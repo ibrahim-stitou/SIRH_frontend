@@ -1,0 +1,28 @@
+<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#0D9488;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#06B6D4;stop-opacity:1" />
+        </linearGradient>
+    </defs>
+
+    <!-- Rounded square background -->
+    <rect x="0" y="0" width="80" height="80" rx="18" fill="url(#mainGradient)"/>
+
+    <!-- Stylized S with people elements -->
+    <g transform="translate(40, 35)">
+        <!-- Top person -->
+        <circle cx="-8" cy="-15" r="7" fill="white"/>
+
+        <!-- S curve path -->
+        <path d="M 15,-20 Q 8,-20 0,-15 Q -8,-10 -8,-2 Q -8,6 0,11 Q 8,16 15,16"
+              fill="none" stroke="white" stroke-width="5" stroke-linecap="round"/>
+
+        <!-- Bottom person -->
+        <circle cx="8" cy="18" r="7" fill="white"/>
+
+        <!-- Team dots -->
+        <circle cx="-18" cy="5" r="3" fill="white" opacity="0.7"/>
+        <circle cx="18" cy="-8" r="3" fill="white" opacity="0.7"/>
+    </g>
+</svg>

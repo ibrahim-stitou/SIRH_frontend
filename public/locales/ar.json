@@ -1,0 +1,134 @@
+{
+  "security": {
+    "account_security": "Sécurité du compte",
+    "password_change": "Changer le mot de passe",
+    "password_change_desc": "Mettez à jour votre mot de passe de connexion",
+    "current_password": "Mot de passe actuel",
+    "new_password": "Nouveau mot de passe",
+    "confirm_password": "Confirmer le mot de passe",
+    "update_password": "Mettre à jour le mot de passe",
+    "updating": "Mise à jour...",
+    "password_changed_success": "Mot de passe mis à jour avec succès",
+    "error_password_update": "Échec de la mise à jour du mot de passe",
+    "error_updating_password": "Une erreur s'est produite lors de la mise à jour du mot de passe"
+  },
+  "sidebar": {
+
+  },
+  "header": {
+    "language": "Langue"
+  },
+  "common": {
+    "optional": "Optionnel",
+    "months": {
+      "1": "Janvier",
+      "2": "Février",
+      "3": "Mars",
+      "4": "Avril",
+      "5": "Mai",
+      "6": "Juin",
+      "7": "Juillet",
+      "8": "Août",
+      "9": "Septembre",
+      "10": "Octobre",
+      "11": "Novembre",
+      "12": "Décembre"
+    },
+    "simple_days": {
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mer",
+      "thu": "Jeu",
+      "fri": "Ven",
+      "sat": "Sam",
+      "sun": "Dim"
+    },
+    "errorLoading": "Erreur lors du chargement des données",
+    "errors": {
+      "fetchFailed": "Une erreur s'est produite lors de la récupération des données"
+    },
+    "add": "Ajouter",
+    "dateFormat": "{{jour}} {{mois}} {{année}}",
+    "dateTimeFormat": "{{jour}} {{mois}} {{année}} à {{heures}}:{{minutes}}",
+    "submit": "Soumettre",
+    "security": "Sécurité",
+    "logout": "Se déconnecter",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "view": "Voir",
+    "download": "Télécharger",
+    "selectDate": "Sélectionner une date",
+    "close": "Fermer",
+    "confirm": "Confirmer",
+    "validate": "Valider",
+    "yes": "Oui",
+    "no": "Non",
+    "loading": "Chargement...",
+    "creating": "Création...",
+    "error": "Erreur",
+    "processing": "Traitement...",
+    "success": "Succès",
+    "warning": "Avertissement",
+    "info": "Information",
+    "noData": "Aucune donnée disponible",
+    "noResults": "Aucun résultat trouvé",
+    "reference": "Référence",
+    "back": "Retour",
+    "submitting": "Envoi en cours...",
+    "attention": "Attention",
+    "days": "jours",
+    "day": "jour",
+    "uploaded": "Téléchargé",
+    "monday": "Lundi",
+    "tuesday": "Mardi",
+    "wednesday": "Mercredi",
+    "thursday": "Jeudi",
+    "friday": "Vendredi",
+    "saturday": "Samedi",
+    "sunday": "Dimanche",
+    "send": "Envoyer"
+  },
+
+  "dataTable": {
+    "searchColumns": "Rechercher dans les colonnes",
+    "loading": "Chargement...",
+    "all": "Tous",
+    "noData": "Aucune donnée disponible",
+    "page": {
+      "of": "sur",
+      "next": "Suivant",
+      "previous": "Précédent",
+      "page": "Page"
+    },
+    "search": {
+      "placeholder": "Rechercher..."
+    },
+    "reset": "Réinitialiser",
+    "apply": "Appliquer les filtres",
+    "rowsPerPage": "Lignes par page",
+    "rowsTotal": "ligne(s) au total.",
+    "rowsSelected": "ligne(s) sélectionnée(s).",
+    "columns": "Colonnes"
+  },
+  "months": {
+    "1": "Janvier",
+    "2": "Février",
+    "3": "Mars",
+    "4": "Avril",
+    "5": "Mai",
+    "6": "Juin",
+    "7": "Juillet",
+    "8": "Août",
+    "9": "Septembre",
+    "10": "Octobre",
+    "11": "Novembre",
+    "12": "Décembre"
+  },
+  "dropzone": {
+    "remove_file": "Supprimer le fichier",
+    "drag_and_drop": "Glissez-déposez les fichiers ici ou cliquez pour sélectionner",
+    "drag_and_drop_description": "Vous pouvez télécharger"
+  }
+}

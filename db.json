@@ -1,0 +1,461 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "admin@example.com",
+      "password": "password",
+      "name": "Admin User",
+      "full_name": "Admin User",
+      "roleIds": [
+        1
+      ],
+      "status": "active"
+    },
+    {
+      "id": 2,
+      "email": "hr@example.com",
+      "password": "password",
+      "name": "HR Manager",
+      "full_name": "HR Manager",
+      "roleIds": [
+        2
+      ],
+      "status": "active"
+    }
+  ],
+  "roles": [
+    {
+      "id": 1,
+      "name": "Admin",
+      "code": "ADMIN",
+      "description": "Administrator",
+      "permissions": [
+        "*"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "HR Manager",
+      "code": "HR_MANAGER",
+      "description": "Human Resources Manager",
+      "permissions": [
+        "employees.read",
+        "employees.write",
+        "leaves.read",
+        "leaves.approve"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Employee",
+      "code": "EMPLOYEE",
+      "description": "Standard Employee",
+      "permissions": [
+        "self.read"
+      ]
+    }
+  ],
+  "sessions": [
+    {
+      "id": 1764000865455,
+      "access_token": "i54k4718ubhmidckiwf",
+      "refresh_token": "79klcblayn9midckiwf",
+      "userId": 1,
+      "expiresAt": 1764002665455
+    },
+    {
+      "id": 1764000871526,
+      "access_token": "n93cf5va1pmidcknl2",
+      "refresh_token": "v8xgebs19jmidcknl2",
+      "userId": 1,
+      "expiresAt": 1764002671526
+    },
+    {
+      "id": 1764001076109,
+      "access_token": "gmri1ghv9zmidcp1fx",
+      "refresh_token": "ch5c4cmrmunmidcp1fx",
+      "userId": 1,
+      "expiresAt": 1764002876109
+    },
+    {
+      "id": 1764001084230,
+      "access_token": "pfvuw8gcz8midcp7pi",
+      "refresh_token": "u2pra43ohglmidcp7pi",
+      "userId": 1,
+      "expiresAt": 1764002884230
+    },
+    {
+      "id": 1764001098271,
+      "access_token": "5klqel1vf4ymidcpijj",
+      "refresh_token": "olyky3cilamidcpijj",
+      "userId": 1,
+      "expiresAt": 1764002898271
+    },
+    {
+      "id": 1764001102451,
+      "access_token": "mm7adhabm5midcplrn",
+      "refresh_token": "kzvgsx6umipmidcplrn",
+      "userId": 1,
+      "expiresAt": 1764002902451
+    },
+    {
+      "id": 1764001124327,
+      "access_token": "vb9ht30kvaomidcq2nb",
+      "refresh_token": "vzzdymx4mtgmidcq2nb",
+      "userId": 1,
+      "expiresAt": 1764002924327
+    },
+    {
+      "id": 1764001138862,
+      "access_token": "usurmgwjyxmidcqdv2",
+      "refresh_token": "m8h308gmtxjmidcqdv2",
+      "userId": 1,
+      "expiresAt": 1764002938862
+    },
+    {
+      "id": 1764001610118,
+      "access_token": "gnpq25nzrpgmidd0hhi",
+      "refresh_token": "zafctzq859cmidd0hhi",
+      "userId": 1,
+      "expiresAt": 1764003410118
+    },
+    {
+      "id": 1764002921970,
+      "access_token": "4t1y3ei9omxmiddslpu",
+      "refresh_token": "3e57hr2ahntmiddslpu",
+      "userId": 1,
+      "expiresAt": 1764004721970
+    },
+    {
+      "id": 1764003100117,
+      "access_token": "067tqfrgh0wmiddwf6d",
+      "refresh_token": "1wvr3p9owefmiddwf6d",
+      "userId": 1,
+      "expiresAt": 1764004900117
+    }
+  ],
+  "departments": [
+    {
+      "id": 1,
+      "name": "Administration",
+      "managerUserId": 1
+    },
+    {
+      "id": 2,
+      "name": "Human Resources",
+      "managerUserId": 2
+    },
+    {
+      "id": 3,
+      "name": "Engineering",
+      "managerUserId": 1
+    },
+    {
+      "id": 4,
+      "name": "Sales",
+      "managerUserId": 2
+    }
+  ],
+  "locations": [
+    {
+      "id": 1,
+      "name": "HQ Paris",
+      "country": "FR"
+    },
+    {
+      "id": 2,
+      "name": "London Office",
+      "country": "GB"
+    }
+  ],
+  "employees": [
+    {
+      "id": 100,
+      "userId": 1,
+      "firstName": "Admin",
+      "lastName": "User",
+      "email": "admin@example.com",
+      "departmentId": 1,
+      "position": "System Administrator",
+      "hireDate": "2022-01-10",
+      "contractType": "CDI",
+      "locationId": 1,
+      "status": "active",
+      "managerEmployeeId": null,
+      "salaryBase": 75000
+    },
+    {
+      "id": 101,
+      "userId": 2,
+      "firstName": "HR",
+      "lastName": "Manager",
+      "email": "hr@example.com",
+      "departmentId": 2,
+      "position": "HR Manager",
+      "hireDate": "2023-03-01",
+      "contractType": "CDI",
+      "locationId": 1,
+      "status": "active",
+      "managerEmployeeId": 100,
+      "salaryBase": 60000
+    },
+    {
+      "id": 102,
+      "userId": null,
+      "firstName": "Alice",
+      "lastName": "Martin",
+      "email": "alice.martin@corp.com",
+      "departmentId": 3,
+      "position": "Frontend Developer",
+      "hireDate": "2023-04-10",
+      "contractType": "CDI",
+      "locationId": 1,
+      "status": "active",
+      "managerEmployeeId": 100,
+      "salaryBase": 48000
+    },
+    {
+      "id": 103,
+      "userId": null,
+      "firstName": "Bruno",
+      "lastName": "Leclerc",
+      "email": "bruno.leclerc@corp.com",
+      "departmentId": 3,
+      "position": "Engineering Manager",
+      "hireDate": "2021-02-01",
+      "contractType": "CDI",
+      "locationId": 1,
+      "status": "active",
+      "managerEmployeeId": 100,
+      "salaryBase": 72000
+    },
+    {
+      "id": 104,
+      "userId": null,
+      "firstName": "Chloe",
+      "lastName": "Dupont",
+      "email": "chloe.dupont@corp.com",
+      "departmentId": 2,
+      "position": "HR Specialist",
+      "hireDate": "2022-09-15",
+      "contractType": "CDD",
+      "locationId": 1,
+      "status": "active",
+      "managerEmployeeId": 101,
+      "salaryBase": 42000
+    }
+  ],
+  "contracts": [
+    {
+      "id": 500,
+      "employeeId": 102,
+      "type": "CDI",
+      "startDate": "2023-04-10",
+      "endDate": null,
+      "weeklyHours": 35
+    },
+    {
+      "id": 501,
+      "employeeId": 104,
+      "type": "CDD",
+      "startDate": "2022-09-15",
+      "endDate": "2025-09-14",
+      "weeklyHours": 35
+    }
+  ],
+  "leaves": [
+    {
+      "id": 900,
+      "employeeId": 102,
+      "type": "PTO",
+      "status": "approved",
+      "startDate": "2025-01-05",
+      "endDate": "2025-01-09",
+      "requestedAt": "2024-12-10"
+    },
+    {
+      "id": 901,
+      "employeeId": 104,
+      "type": "Sick",
+      "status": "pending",
+      "startDate": "2025-02-12",
+      "endDate": "2025-02-14",
+      "requestedAt": "2025-02-10"
+    },
+    {
+      "id": 902,
+      "employeeId": 101,
+      "type": "PTO",
+      "status": "approved",
+      "startDate": "2025-02-20",
+      "endDate": "2025-02-24",
+      "requestedAt": "2025-01-18"
+    }
+  ],
+  "attendance": [
+    {
+      "id": 3000,
+      "employeeId": 102,
+      "date": "2025-01-15",
+      "checkIn": "08:59",
+      "checkOut": "17:08",
+      "status": "present"
+    },
+    {
+      "id": 3001,
+      "employeeId": 104,
+      "date": "2025-01-15",
+      "checkIn": "09:12",
+      "checkOut": "17:02",
+      "status": "present"
+    },
+    {
+      "id": 3002,
+      "employeeId": 101,
+      "date": "2025-01-15",
+      "checkIn": "08:45",
+      "checkOut": "17:30",
+      "status": "present"
+    }
+  ],
+  "payslips": [
+    {
+      "id": 2000,
+      "employeeId": 102,
+      "period": "2025-01",
+      "gross": 4000,
+      "net": 3100,
+      "bonuses": 200,
+      "taxes": 900,
+      "status": "published"
+    },
+    {
+      "id": 2001,
+      "employeeId": 103,
+      "period": "2025-01",
+      "gross": 6000,
+      "net": 4500,
+      "bonuses": 500,
+      "taxes": 1500,
+      "status": "processing"
+    },
+    {
+      "id": 2002,
+      "employeeId": 101,
+      "period": "2025-01",
+      "gross": 5000,
+      "net": 3700,
+      "bonuses": 300,
+      "taxes": 1300,
+      "status": "published"
+    }
+  ],
+  "payrollAdjustments": [
+    {
+      "id": 2100,
+      "payslipId": 2000,
+      "type": "bonus",
+      "label": "Performance Q4",
+      "amount": 200
+    },
+    {
+      "id": 2101,
+      "payslipId": 2001,
+      "type": "deduction",
+      "label": "Health Insurance",
+      "amount": -120
+    }
+  ],
+  "evaluations": [
+    {
+      "id": 800,
+      "employeeId": 102,
+      "period": "2024",
+      "score": 4.3,
+      "reviewerEmployeeId": 103,
+      "submittedAt": "2024-12-20"
+    },
+    {
+      "id": 801,
+      "employeeId": 101,
+      "period": "2024",
+      "score": 4.8,
+      "reviewerEmployeeId": 103,
+      "submittedAt": "2024-12-22"
+    }
+  ],
+  "goals": [
+    {
+      "id": 850,
+      "employeeId": 102,
+      "title": "Improve test coverage",
+      "status": "in_progress",
+      "dueDate": "2025-03-31"
+    },
+    {
+      "id": 851,
+      "employeeId": 101,
+      "title": "Implement new HR workflow",
+      "status": "not_started",
+      "dueDate": "2025-04-30"
+    }
+  ],
+  "announcements": [
+    {
+      "id": 700,
+      "title": "Company Kickoff 2025",
+      "body": "Join us for strategy and vision.",
+      "publishedAt": "2025-01-05T10:00:00Z",
+      "authorUserId": 1
+    },
+    {
+      "id": 701,
+      "title": "New HR Portal Features",
+      "body": "Self service enhancements deployed.",
+      "publishedAt": "2025-01-12T09:30:00Z",
+      "authorUserId": 2
+    }
+  ],
+  "documents": [
+    {
+      "id": 750,
+      "name": "Employee Handbook 2025.pdf",
+      "category": "policy",
+      "uploadedAt": "2025-01-02",
+      "sizeKB": 820
+    }
+  ],
+  "systemSettings": {
+    "localeDefault": "fr",
+    "supportedLocales": [
+      "fr",
+      "en"
+    ],
+    "timezone": "Europe/Paris"
+  },
+  "featureFlags": [
+    {
+      "id": "perfDash",
+      "enabled": true
+    },
+    {
+      "id": "betaLeavesFlow",
+      "enabled": false
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": 6000,
+      "actorUserId": 1,
+      "action": "LOGIN",
+      "at": "2025-01-15T08:12:00Z"
+    },
+    {
+      "id": 6001,
+      "actorUserId": 2,
+      "action": "LEAVE_APPROVE",
+      "entityId": 900,
+      "at": "2025-01-15T09:00:11Z"
+    }
+  ]
+}
