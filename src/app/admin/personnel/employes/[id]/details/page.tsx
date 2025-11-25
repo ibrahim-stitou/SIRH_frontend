@@ -14,6 +14,7 @@ import { SectionCard, InfoRow, AnimatedTabContent } from './components';
 import { Calendar, FileText, GraduationCap, IdCard, Layers, NotebookText, UserRound } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface EmployeeRow {
   id: number;
@@ -37,6 +38,7 @@ export default function EmployeeDetailsPage() {
   const [media, setMedia] = useState<any[]>([]);
   const [openPreview, setOpenPreview] = useState(false);
   const [previewItem, setPreviewItem] = useState<any | null>(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (!id) return;
@@ -86,47 +88,47 @@ export default function EmployeeDetailsPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={() => router.push(`/admin/personnel/employes/${id}/edit`)}>Modifier</Button>
-            <Button variant="secondary" onClick={() => router.push('/admin/personnel/employes')}>Retour</Button>
+            <Button variant="outline" onClick={() => router.push(`/admin/personnel/employes/${id}/edit`)}>{t('common.edit')}</Button>
+            <Button variant="secondary" onClick={() => router.push('/admin/personnel/employes')}>{t('common.back')}</Button>
           </div>
         </div>
 
         <Card className="p-4 border border-primary/10 shadow-sm bg-gradient-to-br from-background to-muted/40">
           <Tabs value={active} onValueChange={setActive}>
             <TabsList className="mb-4">
-              <TabsTrigger value="personal"><UserRound className='text-primary' /> Personnel</TabsTrigger>
-              <TabsTrigger value="skills"><GraduationCap className='text-indigo-600' /> Skills & Studies</TabsTrigger>
-              <TabsTrigger value="social"><IdCard className='text-amber-600' /> CNSS & Mutuelle</TabsTrigger>
-              <TabsTrigger value="contracts"><NotebookText className='text-pink-600' /> Contrats & Mouvements</TabsTrigger>
-              <TabsTrigger value="documents"><FileText className='text-teal-600' /> Documents</TabsTrigger>
-              <TabsTrigger value="leaves"><Calendar className='text-rose-600' /> Congés & Absences</TabsTrigger>
+              <TabsTrigger value="personal"><UserRound className='text-primary' /> {t('employeeDetails.tabs.personal')}</TabsTrigger>
+              <TabsTrigger value="skills"><GraduationCap className='text-indigo-600' /> {t('employeeDetails.tabs.skills')}</TabsTrigger>
+              <TabsTrigger value="social"><IdCard className='text-amber-600' /> {t('employeeDetails.tabs.social')}</TabsTrigger>
+              <TabsTrigger value="contracts"><NotebookText className='text-pink-600' /> {t('employeeDetails.tabs.contracts')}</TabsTrigger>
+              <TabsTrigger value="documents"><FileText className='text-teal-600' /> {t('employeeDetails.tabs.documents')}</TabsTrigger>
+              <TabsTrigger value="leaves"><Calendar className='text-rose-600' /> {t('employeeDetails.tabs.leaves')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="personal">
               <AnimatedTabContent active={active==='personal'}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <SectionCard title="Identité">
-                    <InfoRow label="Nom complet" value={fullName} />
-                    <InfoRow label="Email" value={emp?.email} />
-                    <InfoRow label="Téléphone" value={emp?.phone} />
-                    <InfoRow label="Date de naissance" value={emp?.birthDate} />
-                    <InfoRow label="Lieu de naissance" value={emp?.birthPlace} />
-                    <InfoRow label="Genre" value={emp?.gender==='M'?'Homme':emp?.gender==='F'?'Femme':'—'} />
-                    <InfoRow label="Nationalité" value={emp?.nationality} />
-                    <InfoRow label="État civil" value={emp?.maritalStatus} />
-                    <InfoRow label="Enfants" value={emp?.numberOfChildren} />
+                  <SectionCard title={t('employeeDetails.sections.identity')}>
+                    <InfoRow label={t('employeeDetails.fields.fullName')} value={fullName} />
+                    <InfoRow label={t('employeeDetails.fields.email')} value={emp?.email} />
+                    <InfoRow label={t('employeeDetails.fields.phone')} value={emp?.phone} />
+                    <InfoRow label={t('employeeDetails.fields.birthDate')} value={emp?.birthDate} />
+                    <InfoRow label={t('employeeDetails.fields.birthPlace')} value={emp?.birthPlace} />
+                    <InfoRow label={t('employeeDetails.fields.gender')} value={emp?.gender==='M'?t('employeeCreate.enums.gender.M'):emp?.gender==='F'?t('employeeCreate.enums.gender.F'):'—'} />
+                    <InfoRow label={t('employeeDetails.fields.nationality')} value={emp?.nationality} />
+                    <InfoRow label={t('employeeDetails.fields.maritalStatus')} value={emp?.maritalStatus} />
+                    <InfoRow label={t('employeeDetails.fields.numberOfChildren')} value={emp?.numberOfChildren} />
                   </SectionCard>
-                  <SectionCard title="Coordonnées">
-                    <InfoRow label="Adresse" value={emp?.address} />
-                    <InfoRow label="Ville" value={emp?.city} />
-                    <InfoRow label="Code postal" value={emp?.postalCode} />
-                    <InfoRow label="Pays" value={emp?.country} />
-                    <InfoRow label="Poste" value={emp?.position} />
-                    <InfoRow label="Date d'embauche" value={emp?.hireDate} />
+                  <SectionCard title={t('employeeDetails.sections.contact')}>
+                    <InfoRow label={t('employeeDetails.fields.address')} value={emp?.address} />
+                    <InfoRow label={t('employeeDetails.fields.city')} value={emp?.city} />
+                    <InfoRow label={t('employeeDetails.fields.postalCode')} value={emp?.postalCode} />
+                    <InfoRow label={t('employeeDetails.fields.country')} value={emp?.country} />
+                    <InfoRow label={t('employeeDetails.fields.position')} value={emp?.position} />
+                    <InfoRow label={t('employeeDetails.fields.hireDate')} value={emp?.hireDate} />
                   </SectionCard>
                 </div>
                 {emp?.notes && (
-                  <SectionCard title="Notes"><div className="text-sm">{emp.notes}</div></SectionCard>
+                  <SectionCard title={t('employeeDetails.sections.notes')}><div className="text-sm">{emp.notes}</div></SectionCard>
                 )}
               </AnimatedTabContent>
             </TabsContent>
@@ -134,7 +136,7 @@ export default function EmployeeDetailsPage() {
             <TabsContent value="skills">
               <AnimatedTabContent active={active==='skills'}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <SectionCard title="Formations" description="Liste des études et diplômes">
+                  <SectionCard title={t('employeeDetails.sections.education')} description={t('employeeDetails.sections.education')}>
                     {emp?.education?.length ? (
                       <div className="space-y-2">
                         {emp.education.map((e, i) => (
@@ -144,9 +146,9 @@ export default function EmployeeDetailsPage() {
                           </div>
                         ))}
                       </div>
-                    ) : <div className="text-sm text-muted-foreground">Aucune formation</div>}
+                    ) : <div className="text-sm text-muted-foreground">{t('employeeDetails.empty.noEducation')}</div>}
                   </SectionCard>
-                  <SectionCard title="Compétences" description="Compétences principales">
+                  <SectionCard title={t('employeeDetails.sections.skills')} description={t('employeeDetails.sections.skills')}>
                     {emp?.skills?.length ? (
                       <div className="flex flex-wrap gap-2">
                         {emp.skills.map((s, i) => (
@@ -155,10 +157,10 @@ export default function EmployeeDetailsPage() {
                           </span>
                         ))}
                       </div>
-                    ) : <div className="text-sm text-muted-foreground">Aucune compétence</div>}
+                    ) : <div className="text-sm text-muted-foreground">{t('employeeDetails.empty.noSkills')}</div>}
                   </SectionCard>
                 </div>
-                <SectionCard title="Certifications">
+                <SectionCard title={t('employeeDetails.sections.certifications')}>
                   {emp?.certifications?.length ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       {emp.certifications.map((c, i) => (
@@ -168,14 +170,14 @@ export default function EmployeeDetailsPage() {
                         </div>
                       ))}
                     </div>
-                  ) : <div className="text-sm text-muted-foreground">Aucune certification</div>}
+                  ) : <div className="text-sm text-muted-foreground">{t('employeeDetails.empty.noCertifications')}</div>}
                 </SectionCard>
               </AnimatedTabContent>
             </TabsContent>
 
             <TabsContent value="social">
               <AnimatedTabContent active={active==='social'}>
-                <SectionCard title="CNSS & Mutuelle" description="À venir">
+                <SectionCard title={t('employeeDetails.tabs.social')} description="À venir">
                   <div className="text-sm text-muted-foreground">Section placeholder pour la CNSS et la Mutuelle.</div>
                 </SectionCard>
               </AnimatedTabContent>
@@ -183,7 +185,7 @@ export default function EmployeeDetailsPage() {
 
             <TabsContent value="contracts">
               <AnimatedTabContent active={active==='contracts'}>
-                <SectionCard title="Contrats & Mouvements" description="Historique RH">
+                <SectionCard title={t('employeeDetails.tabs.contracts')} description="Historique RH">
                   <div className="text-sm text-muted-foreground">Données mock à brancher (contracts, movements).</div>
                 </SectionCard>
               </AnimatedTabContent>
@@ -191,7 +193,7 @@ export default function EmployeeDetailsPage() {
 
             <TabsContent value="documents">
               <AnimatedTabContent active={active==='documents'}>
-                <SectionCard title="Documents" description="Fichiers associés à l'employé + galerie complète">
+                <SectionCard title={t('employeeDetails.sections.documents')} description={t('employeeDetails.sections.documentsDesc')}>
                   {combinedDocs.length ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       {combinedDocs.map((d) => (
@@ -210,14 +212,30 @@ export default function EmployeeDetailsPage() {
                         </button>
                       ))}
                     </div>
-                  ) : <div className="text-sm text-muted-foreground">Aucun document</div>}
+                  ) : <div className="text-sm text-muted-foreground">{t('employeeDetails.empty.noDocuments')}</div>}
+                  <div className="mt-6">
+                    <h4 className="text-sm font-semibold mb-2 flex items-center gap-2"><FileText className='size-4 text-teal-600' /> {t('employeeDetails.sections.gallery')}</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {media.filter(m => m.fileName).map((m) => (
+                        <button key={m.id} onClick={() => handleOpen(m)} className="group border rounded-md p-3 bg-white/60 dark:bg-muted/40 hover:shadow-md transition shadow-sm">
+                          <div className="aspect-video w-full rounded-md overflow-hidden bg-muted/30">
+                            <img src={`/images/user/${m.fileName}`} alt={m.title} className="w-full h-full object-cover rounded-md group-hover:scale-105 transition" />
+                          </div>
+                          <div className="mt-2">
+                            <div className="font-medium text-sm line-clamp-1">{m.title}</div>
+                            <div className="text-[11px] text-muted-foreground line-clamp-1">{m.fileName}</div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </SectionCard>
               </AnimatedTabContent>
             </TabsContent>
 
             <TabsContent value="leaves">
               <AnimatedTabContent active={active==='leaves'}>
-                <SectionCard title="Congés & Absences">
+                <SectionCard title={t('employeeDetails.tabs.leaves')}>
                   <div className="text-sm text-muted-foreground">Gérer les congés et absences (mock à brancher si besoin).</div>
                 </SectionCard>
               </AnimatedTabContent>

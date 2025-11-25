@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { FileUploader } from '@/components/file-uploader';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/context/LanguageContext';
 
 const AddButton: React.FC<{ onClick: () => void; label: string }> = ({ onClick, label }) => (
   <Button type="button" variant="outline" size="sm" onClick={onClick}>{label}</Button>
@@ -17,6 +18,7 @@ const RemoveChip: React.FC<{ onClick: () => void }> = ({ onClick }) => (
 
 export const StepDocuments: React.FC = () => {
   const { control, formState: { errors }, register, setValue, watch } = useFormContext<EmployeeCreateFormValues>();
+  const { t } = useLanguage();
   const documentsArray = useFieldArray({ control, name: 'documents' });
   const documentsFiles = watch('documentsFiles') || [];
 
@@ -30,8 +32,8 @@ export const StepDocuments: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <Section title="Documents" description="Ajouter les documents avec un titre" icon="📂" toolbar={<AddButton onClick={() => documentsArray.append({ title: '' })} label="Ajouter document" />}>
-        {documentsArray.fields.length === 0 && <EmptyHint text="Aucun document" />}
+      <Section title={t('employeeCreate.steps.documents')} description={t('employeeCreate.documents.help')} icon="📂" toolbar={<AddButton onClick={() => documentsArray.append({ title: '' })} label={t('common.add')} />}>
+        {documentsArray.fields.length === 0 && <EmptyHint text={t('employeeDetails.empty.noDocuments')} />}
         <div className="space-y-4">
           {documentsArray.fields.map((f, idx) => (
             <Card key={f.id} className="p-4 space-y-3 relative group">
@@ -41,11 +43,11 @@ export const StepDocuments: React.FC = () => {
                 current.splice(idx, 1);
                 setValue('documentsFiles', current);
               }} />
-              <FormField label="Titre" isRequired error={errors.documents?.[idx]?.title?.message}>
+              <FormField label={t('employeeCreate.fields.documentTitle')} isRequired error={errors.documents?.[idx]?.title?.message}>
                 <Input {...register(`documents.${idx}.title` as const)} placeholder="CIN" />
               </FormField>
               <div>
-                <Label className="text-sm mb-2 block">Fichier</Label>
+                <Label className="text-sm mb-2 block">{t('common.uploaded') || 'Fichier'}</Label>
                 <FileUploader
                   value={documentsFiles[idx]}
                   onValueChange={(f) => handleFilesChange(idx, f)}

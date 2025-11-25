@@ -185,6 +185,7 @@
   },
   "employeeCreate": {
     "title": "Create Employee",
+    "subtitle": "3 simple steps to add a new employee (contract & salary excluded).",
     "finishText": "All steps completed. Click Finish to save.",
     "steps": {
       "identity": "Identity",
@@ -194,7 +195,10 @@
       "worktime": "Work Time",
       "salary": "Salary",
       "social": "Social",
-      "finish": "Finish"
+      "finish": "Finish",
+      "personal": "Personal",
+      "professional": "Professional",
+      "documents": "Documents"
     },
     "fields": {
       "firstName": "First Name",
@@ -228,6 +232,71 @@
     },
     "documents": { "help": "Add base documents (ID, photo, diplomas)." },
     "reviewTitle": "Review",
-    "reviewHelp": "Check everything before finishing."
+    "reviewHelp": "Check everything before finishing.",
+    "enums": {
+      "gender": { "M": "Male", "F": "Female" },
+      "maritalStatus": {
+        "celibataire": "Single",
+        "marie": "Married",
+        "divorce": "Divorced",
+        "veuf": "Widowed"
+      }
+    }
+  },
+  "employeeEdit": {
+    "title": "Edit employee"
+  },
+  "employeeDetails": {
+    "title": "Employee details",
+    "tabs": {
+      "personal": "Personal",
+      "skills": "Skills & Studies",
+      "social": "CNSS & Mutual",
+      "contracts": "Contracts & Movements",
+      "documents": "Documents",
+      "leaves": "Leave & Absence"
+    },
+    "sections": {
+      "identity": "Identity",
+      "contact": "Contact",
+      "notes": "Notes",
+      "education": "Education",
+      "skills": "Skills",
+      "certifications": "Certifications",
+      "social": "CNSS & Mutual",
+      "contracts": "Contracts & Movements",
+      "documents": "Documents",
+      "gallery": "Available files gallery",
+      "leaves": "Leave & Absence",
+      "documentsDesc": "Employee files + full gallery"
+    },
+    "fields": {
+      "fullName": "Full name",
+      "email": "Email",
+      "phone": "Phone",
+      "birthDate": "Birth date",
+      "birthPlace": "Birth place",
+      "gender": "Gender",
+      "nationality": "Nationality",
+      "maritalStatus": "Marital status",
+      "numberOfChildren": "Children",
+      "address": "Address",
+      "city": "City",
+      "postalCode": "Postal code",
+      "country": "Country",
+      "position": "Position",
+      "hireDate": "Hire date",
+      "departmentShort": "Dept"
+    },
+    "empty": {
+      "noEducation": "No education",
+      "noSkills": "No skills",
+      "noCertifications": "No certifications",
+      "noDocuments": "No documents"
+    }
+  },
+  "placeholders": {
+    "select": "Select",
+    "choose": "Choose"
   }
 }

@@ -18,11 +18,13 @@ import { StepDocuments } from '../../create/steps/StepDocuments';
 import useMultistepForm from '@/hooks/use-multistep-form';
 import { EmployeeCreateFormValues, fullSchema, stepFields } from '../../create/schema';
 import { transformDocuments } from '../../create/utils';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function EmployeeEditPage() {
   const params = useParams<{ id: string }>();
   const id = useMemo(() => params?.id, [params]);
   const router = useRouter();
+  const { t } = useLanguage();
 
   const methods = useForm<EmployeeCreateFormValues>({
     resolver: zodResolver(fullSchema),
@@ -44,7 +46,7 @@ export default function EmployeeEditPage() {
     if (!id) return;
     (async () => {
       try {
-        toast.loading('Chargement de l\'employé...');
+        toast.loading(t('common.loading'));
         const response = await apiClient.get(apiRoutes.admin.employees.details(id));
         toast.dismiss();
         const payload = (response as any)?.data;
@@ -82,11 +84,11 @@ export default function EmployeeEditPage() {
         reset(defaults);
       } catch (e) {
         toast.dismiss();
-        toast.error('Impossible de charger l\'employé');
+        toast.error(t('common.error'));
         router.push('/admin/personnel/employes');
       }
     })();
-  }, [id, reset, router]);
+  }, [id, reset, router, t]);
 
   const wizard = useMultistepForm([
     <StepPersonal key="step1" />,
@@ -99,7 +101,7 @@ export default function EmployeeEditPage() {
   const goNext = async () => {
     const ok = await trigger(stepFields[wizard.currentStepIndex] as any);
     if (!ok) {
-      toast.error('Veuillez corriger les erreurs avant de continuer');
+      toast.error(t('common.error'));
       return;
     }
     wizard.next();
@@ -112,7 +114,7 @@ export default function EmployeeEditPage() {
     try {
       const ok = await trigger(stepFields[wizard.currentStepIndex] as any);
       if (!ok) {
-        toast.error('Erreurs dans le formulaire');
+        toast.error(t('common.error'));
         return;
       }
       const docs = transformDocuments(data);
@@ -122,14 +124,14 @@ export default function EmployeeEditPage() {
         updatedAt: new Date().toISOString(),
       } as any;
 
-      toast.loading('Mise à jour en cours...');
+      toast.loading(t('common.processing'));
       await apiClient.put(apiRoutes.admin.employees.update(id), payload);
       toast.dismiss();
-      toast.success('Employé modifié avec succès');
+      toast.success(t('common.success'));
       router.push('/admin/personnel/employes');
     } catch (e) {
       toast.dismiss();
-      toast.error('Erreur lors de la modification');
+      toast.error(t('common.error'));
       console.error(e);
     }
   };
@@ -139,20 +141,20 @@ export default function EmployeeEditPage() {
       <FormProvider {...methods}>
         <div className="w-full mx-auto px-4 py-8">
           <div className="mb-10">
-            <h1 className="text-2xl font-bold tracking-tight mb-2">Modifier un employé</h1>
-            <p className="text-sm text-muted-foreground">Mettez à jour les informations en 3 étapes.</p>
+            <h1 className="text-2xl font-bold tracking-tight mb-2">{t('employeeEdit.title')}</h1>
+            <p className="text-sm text-muted-foreground">{t('employeeCreate.subtitle')}</p>
           </div>
           <Stepper current={wizard.currentStepIndex} steps={stepNames} goTo={(i) => wizard.goTo(i)} />
           <Card className="p-6 space-y-8">
             {wizard.step}
             <Separator />
             <div className="flex items-center justify-between">
-              <Button type="button" variant="ghost" disabled={wizard.isFirstStep} onClick={goBack}>Retour</Button>
+              <Button type="button" variant="ghost" disabled={wizard.isFirstStep} onClick={goBack}>{t('common.back')}</Button>
               {!wizard.isLastStep && (
-                <Button type="button" onClick={goNext}>Suivant</Button>
+                <Button type="button" onClick={goNext}>{t('common.next') || 'Suivant'}</Button>
               )}
               {wizard.isLastStep && (
-                <Button type="button" onClick={handleSubmit(onSubmit)} disabled={formState.isSubmitting}>Enregistrer</Button>
+                <Button type="button" onClick={handleSubmit(onSubmit)} disabled={formState.isSubmitting}>{t('common.save')}</Button>
               )}
             </div>
           </Card>

@@ -210,6 +210,7 @@
   },
   "employeeCreate": {
     "title": "Créer un employé",
+    "subtitle": "3 étapes simples pour ajouter un nouvel employé (contrat & salaire exclus).",
     "finishText": "Validation terminée. Cliquez sur Terminer pour enregistrer.",
     "steps": {
       "identity": "Identité",
@@ -219,7 +220,10 @@
       "worktime": "Temps",
       "salary": "Salaire",
       "social": "Social",
-      "finish": "Fin"
+      "finish": "Fin",
+      "personal": "Infos personnelles",
+      "professional": "Infos professionnelles",
+      "documents": "Documents"
     },
     "fields": {
       "firstName": "Prénom",
@@ -249,9 +253,19 @@
       "mutualNumber": "Numéro Mutuelle",
       "educationLevel": "Niveau d'études",
       "diplomaYear": "Année du diplôme",
-      "university": "Université"
+      "university": "Université",
+      "documentTitle": "Titre du document"
     },
     "documents": { "help": "Ajoutez vos documents de base (CIN, photo, diplômes)." },
+    "enums": {
+      "gender": { "M": "Homme", "F": "Femme" },
+      "maritalStatus": {
+        "celibataire": "Célibataire",
+        "marie": "Marié(e)",
+        "divorce": "Divorcé(e)",
+        "veuf": "Veuf(ve)"
+      }
+    },
     "reviewTitle": "Récapitulatif",
     "reviewHelp": "Vérifiez avant de terminer.",
     "actions": {
@@ -260,5 +274,61 @@
       "finish": "Terminer",
       "reset": "Réinitialiser"
     }
+  },
+  "employeeEdit": {
+    "title": "Modifier un employé"
+  },
+  "employeeDetails": {
+    "title": "Détails de l’employé",
+    "tabs": {
+      "personal": "Personnel",
+      "skills": "Skills & Studies",
+      "social": "CNSS & Mutuelle",
+      "contracts": "Contrats & Mouvements",
+      "documents": "Documents",
+      "leaves": "Congés & Absences"
+    },
+    "sections": {
+      "identity": "Identité",
+      "contact": "Coordonnées",
+      "notes": "Notes",
+      "education": "Formations",
+      "skills": "Compétences",
+      "certifications": "Certifications",
+      "social": "CNSS & Mutuelle",
+      "contracts": "Contrats & Mouvements",
+      "documents": "Documents",
+      "gallery": "Galerie fichiers disponibles",
+      "leaves": "Congés & Absences",
+      "documentsDesc": "Fichiers associés à l'employé + galerie complète"
+    },
+    "fields": {
+      "fullName": "Nom complet",
+      "email": "Email",
+      "phone": "Téléphone",
+      "birthDate": "Date de naissance",
+      "birthPlace": "Lieu de naissance",
+      "gender": "Genre",
+      "nationality": "Nationalité",
+      "maritalStatus": "État civil",
+      "numberOfChildren": "Enfants",
+      "address": "Adresse",
+      "city": "Ville",
+      "postalCode": "Code postal",
+      "country": "Pays",
+      "position": "Poste",
+      "hireDate": "Date d'embauche",
+      "departmentShort": "Dépt"
+    },
+    "empty": {
+      "noEducation": "Aucune formation",
+      "noSkills": "Aucune compétence",
+      "noCertifications": "Aucune certification",
+      "noDocuments": "Aucun document"
+    }
+  },
+  "placeholders": {
+    "select": "Sélectionner",
+    "choose": "Choisir"
   }
 }

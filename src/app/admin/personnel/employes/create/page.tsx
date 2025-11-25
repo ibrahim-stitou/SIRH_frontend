@@ -18,8 +18,10 @@ import { StepDocuments } from './steps/StepDocuments';
 import { transformDocuments } from './utils';
 import PageContainer from '@/components/layout/page-container';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function EmployeeCreatePage() {
+  const { t } = useLanguage();
   const methods = useForm<EmployeeCreateFormValues>({
     resolver: zodResolver(fullSchema),
     defaultValues: {
@@ -43,12 +45,16 @@ export default function EmployeeCreatePage() {
     <StepDocuments key="step3" />,
   ]);
 
-  const stepNames = ['Infos personnelles', 'Infos professionnelles', 'Documents'];
+  const stepNames = [
+    t('employeeCreate.steps.personal'),
+    t('employeeCreate.steps.professional'),
+    t('employeeCreate.steps.documents')
+  ];
 
   const goNext = async () => {
     const ok = await trigger(stepFields[wizard.currentStepIndex] as any);
     if (!ok) {
-      toast.error('Veuillez corriger les erreurs avant de continuer');
+      toast.error(t('common.error'));
       return;
     }
     wizard.next();
@@ -60,7 +66,7 @@ export default function EmployeeCreatePage() {
     try {
       const ok = await trigger(stepFields[wizard.currentStepIndex] as any);
       if (!ok) {
-        toast.error('Erreurs dans le formulaire');
+        toast.error(t('common.error'));
         return;
       }
 
@@ -103,15 +109,15 @@ export default function EmployeeCreatePage() {
         notes: data.notes,
       };
 
-      toast.loading('Création en cours...');
+      toast.loading(t('common.creating'));
       await apiClient.post(apiRoutes.admin.employees.list, payload);
       toast.dismiss();
-      toast.success('Employé créé avec succès');
+      toast.success(t('common.success'));
       methods.reset();
       router.push('/admin/personnel/employes');
     } catch (e: any) {
       toast.dismiss();
-      toast.error('Erreur lors de la création');
+      toast.error(t('common.error'));
       console.error(e);
     }
   };
@@ -121,20 +127,20 @@ export default function EmployeeCreatePage() {
     <FormProvider {...methods}>
       <div className="w-full mx-auto px-4 py-8">
         <div className="mb-10">
-          <h1 className="text-2xl font-bold tracking-tight mb-2">Créer un employé</h1>
-          <p className="text-sm text-muted-foreground">3 étapes simples pour ajouter un nouvel employé (contrat & salaire exclus).</p>
+          <h1 className="text-2xl font-bold tracking-tight mb-2">{t('employeeCreate.title')}</h1>
+          <p className="text-sm text-muted-foreground">{t('employeeCreate.subtitle')}</p>
         </div>
         <Stepper current={wizard.currentStepIndex} steps={stepNames} goTo={(i) => wizard.goTo(i)} />
         <Card className="p-6 space-y-8">
           {wizard.step}
           <Separator />
           <div className="flex items-center justify-between">
-            <Button type="button" variant="ghost" disabled={wizard.isFirstStep} onClick={goBack}>Retour</Button>
+            <Button type="button" variant="ghost" disabled={wizard.isFirstStep} onClick={goBack}>{t('common.back')}</Button>
             {!wizard.isLastStep && (
-              <Button type="button" onClick={goNext}>Suivant</Button>
+              <Button type="button" onClick={goNext}>{t('common.next') || 'Suivant'}</Button>
             )}
             {wizard.isLastStep && (
-              <Button type="button" onClick={handleSubmit(onSubmit)} disabled={formState.isSubmitting}>Terminer</Button>
+              <Button type="button" onClick={handleSubmit(onSubmit)} disabled={formState.isSubmitting}>{t('employeeCreate.actions.finish')}</Button>
             )}
           </div>
         </Card>
