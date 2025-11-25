@@ -169,6 +169,12 @@ server.delete('/hrEmployees/:id', (req, res) => {
   return res.json({ status: 'success', message: `Employé #${id} supprimé` });
 });
 
+// Explicit userMedia route (safety if not initialized yet)
+server.get('/userMedia', (req, res) => {
+  const rows = db.get('userMedia').value() || [];
+  return res.json({ status: 'success', message: 'Récupération réussie', data: rows });
+});
+
 // Generic CRUD envelope endpoints for each top-level collection
 const collections = Object.keys(data).filter(k => Array.isArray(data[k]));
 collections.forEach(col => {

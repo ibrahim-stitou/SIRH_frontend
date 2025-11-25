@@ -40,6 +40,10 @@ export const apiRoutes = {
       delete: (id: number | string) => `${API_BASE}/hrEmployees/${id}`,
       details: (id: number | string) => `${API_BASE}/hrEmployees/${id}`,
       update: (id: number | string) => `${API_BASE}/hrEmployees/${id}`,
+    },
+    media: {
+      list: `${API_BASE}/userMedia`,
+      details: (id: number | string) => `${API_BASE}/userMedia/${id}`,
     }
   }
 };

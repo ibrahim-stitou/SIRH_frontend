@@ -109,7 +109,7 @@ export function EmployeeListing() {
               <Button
                 variant="outline"
                 className="h-8 w-8 p-1.5"
-                onClick={() => router.push(`/admin/personnel/employees/${row.id}/details`)}
+                onClick={() => router.push(`/admin/personnel/employes/${row.id}/details`)}
               >
                 <Eye className="h-4 w-4" />
               </Button>

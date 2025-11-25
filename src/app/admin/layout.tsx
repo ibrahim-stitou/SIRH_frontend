@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: 'Admin Dashboard - SIRH',
   description: 'SIRH - Admin Dashboard',
   icons: {
-    icon: '/logo/small-logo-black.svg'
+    icon: '/logo/small-SIRH_logo.svg'
   }
 };
 

@@ -18,5 +18,5 @@ module.exports = {
   systemSettings: require('./mock-data/systemSettings.json'),
   featureFlags: require('./mock-data/featureFlags.json'),
   auditLogs: require('./mock-data/auditLogs.json'),
+  userMedia: require('./mock-data/userMedia.json'),
 };
-
