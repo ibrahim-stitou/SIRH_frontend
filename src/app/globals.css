@@ -79,6 +79,7 @@
 .theme-sirh {
   /* Core palette */
   --primary: #0D9488;
+  /*--primary-light: #06B6D4;*/
   --primary-light: #06B6D4;
   --primary-foreground: #ffffff;
   --secondary: var(--primary-light);

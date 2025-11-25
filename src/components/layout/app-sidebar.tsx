@@ -27,7 +27,7 @@ import {
   SidebarMenuSubItem,
   SidebarRail
 } from '@/components/ui/sidebar';
-import { navItems, consultantNavItems } from '@/constants/data';
+import { useNavItems } from '@/constants/data';
 import {
   IconChevronRight,
   IconChevronsDown,
@@ -41,6 +41,8 @@ import { Icons } from '../icons';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { useSidebar } from '@/components/ui/sidebar'
 import { useEffect } from 'react';
+import { useLanguage } from '@/context/LanguageContext';
+
 const tenants = [
   { id: '', name: '' },
 ];
@@ -50,15 +52,15 @@ export default function AppSidebar() {
   const pathname = usePathname();
   const { isOpen } = useMediaQuery();
   const { state } = useSidebar();
+  const { isRTL } = useLanguage();
   useEffect(() => {
     console.log('state',state);
   }, []);
 
-  //@ts-ignore
-  const navItemsToUse =  navItems;
+  const navItemsToUse = useNavItems();
 
   return (
-    <Sidebar collapsible="icon" >
+    <Sidebar collapsible="icon" side={isRTL ? 'right' : 'left'}>
       <SidebarHeader>
         <SidebarMenuButton
           size="lg"
@@ -106,7 +108,7 @@ export default function AppSidebar() {
                       >
                         {item.icon && <Icon className="w-6 h-6" />}
                         <span>{item.title}</span>
-                        <IconChevronRight className="ml-auto w-5 h-5 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                        <IconChevronRight className={`ml-auto w-5 h-5 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 ${isRTL ? 'rotate-90' : ''}`} />
                       </SidebarMenuButton>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
@@ -127,7 +129,7 @@ export default function AppSidebar() {
                                   >
                                     {SubIcon && <SubIcon className="w-4 h-4" />}
                                     <span>{subItem.title}</span>
-                                    <IconChevronRight className="ml-auto w-4 h-4 transition-transform duration-200 group-data-[state=open]/sub-collapsible:rotate-90" />
+                                    <IconChevronRight className={`ml-auto w-4 h-4 transition-transform duration-200 group-data-[state=open]/sub-collapsible:rotate-90 ${isRTL ? 'rotate-90' : ''}`} />
                                   </SidebarMenuSubButton>
                                 </CollapsibleTrigger>
                                 <CollapsibleContent>

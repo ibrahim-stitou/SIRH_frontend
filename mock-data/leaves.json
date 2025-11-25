@@ -1,0 +1,6 @@
+[
+  {"id":900,"employeeId":102,"type":"PTO","status":"approved","startDate":"2025-01-05","endDate":"2025-01-09","requestedAt":"2024-12-10"},
+  {"id":901,"employeeId":104,"type":"Sick","status":"pending","startDate":"2025-02-12","endDate":"2025-02-14","requestedAt":"2025-02-10"},
+  {"id":902,"employeeId":101,"type":"PTO","status":"approved","startDate":"2025-02-20","endDate":"2025-02-24","requestedAt":"2025-01-18"}
+]
+

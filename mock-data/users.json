@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "email": "admin@example.com",
+    "password": "password",
+    "name": "Admin User",
+    "full_name": "Admin User",
+    "roleIds": [1],
+    "status": "active"
+  },
+  {
+    "id": 2,
+    "email": "hr@example.com",
+    "password": "password",
+    "name": "HR Manager",
+    "full_name": "HR Manager",
+    "roleIds": [2],
+    "status": "active"
+  }
+]

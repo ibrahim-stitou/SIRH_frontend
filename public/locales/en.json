@@ -13,7 +13,12 @@
     "error_updating_password": "Une erreur s'est produite lors de la mise à jour du mot de passe"
   },
   "sidebar": {
-
+    "dashboard": "Dashboard",
+    "employeeFolder": "Employee Folder",
+    "searchList": "Search / List",
+    "createEmployee": "Create Employee",
+    "orgChart": "Org Chart",
+    "certificates": "Certificates"
   },
   "header": {
     "language": "Langue"
@@ -130,5 +135,99 @@
     "remove_file": "Supprimer le fichier",
     "drag_and_drop": "Glissez-déposez les fichiers ici ou cliquez pour sélectionner",
     "drag_and_drop_description": "Vous pouvez télécharger"
+  },
+  "employees": {
+    "title": "Employés",
+    "subtitle": "Gestion des employés RH",
+    "columns": {
+      "id": "ID",
+      "matricule": "N° d'employé",
+      "name": "Nom",
+      "position": "Poste",
+      "email": "Email",
+      "hireDate": "Date d'embauche",
+      "contractType": "Type de contrat",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "filters": {
+      "matricule": "N° d'employé",
+      "name": "Nom",
+      "position": "Poste",
+      "contractType": "Type de contrat",
+      "status": "Statut"
+    },
+    "status": {
+      "actif": "Actif",
+      "suspendu": "Suspendu",
+      "parti": "Parti"
+    },
+    "dialog": {
+      "delete": {
+        "title": "Confirmer la suppression",
+        "description": "Êtes-vous sûr de vouloir supprimer cet employé ?"
+      }
+    },
+    "messages": {
+      "deleted": "Employé #{{id}} supprimé avec succès",
+      "deleteError": "Une erreur s'est produite lors de la suppression"
+    }
+  },
+  "table": {
+    "rowsPerPage": "Rows per page",
+    "page": "Page",
+    "of": "of",
+    "selected": "selected",
+    "totalRows": "rows total",
+    "clear": "Clear",
+    "none": "No data",
+    "all": "All"
+  },
+  "employeeCreate": {
+    "title": "Create Employee",
+    "finishText": "All steps completed. Click Finish to save.",
+    "steps": {
+      "identity": "Identity",
+      "contact": "Contact",
+      "job": "Job",
+      "contract": "Contract",
+      "worktime": "Work Time",
+      "salary": "Salary",
+      "social": "Social",
+      "finish": "Finish"
+    },
+    "fields": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "cin": "National ID",
+      "birthDate": "Birth Date",
+      "birthPlace": "Birth Place",
+      "nationality": "Nationality",
+      "address": "Address",
+      "city": "City",
+      "postalCode": "Postal Code",
+      "country": "Country",
+      "phone": "Phone",
+      "email": "Work Email",
+      "departmentId": "Department",
+      "position": "Position",
+      "hireDate": "Hire Date",
+      "contractType": "Contract Type",
+      "contractStartDate": "Contract Start",
+      "contractEndDate": "Contract End",
+      "weeklyHours": "Weekly Hours",
+      "workingDays": "Working Days",
+      "baseSalary": "Base Salary",
+      "currency": "Currency",
+      "salaryFrequency": "Pay Frequency",
+      "cnssNumber": "CNSS Number",
+      "mutualNumber": "Mutual Number",
+      "educationLevel": "Education Level",
+      "diplomaYear": "Diploma Year",
+      "university": "University"
+    },
+    "documents": { "help": "Add base documents (ID, photo, diplomas)." },
+    "reviewTitle": "Review",
+    "reviewHelp": "Check everything before finishing."
   }
 }

@@ -13,7 +13,12 @@
     "error_updating_password": "Une erreur s'est produite lors de la mise à jour du mot de passe"
   },
   "sidebar": {
-
+    "dashboard": "Tableau de bord",
+    "employeeFolder": "Dossier Salarié",
+    "searchList": "Rechercher / Liste",
+    "createEmployee": "Créer un employé",
+    "orgChart": "Organigramme",
+    "certificates": "Attestations"
   },
   "header": {
     "language": "Langue"
@@ -154,6 +159,106 @@
       "annualGross": "Total brut annuel",
       "avgSalary": "Salaire moyen",
       "payrollGrowth": "Croissance paie"
+    }
+  },
+  "employees": {
+    "title": "Employés",
+    "subtitle": "Gestion des employés RH",
+    "columns": {
+      "id": "ID",
+      "matricule": "Matricule",
+      "name": "Nom",
+      "position": "Poste",
+      "email": "Email",
+      "hireDate": "Date d'embauche",
+      "contractType": "Type de contrat",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "filters": {
+      "matricule": "Matricule",
+      "name": "Nom",
+      "position": "Poste",
+      "contractType": "Type de contrat",
+      "status": "Statut"
+    },
+    "status": {
+      "actif": "Actif",
+      "suspendu": "Suspendu",
+      "parti": "Parti"
+    },
+    "dialog": {
+      "delete": {
+        "title": "Confirmer la suppression",
+        "description": "Êtes-vous sûr de vouloir supprimer cet employé ?"
+      }
+    },
+    "messages": {
+      "deleted": "Employé #{{id}} supprimé avec succès",
+      "deleteError": "Une erreur est survenue lors de la suppression"
+    }
+  },
+  "table": {
+    "rowsPerPage": "Lignes par page",
+    "page": "Page",
+    "of": "sur",
+    "selected": "sélectionné(s)",
+    "totalRows": "lignes au total",
+    "clear": "Effacer",
+    "none": "Aucune donnée",
+    "all": "Tous"
+  },
+  "employeeCreate": {
+    "title": "Créer un employé",
+    "finishText": "Validation terminée. Cliquez sur Terminer pour enregistrer.",
+    "steps": {
+      "identity": "Identité",
+      "contact": "Coordonnées",
+      "job": "Poste",
+      "contract": "Contrat",
+      "worktime": "Temps",
+      "salary": "Salaire",
+      "social": "Social",
+      "finish": "Fin"
+    },
+    "fields": {
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "cin": "CIN",
+      "birthDate": "Date de naissance",
+      "birthPlace": "Lieu de naissance",
+      "nationality": "Nationalité",
+      "address": "Adresse",
+      "city": "Ville",
+      "postalCode": "Code postal",
+      "country": "Pays",
+      "phone": "Téléphone",
+      "email": "Email professionnel",
+      "departmentId": "Département",
+      "position": "Poste",
+      "hireDate": "Date d'embauche",
+      "contractType": "Type de contrat",
+      "contractStartDate": "Date début contrat",
+      "contractEndDate": "Date fin contrat",
+      "weeklyHours": "Heures hebdo",
+      "workingDays": "Jours/semaine",
+      "baseSalary": "Salaire de base",
+      "currency": "Devise",
+      "salaryFrequency": "Fréquence de paie",
+      "cnssNumber": "Numéro CNSS",
+      "mutualNumber": "Numéro Mutuelle",
+      "educationLevel": "Niveau d'études",
+      "diplomaYear": "Année du diplôme",
+      "university": "Université"
+    },
+    "documents": { "help": "Ajoutez vos documents de base (CIN, photo, diplômes)." },
+    "reviewTitle": "Récapitulatif",
+    "reviewHelp": "Vérifiez avant de terminer.",
+    "actions": {
+      "prev": "Précédent",
+      "next": "Suivant",
+      "finish": "Terminer",
+      "reset": "Réinitialiser"
     }
   }
 }

@@ -26,6 +26,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { PlusCircle, X } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 interface DataTableSelectFilterProps {
   filter: CustomTableFilterConfig;
   form: UseFormReturn<any>;
@@ -36,6 +37,7 @@ export function CustomDataTableSelect({ filter, form }: DataTableSelectFilterPro
   const isMultiSelect = type === 'datatable-multiselect';
   const [open, setOpen] = useState(false);
   const [selectedValues, setSelectedValues] = useState<Set<string | number>>(new Set());
+  const { t } = useLanguage();
 
   useEffect(() => {
     const initialValues = getValues(field);
@@ -120,7 +122,7 @@ export function CustomDataTableSelect({ filter, form }: DataTableSelectFilterPro
                     variant='secondary'
                     className='rounded-sm px-1 font-normal'
                   >
-                    {selectedValues.size} selected
+                    {selectedValues.size} {t('table.selected')}
                   </Badge>
                 ) : (
                   options
@@ -144,7 +146,7 @@ export function CustomDataTableSelect({ filter, form }: DataTableSelectFilterPro
         <Command>
           <CommandInput placeholder={label} />
           <CommandList className='max-h-full'>
-            <CommandEmpty>Aucune donnée</CommandEmpty>
+            <CommandEmpty>{t('table.none')}</CommandEmpty>
             <CommandGroup className='max-h-[18.75rem] overflow-x-hidden overflow-y-auto'>
               {options?.map((option) => {
                 const isSelected = selectedValues.has(option.value);
@@ -175,7 +177,7 @@ export function CustomDataTableSelect({ filter, form }: DataTableSelectFilterPro
                     onSelect={onReset}
                     className='justify-center text-center'
                   >
-                    Effacer
+                    {t('table.clear')}
                   </CommandItem>
                 </CommandGroup>
               </>

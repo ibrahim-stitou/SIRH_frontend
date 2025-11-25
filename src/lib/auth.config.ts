@@ -69,23 +69,21 @@ export const authConfig = {
       },
       async authorize(credentials): Promise<User | null> {
         try {
-          const { data } = await apiClient.post(apiRoutes.auth.login, {
+          const response = await apiClient.post(apiRoutes.auth.login, {
             email: credentials?.email,
             password: credentials?.password
           });
-
-          const accessToken = data.access_token || data.accessToken || data.token;
-          const refreshToken = data.refresh_token || data.refreshToken || data.refresh;
-
-            if (!accessToken) {
-              console.error('Login failed - no access token received');
-              return null;
-            }
-
-          // Normalize role information
-          let role = data.role;
-          if (!role && Array.isArray(data.user?.roles) && data.user.roles.length > 0) {
-            const r0 = data.user.roles[0];
+          const payload = response.data || {};
+          const inner = payload.data || payload; // unwrap envelope {status,message,data}
+          const accessToken = inner.access_token || inner.accessToken || inner.token;
+          const refreshToken = inner.refresh_token || inner.refreshToken || inner.refresh;
+          if (!accessToken) {
+            console.error('Login failed - no access token received');
+            return null;
+          }
+          let role = inner.role || inner.user?.role;
+          if (!role && Array.isArray(inner.user?.roles) && inner.user.roles.length > 0) {
+            const r0 = inner.user.roles[0];
             role = {
               id: r0.id || r0.pivot?.role_id || 1,
               name: r0.name || 'User',
@@ -94,15 +92,13 @@ export const authConfig = {
             };
           }
           if (!role) {
-            // Provide a default role to avoid null downstream issues
             role = { id: 1, name: 'User', code: 'USER', description: 'Default user role' };
           }
-
           return {
-            id: (data.user?.id ?? role.id).toString(),
-            full_name: data.full_name || data.user?.full_name || data.user?.name || 'User',
-            name: data.full_name || data.user?.name || 'User',
-            email: (credentials?.email as string) || data.user?.email,
+            id: (inner.user?.id ?? role.id).toString(),
+            full_name: inner.full_name || inner.user?.full_name || inner.user?.name || 'User',
+            name: inner.full_name || inner.user?.name || 'User',
+            email: (credentials?.email as string) || inner.user?.email,
             accessToken,
             refreshToken,
             role
@@ -144,16 +140,16 @@ export const authConfig = {
          try {
            isRefreshing = true;
           const response = await apiClient.post(apiRoutes.auth.refreshToken, { refresh_token: token.refreshToken });
-          const data = response.data || {};
-          const newAccess = data.access_token || data.accessToken || data.token;
-          const newRefresh = data.refresh_token || data.refreshToken || token.refreshToken;
+          const payload = response.data || {};
+          const inner = payload.data || payload;
+          const newAccess = inner.access_token || inner.accessToken || inner.token;
+          const newRefresh = inner.refresh_token || inner.refreshToken || token.refreshToken;
           if (!newAccess) throw new Error('Invalid refresh response');
-
-           return {
+          return {
              ...token,
              accessToken: newAccess,
              refreshToken: newRefresh,
-             expiresAt: Date.now() + 30 * 60 * 1000, // New 30 minute window
+             expiresAt: Date.now() + 30 * 60 * 1000,
              refreshAttempt: 0,
              lastRefreshTime: Date.now(),
              error: undefined

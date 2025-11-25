@@ -27,6 +27,21 @@ export const apiRoutes = {
     },
     debug: `${API_BASE}/debug-user`,
   },
+
+  admin: {
+    users: {
+      list: `${API_BASE}/users`,
+      delete: (id: number | string) => `${API_BASE}/users/${id}`,
+      details: (id: number | string) => `${API_BASE}/users/${id}`,
+      update: (id: number | string) => `${API_BASE}/users/${id}`,
+    },
+    employees: {
+      list: `${API_BASE}/hrEmployees`,
+      delete: (id: number | string) => `${API_BASE}/hrEmployees/${id}`,
+      details: (id: number | string) => `${API_BASE}/hrEmployees/${id}`,
+      update: (id: number | string) => `${API_BASE}/hrEmployees/${id}`,
+    }
+  }
 };
 
 export type ApiRoutes = typeof apiRoutes;

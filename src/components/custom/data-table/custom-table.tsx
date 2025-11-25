@@ -17,6 +17,7 @@ import { CustomTableToolbar } from '@/components/custom/data-table/custom-table-
 import { IconLoader } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import CustomTablePagination from '@/components/custom/data-table/custom-table-pagination';
+import { useLanguage } from '@/context/LanguageContext';
 
 const CustomTable = <T extends Record<string, any>>({
                                                       url,
@@ -27,6 +28,7 @@ const CustomTable = <T extends Record<string, any>>({
                                                       clickCard,
                                                     }: CustomTableProps<T>) => {
   const table = useCustomTable(url, columns, bulkActions);
+  const { t } = useLanguage();
   const [showBulkActions, setShowBulkActions] = useState(false);
   const [clickedRow, setClickedRow] = useState<T | null>(null);
   const [showClickCard, setShowClickCard] = useState(false);
@@ -94,7 +96,7 @@ const CustomTable = <T extends Record<string, any>>({
       {showBulkActions && bulkActions && bulkActions.length > 0 && (
         <div className='bg-muted flex items-center gap-2 rounded-md p-2'>
           <span className='text-sm font-medium'>
-            {table.selectedRows.length} sélectionné(s)
+            {table.selectedRows.length} {t('table.selected')}
           </span>
           <div className='flex-1'></div>
           <div className='flex items-center gap-2'>
@@ -366,7 +368,7 @@ const CustomTable = <T extends Record<string, any>>({
                           }
                           className='h-24 text-center'
                         >
-                          Aucune donnée disponible
+                          {t('table.noData')}
                         </TableCell>
                       </TableRow>
                     )}

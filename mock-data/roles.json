@@ -1,0 +1,24 @@
+[
+  {
+    "id": 1,
+    "name": "Admin",
+    "code": "ADMIN",
+    "description": "Administrator",
+    "permissions": ["*"]
+  },
+  {
+    "id": 2,
+    "name": "HR Manager",
+    "code": "HR_MANAGER",
+    "description": "Human Resources Manager",
+    "permissions": ["employees.read","employees.write","leaves.read","leaves.approve"]
+  },
+  {
+    "id": 3,
+    "name": "Employee",
+    "code": "EMPLOYEE",
+    "description": "Standard Employee",
+    "permissions": ["self.read"]
+  }
+]
+

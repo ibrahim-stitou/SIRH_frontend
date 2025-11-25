@@ -49,7 +49,7 @@ export default async function RootLayout({
       : DEFAULT_LANG;
 
   return (
-    <html lang={validatedLang} suppressHydrationWarning>
+    <html lang={validatedLang} suppressHydrationWarning dir={validatedLang === 'ar' ? 'rtl' : 'ltr'}>
       <head>
         <title>{typeof metadata.title === 'string' ? metadata.title : ''}</title>
         <script
@@ -60,7 +60,7 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className={cn('bg-background overflow-hidden overscroll-none font-sans antialiased','theme-sirh',fontVariables)}>
+      <body className={cn('bg-background overflow-hidden overscroll-none font-sans antialiased theme-sirh', fontVariables)}>
         <NextTopLoader showSpinner={true} />
         <NuqsAdapter>
           <LanguageProvider>

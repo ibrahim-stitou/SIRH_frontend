@@ -736,3 +736,22 @@ body {
         .section-title { font-size: 1.5rem; }
     }
 }
+
+/* ===== RTL STYLES ===== */
+.rtl, .rtl * {
+  direction: rtl;
+}
+.rtl .text-left { text-align: right; }
+.rtl .text-right { text-align: left; }
+.rtl [data-slot='sidebar'] { border-left: none; }
+.rtl [data-slot='sidebar-container'][data-side='right'] { right:0; left:auto; }
+/* Remove previous border-left override that caused duplication */
+.rtl [data-slot='sidebar-content'] { padding-right: 0; padding-left:4px; }
+.rtl .nav-link { text-align: right; }
+/* Simple flex mirroring where needed */
+.rtl .flex.items-center.space-x-2 { flex-direction: row-reverse; }
+/* Table header alignment */
+.rtl table thead th { text-align: right; }
+/* Override padding logical if necessary */
+.rtl .pl-3 { padding-right: .75rem; padding-left: 0; }
+.rtl .pr-3 { padding-left: .75rem; padding-right: 0; }

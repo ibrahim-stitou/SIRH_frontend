@@ -71,6 +71,8 @@ export default function OverviewDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const tSnapshot = React.useRef(t);
+
   useEffect(() => {
     let mounted = true;
     async function load() {
@@ -83,22 +85,20 @@ export default function OverviewDashboard() {
           apiClient.get('/evaluations')
         ]);
         if (!mounted) return;
-        setEmployees(empRes.data || []);
-        setDepartments(deptRes.data || []);
-        setLeaves(leaveRes.data || []);
-        setPayslips(payRes.data || []);
-        setEvaluations(evalRes.data || []);
+        setEmployees(empRes.data.data || []);
+        setDepartments(deptRes.data.data || []);
+        setLeaves(leaveRes.data.data || []);
+        setPayslips(payRes.data.data || []);
+        setEvaluations(evalRes.data.data || []);
       } catch (e: any) {
-        if (mounted) setError(e?.message || t('dashboard.error'));
+        if (mounted) setError(e?.message || tSnapshot.current('dashboard.error'));
       } finally {
         mounted && setLoading(false);
       }
     }
     load();
-    return () => {
-      mounted = false;
-    };
-  }, [t]);
+    return () => { mounted = false; };
+  }, []);
 
   const activeEmployees = employees.filter((e) => e.status === 'active');
   const pendingLeavesCount = leaves.filter(
@@ -128,7 +128,9 @@ export default function OverviewDashboard() {
     employees.forEach((e) => {
       if (!e.hireDate) return;
       const d = new Date(e.hireDate);
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      const year = d.getUTCFullYear();
+      const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+      const key = `${year}-${month}`;
       hires[key] = (hires[key] || 0) + 1;
     });
     const sortedKeys = Object.keys(hires).sort().slice(-6);

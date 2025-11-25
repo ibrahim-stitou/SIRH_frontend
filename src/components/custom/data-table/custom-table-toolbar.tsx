@@ -20,6 +20,7 @@ import { CustomTableFilterConfig, UseCustomTableReturnType } from '@/components/
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface CustomTableToolbarProps<TData extends Record<string, any>>
   extends React.ComponentProps<'div'> {
@@ -33,6 +34,8 @@ export function CustomTableToolbar<TData extends Record<string, any>>({
                                                                         className,
                                                                         ...props
                                                                       }: CustomTableToolbarProps<TData>) {
+
+  const { t } = useLanguage();
 
   const defaultValues = useMemo(() => {
     return filters.reduce<Record<string, any>>((acc, filter) => {
@@ -196,7 +199,7 @@ export function CustomTableToolbar<TData extends Record<string, any>>({
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="null">Tous</SelectItem>
+                  <SelectItem value="null">{t('table.all')}</SelectItem>
                   {filter.options?.map((option) => (
                     <SelectItem key={option.value} value={String(option.value)}>
                       {option.label}
@@ -262,13 +265,13 @@ export function CustomTableToolbar<TData extends Record<string, any>>({
               onClick={handleResetFilters}
             >
               <X className='mr-2 h-4 w-4' />
-              Effacer
+              {t('table.clear')}
             </Button>
           )}
 
           {filters.length > 0 && (
             <Button aria-label='Apply filters' size='sm' onClick={handleApplyFilters}>
-              Appliquer
+              {t('dataTable.apply') || 'Appliquer'}
             </Button>
           )}
         </div>
@@ -289,9 +292,9 @@ export function CustomTableToolbar<TData extends Record<string, any>>({
             </PopoverTrigger>
             <PopoverContent align='end' className='w-44 p-0'>
               <Command>
-                <CommandInput placeholder="Rechercher une colonne" />
+                <CommandInput placeholder={t('dataTable.search.placeholder') || 'Rechercher...'} />
                 <CommandList>
-                  <CommandEmpty>Aucune donnée</CommandEmpty>
+                  <CommandEmpty>{t('table.none')}</CommandEmpty>
                   <CommandGroup>
                     {table.columns.map((column) => (
                       <CommandItem

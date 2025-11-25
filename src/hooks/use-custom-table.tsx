@@ -45,15 +45,21 @@ export const useCustomTable = <T extends Record<string, any>>(
           sortDir: state.sortDir,
         },
       };
-      const response: AxiosResponse<CustomTableResponse<T>> = await apiClient.get(url, config);
+      const response: AxiosResponse<any> = await apiClient.get(url, config);
+      // Support both CustomTableResponse and wrapped {status,message,data}
+      const payload = response.data;
+      const dataArray = payload.data?.data ? payload.data.data : payload.data || [];
+      const rows: T[] = Array.isArray(payload.data) ? payload.data : Array.isArray(dataArray) ? dataArray : [];
+      const recordsTotal = payload.recordsTotal ?? rows.length;
+      const recordsFiltered = payload.recordsFiltered ?? rows.length;
       setState((prev) => ({
         ...prev,
-        data: response.data.data,
-        pages: Math.ceil(response.data.recordsFiltered / state.rowsPerPage),
-        recordCount: response.data.recordsTotal,
+        data: rows,
+        pages: Math.ceil(recordsFiltered / state.rowsPerPage),
+        recordCount: recordsTotal,
         loading: false,
         selectedRows: prev.selectedRows.filter(selected =>
-          response.data.data.some(newRow => newRow.id === selected.id)
+          rows.some((newRow: any) => newRow.id === selected.id)
         ),
       }));
     } catch (error: any) {

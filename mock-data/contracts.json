@@ -1,0 +1,5 @@
+[
+  {"id":500,"employeeId":102,"type":"CDI","startDate":"2023-04-10","endDate":null,"weeklyHours":35},
+  {"id":501,"employeeId":104,"type":"CDD","startDate":"2022-09-15","endDate":"2025-09-14","weeklyHours":35}
+]
+

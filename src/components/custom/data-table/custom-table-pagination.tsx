@@ -4,8 +4,10 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeftIcon, ChevronRightIcon, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import React from 'react';
 import { UseCustomTableHook, UseCustomTableReturnType } from '@/components/custom/data-table/types';
+import { useLanguage } from '@/context/LanguageContext';
 
 const CustomTablePagination =<T extends Record<string, any>>({table}:{table:UseCustomTableReturnType<T>}) => {
+  const { t } = useLanguage();
   const pageSizeOptions = [10, 25, 50, 100];
 
   return (
@@ -18,16 +20,16 @@ const CustomTablePagination =<T extends Record<string, any>>({table}:{table:UseC
         <div className='text-muted-foreground flex-1 text-sm whitespace-nowrap'>
           {table.selectedRows.length > 0 ? (
             <>
-              {table.selectedRows.length} sur {table.data.length} lignes sélectionnées
+              {table.selectedRows.length} {t('table.selected')} / {table.data.length}
             </>
           ) : (
-            <>{table.data.length} lignes au total</>
+            <>{table.data.length} {t('table.totalRows')}</>
           )}
         </div>
         <div className='flex flex-col-reverse items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8'>
           <div className='flex items-center space-x-2'>
             <p className='text-sm font-medium whitespace-nowrap'>
-              Rows per page
+              {t('table.rowsPerPage')}
             </p>
             <Select
               value={`${table.rowsPerPage}`}
@@ -48,7 +50,7 @@ const CustomTablePagination =<T extends Record<string, any>>({table}:{table:UseC
             </Select>
           </div>
           <div className='flex items-center justify-center text-sm font-medium'>
-            Page {table.currentPage + 1} sur {table.pages}
+            {t('table.page')} {table.currentPage + 1} {t('table.of')} {table.pages}
           </div>
           <div className='flex items-center space-x-2'>
             <Button

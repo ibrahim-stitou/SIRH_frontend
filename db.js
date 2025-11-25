@@ -1,0 +1,22 @@
+module.exports = {
+  users: require('./mock-data/users.json'),
+  roles: require('./mock-data/roles.json'),
+  sessions: require('./mock-data/sessions.json'),
+  departments: require('./mock-data/departments.json'),
+  locations: require('./mock-data/locations.json'),
+  employees: require('./mock-data/employees.json'),
+  hrEmployees: require('./mock-data/hrEmployees.json'),
+  contracts: require('./mock-data/contracts.json'),
+  leaves: require('./mock-data/leaves.json'),
+  attendance: require('./mock-data/attendance.json'),
+  payslips: require('./mock-data/payslips.json'),
+  payrollAdjustments: require('./mock-data/payrollAdjustments.json'),
+  evaluations: require('./mock-data/evaluations.json'),
+  goals: require('./mock-data/goals.json'),
+  announcements: require('./mock-data/announcements.json'),
+  documents: require('./mock-data/documents.json'),
+  systemSettings: require('./mock-data/systemSettings.json'),
+  featureFlags: require('./mock-data/featureFlags.json'),
+  auditLogs: require('./mock-data/auditLogs.json'),
+};
+

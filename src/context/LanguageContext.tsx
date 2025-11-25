@@ -11,6 +11,7 @@ type LanguageContextType = {
   t: (key: string) => string;
   isLoading: boolean;
   handleLanguageChange: (lang: string) => void;
+  isRTL: boolean; // added
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -20,6 +21,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState('en');
   const [translations, setTranslations] = useState<Record<string, Translations>>({});
   const [isLoading, setIsLoading] = useState(true);
+  const isRTL = language === 'ar';
 
   const handleLanguageChange = (lang: string) => {
     setLanguage(lang);
@@ -62,6 +64,18 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     loadAllTranslations();
   }, []);
 
+  useEffect(() => {
+    // apply dir and class whenever language changes
+    const root = document.documentElement;
+    if (language === 'ar') {
+      root.setAttribute('dir', 'rtl');
+      root.classList.add('rtl');
+    } else {
+      root.setAttribute('dir', 'ltr');
+      root.classList.remove('rtl');
+    }
+  }, [language]);
+
   const t = (key: string): string => {
     if (!translations[language]) return key;
 
@@ -76,7 +90,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t, isLoading, handleLanguageChange }}>
+    <LanguageContext.Provider value={{ language, setLanguage, t, isLoading, handleLanguageChange, isRTL }}>
       {isLoading ? <CreativeLoader /> : children}
     </LanguageContext.Provider>
   );

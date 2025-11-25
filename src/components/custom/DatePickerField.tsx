@@ -75,7 +75,7 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
           <Calendar
             mode="single"
             selected={value || undefined}
-            onSelect={onChange}
+            onSelect={(day) => onChange(day ?? null)}
             disabled={disabled || dateConstraints}
             initialFocus
             locale={fr}

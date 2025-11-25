@@ -1,5 +1,5 @@
 'use client';
-import { navItems } from '@/constants/data';
+import { useNavItems } from '@/constants/data';
 import {
   KBarAnimator,
   KBarPortal,
@@ -14,6 +14,7 @@ import useThemeSwitching from './use-theme-switching';
 
 export default function KBar({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const navItems = useNavItems();
 
   // These action are for the navigation
   const actions = useMemo(() => {
@@ -22,7 +23,7 @@ export default function KBar({ children }: { children: React.ReactNode }) {
       router.push(url);
     };
 
-    return navItems.flatMap((navItem) => {
+    return navItems.flatMap((navItem: any) => {
       // Only include base action if the navItem has a real URL and is not just a container
       const baseAction =
         navItem.url !== '#'
@@ -39,7 +40,7 @@ export default function KBar({ children }: { children: React.ReactNode }) {
 
       // Map child items into actions
       const childActions =
-        navItem.items?.map((childItem) => ({
+        navItem.items?.map((childItem: any) => ({
           id: `${childItem.title.toLowerCase()}Action`,
           name: childItem.title,
           shortcut: childItem.shortcut,
@@ -52,7 +53,7 @@ export default function KBar({ children }: { children: React.ReactNode }) {
       // Return only valid actions (ignoring null base actions for containers)
       return baseAction ? [baseAction, ...childActions] : childActions;
     });
-  }, [router]);
+  }, [router, navItems]);
 
   return (
     <KBarProvider actions={actions}>
