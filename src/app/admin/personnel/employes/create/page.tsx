@@ -17,6 +17,7 @@ import { StepProfessional } from './steps/StepProfessional';
 import { StepDocuments } from './steps/StepDocuments';
 import { transformDocuments } from './utils';
 import PageContainer from '@/components/layout/page-container';
+import { useRouter } from 'next/navigation';
 
 export default function EmployeeCreatePage() {
   const methods = useForm<EmployeeCreateFormValues>({
@@ -34,6 +35,7 @@ export default function EmployeeCreatePage() {
   });
 
   const { handleSubmit, trigger, formState } = methods;
+  const router = useRouter();
 
   const wizard = useMultistepForm([
     <StepPersonal key="step1" />,
@@ -106,6 +108,7 @@ export default function EmployeeCreatePage() {
       toast.dismiss();
       toast.success('Employé créé avec succès');
       methods.reset();
+      router.push('/admin/personnel/employes');
     } catch (e: any) {
       toast.dismiss();
       toast.error('Erreur lors de la création');

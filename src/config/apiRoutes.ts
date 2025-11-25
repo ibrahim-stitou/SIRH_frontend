@@ -1,5 +1,5 @@
 const API_BASE = process.env.NEXT_PUBLIC_USE_MOCK === 'true'
-  ? 'http://localhost:3001'
+  ? process.env.JSON_SERVER_URL || 'http://localhost:3001'
   : process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:8003/api/v1';
 
 export const apiRoutes = {

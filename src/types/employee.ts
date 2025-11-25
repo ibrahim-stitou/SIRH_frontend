@@ -6,7 +6,7 @@ export type ContractType = 'CDI' | 'CDD' | 'Stage' | 'Intérim' | 'Apprentissage
 export type MaritalStatus = 'celibataire' | 'marie' | 'divorce' | 'veuf';
 
 export interface Employee {
-  id: string;
+  id: number; // Align with mock data numeric IDs
   matricule: string; // Auto-généré
 
   // ========================================
@@ -60,11 +60,18 @@ export interface Employee {
   workLocation?: string; // Lieu de travail
 
   // ========================================
-  // CONTRAT
+  // FORMATION & COMPÉTENCES (aligné au formulaire)
   // ========================================
-  contractType: ContractType;
+  education?: { level: string; diploma?: string; year?: string; institution?: string }[];
+  skills?: { name: string; level: number }[];
+  certifications?: { name: string; issuer?: string; issueDate?: string; expirationDate?: string }[];
+
+  // ========================================
+  // CONTRAT (peut être absent à la création)
+  // ========================================
+  contractType?: ContractType;
   contractNumber?: string;
-  contractStartDate: string;
+  contractStartDate?: string;
   contractEndDate?: string;
   contractSignatureDate?: string;
   trialPeriodDuration?: number; // En jours
@@ -74,16 +81,16 @@ export interface Employee {
   // ========================================
   // TEMPS DE TRAVAIL
   // ========================================
-  weeklyHours: number; // Heures hebdomadaires (ex: 44h)
-  workingDays: number; // Jours travaillés par semaine (ex: 5 ou 6)
+  weeklyHours?: number; // Heures hebdomadaires (ex: 44h)
+  workingDays?: number; // Jours travaillés par semaine (ex: 5 ou 6)
   scheduleId?: string; // Référence au planning horaire
 
   // ========================================
   // RÉMUNÉRATION
   // ========================================
-  baseSalary: number; // Salaire de base brut
-  currency: string; // MAD
-  salaryFrequency: 'mensuel' | 'horaire'; // Fréquence de paie
+  baseSalary?: number; // Salaire de base brut
+  currency?: string; // MAD
+  salaryFrequency?: 'mensuel' | 'horaire'; // Fréquence de paie
   bankName?: string;
   bankAccountNumber?: string; // RIB/IBAN
   bankBranch?: string;
@@ -91,9 +98,9 @@ export interface Employee {
   // ========================================
   // CONGÉS & ABSENCES
   // ========================================
-  annualLeaveDays: number; // Jours de congé annuel (18 par défaut au Maroc, peut être augmenté)
+  annualLeaveDays?: number; // Jours de congé annuel
   leaveBalance?: number; // Solde congés disponible
-  leaveAcquisitionRate?: number; // Taux d'acquisition (1.5 jours/mois par défaut)
+  leaveAcquisitionRate?: number; // Taux d'acquisition
 
   // ========================================
   // SOCIAL & MUTUELLE
@@ -106,15 +113,9 @@ export interface Employee {
   familyMembersCovered?: number; // Nombre d'ayants droit
 
   // ========================================
-  // FORMATION & COMPÉTENCES
+  // DOCUMENTS (aligné au formulaire)
   // ========================================
-  educationLevel?: string; // Bac, Licence, Master, Doctorat
-  diploma?: string;
-  diplomaYear?: number;
-  university?: string;
-  skills?: Skill[]; // Compétences de l'employé
-  certifications?: Certification[];
-  languages?: Language[];
+  documents?: { id: string; title: string; fileName?: string; mimeType?: string; size?: number; base64?: string }[];
 
   // ========================================
   // STATUT & WORKFLOW
@@ -135,10 +136,9 @@ export interface Employee {
   tags?: string[]; // Tags pour classification
 
   // ========================================
-  // RELATIONS (chargées si besoin) il seront de type many to many
+  // RELATIONS (optionnelles)
   // ========================================
   contracts?: Contract[]; // Historique des contrats
-  documents?: EmployeeDocument[];
   absences?: Absence[];
   movements?: Movement[];
   trainings?: Training[];
@@ -161,35 +161,6 @@ export interface Department {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
-}
-
-//parametrables
-export interface Skill {
-  id: string;
-  skillId: string; // Référence au référentiel
-  skillName: string;
-  level: 1 | 2 | 3 | 4 | 5; // 1=Notions, 5=Expertise
-  acquiredDate?: string;
-  certificationId?: string;
-}
-
-export interface Certification {
-  id: string;
-  name: string;
-  issuer: string;
-  issueDate: string;
-  expirationDate?: string;
-  certificateNumber?: string;
-  documentUrl?: string;
-}
-
-//parametrables
-export interface Language {
-  id: string;
-  language: string;
-  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2'; // CECRL
-  spokenLevel?: 'basique' | 'intermediaire' | 'avance' | 'courant';
-  writtenLevel?: 'basique' | 'intermediaire' | 'avance' | 'courant';
 }
 
 export interface Contract {
@@ -226,35 +197,6 @@ export interface ContractAmendment {
   createdAt: string;
   createdBy: string;
 }
-
-export interface EmployeeDocument {
-  id: string;
-  employeeId: string;
-  category: DocumentCategory;
-  fileName: string;
-  fileUrl: string;
-  fileSize: number;
-  mimeType: string;
-  version: number;
-  expirationDate?: string;
-  uploadedAt: string;
-  uploadedBy: string;
-  description?: string;
-  isExpired?: boolean;
-  alertDays?: number; // Nombre de jours avant expiration pour alerte
-}
-
-export type DocumentCategory =
-  | 'CIN'
-  | 'RIB'
-  | 'Diplomes'
-  | 'Contrat'
-  | 'Attestations'
-  | 'Autorisation_Travail'
-  | 'Certificat_Medical'
-  | 'Photo_Identite'
-  | 'CV'
-  | 'Autre';
 
 export interface Movement {
   id: string;
@@ -415,7 +357,7 @@ export interface EmployeeEvent {
 }
 
 export interface employeeDatatable{
-  id:string;
+  id:number;
   matricule:string;
   firstName:string;
   lastName:string;
@@ -435,5 +377,3 @@ export interface EmployeeFilter {
   matricule?: string;
   search?: string;
 }
-
-

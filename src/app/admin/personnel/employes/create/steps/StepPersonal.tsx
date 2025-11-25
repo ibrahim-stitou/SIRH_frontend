@@ -8,7 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Gender, MaritalStatus } from '@/types/employee';
 
 export const StepPersonal: React.FC = () => {
-  const { register, formState: { errors }, setValue } = useFormContext<EmployeeCreateFormValues>();
+  const { register, formState: { errors }, setValue, watch } = useFormContext<EmployeeCreateFormValues>();
+  const gender = watch('gender');
+  const maritalStatus = watch('maritalStatus');
   return (
     <div className="space-y-6">
       <Section title="Identité" description="Informations personnelles de base" icon="👤">
@@ -20,7 +22,7 @@ export const StepPersonal: React.FC = () => {
           <FormField label="Lieu de naissance" isRequired error={errors.birthPlace?.message}><Input {...register('birthPlace')} placeholder="Casablanca" /></FormField>
           <FormField label="Nationalité" isRequired error={errors.nationality?.message}><Input {...register('nationality')} placeholder="Marocaine" /></FormField>
           <FormField label="Genre" isRequired error={errors.gender?.message}>
-            <Select onValueChange={(val: Gender) => setValue('gender', val)}>
+            <Select value={gender || undefined} onValueChange={(val: Gender) => setValue('gender', val)}>
               <SelectTrigger className="w-full"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="M">Homme</SelectItem>
@@ -29,7 +31,7 @@ export const StepPersonal: React.FC = () => {
             </Select>
           </FormField>
           <FormField label="État civil" error={errors.maritalStatus?.message}>
-            <Select onValueChange={(val: MaritalStatus) => setValue('maritalStatus', val)}>
+            <Select value={maritalStatus || undefined} onValueChange={(val: MaritalStatus) => setValue('maritalStatus', val)}>
               <SelectTrigger className="w-full"><SelectValue placeholder="Choisir" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="celibataire">Célibataire</SelectItem>

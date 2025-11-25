@@ -15,15 +15,19 @@ export const Section: React.FC<{ title: string; description?: string; icon?: str
   </div>
 );
 
-export const FormField: React.FC<{ label: string; error?: string; children: React.ReactNode; isRequired?: boolean }> = ({ label, error, children, isRequired }) => (
-  <div className="space-y-1" aria-required={isRequired || undefined}>
-    <Label className="text-sm font-medium">
-      {label}{isRequired && <span className="text-red-600 ml-0.5">*</span>}
-    </Label>
-    {children}
-    {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
-  </div>
-);
+type FormFieldProps = { label: string; error?: string; children: React.ReactNode; isRequired?: boolean; isrequired?: boolean };
+export const FormField: React.FC<FormFieldProps> = ({ label, error, children, isRequired, isrequired }) => {
+  const required = isRequired || isrequired;
+  return (
+    <div className="space-y-1" aria-required={required || undefined}>
+      <Label className="text-sm font-medium">
+        {label}{required && <span className="text-red-600 ml-0.5">*</span>}
+      </Label>
+      {children}
+      {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
+    </div>
+  );
+};
 
 export const EmptyHint: React.FC<{ text: string }> = ({ text }) => (
   <div className="text-xs text-muted-foreground italic">{text}</div>
