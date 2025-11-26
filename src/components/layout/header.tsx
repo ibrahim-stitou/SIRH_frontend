@@ -60,7 +60,7 @@ export default function Header() {
       <div className='flex items-center gap-4'>
         <SidebarTrigger className='-ml-1 cursor-pointer hover:scale-110 transition-transform duration-200' />
         <Separator orientation='vertical' className='h-6 bg-gray-200 dark:bg-gray-700' />
-        <Breadcrumbs  />
+        {/*<Breadcrumbs  />*/}
       </div>
       <div className='flex items-center gap-3'>
         <motion.button

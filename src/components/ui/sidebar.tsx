@@ -31,6 +31,13 @@ const SIDEBAR_WIDTH_MOBILE = '18rem';
 const SIDEBAR_WIDTH_ICON = '3rem';
 const SIDEBAR_KEYBOARD_SHORTCUT = 'b';
 
+// Small helper to read a cookie by name (client-only)
+function readCookie(name: string): string | undefined {
+  if (typeof document === 'undefined') return undefined;
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  return match ? decodeURIComponent(match[2]) : undefined;
+}
+
 type SidebarContextProps = {
   state: 'expanded' | 'collapsed';
   open: boolean;
@@ -67,7 +74,13 @@ function SidebarProvider({
 }) {
   const isMobile = useIsMobile();
   const [openMobile, setOpenMobile] = React.useState(false);
-  const [_open, _setOpen] = React.useState(defaultOpen);
+  // Initialize from cookie if available, otherwise from defaultOpen
+  const [_open, _setOpen] = React.useState<boolean>(() => {
+    const cookieVal = readCookie(SIDEBAR_COOKIE_NAME);
+    if (cookieVal === 'true') return true;
+    if (cookieVal === 'false') return false;
+    return defaultOpen;
+  });
   const open = openProp ?? _open;
   const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
@@ -78,7 +91,7 @@ function SidebarProvider({
         _setOpen(openState);
       }
 
-      // This sets the cookie to keep the sidebar state.
+      // Persist the sidebar state in a cookie
       document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
     },
     [setOpenProp, open]
@@ -89,7 +102,7 @@ function SidebarProvider({
     return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open);
   }, [isMobile, setOpen, setOpenMobile]);
 
-  // Adds a keyboard shortcut to toggle the sidebar.
+  // Keyboard shortcut to toggle the sidebar.
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (
@@ -105,8 +118,6 @@ function SidebarProvider({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [toggleSidebar]);
 
-  // We add a state so that we can do data-state="expanded" or "collapsed".
-  // This makes it easier to style the sidebar with Tailwind classes.
   const state = open ? 'expanded' : 'collapsed';
 
   const contextValue = React.useMemo<SidebarContextProps>(
@@ -210,7 +221,6 @@ function Sidebar({
       data-side={side}
       data-slot='sidebar'
     >
-      {/* This is what handles the sidebar gap on desktop */}
       <div
         data-slot='sidebar-gap'
         className={cn(
@@ -229,10 +239,10 @@ function Sidebar({
           side === 'left'
             ? 'left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
             : 'right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',
-          // Adjust the padding for floating and inset variants.
-          variant === 'floating' || variant === 'inset'
-            ? 'p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]'
-            : 'group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l',
+          // When collapsed in icon mode, shrink the container width to icon width and remove outer padding
+          'group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:overflow-visible',
+          // Padding only for floating variant to create the gap around the inner card
+          variant === 'floating' && 'p-3',
           className
         )}
         {...props}
@@ -240,7 +250,13 @@ function Sidebar({
         <div
           data-sidebar='sidebar'
           data-slot='sidebar-inner'
-          className='bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm'
+          className={cn(
+            'bg-sidebar relative flex h-full w-full flex-col overflow-hidden',
+            // Apply floating card look conditionally
+            variant === 'floating' && 'rounded-xl border border-sidebar-border shadow-xl',
+            // Ensure inner shrinks with icon collapsed to avoid background staying expanded
+            'group-data-[collapsible=icon]:w-full'
+          )}
         >
           {children}
         </div>
@@ -333,7 +349,7 @@ function SidebarHeader({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot='sidebar-header'
       data-sidebar='header'
-      className={cn('flex flex-col gap-2 p-2', className)}
+      className={cn('flex flex-col gap-2 p-2', 'group-data-[collapsible=icon]:p-1', className)}
       {...props}
     />
   );
@@ -344,7 +360,7 @@ function SidebarFooter({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot='sidebar-footer'
       data-sidebar='footer'
-      className={cn('flex flex-col gap-2 p-2', className)}
+      className={cn('flex flex-col gap-2 p-2', 'group-data-[collapsible=icon]:p-1', className)}
       {...props}
     />
   );
@@ -383,7 +399,7 @@ function SidebarGroup({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot='sidebar-group'
       data-sidebar='group'
-      className={cn('relative flex w-full min-w-0 flex-col p-2', className)}
+      className={cn('relative flex w-full min-w-0 flex-col p-2', 'group-data-[collapsible=icon]:p-1', className)}
       {...props}
     />
   );
@@ -470,19 +486,18 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<'li'>) {
 }
 
 const sidebarMenuButtonVariants = cva(
-  'peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2.5 text-left text-base outline-hidden ring-sidebar-ring transition-[width,height,padding] hover:bg-primary/10 focus-visible:ring-2 active:bg-primary/15 active:text-primary disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-primary/10 data-[active=true]:font-semibold data-[active=true]:text-primary data-[state=open]:hover:bg-primary/10 data-[state=open]:hover:text-primary group-data-[collapsible=icon]:size-9! group-data-[collapsible=icon]:p-2.5! [&>span:last-child]:truncate [&>svg]:size-5 [&>svg]:shrink-0',
+  'peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-lg p-2.5 text-left text-base outline-hidden ring-sidebar-ring transition-[all] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-gradient-to-r data-[active=true]:from-sidebar-primary data-[active=true]:to-indigo-600 data-[active=true]:font-semibold data-[active=true]:text-sidebar-primary-foreground data-[active=true]:shadow-md data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-9! group-data-[collapsible=icon]:p-2.5! [&>span:last-child]:truncate [&>svg]:size-5 [&>svg]:shrink-0',
   {
     variants: {
       variant: {
-        default: 'hover:text-primary',
+        default: 'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
         outline:
-          'bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-primary/10 hover:text-primary hover:shadow-[0_0_0_1px_hsl(var(--primary))]'
+          'bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]'
       },
       size: {
-        // Hauteur par défaut augmentée pour correspondre aux items avec sous-menu
-        default: 'h-10 text-base',
-        sm: 'h-8 text-sm',
-        lg: 'h-14 text-base group-data-[collapsible=icon]:p-0!'
+        default: 'h-10 text-sm',
+        sm: 'h-8 text-xs',
+        lg: 'h-12 text-sm group-data-[collapsible=icon]:p-0!'
       }
     },
     defaultVariants: {
@@ -514,9 +529,11 @@ function SidebarMenuButton({
       data-sidebar='menu-button'
       data-size={size}
       data-active={isActive}
-      className={cn(sidebarMenuButtonVariants({ variant, size }),
-        '[&>svg]:text-primary',
-        className)}
+      className={cn(
+        sidebarMenuButtonVariants({ variant, size }),
+        // icons inherit current text color by default for a cleaner look
+        className
+      )}
       {...props}
     />
   );
@@ -636,14 +653,14 @@ function SidebarMenuSkeleton({
   );
 }
 
-function SidebarMenuSub({ className, ...props }: React.ComponentProps<'ul'>) {
+function SidebarMenuSub({ className, showInCollapsed = false, ...props }: React.ComponentProps<'ul'> & { showInCollapsed?: boolean }) {
   return (
     <ul
       data-slot='sidebar-menu-sub'
       data-sidebar='menu-sub'
       className={cn(
         'border-sidebar-border mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l px-2.5 py-0.5',
-        'group-data-[collapsible=icon]:hidden',
+        !showInCollapsed && 'group-data-[collapsible=icon]:hidden',
         className
       )}
       {...props}
@@ -651,15 +668,12 @@ function SidebarMenuSub({ className, ...props }: React.ComponentProps<'ul'>) {
   );
 }
 
-function SidebarMenuSubItem({
-  className,
-  ...props
-}: React.ComponentProps<'li'>) {
+function SidebarMenuSubItem({ className, showInCollapsed = false, ...props }: React.ComponentProps<'li'> & { showInCollapsed?: boolean }) {
   return (
     <li
       data-slot='sidebar-menu-sub-item'
       data-sidebar='menu-sub-item'
-      className={cn('group/menu-sub-item relative', className)}
+      className={cn('group/menu-sub-item relative', !showInCollapsed && 'group-data-[collapsible=icon]:hidden', className)}
       {...props}
     />
   );
@@ -669,12 +683,14 @@ function SidebarMenuSubButton({
   asChild = false,
   size = 'md',
   isActive = false,
+  showInCollapsed = false,
   className,
   ...props
 }: React.ComponentProps<'a'> & {
   asChild?: boolean;
   size?: 'sm' | 'md';
   isActive?: boolean;
+  showInCollapsed?: boolean;
 }) {
   const Comp = asChild ? Slot : 'a';
 
@@ -685,12 +701,11 @@ function SidebarMenuSubButton({
       data-size={size}
       data-active={isActive}
       className={cn(
-        // Couleur icône corrigée: foreground par défaut, accent au hover/actif
         'text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground flex h-8 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-foreground hover:[&>svg]:text-sidebar-accent-foreground data-[active=true]:[&>svg]:text-primary',
         'data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground',
         size === 'sm' && 'text-sm',
         size === 'md' && 'text-base',
-        'group-data-[collapsible=icon]:hidden',
+        !showInCollapsed && 'group-data-[collapsible=icon]:hidden',
         className
       )}
       {...props}
