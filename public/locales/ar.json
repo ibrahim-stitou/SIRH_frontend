@@ -235,5 +235,178 @@
       "finish": "إنهاء",
       "reset": "إعادة تعيين"
     }
+  },
+  "employeeEdit": {
+    "title": "تعديل الموظف",
+    "subtitle": "تحديث معلومات الموظف",
+    "loading": "جاري تحميل بيانات الموظف...",
+    "updateSuccess": "تم تحديث الموظف بنجاح",
+    "updateError": "خطأ في تحديث الموظف"
+  },
+  "employeeDetails": {
+    "title": "تفاصيل الموظف",
+    "loading": "جاري تحميل تفاصيل الموظف...",
+    "loadError": "تعذر تحميل الموظف",
+    "tabs": {
+      "personal": "شخصي",
+      "skills": "المهارات والدراسات",
+      "social": "CNSS والتأمين",
+      "contracts": "العقود والتحركات",
+      "documents": "المستندات",
+      "leaves": "الإجازات والغياب"
+    },
+    "sections": {
+      "identity": "الهوية",
+      "contact": "الاتصال",
+      "notes": "ملاحظات",
+      "education": "التعليم",
+      "skills": "المهارات",
+      "certifications": "الشهادات",
+      "social": "CNSS والتأمين",
+      "contracts": "العقود والتحركات",
+      "documents": "المستندات",
+      "gallery": "معرض الملفات المتاحة",
+      "leaves": "الإجازات والغياب",
+      "documentsDesc": "ملفات الموظف + المعرض الكامل"
+    },
+    "fields": {
+      "fullName": "الاسم الكامل",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "birthDate": "تاريخ الميلاد",
+      "birthPlace": "مكان الميلاد",
+      "gender": "الجنس",
+      "nationality": "الجنسية",
+      "maritalStatus": "الحالة الاجتماعية",
+      "numberOfChildren": "الأطفال",
+      "address": "العنوان",
+      "city": "المدينة",
+      "postalCode": "الرمز البريدي",
+      "country": "البلد",
+      "position": "المنصب",
+      "hireDate": "تاريخ التوظيف",
+      "departmentShort": "القسم"
+    },
+    "empty": {
+      "noEducation": "لا يوجد تعليم",
+      "noSkills": "لا توجد مهارات",
+      "noCertifications": "لا توجد شهادات",
+      "noDocuments": "لا توجد مستندات"
+    }
+  },
+  "placeholders": {
+    "select": "اختر",
+    "choose": "اختيار"
+  },
+  "attestations": {
+    "title": "الشهادات",
+    "subtitle": "إدارة الشهادات والوثائق الرسمية",
+    "newRequest": "طلب جديد",
+    "generateNew": "إنشاء شهادة",
+    "myRequests": "طلباتي",
+    "allRequests": "جميع الطلبات",
+    "generatedDocs": "المستندات المُنشأة",
+    "tabs": {
+      "requests": "الطلبات",
+      "generated": "الشهادات المُنشأة"
+    },
+    "types": {
+      "travail": "شهادة عمل",
+      "salaire": "شهادة راتب",
+      "stage": "شهادة تدريب",
+      "travail_salaire": "شهادة عمل وراتب",
+      "autre": "أخرى"
+    },
+    "status": {
+      "en_attente": "قيد الانتظار",
+      "approuve": "موافق عليه",
+      "rejete": "مرفوض",
+      "genere": "تم الإنشاء"
+    },
+    "columns": {
+      "id": "المعرف",
+      "employee": "الموظف",
+      "type": "النوع",
+      "dateRequest": "تاريخ الطلب",
+      "dateSouhaitee": "التاريخ المرغوب",
+      "dateGeneration": "تاريخ الإنشاء",
+      "status": "الحالة",
+      "numero": "الرقم",
+      "actions": "الإجراءات"
+    },
+    "fields": {
+      "employeeId": "الموظف",
+      "typeAttestation": "نوع الشهادة",
+      "dateSouhaitee": "التاريخ المرغوب",
+      "notes": "ملاحظات / السبب",
+      "raisonRejet": "سبب الرفض",
+      "numeroAttestation": "رقم الشهادة",
+      "stageStartDate": "تاريخ بدء التدريب",
+      "stageEndDate": "تاريخ نهاية التدريب"
+    },
+    "dialog": {
+      "newRequest": {
+        "title": "طلب شهادة جديد",
+        "description": "املأ النموذج لإنشاء طلب جديد"
+      },
+      "generateAttestation": {
+        "title": "إنشاء شهادة",
+        "description": "إنشاء شهادة مباشرة بدون طلب مسبق"
+      },
+      "approve": {
+        "title": "الموافقة على الطلب",
+        "description": "هل أنت متأكد من الموافقة على هذا الطلب؟"
+      },
+      "reject": {
+        "title": "رفض الطلب",
+        "description": "حدد سبب الرفض"
+      },
+      "delete": {
+        "title": "حذف",
+        "description": "هل أنت متأكد من حذف هذا العنصر؟"
+      },
+      "preview": {
+        "title": "معاينة الشهادة"
+      },
+      "confirmGenerate": {
+        "title": "تأكيد الإنشاء",
+        "description": "هل أنت متأكد من إنشاء هذه الشهادة؟ سيتم إنشاء ملف PDF وتنزيله تلقائيًا."
+      }
+    },
+    "actions": {
+      "approve": "موافقة",
+      "reject": "رفض",
+      "generate": "إنشاء PDF",
+      "download": "تنزيل",
+      "preview": "معاينة",
+      "viewDetails": "عرض التفاصيل"
+    },
+    "messages": {
+      "requestCreated": "تم إنشاء الطلب بنجاح",
+      "requestApproved": "تمت الموافقة على الطلب بنجاح",
+      "requestRejected": "تم رفض الطلب",
+      "attestationGenerated": "تم إنشاء الشهادة بنجاح",
+      "downloadStarted": "بدأ التنزيل",
+      "error": "حدث خطأ",
+      "deleteSuccess": "تم الحذف بنجاح",
+      "noRequests": "لا توجد طلبات شهادات",
+      "noAttestations": "لا توجد شهادات منشأة"
+    },
+    "stats": {
+      "totalRequests": "إجمالي الطلبات",
+      "pending": "قيد الانتظار",
+      "approved": "موافق عليها",
+      "generated": "تم إنشاؤها"
+    },
+    "filters": {
+      "allTypes": "جميع الأنواع",
+      "allStatus": "جميع الحالات",
+      "searchPlaceholder": "البحث عن موظف..."
+    },
+    "help": {
+      "requestInfo": "يجب الموافقة على الطلبات قبل إنشاء مستند PDF",
+      "generateInfo": "يمكنك إنشاء شهادة مباشرة دون المرور بطلب",
+      "stageInfo": "بالنسبة لشهادات التدريب، حدد تواريخ البداية والنهاية"
+    }
   }
 }

@@ -24,98 +24,99 @@
     "language": "Langue"
   },
   "common": {
-    "optional": "Optionnel",
+    "optional": "Optional",
     "months": {
-      "1": "Janvier",
-      "2": "Février",
-      "3": "Mars",
-      "4": "Avril",
-      "5": "Mai",
-      "6": "Juin",
-      "7": "Juillet",
-      "8": "Août",
-      "9": "Septembre",
-      "10": "Octobre",
-      "11": "Novembre",
-      "12": "Décembre"
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
     },
     "simple_days": {
-      "mon": "Lun",
-      "tue": "Mar",
-      "wed": "Mer",
-      "thu": "Jeu",
-      "fri": "Ven",
-      "sat": "Sam",
-      "sun": "Dim"
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
     },
-    "errorLoading": "Erreur lors du chargement des données",
+    "errorLoading": "Error loading data",
     "errors": {
-      "fetchFailed": "Une erreur s'est produite lors de la récupération des données"
+      "fetchFailed": "An error occurred while fetching data"
     },
-    "add": "Ajouter",
-    "dateFormat": "{{jour}} {{mois}} {{année}}",
-    "dateTimeFormat": "{{jour}} {{mois}} {{année}} à {{heures}}:{{minutes}}",
-    "submit": "Soumettre",
-    "security": "Sécurité",
-    "logout": "Se déconnecter",
-    "cancel": "Annuler",
-    "save": "Enregistrer",
-    "delete": "Supprimer",
-    "edit": "Modifier",
-    "view": "Voir",
-    "download": "Télécharger",
-    "selectDate": "Sélectionner une date",
-    "close": "Fermer",
-    "confirm": "Confirmer",
-    "validate": "Valider",
-    "yes": "Oui",
-    "no": "Non",
-    "loading": "Chargement...",
-    "creating": "Création...",
-    "error": "Erreur",
-    "processing": "Traitement...",
-    "success": "Succès",
-    "warning": "Avertissement",
+    "add": "Add",
+    "dateFormat": "{{day}} {{month}} {{year}}",
+    "dateTimeFormat": "{{day}} {{month}} {{year}} at {{hours}}:{{minutes}}",
+    "submit": "Submit",
+    "security": "Security",
+    "logout": "Logout",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "download": "Download",
+    "selectDate": "Select date",
+    "close": "Close",
+    "confirm": "Confirm",
+    "next": "Next",
+    "validate": "Validate",
+    "yes": "Yes",
+    "no": "No",
+    "loading": "Loading...",
+    "creating": "Creating...",
+    "error": "Error",
+    "processing": "Processing...",
+    "success": "Success",
+    "warning": "Warning",
     "info": "Information",
-    "noData": "Aucune donnée disponible",
-    "noResults": "Aucun résultat trouvé",
-    "reference": "Référence",
-    "back": "Retour",
-    "submitting": "Envoi en cours...",
+    "noData": "No data available",
+    "noResults": "No results found",
+    "reference": "Reference",
+    "back": "Back",
+    "submitting": "Submitting...",
     "attention": "Attention",
-    "days": "jours",
-    "day": "jour",
-    "uploaded": "Téléchargé",
-    "monday": "Lundi",
-    "tuesday": "Mardi",
-    "wednesday": "Mercredi",
-    "thursday": "Jeudi",
-    "friday": "Vendredi",
-    "saturday": "Samedi",
-    "sunday": "Dimanche",
-    "send": "Envoyer"
+    "days": "days",
+    "day": "day",
+    "uploaded": "Uploaded",
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday",
+    "send": "Send"
   },
 
   "dataTable": {
-    "searchColumns": "Rechercher dans les colonnes",
-    "loading": "Chargement...",
-    "all": "Tous",
-    "noData": "Aucune donnée disponible",
+    "searchColumns": "Search columns",
+    "loading": "Loading...",
+    "all": "All",
+    "noData": "No data available",
     "page": {
-      "of": "sur",
-      "next": "Suivant",
-      "previous": "Précédent",
+      "of": "of",
+      "next": "Next",
+      "previous": "Previous",
       "page": "Page"
     },
     "search": {
-      "placeholder": "Rechercher..."
+      "placeholder": "Search..."
     },
-    "reset": "Réinitialiser",
-    "apply": "Appliquer les filtres",
-    "rowsPerPage": "Lignes par page",
-    "rowsTotal": "ligne(s) au total.",
-    "rowsSelected": "ligne(s) sélectionnée(s).",
-    "columns": "Colonnes"
+    "reset": "Reset",
+    "apply": "Apply filters",
+    "rowsPerPage": "Rows per page",
+    "rowsTotal": "row(s) total.",
+    "rowsSelected": "row(s) selected.",
+    "columns": "Columns"
   },
   "months": {
     "1": "Janvier",
@@ -248,6 +249,8 @@
   },
   "employeeDetails": {
     "title": "Employee details",
+    "loading": "Loading employee details...",
+    "loadError": "Unable to load employee",
     "tabs": {
       "personal": "Personal",
       "skills": "Skills & Studies",
@@ -297,6 +300,127 @@
   },
   "placeholders": {
     "select": "Select",
-    "choose": "Choose"
+    "choose": "Choose",
+    "selectDate": "Select date"
+  },
+  "attestations": {
+    "title": "Certificates",
+    "subtitle": "Management of certificates and official documents",
+    "newRequest": "New request",
+    "generateNew": "Generate certificate",
+    "myRequests": "My requests",
+    "allRequests": "All requests",
+    "generatedDocs": "Generated documents",
+    "tabs": {
+      "requests": "Requests",
+      "generated": "Generated certificates"
+    },
+    "types": {
+      "travail": "Work certificate",
+      "salaire": "Salary certificate",
+      "stage": "Internship certificate",
+      "travail_salaire": "Work and salary certificate",
+      "autre": "Other"
+    },
+    "status": {
+      "en_attente": "Pending",
+      "approuve": "Approved",
+      "rejete": "Rejected",
+      "genere": "Generated"
+    },
+    "columns": {
+      "id": "ID",
+      "employee": "Employee",
+      "type": "Type",
+      "dateRequest": "Request date",
+      "dateSouhaitee": "Desired date",
+      "dateGeneration": "Generation date",
+      "dateValidation": "Validation date",
+      "status": "Status",
+      "numero": "Number",
+      "raison": "Reason",
+      "motifRejet": "Rejection reason",
+      "actions": "Actions"
+    },
+    "fields": {
+      "employeeId": "Employee",
+      "typeAttestation": "Certificate type",
+      "dateSouhaitee": "Desired date",
+      "notes": "Notes / Reason",
+      "raisonRejet": "Rejection reason",
+      "numeroAttestation": "Certificate number",
+      "stageStartDate": "Internship start date",
+      "stageEndDate": "Internship end date"
+    },
+    "dialog": {
+      "newRequest": {
+        "title": "New certificate request",
+        "description": "Fill in the form to create a new request"
+      },
+      "generateAttestation": {
+        "title": "Generate certificate",
+        "description": "Generate a certificate directly without prior request"
+      },
+      "approve": {
+        "title": "Approve request",
+        "description": "Are you sure you want to approve this request?"
+      },
+      "reject": {
+        "title": "Reject request",
+        "description": "Indicate the reason for rejection"
+      },
+      "delete": {
+        "title": "Delete",
+        "description": "Are you sure you want to delete this item?"
+      },
+      "preview": {
+        "title": "Certificate preview"
+      },
+      "confirmGenerate": {
+        "title": "Confirm generation",
+        "description": "Are you sure you want to generate this certificate? The PDF will be created and downloaded automatically."
+      },
+      "details": {
+        "title": "Request Details",
+        "description": "Complete information about the certificate request",
+        "employeeInfo": "Employee Information",
+        "attestationInfo": "Certificate Information"
+      }
+    },
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "generate": "Generate PDF",
+      "download": "Download",
+      "preview": "Preview",
+      "viewDetails": "View details"
+    },
+    "messages": {
+      "requestCreated": "Request created successfully",
+      "requestApproved": "Request approved successfully",
+      "requestRejected": "Request rejected",
+      "attestationGenerated": "Certificate generated successfully",
+      "downloadStarted": "Download started",
+      "error": "An error occurred",
+      "deleteSuccess": "Deletion successful",
+      "noRequests": "No certificate requests",
+      "noAttestations": "No generated certificates"
+    },
+    "stats": {
+      "totalRequests": "Total requests",
+      "pending": "Pending",
+      "approved": "Approved",
+      "generated": "Generated"
+    },
+    "filters": {
+      "allTypes": "All types",
+      "allStatus": "All statuses",
+      "searchPlaceholder": "Search an employee..."
+    },
+    "help": {
+      "requestInfo": "Requests must be approved before generating the PDF document",
+      "generateInfo": "You can generate a certificate directly without going through a request",
+      "stageInfo": "For internship certificates, indicate start and end dates"
+    }
   }
 }

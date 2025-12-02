@@ -1,0 +1,39 @@
+[
+  {
+    "id": 1,
+    "requestId": 1,
+    "employeeId": 100,
+    "typeAttestation": "travail",
+    "dateGeneration": "2024-11-15",
+    "documentPath": "/documents/attestations/ATT-2024-001.pdf",
+    "numeroAttestation": "ATT-2024-001",
+    "notes": "Généré automatiquement",
+    "createdAt": "2024-11-15T14:20:00Z",
+    "updatedAt": "2024-11-15T14:20:00Z"
+  },
+  {
+    "id": 2,
+    "requestId": 5,
+    "employeeId": 103,
+    "typeAttestation": "travail_salaire",
+    "dateGeneration": "2024-12-02",
+    "documentPath": "/documents/attestations/ATT-2024-002.pdf",
+    "numeroAttestation": "ATT-2024-002",
+    "notes": "Avec cachet et signature",
+    "createdAt": "2024-12-02T16:30:00Z",
+    "updatedAt": "2024-12-02T16:30:00Z"
+  },
+  {
+    "id": 3,
+    "requestId": null,
+    "employeeId": 102,
+    "typeAttestation": "salaire",
+    "dateGeneration": "2024-10-05",
+    "documentPath": "/documents/attestations/ATT-2024-003.pdf",
+    "numeroAttestation": "ATT-2024-003",
+    "notes": "Généré sans demande préalable",
+    "createdAt": "2024-10-05T10:00:00Z",
+    "updatedAt": "2024-10-05T10:00:00Z"
+  }
+]
+

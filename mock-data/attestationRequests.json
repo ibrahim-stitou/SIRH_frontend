@@ -1,0 +1,71 @@
+[
+  {
+    "id": 1,
+    "employeeId": 100,
+    "typeAttestation": "travail",
+    "dateRequest": "2024-11-15",
+    "dateSouhaitee": "2024-11-20",
+    "status": "genere",
+    "raison": "Demande pour dossier bancaire",
+    "notes": "Demande pour dossier bancaire",
+    "dateValidation": "2024-11-15T10:00:00Z",
+    "dateGeneration": "2024-11-15T14:20:00Z",
+    "createdAt": "2024-11-15T09:30:00Z",
+    "updatedAt": "2024-11-15T14:20:00Z"
+  },
+  {
+    "id": 2,
+    "employeeId": 102,
+    "typeAttestation": "salaire",
+    "dateRequest": "2024-11-20",
+    "dateSouhaitee": "2024-11-25",
+    "status": "approuve",
+    "raison": "Pour demande de crédit immobilier",
+    "notes": "Pour demande de crédit immobilier",
+    "dateValidation": "2024-11-21T08:45:00Z",
+    "createdAt": "2024-11-20T10:15:00Z",
+    "updatedAt": "2024-11-21T08:45:00Z"
+  },
+  {
+    "id": 3,
+    "employeeId": 104,
+    "typeAttestation": "stage",
+    "dateRequest": "2024-12-01",
+    "dateSouhaitee": "2024-12-05",
+    "status": "en_attente",
+    "raison": "Attestation de fin de stage",
+    "notes": "Attestation de fin de stage",
+    "createdAt": "2024-12-01T11:00:00Z",
+    "updatedAt": "2024-12-01T11:00:00Z"
+  },
+  {
+    "id": 4,
+    "employeeId": 101,
+    "typeAttestation": "travail",
+    "dateRequest": "2024-11-10",
+    "dateSouhaitee": "2024-11-15",
+    "status": "rejete",
+    "raison": "Demande pour visa",
+    "raisonRejet": "Informations incomplètes dans le dossier employé",
+    "motifRejet": "Informations incomplètes dans le dossier employé",
+    "notes": "Demande pour visa",
+    "dateValidation": "2024-11-11T09:30:00Z",
+    "createdAt": "2024-11-10T14:20:00Z",
+    "updatedAt": "2024-11-11T09:30:00Z"
+  },
+  {
+    "id": 5,
+    "employeeId": 103,
+    "typeAttestation": "travail_salaire",
+    "dateRequest": "2024-12-02",
+    "dateSouhaitee": "2024-12-10",
+    "status": "genere",
+    "raison": "Attestation complète pour dossier consulat",
+    "notes": "Attestation complète pour dossier consulat",
+    "dateValidation": "2024-12-02T09:00:00Z",
+    "dateGeneration": "2024-12-02T16:30:00Z",
+    "createdAt": "2024-12-02T08:00:00Z",
+    "updatedAt": "2024-12-02T16:30:00Z"
+  }
+]
+

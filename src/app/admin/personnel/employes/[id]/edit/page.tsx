@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useRouter } from 'next/navigation';
@@ -19,12 +19,14 @@ import useMultistepForm from '@/hooks/use-multistep-form';
 import { EmployeeCreateFormValues, fullSchema, stepFields } from '../../create/schema';
 import { transformDocuments } from '../../create/utils';
 import { useLanguage } from '@/context/LanguageContext';
+import { EmployeeEditLoadingSkeleton } from '@/app/admin/personnel/employes/[id]/edit/loading-skeleton';
 
 export default function EmployeeEditPage() {
   const params = useParams<{ id: string }>();
   const id = useMemo(() => params?.id, [params]);
   const router = useRouter();
   const { t } = useLanguage();
+  const [loading, setLoading] = useState(true);
 
   const methods = useForm<EmployeeCreateFormValues>({
     resolver: zodResolver(fullSchema),
@@ -46,9 +48,8 @@ export default function EmployeeEditPage() {
     if (!id) return;
     (async () => {
       try {
-        toast.loading(t('common.loading'));
+        setLoading(true);
         const response = await apiClient.get(apiRoutes.admin.employees.details(id));
-        toast.dismiss();
         const payload = (response as any)?.data;
         const row = payload && typeof payload === 'object' && 'data' in payload ? (payload as any).data : payload;
         // Adapter les données de l'API au formulaire
@@ -83,9 +84,10 @@ export default function EmployeeEditPage() {
         } as any;
         reset(defaults);
       } catch (e) {
-        toast.dismiss();
-        toast.error(t('common.error'));
+        toast.error(t('employeeEdit.updateError') || t('common.error'));
         router.push('/admin/personnel/employes');
+      } finally {
+        setLoading(false);
       }
     })();
   }, [id, reset, router, t]);
@@ -127,14 +129,22 @@ export default function EmployeeEditPage() {
       toast.loading(t('common.processing'));
       await apiClient.put(apiRoutes.admin.employees.update(id), payload);
       toast.dismiss();
-      toast.success(t('common.success'));
+      toast.success(t('employeeEdit.updateSuccess') || t('common.success'));
       router.push('/admin/personnel/employes');
     } catch (e) {
       toast.dismiss();
-      toast.error(t('common.error'));
+      toast.error(t('employeeEdit.updateError') || t('common.error'));
       console.error(e);
     }
   };
+
+  if (loading) {
+    return (
+      <PageContainer>
+        <EmployeeEditLoadingSkeleton />
+      </PageContainer>
+    );
+  }
 
   return (
     <PageContainer>
@@ -142,16 +152,16 @@ export default function EmployeeEditPage() {
         <div className="w-full mx-auto px-4 py-8">
           <div className="mb-10">
             <h1 className="text-2xl font-bold tracking-tight mb-2">{t('employeeEdit.title')}</h1>
-            <p className="text-sm text-muted-foreground">{t('employeeCreate.subtitle')}</p>
+            <p className="text-sm text-muted-foreground">{t('employeeEdit.subtitle')}</p>
           </div>
           <Stepper current={wizard.currentStepIndex} steps={stepNames} goTo={(i) => wizard.goTo(i)} />
           <Card className="p-6 space-y-8">
             {wizard.step}
             <Separator />
             <div className="flex items-center justify-between">
-              <Button type="button" variant="ghost" disabled={wizard.isFirstStep} onClick={goBack}>{t('common.back')}</Button>
+              <Button type="button" variant="ghost" disabled={wizard.isFirstStep} onClick={goBack}>{t('employeeCreate.actions.prev') || t('common.back')}</Button>
               {!wizard.isLastStep && (
-                <Button type="button" onClick={goNext}>{t('common.next') || 'Suivant'}</Button>
+                <Button type="button" onClick={goNext}>{t('employeeCreate.actions.next') || t('common.next')}</Button>
               )}
               {wizard.isLastStep && (
                 <Button type="button" onClick={handleSubmit(onSubmit)} disabled={formState.isSubmitting}>{t('common.save')}</Button>

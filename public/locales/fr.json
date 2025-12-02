@@ -24,6 +24,7 @@
     "language": "Langue"
   },
   "common": {
+    "next": "Suivant",
     "optional": "Optionnel",
     "months": {
       "1": "Janvier",
@@ -279,7 +280,9 @@
     "title": "Modifier un employé"
   },
   "employeeDetails": {
-    "title": "Détails de l’employé",
+    "title": "Détails de l'employé",
+    "loading": "Chargement des détails de l'employé...",
+    "loadError": "Impossible de charger l'employé",
     "tabs": {
       "personal": "Personnel",
       "skills": "Skills & Studies",
@@ -329,6 +332,127 @@
   },
   "placeholders": {
     "select": "Sélectionner",
-    "choose": "Choisir"
+    "choose": "Choisir",
+    "selectDate": "Sélectionner une date"
+  },
+  "attestations": {
+    "title": "Attestations",
+    "subtitle": "Gestion des attestations et documents officiels",
+    "newRequest": "Nouvelle demande",
+    "generateNew": "Générer une attestation",
+    "myRequests": "Mes demandes",
+    "allRequests": "Toutes les demandes",
+    "generatedDocs": "Documents générés",
+    "tabs": {
+      "requests": "Demandes",
+      "generated": "Attestations générées"
+    },
+    "types": {
+      "travail": "Attestation de travail",
+      "salaire": "Attestation de salaire",
+      "stage": "Attestation de stage",
+      "travail_salaire": "Attestation de travail et salaire",
+      "autre": "Autre"
+    },
+    "status": {
+      "en_attente": "En attente",
+      "approuve": "Approuvée",
+      "rejete": "Rejetée",
+      "genere": "Générée"
+    },
+    "columns": {
+      "id": "ID",
+      "employee": "Employé",
+      "type": "Type",
+      "dateRequest": "Date de demande",
+      "dateSouhaitee": "Date souhaitée",
+      "dateGeneration": "Date de génération",
+      "dateValidation": "Date de validation",
+      "status": "Statut",
+      "numero": "Numéro",
+      "raison": "Raison",
+      "motifRejet": "Motif du rejet",
+      "actions": "Actions"
+    },
+    "fields": {
+      "employeeId": "Employé",
+      "typeAttestation": "Type d'attestation",
+      "dateSouhaitee": "Date souhaitée",
+      "notes": "Notes / Raison",
+      "raisonRejet": "Raison du rejet",
+      "numeroAttestation": "Numéro d'attestation",
+      "stageStartDate": "Date début stage",
+      "stageEndDate": "Date fin stage"
+    },
+    "dialog": {
+      "newRequest": {
+        "title": "Nouvelle demande d'attestation",
+        "description": "Remplissez le formulaire pour créer une nouvelle demande"
+      },
+      "generateAttestation": {
+        "title": "Générer une attestation",
+        "description": "Générez directement une attestation sans demande préalable"
+      },
+      "approve": {
+        "title": "Approuver la demande",
+        "description": "Êtes-vous sûr de vouloir approuver cette demande ?"
+      },
+      "reject": {
+        "title": "Rejeter la demande",
+        "description": "Indiquez la raison du rejet"
+      },
+      "delete": {
+        "title": "Supprimer",
+        "description": "Êtes-vous sûr de vouloir supprimer cet élément ?"
+      },
+      "preview": {
+        "title": "Aperçu de l'attestation"
+      },
+      "confirmGenerate": {
+        "title": "Confirmer la génération",
+        "description": "Êtes-vous sûr de vouloir générer cette attestation ? Le PDF sera créé et téléchargé automatiquement."
+      },
+      "details": {
+        "title": "Détails de la demande",
+        "description": "Informations complètes sur la demande d'attestation",
+        "employeeInfo": "Informations de l'employé",
+        "attestationInfo": "Informations de l'attestation"
+      }
+    },
+    "actions": {
+      "approve": "Approuver",
+      "reject": "Rejeter",
+      "generate": "Générer PDF",
+      "download": "Télécharger",
+      "preview": "Aperçu",
+      "viewDetails": "Voir détails"
+    },
+    "messages": {
+      "requestCreated": "Demande créée avec succès",
+      "requestApproved": "Demande approuvée avec succès",
+      "requestRejected": "Demande rejetée",
+      "attestationGenerated": "Attestation générée avec succès",
+      "downloadStarted": "Téléchargement démarré",
+      "error": "Une erreur est survenue",
+      "deleteSuccess": "Suppression réussie",
+      "noRequests": "Aucune demande d'attestation",
+      "noAttestations": "Aucune attestation générée"
+    },
+    "stats": {
+      "totalRequests": "Demandes totales",
+      "pending": "En attente",
+      "approved": "Approuvées",
+      "generated": "Générées"
+    },
+    "filters": {
+      "allTypes": "Tous les types",
+      "allStatus": "Tous les statuts",
+      "searchPlaceholder": "Rechercher un employé..."
+    },
+    "help": {
+      "requestInfo": "Les demandes doivent être approuvées avant de générer le document PDF",
+      "generateInfo": "Vous pouvez générer directement une attestation sans passer par une demande",
+      "stageInfo": "Pour les attestations de stage, indiquez les dates de début et fin"
+    }
   }
 }

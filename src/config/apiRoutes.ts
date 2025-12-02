@@ -44,7 +44,23 @@ export const apiRoutes = {
     media: {
       list: `${API_BASE}/userMedia`,
       details: (id: number | string) => `${API_BASE}/userMedia/${id}`,
-    }
+    },
+    attestations: {
+      requests: {
+        list: `${API_BASE}/attestationRequests`,
+        create: `${API_BASE}/attestationRequests`,
+        update: (id: number | string) => `${API_BASE}/attestationRequests/${id}`,
+        delete: (id: number | string) => `${API_BASE}/attestationRequests/${id}`,
+        show: (id: number | string) => `${API_BASE}/attestationRequests/${id}`,
+      },
+      generated: {
+        list: `${API_BASE}/attestations`,
+        create: `${API_BASE}/attestations`,
+        update: (id: number | string) => `${API_BASE}/attestations/${id}`,
+        delete: (id: number | string) => `${API_BASE}/attestations/${id}`,
+        show: (id: number | string) => `${API_BASE}/attestations/${id}`,
+      },
+    },
   }
 };
 

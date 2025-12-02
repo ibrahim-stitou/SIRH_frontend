@@ -125,25 +125,100 @@ export default function EmployeeCreatePage() {
   return (
     <PageContainer>
     <FormProvider {...methods}>
-      <div className="w-full mx-auto px-4 py-8">
-        <div className="mb-10">
-          <h1 className="text-2xl font-bold tracking-tight mb-2">{t('employeeCreate.title')}</h1>
-          <p className="text-sm text-muted-foreground">{t('employeeCreate.subtitle')}</p>
+      <div className="w-full  mx-auto px-4 py-8 space-y-8">
+        {/* Header */}
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            {t('employeeCreate.title')}
+          </h1>
+          <p className="text-muted-foreground">
+            {t('employeeCreate.subtitle')}
+          </p>
         </div>
-        <Stepper current={wizard.currentStepIndex} steps={stepNames} goTo={(i) => wizard.goTo(i)} />
-        <Card className="p-6 space-y-8">
-          {wizard.step}
-          <Separator />
-          <div className="flex items-center justify-between">
-            <Button type="button" variant="ghost" disabled={wizard.isFirstStep} onClick={goBack}>{t('common.back')}</Button>
-            {!wizard.isLastStep && (
-              <Button type="button" onClick={goNext}>{t('common.next') || 'Suivant'}</Button>
-            )}
-            {wizard.isLastStep && (
-              <Button type="button" onClick={handleSubmit(onSubmit)} disabled={formState.isSubmitting}>{t('employeeCreate.actions.finish')}</Button>
-            )}
+
+        {/* Stepper */}
+        <Stepper
+          current={wizard.currentStepIndex}
+          steps={stepNames}
+          goTo={(i) => wizard.goTo(i)}
+        />
+
+        {/* Form Content */}
+        <Card className="border-2 shadow-lg animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="p-6 md:p-8 space-y-8">
+            {/* Step Content */}
+            <div className="min-h-[400px]">
+              {wizard.step}
+            </div>
+
+            <Separator className="my-6" />
+
+            {/* Navigation Footer */}
+            <div className="flex items-center justify-between gap-4">
+              <Button
+                type="button"
+                variant="outline"
+                disabled={wizard.isFirstStep}
+                onClick={goBack}
+                className="gap-2"
+              >
+                <span>←</span>
+                {t('common.back')}
+              </Button>
+
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span className="font-medium">
+                  Étape {wizard.currentStepIndex + 1} / {stepNames.length}
+                </span>
+              </div>
+
+              {!wizard.isLastStep && (
+                <Button
+                  type="button"
+                  onClick={goNext}
+                  className="gap-2"
+                >
+                  {t('common.next') || 'Suivant'}
+                  <span>→</span>
+                </Button>
+              )}
+
+              {wizard.isLastStep && (
+                <Button
+                  type="button"
+                  onClick={handleSubmit(onSubmit)}
+                  disabled={formState.isSubmitting}
+                  className="gap-2 min-w-[140px]"
+                >
+                  {formState.isSubmitting ? (
+                    <>
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      {t('common.creating')}
+                    </>
+                  ) : (
+                    <>
+                      <span>✓</span>
+                      {t('employeeCreate.actions.finish') || 'Terminer'}
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
           </div>
         </Card>
+
+        {/* Progress Indicator */}
+        {formState.isSubmitting && (
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+            <Card className="p-8 space-y-4 shadow-2xl animate-in zoom-in-95">
+              <div className="flex flex-col items-center gap-4">
+                <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                <p className="text-lg font-medium">Création de l&apos;employé en cours...</p>
+                <p className="text-sm text-muted-foreground">Veuillez patienter</p>
+              </div>
+            </Card>
+          </div>
+        )}
       </div>
     </FormProvider>
     </PageContainer>
