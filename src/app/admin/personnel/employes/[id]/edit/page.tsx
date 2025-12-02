@@ -149,7 +149,7 @@ export default function EmployeeEditPage() {
   return (
     <PageContainer>
       <FormProvider {...methods}>
-        <div className="w-full mx-auto px-4 py-8">
+        <div className="w-full mx-auto px-4 py-2">
           <div className="mb-10">
             <h1 className="text-2xl font-bold tracking-tight mb-2">{t('employeeEdit.title')}</h1>
             <p className="text-sm text-muted-foreground">{t('employeeEdit.subtitle')}</p>
