@@ -37,9 +37,15 @@ export const apiRoutes = {
     },
     employees: {
       list: `${API_BASE}/hrEmployees`,
+      simpleList: `${API_BASE}/hrEmployees/simple-list`,
       delete: (id: number | string) => `${API_BASE}/hrEmployees/${id}`,
       details: (id: number | string) => `${API_BASE}/hrEmployees/${id}`,
       update: (id: number | string) => `${API_BASE}/hrEmployees/${id}`,
+    },
+    departments: {
+      list: `${API_BASE}/departments`,
+      show: (id: number | string) => `${API_BASE}/departments/${id}`,
+      simpleList: `${API_BASE}/departments/simple-list`,
     },
     media: {
       list: `${API_BASE}/userMedia`,
@@ -61,6 +67,17 @@ export const apiRoutes = {
         show: (id: number | string) => `${API_BASE}/attestations/${id}`,
       },
     },
+    contratsEtMovements: {
+      contrats:{
+        list: `${API_BASE}/contracts`,
+        create: `${API_BASE}/contracts`,
+        update: (id: number | string) => `${API_BASE}/contracts/${id}`,
+        delete: (id: number | string) => `${API_BASE}/contracts/${id}`,
+        show: (id: number | string) => `${API_BASE}/contracts/${id}`,
+        generate: (id: number | string) => `${API_BASE}/contracts/${id}/generate`,
+        validate: (id: number | string) => `${API_BASE}/contracts/${id}/validate`,
+      }
+    }
   }
 };
 

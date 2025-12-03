@@ -15,10 +15,11 @@
   "sidebar": {
     "dashboard": "Tableau de bord",
     "employeeFolder": "Dossier Salarié",
-    "searchList": "Rechercher / Liste",
-    "createEmployee": "Créer un employé",
+    "employes": "Employés",
     "orgChart": "Organigramme",
-    "certificates": "Attestations"
+    "certificates": "Attestations",
+    "contratEtMovements": "Contrats & Mouv",
+    "contrat": "Contrats"
   },
   "header": {
     "language": "Langue"
@@ -197,6 +198,9 @@
     "messages": {
       "deleted": "Employé #{{id}} supprimé avec succès",
       "deleteError": "Une erreur est survenue lors de la suppression"
+    },
+    "actions": {
+      "create": "Créer un employé"
     }
   },
   "table": {
@@ -211,7 +215,7 @@
   },
   "employeeCreate": {
     "title": "Créer un employé",
-    "subtitle": "3 étapes simples pour ajouter un nouvel employé (contrat & salaire exclus).",
+    "subtitle": "ajouter un nouvel employé.",
     "finishText": "Validation terminée. Cliquez sur Terminer pour enregistrer.",
     "steps": {
       "identity": "Identité",
@@ -328,6 +332,11 @@
       "noSkills": "Aucune compétence",
       "noCertifications": "Aucune certification",
       "noDocuments": "Aucun document"
+    },
+    "actions": {
+      "editPhotoTooltip": "Modifier la photo de profil",
+      "changePhoto": "Changer la photo de profil",
+      "photoRequirements": "Formats: JPG, PNG. Taille max: 2MB"
     }
   },
   "placeholders": {
@@ -453,6 +462,301 @@
       "requestInfo": "Les demandes doivent être approuvées avant de générer le document PDF",
       "generateInfo": "Vous pouvez générer directement une attestation sans passer par une demande",
       "stageInfo": "Pour les attestations de stage, indiquez les dates de début et fin"
+    }
+  },
+  "contracts": {
+    "title": "Contrats de travail",
+    "subtitle": "Gérer tous les contrats de travail de l'entreprise",
+    "create": "Créer un contrat",
+    "newContract": "Nouveau contrat",
+    "contractDetails": "Détails du contrat",
+    "editContract": "Modifier le contrat",
+    "types": {
+      "CDI": "CDI - Contrat à Durée Indéterminée",
+      "CDD": "CDD - Contrat à Durée Déterminée",
+      "STAGE": "Stage",
+      "INTERIM": "Intérim",
+      "APPRENTISSAGE": "Apprentissage"
+    },
+    "status": {
+      "BROUILLON": "Brouillon",
+      "ACTIF": "Actif",
+      "TERMINE": "Terminé",
+      "ANNULE": "Annulé"
+    },
+    "sections": {
+      "employee": "Employé",
+      "typeAndDates": "Type de contrat & Dates",
+      "trialPeriod": "Période d'essai",
+      "position": "Poste & Localisation",
+      "remuneration": "Rémunération",
+      "worktime": "Durée de travail",
+      "document": "Document du contrat",
+      "notes": "Notes",
+      "avenants": "Avenants",
+      "systemInfo": "Informations système"
+    },
+    "fields": {
+      "contractNumber": "N° Contrat",
+      "employee": "Employé",
+      "type": "Type de contrat",
+      "status": "Statut",
+      "signatureDate": "Date de signature",
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "trialPeriodDays": "Durée (en jours)",
+      "trialPeriodRenewals": "Nombre de renouvellements",
+      "trialPeriodEndDate": "Date de fin",
+      "position": "Intitulé du poste",
+      "department": "Département",
+      "workLocation": "Lieu de travail",
+      "baseSalary": "Salaire de base",
+      "currency": "Devise",
+      "paymentFrequency": "Fréquence de paie",
+      "weeklyHours": "Heures par semaine",
+      "weeklyDays": "Jours par semaine",
+      "notes": "Notes additionnelles"
+    },
+    "actions": {
+      "validate": "Valider le contrat",
+      "generatePdf": "Générer PDF",
+      "createAvenant": "Créer un avenant",
+      "viewEmployee": "Voir le profil employé"
+    },
+    "messages": {
+      "createSuccess": "Contrat créé avec succès",
+      "updateSuccess": "Contrat mis à jour avec succès",
+      "deleteSuccess": "Contrat supprimé avec succès",
+      "validateSuccess": "Contrat validé avec succès",
+      "pdfGenerated": "PDF généré avec succès",
+      "error": "Une erreur est survenue",
+      "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce contrat en brouillon ?",
+      "onlyDraftCanBeModified": "Seuls les contrats en brouillon peuvent être modifiés",
+      "onlyDraftCanBeDeleted": "Seuls les contrats en brouillon peuvent être supprimés"
+    },
+    "help": {
+      "cddEndDateRequired": "Obligatoire pour un CDD",
+      "trialPeriodMax": "Max: 90 jours (cadres), 45 jours (non-cadres)",
+      "trialPeriodRenewals": "Maximum 2 renouvellements possibles",
+      "smigInfo": "SMIG: 2828.71 MAD",
+      "standardWeeklyHours": "Durée standard au Maroc: 44h",
+      "notesInternal": "Ces notes sont internes et ne seront pas visibles sur le contrat généré"
+    },
+    "stats": {
+      "total": "Total",
+      "active": "Actifs",
+      "drafts": "Brouillons",
+      "cdi": "CDI"
+    },
+    "filters": {
+      "allTypes": "Tous les types",
+      "allStatus": "Tous les statuts",
+      "searchPlaceholder": "Rechercher par numéro, employé, poste..."
+    },
+    "empty": {
+      "noContracts": "Aucun contrat",
+      "noAvenants": "Aucun avenant pour ce contrat"
+    }
+  },
+  "avenants": {
+    "title": "Avenants",
+    "subtitle": "Gérer les avenants aux contrats de travail",
+    "create": "Créer un avenant",
+    "types": {
+      "SALAIRE": "Modification de salaire",
+      "POSTE": "Changement de poste",
+      "LIEU_TRAVAIL": "Changement de lieu de travail",
+      "DUREE_TRAVAIL": "Modification durée de travail",
+      "AUTRE": "Autre"
+    },
+    "workflowStatus": {
+      "BROUILLON": "Brouillon",
+      "SOUMIS": "Soumis",
+      "VALIDE_N1": "Validé N+1",
+      "VALIDE_N2": "Validé N+2",
+      "VALIDE_RH": "Validé RH",
+      "EFFECTIF": "Effectif",
+      "REFUSE": "Refusé"
+    },
+    "fields": {
+      "avenantNumber": "N° Avenant",
+      "contractId": "Contrat",
+      "type": "Type d'avenant",
+      "effectiveDate": "Date d'effet",
+      "description": "Description des modifications",
+      "newSalary": "Nouveau salaire",
+      "newPosition": "Nouveau poste",
+      "newWorkLocation": "Nouveau lieu",
+      "newWeeklyHours": "Nouvelles heures"
+    },
+    "sections": {
+      "comparison": "Comparatif avant/après",
+      "workflow": "Workflow de validation"
+    },
+    "messages": {
+      "createSuccess": "Avenant créé avec succès",
+      "validateSuccess": "Avenant validé avec succès",
+      "rejectSuccess": "Avenant rejeté",
+      "error": "Une erreur est survenue"
+    },
+    "help": {
+      "effectiveDateNoBackdate": "La date d'effet ne peut pas être antérieure à aujourd'hui",
+      "salaryValidationRequired": "Modification salaire : validation obligatoire"
+    },
+    "features": {
+      "title": "Fonctionnalités à venir",
+      "create": "Créer un avenant (modification salaire, poste, lieu, durée)",
+      "workflow": "Workflow de validation multi-niveaux",
+      "comparison": "Comparatif avant/après les modifications",
+      "numbering": "Numérotation automatique (AVT-xxx)",
+      "documents": "Upload de documents signés",
+      "history": "Historique complet des avenants par contrat"
+    }
+  },
+  "movements": {
+    "title": "Mouvements de personnel",
+    "subtitle": "Suivre les mutations, promotions, départs et autres mouvements",
+    "create": "Créer un mouvement",
+    "types": {
+      "EMBAUCHE": "Embauche",
+      "MUTATION": "Mutation",
+      "PROMOTION": "Promotion",
+      "RETROGRADATION": "Rétrogradation",
+      "SANCTION": "Sanction disciplinaire",
+      "DEMISSION": "Démission",
+      "LICENCIEMENT": "Licenciement",
+      "RETRAITE": "Retraite",
+      "DECES": "Décès"
+    },
+    "typeDescriptions": {
+      "EMBAUCHE": "Nouvel employé dans l'entreprise",
+      "MUTATION": "Changement de département ou lieu",
+      "PROMOTION": "Changement de poste ou grade",
+      "RETROGRADATION": "Changement vers un poste inférieur",
+      "DEMISSION": "Départ volontaire de l'employé",
+      "LICENCIEMENT": "Fin de contrat par l'employeur",
+      "RETRAITE": "Départ en retraite",
+      "SANCTION": "Mesure disciplinaire"
+    },
+    "workflowStatus": {
+      "BROUILLON": "Brouillon",
+      "SOUMIS": "Soumis",
+      "VALIDE_N1": "Validé N+1",
+      "VALIDE_N2": "Validé N+2",
+      "VALIDE_RH": "Validé RH",
+      "EFFECTIF": "Effectif",
+      "REFUSE": "Refusé"
+    },
+    "fields": {
+      "movementNumber": "N° Mouvement",
+      "employee": "Employé",
+      "type": "Type de mouvement",
+      "effectiveDate": "Date d'effet",
+      "reason": "Motif",
+      "detailedReason": "Motif détaillé",
+      "origin": "Origine",
+      "destination": "Destination"
+    },
+    "sections": {
+      "origin": "Informations origine",
+      "destination": "Informations destination",
+      "workflow": "Workflow de validation",
+      "documents": "Documents justificatifs"
+    },
+    "workflow": {
+      "title": "Workflow de validation",
+      "description": "Les mouvements suivent un workflow de validation adapté selon le type de mouvement"
+    }
+  },
+  "alerts": {
+    "title": "Alertes & Échéances",
+    "subtitle": "Suivre les événements importants et échéances contractuelles",
+    "types": {
+      "FIN_PERIODE_ESSAI": "Fin période d'essai",
+      "FIN_CDD": "Fin de CDD",
+      "EXPIRATION_DOCUMENT": "Document expiré",
+      "DEPART_RETRAITE": "Départ en retraite"
+    },
+    "priority": {
+      "LOW": "Faible",
+      "MEDIUM": "Moyenne",
+      "HIGH": "Haute",
+      "URGENT": "Urgent"
+    },
+    "status": {
+      "ACTIVE": "Active",
+      "TREATED": "Traitée",
+      "DISMISSED": "Ignorée"
+    },
+    "fields": {
+      "type": "Type",
+      "priority": "Priorité",
+      "title": "Titre",
+      "description": "Description",
+      "dueDate": "Échéance",
+      "daysUntilDue": "Reste",
+      "relatedEntity": "Référence"
+    },
+    "actions": {
+      "markAsTreated": "Marquer comme traité",
+      "viewDetails": "Voir détails"
+    },
+    "stats": {
+      "active": "Alertes actives",
+      "urgent": "Urgentes",
+      "high": "Hautes",
+      "treatedThisMonth": "Traitées ce mois"
+    },
+    "configuration": {
+      "title": "Configuration des alertes",
+      "description": "Les alertes sont automatiquement générées selon les délais suivants :",
+      "trialPeriodEnd": "Fin période d'essai",
+      "trialPeriodEndDelays": "J-15, J-7, J-1",
+      "cddEnd": "Fin de CDD",
+      "cddEndDelays": "J-30, J-15, J-7",
+      "documentExpiration": "Expiration documents",
+      "documentExpirationDelays": "J-30, J-15",
+      "retirement": "Départ retraite",
+      "retirementDelays": "M-12, M-6, M-3",
+      "emailDigest": "💡 Un digest quotidien est envoyé par email avec toutes les alertes actives"
+    }
+  },
+  "contractsAndMovements": {
+    "title": "Contrats & Mouvements",
+    "subtitle": "Gestion complète des contrats de travail et mouvements du personnel",
+    "modules": {
+      "contracts": {
+        "title": "Contrats de travail",
+        "description": "Gérer les contrats de travail (CDI, CDD, Stage, etc.)"
+      },
+      "avenants": {
+        "title": "Avenants",
+        "description": "Créer et gérer les avenants aux contrats"
+      },
+      "movements": {
+        "title": "Mouvements de personnel",
+        "description": "Suivre les mutations, promotions, départs"
+      },
+      "alerts": {
+        "title": "Alertes & Échéances",
+        "description": "Notifications pour les événements importants"
+      }
+    },
+    "stats": {
+      "activeContracts": "Contrats actifs",
+      "pendingAvenants": "Avenants en cours",
+      "movementsThisMonth": "Mouvements ce mois",
+      "activeAlerts": "Alertes actives"
+    },
+    "importantAlerts": {
+      "title": "Alertes importantes",
+      "cddExpiring": "CDD arrivent à échéance dans les 30 jours",
+      "trialPeriodEnding": "périodes d'essai se terminent dans 7 jours",
+      "avenantsWaiting": "avenants en attente de validation"
+    },
+    "badges": {
+      "new": "Nouveau",
+      "comingSoon": "À venir"
     }
   }
 }

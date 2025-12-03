@@ -161,9 +161,14 @@ export function EmployeeListing() {
 
   return (
     <>
-    <div>
-      <h1 className="text-2xl font-semibold tracking-tight">{t('employees.title')}</h1>
-      <p className="text-muted-foreground text-sm">{t('employees.subtitle')}</p>
+    <div className="flex items-center justify-between">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">{t('employees.title')}</h1>
+        <p className="text-muted-foreground text-sm">{t('employees.subtitle')}</p>
+      </div>
+      <Button onClick={() => router.push('/admin/personnel/employes/create')}>
+        {t('employees.actions.create')}
+      </Button>
     </div>
     <div className="flex flex-1 flex-col space-y-4">
       <CustomTable<EmployeeRow>

@@ -19,7 +19,7 @@ npm run dev
 
 | Fichier | Description |
 |---------|-------------|
-| `src/app/admin/personnel/attestations/page.tsx` | Interface principale |
+| `src/app/admin/personnel/attestations/page_old.tsx` | Interface principale |
 | `src/lib/pdf/attestation-generator.ts` | Générateur PDF |
 | `src/types/attestation.ts` | Types TypeScript |
 | `mock-data/attestationRequests.json` | Données demandes |
@@ -119,7 +119,7 @@ const DEFAULT_COMPANY = {
 
 ### Modifier numérotation
 ```typescript
-// src/app/admin/personnel/attestations/page.tsx (ligne ~200)
+// src/app/admin/personnel/attestations/page_old.tsx (ligne ~200)
 const numeroAttestation = `ATT-${year}-${String(nextNum).padStart(3, '0')}`;
 ```
 

@@ -18,7 +18,9 @@
     "searchList": "بحث / قائمة",
     "createEmployee": "إنشاء موظف",
     "orgChart": "الهيكل التنظيمي",
-    "certificates": "الشهادات"
+    "certificates": "الشهادات",
+    "contratEtMovements": "العقود والحركات",
+    "contrat": "العقود"
   },
   "header": {
     "language": "Langue"

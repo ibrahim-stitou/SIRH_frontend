@@ -29,15 +29,18 @@ import {
   Edit,
   ArrowLeft,
   Download,
-  Eye
+  Eye,
+  Pencil
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { useLanguage } from '@/context/LanguageContext';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { EmployeeDetailsLoadingSkeleton } from '@/app/admin/personnel/employes/[id]/details/loading-skeleton';
+import { FileUploader } from '@/components/file-uploader';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface EmployeeRow {
   id: number;
@@ -98,6 +101,10 @@ export default function EmployeeDetailsPage() {
   const [previewItem, setPreviewItem] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const { t } = useLanguage();
+  const [openChangePhoto, setOpenChangePhoto] = useState(false);
+  const [selectedPhotoFiles, setSelectedPhotoFiles] = useState<File[]>([]);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -122,6 +129,9 @@ export default function EmployeeDetailsPage() {
 
   const fullName = emp ? `${emp.firstName} ${emp.lastName}` : '';
   const initials = emp ? `${emp.firstName?.[0]}${emp.lastName?.[0]}` : '';
+
+  // Use uploaded avatar if available, fallback to default static image
+  const currentAvatarSrc = avatarUrl || '/images/user/profile.png';
 
   const combinedDocs = [
     ...(emp?.documents || []),
@@ -157,6 +167,40 @@ export default function EmployeeDetailsPage() {
     }
   };
 
+  const handleSaveAvatar = async () => {
+    if (!selectedPhotoFiles || selectedPhotoFiles.length === 0) {
+      toast.error('Veuillez sélectionner une image');
+      return;
+    }
+    const file = selectedPhotoFiles[0];
+    try {
+      setAvatarUploading(true);
+      const formData = new FormData();
+      formData.append('file', file);
+      // Upload to temporary endpoint; backend should return { fileName } or { url }
+      const res = await apiClient.post(apiRoutes.files.uploadTemp, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const payload: any = res.data && typeof res.data === 'object' && 'data' in res.data ? res.data.data : res.data;
+      const fileName = payload?.fileName || payload?.filename || payload?.name;
+      const url = payload?.url || (fileName ? `/images/user/${fileName}` : undefined);
+      const finalUrl = url || (file instanceof File ? URL.createObjectURL(file) : undefined);
+      if (!finalUrl) {
+        toast.error('Échec du téléchargement de la photo');
+        return;
+      }
+      setAvatarUrl(finalUrl);
+      toast.success('Photo de profil mise à jour');
+      setOpenChangePhoto(false);
+      setSelectedPhotoFiles([]);
+    } catch (e) {
+      console.error(e);
+      toast.error('Impossible de mettre à jour la photo');
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
+
   if (loading) {
     return (
       <PageContainer>
@@ -167,22 +211,42 @@ export default function EmployeeDetailsPage() {
 
   return (
     <PageContainer>
-      <div className="w-full mx-auto px-4 py-6 space-y-6">
+      <div className="w-full mx-auto px-4 py-6 space-y-6 mt-2">
         {/* Header Section - Modern Hero */}
-        <Card className="relative overflow-hidden border-2">
+        <Card className="relative overflow-hidden border-2 py-0">
           {/* Background gradient */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-primary/10 to-background opacity-50" />
 
-          <div className="relative p-6 md:p-8">
+          <div className="relative p-2 md:p-8">
             <div className="flex flex-col md:flex-row gap-6">
               {/* Avatar Section */}
-              <div className="flex-shrink-0">
+              <div className="flex-shrink-0 relative">
                 <Avatar className="h-24 w-24 md:h-32 md:w-32 ring-4 ring-primary/20 shadow-lg">
-                  <AvatarImage src={`/images/user/profile.png`} alt={fullName} />
+                  <AvatarImage src={currentAvatarSrc} alt={fullName} />
                   <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-primary to-primary/60 text-primary-foreground">
                     {initials}
                   </AvatarFallback>
                 </Avatar>
+                {/* Edit photo button overlay with tooltip */}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="icon"
+                        onClick={() => setOpenChangePhoto(true)}
+                        className="absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4 h-8 w-8 rounded-full shadow-md hover:shadow-lg border"
+                        aria-label={t('employeeDetails.actions.editPhotoTooltip') || 'Modifier la photo de profil'}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {t('employeeDetails.actions.editPhotoTooltip') || 'Modifier la photo de profil'}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
 
               {/* Info Section */}
@@ -656,7 +720,40 @@ export default function EmployeeDetailsPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Change Photo Dialog */}
+      <Dialog open={openChangePhoto} onOpenChange={setOpenChangePhoto}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t('employeeDetails.actions.changePhoto') || 'Changer la photo de profil'}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <FileUploader
+              value={selectedPhotoFiles}
+              onValueChange={setSelectedPhotoFiles}
+              accept={{ 'image/*': [] }}
+              maxFiles={1}
+              description={t('employeeDetails.actions.photoRequirements') || 'Formats: JPG, PNG. Taille max: 2MB'}
+              variant="default"
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setOpenChangePhoto(false);
+                setSelectedPhotoFiles([]);
+              }}
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button onClick={handleSaveAvatar} disabled={avatarUploading || selectedPhotoFiles.length === 0} className="gap-2">
+              {avatarUploading && <span className="h-4 w-4 animate-spin border-2 border-t-transparent rounded-full" aria-hidden="true" />}
+              {t('common.save')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </PageContainer>
   );
 }
-

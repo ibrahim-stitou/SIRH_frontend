@@ -93,7 +93,7 @@ interface AttestationListingProps {
 
 ---
 
-### 4. Refactorisation de page.tsx
+### 4. Refactorisation de page_old.tsx
 
 **Changements :**
 
@@ -153,7 +153,7 @@ src/
 │   └── apiRoutes.ts                 # ✅ MIS À JOUR - Routes attestations
 │
 ├── app/admin/personnel/attestations/
-│   ├── page.tsx                     # ✅ REFACTORISÉ - Utilise composants
+│   ├── page_old.tsx                     # ✅ REFACTORISÉ - Utilise composants
 │   ├── demande-attestation-listing.tsx  # ✨ NOUVEAU - Table demandes
 │   ├── attestation-listing.tsx      # ✨ NOUVEAU - Table attestations
 │   ├── requests-columns.tsx         # Définition colonnes demandes
@@ -254,7 +254,7 @@ apiClient.delete(apiRoutes.admin.attestations.requests.delete(id))
 
 ## 📊 Composants Séparés - Avantages
 
-### Avant (Tout dans page.tsx)
+### Avant (Tout dans page_old.tsx)
 ```typescript
 // ❌ Fichier unique de ~700 lignes
 // - Difficile à maintenir
@@ -265,7 +265,7 @@ apiClient.delete(apiRoutes.admin.attestations.requests.delete(id))
 ### Après (Composants modulaires)
 ```typescript
 // ✅ 3 fichiers de ~150 lignes chacun
-// - page.tsx : Orchestration
+// - page_old.tsx : Orchestration
 // - demande-attestation-listing.tsx : Table demandes
 // - attestation-listing.tsx : Table attestations
 ```
@@ -293,7 +293,7 @@ apiClient.delete(apiRoutes.admin.attestations.requests.delete(id))
 ```bash
 ✅ DemandeAttestationListing créé
 ✅ AttestationListing créé
-✅ Composants utilisés dans page.tsx
+✅ Composants utilisés dans page_old.tsx
 ✅ Props correctement typées
 ```
 
@@ -375,7 +375,7 @@ http://localhost:3003/admin/personnel/attestations
 | Aspect | v2.0 | v2.1 |
 |--------|------|------|
 | Routes API | ❌ URLs en dur | ✅ apiRoutes centralisé |
-| Composants | ❌ Tout dans page.tsx | ✅ 3 composants séparés |
+| Composants | ❌ Tout dans page_old.tsx | ✅ 3 composants séparés |
 | Suppression | ❌ Non disponible | ✅ Pour demandes non validées |
 | Maintenabilité | ⚠️ Difficile | ✅ Excellente |
 | Type-safety | ⚠️ Partiel | ✅ Total |

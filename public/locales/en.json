@@ -15,8 +15,7 @@
   "sidebar": {
     "dashboard": "Dashboard",
     "employeeFolder": "Employee Folder",
-    "searchList": "Search / List",
-    "createEmployee": "Create Employee",
+    "employes": "Employees",
     "orgChart": "Org Chart",
     "certificates": "Certificates"
   },
@@ -172,6 +171,9 @@
     "messages": {
       "deleted": "Employé #{{id}} supprimé avec succès",
       "deleteError": "Une erreur s'est produite lors de la suppression"
+    },
+    "actions": {
+      "create": "Create Employee"
     }
   },
   "table": {
@@ -296,6 +298,11 @@
       "noSkills": "No skills",
       "noCertifications": "No certifications",
       "noDocuments": "No documents"
+    },
+    "actions": {
+      "editPhotoTooltip": "Edit profile photo",
+      "changePhoto": "Change profile photo",
+      "photoRequirements": "Formats: JPG, PNG. Max size: 2MB"
     }
   },
   "placeholders": {

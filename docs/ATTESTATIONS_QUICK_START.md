@@ -36,7 +36,7 @@ http://localhost:3003/admin/personnel/attestations
 - `src/lib/pdf/attestation-generator.ts` - Logique de génération PDF
 
 ✅ **Interface utilisateur**
-- `src/app/admin/personnel/attestations/page.tsx` - Page principale
+- `src/app/admin/personnel/attestations/page_old.tsx` - Page principale
 
 ✅ **Mock Data**
 - `mock-data/attestationRequests.json` - Demandes de test
@@ -215,7 +215,7 @@ const DEFAULT_COMPANY = {
 ```
 
 ### Numérotation personnalisée
-Dans `page.tsx`, ligne ~200 :
+Dans `page_old.tsx`, ligne ~200 :
 ```typescript
 const numeroAttestation = `ATT-${year}-${String(nextNum).padStart(3, '0')}`;
 // Exemple : ATT-2024-001

@@ -69,7 +69,7 @@
 
 ```
 src/app/admin/personnel/attestations/
-├── page.tsx                      # Page principale (refactorisée)
+├── page_old.tsx                      # Page principale (refactorisée)
 ├── loading-skeleton.tsx          # ✨ NOUVEAU - Skeleton de chargement
 ├── requests-columns.tsx          # ✨ NOUVEAU - Colonnes demandes
 └── attestations-columns.tsx      # ✨ NOUVEAU - Colonnes attestations

@@ -25,7 +25,7 @@ Créer un système complet de gestion des attestations permettant de :
 |---------|--------|--------|--------|
 | Types TypeScript | `src/types/attestation.ts` | ~50 | ✅ OK |
 | Générateur PDF | `src/lib/pdf/attestation-generator.ts` | ~490 | ✅ OK |
-| Interface UI | `src/app/admin/personnel/attestations/page.tsx` | ~680 | ✅ OK |
+| Interface UI | `src/app/admin/personnel/attestations/page_old.tsx` | ~680 | ✅ OK |
 | Mock Requests | `mock-data/attestationRequests.json` | 5 items | ✅ OK |
 | Mock Attestations | `mock-data/attestations.json` | 3 items | ✅ OK |
 | DB Config | `db.js` (modifié) | +2 lignes | ✅ OK |
@@ -52,7 +52,7 @@ Créer un système complet de gestion des attestations permettant de :
 ```
 ✓ src/types/attestation.ts - Compilé
 ✓ src/lib/pdf/attestation-generator.ts - Compilé
-✓ src/app/admin/personnel/attestations/page.tsx - Compilé
+✓ src/app/admin/personnel/attestations/page_old.tsx - Compilé
 
 ⚠️ 2 warnings (interfaces inutilisées mais prévues pour future use)
 ```
@@ -82,7 +82,7 @@ Créer un système complet de gestion des attestations permettant de :
 
 ## 🎨 Fonctionnalités implémentées
 
-### Module principal (page.tsx)
+### Module principal (page_old.tsx)
 - ✅ Chargement des données (requests, attestations, employees)
 - ✅ Affichage des statistiques en temps réel
 - ✅ Onglets Demandes / Attestations générées
@@ -351,7 +351,7 @@ Au-delà des spécifications :
 
 ### Intégration backend réelle
 Pour connecter à un vrai backend :
-1. Remplacer les appels API dans `page.tsx`
+1. Remplacer les appels API dans `page_old.tsx`
 2. Adapter les endpoints dans `apiClient`
 3. Gérer l'upload de fichiers PDF
 4. Implémenter l'authentification

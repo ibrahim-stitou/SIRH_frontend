@@ -49,7 +49,7 @@ npm run dev
 │   ├── (dashboard)/      # Routes pour le tableau de bord et fonctionnalités principales
 │   ├── api/              # Points d'API locaux pour Next.js
 │   ├── layout.tsx        # Layout racine de l'application
-│   └── page.tsx          # Page d'accueil
+│   └── page_old.tsx          # Page d'accueil
 ├── components/           # Composants réutilisables
 │   ├── ui/               # Composants UI de Shadcn
 │   ├── forms/            # Composants liés aux formulaires

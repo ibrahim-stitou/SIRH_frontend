@@ -134,7 +134,7 @@ export const StepDocuments: React.FC = () => {
             <div className="space-y-1">
               <p className="text-sm font-medium">Documents recommandés</p>
               <p className="text-xs text-muted-foreground">
-                CIN (recto/verso), Photo d'identité, Diplômes, Attestations de travail, Relevé d'identité bancaire (RIB)
+                CIN (recto/verso), Photo d&apos;identité, Diplômes, Attestations de travail, Relevé d&apos;identité bancaire (RIB)
               </p>
             </div>
           </div>

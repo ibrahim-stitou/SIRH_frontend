@@ -78,7 +78,7 @@ Il est possible de générer une attestation directement sans passer par une dem
 
 ### 3. Interface utilisateur
 
-**`src/app/admin/personnel/attestations/page.tsx`**
+**`src/app/admin/personnel/attestations/page_old.tsx`**
 - Page principale du module
 - Gestion des demandes et attestations générées
 - Dialogues pour création, approbation, rejet
@@ -242,7 +242,7 @@ Pour tester le module :
 
 ### Modifier le format de numérotation
 
-Dans `page.tsx`, fonction `handleGenerate()` :
+Dans `page_old.tsx`, fonction `handleGenerate()` :
 
 ```typescript
 const numeroAttestation = `ATT-${year}-${String(nextNum).padStart(3, '0')}`;

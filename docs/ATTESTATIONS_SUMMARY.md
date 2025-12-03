@@ -13,7 +13,7 @@ Le module complet d'attestations a été créé avec succès ! Voici ce qui a é
 - ✅ `attestation-generator.ts` - Générateur PDF avec 4 templates
 
 ### 3. Interface utilisateur (`src/app/admin/personnel/attestations/`)
-- ✅ `page.tsx` - Page complète avec tous les composants
+- ✅ `page_old.tsx` - Page complète avec tous les composants
 
 ### 4. Données de test (`mock-data/`)
 - ✅ `attestationRequests.json` - 5 demandes exemples
@@ -109,7 +109,7 @@ Naviguez vers : `http://localhost:3003/admin/personnel/attestations`
 ```
 src/
 ├── app/admin/personnel/attestations/
-│   └── page.tsx                    # Interface principale
+│   └── page_old.tsx                    # Interface principale
 ├── lib/pdf/
 │   └── attestation-generator.ts   # Logique PDF
 └── types/

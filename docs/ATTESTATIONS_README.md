@@ -48,7 +48,7 @@ http://localhost:3003/admin/personnel/attestations
 ```
 src/
 ├── app/admin/personnel/attestations/
-│   └── page.tsx                        # 🎨 Interface principale
+│   └── page_old.tsx                        # 🎨 Interface principale
 ├── lib/pdf/
 │   └── attestation-generator.ts        # 📄 Générateur PDF
 ├── types/
@@ -251,7 +251,7 @@ const DEFAULT_COMPANY = {
 ```
 
 ### Changer le format de numérotation
-Dans `src/app/admin/personnel/attestations/page.tsx` :
+Dans `src/app/admin/personnel/attestations/page_old.tsx` :
 ```typescript
 const numeroAttestation = `ATT-${year}-${String(nextNum).padStart(3, '0')}`;
 // Personnalisez ce format
@@ -261,7 +261,7 @@ const numeroAttestation = `ATT-${year}-${String(nextNum).padStart(3, '0')}`;
 1. Ajouter le type dans `src/types/attestation.ts`
 2. Créer la méthode dans `attestation-generator.ts`
 3. Ajouter les traductions dans les 3 fichiers de langue
-4. Mettre à jour le select dans `page.tsx`
+4. Mettre à jour le select dans `page_old.tsx`
 
 ---
 

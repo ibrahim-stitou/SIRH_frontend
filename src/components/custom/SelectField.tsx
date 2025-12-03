@@ -78,7 +78,7 @@ export function SelectField<T extends Record<string, any>, K extends keyof T>({
               </SelectTrigger>
               <SelectContent>
                 {/* Always show search when there are 3+ options */}
-                {options.length > 2 && (
+                {options.length > 7 && (
                   <div className="flex items-center space-x-2 px-3 py-2 border-b">
                     <Search className="h-4 w-4 opacity-50" />
                     <Input

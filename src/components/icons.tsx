@@ -124,6 +124,8 @@ export const Icons = {
   help: IconHelpCircle,
   id: IconId,
   image: IconPhotoScan,
+  filePlus: IconFileUpload,
+  shuffle: IconAdjustmentsExclamation,
   import: IconFileUpload,
   kanban: IconLayoutKanban,
   laptop: IconDeviceLaptop,

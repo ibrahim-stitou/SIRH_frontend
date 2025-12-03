@@ -338,7 +338,7 @@ Note: Les PDFs sont en français
 ┌──────────────────────────────────────────────────────┐
 │                    FRONTEND                          │
 │  ┌────────────────────────────────────────────────┐  │
-│  │  page.tsx (UI + Logic)                         │  │
+│  │  page_old.tsx (UI + Logic)                         │  │
 │  │  ├─ Gestion état (useState)                    │  │
 │  │  ├─ Appels API (apiClient)                     │  │
 │  │  ├─ Dialogues modaux                           │  │

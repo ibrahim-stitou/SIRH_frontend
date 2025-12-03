@@ -169,10 +169,158 @@ server.delete('/hrEmployees/:id', (req, res) => {
   return res.json({ status: 'success', message: `Employé #${id} supprimé` });
 });
 
+// Simple list for employees (id, firstName, lastName, matricule)
+server.get('/hrEmployees/simple-list', (req, res) => {
+  const all = db.get('hrEmployees').value() || [];
+  const simple = all.map(e => ({ id: e.id, firstName: e.firstName, lastName: e.lastName, matricule: e.matricule }));
+  return res.json({ status: 'success', data: simple });
+});
+
+// Custom Contracts listing with unified response format
+server.get('/contracts', (req, res) => {
+  console.log('Custom /contracts handler hit');
+  const start = parseInt(req.query.start || '0', 10);
+  const length = parseInt(req.query.length || '10', 10);
+  const sortBy = req.query.sortBy;
+  const sortDir = req.query.sortDir === 'desc' ? 'desc' : 'asc';
+
+  let all = db.get('contracts').value() || [];
+
+  // Enrich with employee data
+  const hrEmployees = db.get('hrEmployees').value() || [];
+  all = all.map(contract => {
+    const employee = hrEmployees.find(emp => emp.id === contract.employee_id);
+    return {
+      ...contract,
+      employee: employee ? {
+        id: employee.id,
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        matricule: employee.matricule,
+        email: employee.email
+      } : null
+    };
+  });
+
+  // Apply filters from query (excluding pagination/sort params)
+  const excludedKeys = new Set(['start', 'length', 'sortBy', 'sortDir']);
+  Object.entries(req.query).forEach(([key, value]) => {
+    if (excludedKeys.has(key) || value === undefined || value === '') return;
+    all = all.filter(contract => {
+      const fieldVal = contract[key];
+      if (fieldVal === undefined || fieldVal === null) return false;
+      return String(fieldVal).toLowerCase().includes(String(value).toLowerCase());
+    });
+  });
+
+  const recordsFiltered = all.length;
+
+  // Sorting
+  if (sortBy) {
+    all.sort((a, b) => {
+      const av = a[sortBy];
+      const bv = b[sortBy];
+      if (av === bv) return 0;
+      if (av === undefined) return 1;
+      if (bv === undefined) return -1;
+      if (typeof av === 'number' && typeof bv === 'number') {
+        return sortDir === 'asc' ? av - bv : bv - av;
+      }
+      return sortDir === 'asc'
+        ? String(av).localeCompare(String(bv))
+        : String(bv).localeCompare(String(av));
+    });
+  }
+
+  const recordsTotal = db.get('contracts').value()?.length || 0;
+  const sliced = all.slice(start, start + length).map(row => ({ ...row, actions: 1 }));
+
+  return res.json({
+    status: 'success',
+    message: 'Liste des contrats récupérée avec succès',
+    data: sliced,
+    recordsTotal,
+    recordsFiltered
+  });
+});
+
+// Contract details with employee enrichment
+server.get('/contracts/:id', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const contract = db.get('contracts').find({ id }).value();
+  if (!contract) {
+    return res.status(404).json({ status: 'error', message: 'Contrat introuvable' });
+  }
+
+  const hrEmployees = db.get('hrEmployees').value() || [];
+  const employee = hrEmployees.find(emp => emp.id === contract.employee_id);
+
+  const enriched = {
+    ...contract,
+    employee: employee ? {
+      id: employee.id,
+      firstName: employee.firstName,
+      lastName: employee.lastName,
+      matricule: employee.matricule,
+      email: employee.email,
+      departmentId: employee.departmentId,
+      position: employee.position
+    } : null
+  };
+
+  return res.json({ status: 'success', message: 'Contrat récupéré avec succès', data: enriched });
+});
+
+// Validate contract
+server.patch('/contracts/:id/validate', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const contract = db.get('contracts').find({ id }).value();
+  if (!contract) {
+    return res.status(404).json({ status: 'error', message: 'Contrat introuvable' });
+  }
+  if (contract.statut !== 'Brouillon') {
+    return res.status(400).json({ status: 'error', message: 'Seuls les contrats en brouillon peuvent être validés' });
+  }
+
+  db.get('contracts').find({ id }).assign({ statut: 'Actif', updated_at: new Date().toISOString() }).write();
+  return res.json({ status: 'success', message: 'Contrat validé avec succès', data: db.get('contracts').find({ id }).value() });
+});
+
+// Generate PDF (mock)
+server.get('/contracts/:id/generate', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const contract = db.get('contracts').find({ id }).value();
+  if (!contract) {
+    return res.status(404).json({ status: 'error', message: 'Contrat introuvable' });
+  }
+  return res.json({ status: 'success', message: 'PDF généré avec succès', data: { url: `/generated/contract-${id}.pdf` } });
+});
+
+// Custom delete endpoint for contracts
+server.delete('/contracts/:id', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const exists = db.get('contracts').find({ id }).value();
+  if (!exists) {
+    return res.status(404).json({ status: 'error', message: "Contrat introuvable" });
+  }
+  if (exists.statut !== 'Brouillon') {
+    return res.status(400).json({ status: 'error', message: "Seuls les contrats en brouillon peuvent être supprimés" });
+  }
+  db.get('contracts').remove({ id }).write();
+  return res.json({ status: 'success', message: `Contrat #${id} supprimé` });
+});
+
 // Explicit userMedia route (safety if not initialized yet)
 server.get('/userMedia', (req, res) => {
   const rows = db.get('userMedia').value() || [];
   return res.json({ status: 'success', message: 'Récupération réussie', data: rows });
+});
+
+// Simple list for departments (id, name)
+server.get('/departments/simple-list', (req, res) => {
+  const all = db.get('departments').value() || [];
+  const simple = all.map(d => ({ id: d.id || String(d.id), name: d.name || d.label || d.title }));
+  return res.json({ status: 'success', data: simple });
 });
 
 // Generic CRUD envelope endpoints for each top-level collection

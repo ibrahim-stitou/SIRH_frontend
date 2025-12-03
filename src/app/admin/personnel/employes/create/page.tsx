@@ -1,226 +1,443 @@
-"use client";
+'use client';
 
-import React from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import useMultistepForm from '@/hooks/use-multistep-form';
+import * as z from 'zod';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowLeft, Save } from 'lucide-react';
+import { toast } from 'sonner';
+import PageContainer from '@/components/layout/page-container';
+import { useLanguage } from '@/context/LanguageContext';
+import { DatePickerField } from '@/components/custom/DatePickerField';
+import { SelectField } from '@/components/custom/SelectField';
 import apiClient from '@/lib/api';
 import { apiRoutes } from '@/config/apiRoutes';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { Stepper } from './components/Stepper';
-import { fullSchema, EmployeeCreateFormValues, stepFields } from './schema';
-import { StepPersonal } from './steps/StepPersonal';
-import { StepProfessional } from './steps/StepProfessional';
-import { StepDocuments } from './steps/StepDocuments';
-import { transformDocuments } from './utils';
-import PageContainer from '@/components/layout/page-container';
-import { useRouter } from 'next/navigation';
-import { useLanguage } from '@/context/LanguageContext';
+
+// Validation schema
+const employeeSchema = z.object({
+  firstName: z.string().min(1, 'Prénom requis'),
+  matricule: z.string().min(1, 'Matricule requis'),
+  lastName: z.string().min(1, 'Nom requis'),
+  cin: z.string().min(1, 'CIN requis'),
+  birthDate: z.string().min(1, 'Date de naissance requise'),
+  birthPlace: z.string().optional(),
+  nationality: z.enum(['maroc', 'autre'], { required_error: 'Nationalité requise' }),
+  gender: z.enum(['Homme', 'Femme', 'Autre'], { required_error: 'Genre requis' }),
+  maritalStatus: z.enum(['celibataire', 'marie'], { required_error: 'État civil requis' }),
+  children: z
+    .number({ invalid_type_error: 'Doit être un nombre' })
+    .min(0, 'Doit être >= 0')
+    .optional(),
+  address: z.string().optional(),
+  city: z.string().optional(),
+  postalCode: z.string().optional(),
+  phone: z.string().min(1, 'Téléphone requis').regex(/^[+\d]?(?:[\s.\-]?\d){7,15}$/, 'Numéro de téléphone invalide'),
+  email: z.string().email('Email invalide').optional(),
+  departmentId: z.number({ invalid_type_error: 'Département requis' }).min(1, 'Département requis'),
+  position: z.string().min(1, 'Poste requis'),
+});
+
+type EmployeeFormValues = z.infer<typeof employeeSchema>;
+
+interface DepartmentOption { id: string | number; name: string; }
 
 export default function EmployeeCreatePage() {
   const { t } = useLanguage();
-  const methods = useForm<EmployeeCreateFormValues>({
-    resolver: zodResolver(fullSchema),
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [departments, setDepartments] = useState<DepartmentOption[]>([]);
+  const [loadingDepartments, setLoadingDepartments] = useState(true);
+
+  const form = useForm<EmployeeFormValues>({
+    resolver: zodResolver(employeeSchema),
     defaultValues: {
-      gender: undefined,
-      maritalStatus: undefined,
-      education: [],
-      skills: [],
-      certifications: [],
-      documents: [],
-      documentsFiles: [],
+      firstName: '',
+      matricule: '',
+      lastName: '',
+      cin: '',
+      birthDate: (() => { const d = new Date(); d.setFullYear(d.getFullYear() - 18); return d.toISOString().split('T')[0]; })(),
+      birthPlace: '',
+      nationality: 'maroc',
+      gender: 'Homme',
+      maritalStatus: 'celibataire',
+      children: 0,
+      address: '',
+      city: '',
+      postalCode: '',
+      phone: '',
+      email: '',
+      departmentId: undefined,
+      position: '',
     },
-    mode: 'onBlur'
+    mode: 'onBlur',
   });
 
-  const { handleSubmit, trigger, formState } = methods;
-  const router = useRouter();
-
-  const wizard = useMultistepForm([
-    <StepPersonal key="step1" />,
-    <StepProfessional key="step2" />,
-    <StepDocuments key="step3" />,
-  ]);
-
-  const stepNames = [
-    t('employeeCreate.steps.personal'),
-    t('employeeCreate.steps.professional'),
-    t('employeeCreate.steps.documents')
-  ];
-
-  const goNext = async () => {
-    const ok = await trigger(stepFields[wizard.currentStepIndex] as any);
-    if (!ok) {
-      toast.error(t('common.error'));
-      return;
-    }
-    wizard.next();
-  };
-
-  const goBack = () => wizard.back();
-
-  const onSubmit = async (data: EmployeeCreateFormValues) => {
-    try {
-      const ok = await trigger(stepFields[wizard.currentStepIndex] as any);
-      if (!ok) {
-        toast.error(t('common.error'));
-        return;
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const response = await apiClient.get(apiRoutes.admin.departments.simpleList);
+        const result = response.data;
+        setDepartments(result.data || result || []);
+      } catch (error) {
+        console.error('Error fetching departments:', error);
+        toast.error(t('common.errors.fetchFailed'));
+      } finally {
+        setLoadingDepartments(false);
       }
+    };
+    fetchDepartments();
+  }, [t]);
 
-      const docs = transformDocuments(data);
 
+  const onSubmit = async (data: EmployeeFormValues) => {
+    console.log('Submitting employee data:', data);
+    setLoading(true);
+    try {
       const payload = {
         id: Date.now(),
         firstName: data.firstName,
         lastName: data.lastName,
+        matricule: data.matricule,
         cin: data.cin,
         birthDate: data.birthDate,
         birthPlace: data.birthPlace,
-        gender: data.gender,
         nationality: data.nationality,
+        gender: data.gender,
         maritalStatus: data.maritalStatus,
-        numberOfChildren: data.numberOfChildren,
+        numberOfChildren: data.children ?? 0,
         address: data.address,
         city: data.city,
         postalCode: data.postalCode,
-        country: data.country,
         phone: data.phone,
         email: data.email,
-        emergencyContact: data.emergencyContactName ? {
-          name: data.emergencyContactName,
-          phone: data.emergencyContactPhone,
-          relationship: data.emergencyContactRelationship || '',
-        } : undefined,
         departmentId: data.departmentId,
         position: data.position,
-        hireDate: data.hireDate,
-        education: data.education,
-        skills: data.skills,
-        certifications: data.certifications,
-        documents: docs,
         status: 'actif',
         isActive: true,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         createdBy: 'system',
-        notes: data.notes,
       };
 
       toast.loading(t('common.creating'));
       await apiClient.post(apiRoutes.admin.employees.list, payload);
       toast.dismiss();
       toast.success(t('common.success'));
-      methods.reset();
+      form.reset();
       router.push('/admin/personnel/employes');
-    } catch (e: any) {
+    } catch (error) {
       toast.dismiss();
       toast.error(t('common.error'));
-      console.error(e);
+      console.error('Error creating employee:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  const nationalityOptions = [
+    { id: 'maroc', label: 'Maroc' },
+    { id: 'autre', label: 'Autre' },
+  ];
+  const genderOptions = [
+    { id: 'Homme', label: 'Homme' },
+    { id: 'Femme', label: 'Femme' },
+  ];
+  const maritalOptions = [
+    { id: 'celibataire', label: 'Célibataire' },
+    { id: 'marie', label: 'Marié' },
+  ];
+
   return (
     <PageContainer>
-    <FormProvider {...methods}>
-      <div className="w-full  mx-auto px-4 py-2 space-y-2">
-        {/* Header */}
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            {t('employeeCreate.title')}
-          </h1>
-          <p className="text-muted-foreground">
-            {t('employeeCreate.subtitle')}
-          </p>
+      <div className="mx-auto py-6 w-full">
+        <div className="mb-6">
+          <Button variant="ghost" onClick={() => router.back()}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            {t('common.back')}
+          </Button>
         </div>
 
-        {/* Stepper */}
-        <Stepper
-          current={wizard.currentStepIndex}
-          steps={stepNames}
-          goTo={(i) => wizard.goTo(i)}
-        />
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>{t('employeeCreate.title')}</CardTitle>
+            <CardDescription>{t('employeeCreate.subtitle')}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                  {/* Identité */}
+                  <FormField
+                    control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Prénom *</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-        {/* Form Content */}
-        <Card className="border-2 shadow-lg animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="p-6 md:p-8 space-y-8">
-            {/* Step Content */}
-            <div className="min-h-[400px]">
-              {wizard.step}
-            </div>
+                  <FormField
+                    control={form.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nom *</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-            <Separator className="my-6" />
+                  <FormField
+                    control={form.control}
+                    name="matricule"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Matricule *</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-            {/* Navigation Footer */}
-            <div className="flex items-center justify-between gap-4">
-              <Button
-                type="button"
-                variant="outline"
-                disabled={wizard.isFirstStep}
-                onClick={goBack}
-                className="gap-2"
-              >
-                <span>←</span>
-                {t('common.back')}
-              </Button>
+                  <FormField
+                    control={form.control}
+                    name="cin"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>CIN *</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span className="font-medium">
-                  Étape {wizard.currentStepIndex + 1} / {stepNames.length}
-                </span>
-              </div>
+                  {/* Naissance */}
+                  <FormField
+                    control={form.control}
+                    name="birthDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Date de naissance *</FormLabel>
+                        <FormControl>
+                          <DatePickerField
+                            value={field.value}
+                            onChange={field.onChange}
+                            placeholder={t('placeholders.selectDate')}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              {!wizard.isLastStep && (
-                <Button
-                  type="button"
-                  onClick={goNext}
-                  className="gap-2"
-                >
-                  {t('common.next') || 'Suivant'}
-                  <span>→</span>
-                </Button>
-              )}
+                  <FormField
+                    control={form.control}
+                    name="birthPlace"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Lieu de naissance</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              {wizard.isLastStep && (
-                <Button
-                  type="button"
-                  onClick={handleSubmit(onSubmit)}
-                  disabled={formState.isSubmitting}
-                  className="gap-2 min-w-[140px]"
-                >
-                  {formState.isSubmitting ? (
-                    <>
-                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                      {t('common.creating')}
-                    </>
-                  ) : (
-                    <>
-                      <span>✓</span>
-                      {t('employeeCreate.actions.finish') || 'Terminer'}
-                    </>
-                  )}
-                </Button>
-              )}
-            </div>
-          </div>
+                  <SelectField
+                    name="nationality"
+                    label="Nationalité *"
+                    control={form.control}
+                    options={nationalityOptions}
+                    displayField="label"
+                    placeholder={t('placeholders.select')}
+                    error={form.formState.errors.nationality?.message as string | undefined}
+                  />
+
+                  {/* État civil */}
+                  <SelectField
+                    name="gender"
+                    label="Genre *"
+                    control={form.control}
+                    options={genderOptions}
+                    displayField="label"
+                    placeholder={t('placeholders.select')}
+                    error={form.formState.errors.gender?.message as string | undefined}
+                  />
+
+                  <SelectField
+                    name="maritalStatus"
+                    label="État civil *"
+                    control={form.control}
+                    options={maritalOptions}
+                    displayField="label"
+                    placeholder={t('placeholders.select')}
+                    error={form.formState.errors.maritalStatus?.message as string | undefined}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="children"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Enfants</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min={0}
+                            {...field}
+                            onChange={(e) => field.onChange(Number(e.target.value))}
+                          />
+                        </FormControl>
+                        <FormDescription>Nombre d&apos;enfants</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Contact */}
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Téléphone *</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input type="email" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Adresse */}
+                  <FormField
+                    control={form.control}
+                    name="address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Adresse</FormLabel>
+                        <FormControl>
+                          <Textarea {...field} rows={3} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Ville</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="postalCode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Code postal</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Détails de poste */}
+                  <SelectField
+                    name="departmentId"
+                    label="Département *"
+                    control={form.control}
+                    options={
+                      loadingDepartments
+                        ? [{ id: 'loading', label: t('common.loading') }]
+                        : departments.map((d) => ({ id: String(d.id), label: d.name }))
+                    }
+                    displayField="label"
+                    placeholder={t('placeholders.select')}
+                    error={form.formState.errors.departmentId?.message as string | undefined}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="position"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Poste *</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Actions */}
+                <div className="flex justify-end gap-4">
+                  <Button type="button" variant="outline" onClick={() => router.back()} disabled={loading}>
+                    {t('common.cancel')}
+                  </Button>
+                  <Button type="submit" disabled={loading}>
+                    <Save className="mr-2 h-4 w-4" />
+                    {loading ? t('common.creating') : t('common.save')}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </CardContent>
         </Card>
-
-        {/* Progress Indicator */}
-        {formState.isSubmitting && (
-          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
-            <Card className="p-8 space-y-4 shadow-2xl animate-in zoom-in-95">
-              <div className="flex flex-col items-center gap-4">
-                <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-                <p className="text-lg font-medium">Création de l&apos;employé en cours...</p>
-                <p className="text-sm text-muted-foreground">Veuillez patienter</p>
-              </div>
-            </Card>
-          </div>
-        )}
       </div>
-    </FormProvider>
     </PageContainer>
   );
 }
