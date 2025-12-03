@@ -36,10 +36,6 @@ export function EmployeeDetailsLoadingSkeleton() {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2 mt-6 pt-6 border-t">
-            <Skeleton className="h-10 w-24" />
-            <Skeleton className="h-10 w-24" />
-          </div>
         </div>
       </Card>
       <div className="space-y-4">
