@@ -25,6 +25,11 @@
       "relationship": "Frère"
     },
     "departmentId": "1",
+    "departement": {
+      "id": 1,
+      "name": "Operations",
+      "nameAr": "العمليات"
+    },
     "position": "HR Manager",
     "positionAr": "مدير الموارد البشرية",
     "hireDate": "2022-01-10",
@@ -150,6 +155,11 @@
       "relationship": ""
     },
     "departmentId": "3",
+    "departement": {
+      "id": 3,
+      "name": "Engineering",
+      "nameAr": "الهندسة"
+    },
     "position": "Frontend Developer",
     "positionAr": "مطور الواجهة الأمامية",
     "hireDate": "2023-04-10",
@@ -243,6 +253,11 @@
       "relationship": "Épouse"
     },
     "departmentId": "3",
+    "departement": {
+        "id": 3,
+        "name": "Engineering",
+        "nameAr": "الهندسة"
+    },
     "position": "Engineering Manager",
     "positionAr": "مدير الهندسة",
     "hireDate": "2021-02-01",
@@ -341,6 +356,11 @@
       "relationship": ""
     },
     "departmentId": "2",
+    "departement": {
+      "id": 2,
+      "name": "Ressources Humaines",
+      "nameAr": "الموارد البشرية"
+    },
     "position": "HR Specialist",
     "positionAr": "أخصائي الموارد البشرية",
     "hireDate": "2022-09-15",

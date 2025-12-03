@@ -1,8 +1,8 @@
 [
-  {"id":100,"userId":1,"firstName":"Admin","lastName":"User","email":"admin@example.com","departmentId":1,"position":"System Administrator","hireDate":"2022-01-10","contractType":"CDI","locationId":1,"status":"active","managerEmployeeId":null,"salaryBase":75000},
-  {"id":101,"userId":2,"firstName":"HR","lastName":"Manager","email":"hr@example.com","departmentId":2,"position":"HR Manager","hireDate":"2023-03-01","contractType":"CDI","locationId":1,"status":"active","managerEmployeeId":100,"salaryBase":60000},
-  {"id":102,"userId":null,"firstName":"Alice","lastName":"Martin","email":"alice.martin@corp.com","departmentId":3,"position":"Frontend Developer","hireDate":"2023-04-10","contractType":"CDI","locationId":1,"status":"active","managerEmployeeId":100,"salaryBase":48000},
-  {"id":103,"userId":null,"firstName":"Bruno","lastName":"Leclerc","email":"bruno.leclerc@corp.com","departmentId":3,"position":"Engineering Manager","hireDate":"2021-02-01","contractType":"CDI","locationId":1,"status":"active","managerEmployeeId":100,"salaryBase":72000},
-  {"id":104,"userId":null,"firstName":"Chloe","lastName":"Dupont","email":"chloe.dupont@corp.com","departmentId":2,"position":"HR Specialist","hireDate":"2022-09-15","contractType":"CDD","locationId":1,"status":"active","managerEmployeeId":101,"salaryBase":42000}
+  {"id":100,"userId":1,"firstName":"Admin","lastName":"User","email":"admin@example.com","departmentId":1,"position":"System Administrator","hireDate":"2022-01-10","contractType":"CDI","locationId":1,"status":"active","managerEmployeeId":null,"salaryBase":75000,"matricule":"A0001"},
+  {"id":101,"userId":2,"firstName":"HR","lastName":"Manager","email":"hr@example.com","departmentId":2,"position":"HR Manager","hireDate":"2023-03-01","contractType":"CDI","locationId":1,"status":"active","managerEmployeeId":100,"salaryBase":60000 ,"matricule":"H0001"},
+  {"id":102,"userId":null,"firstName":"Alice","lastName":"Martin","email":"alice.martin@corp.com","departmentId":3,"position":"Frontend Developer","hireDate":"2023-04-10","contractType":"CDI","locationId":1,"status":"active","managerEmployeeId":100,"salaryBase":48000 ,"matricule":"E0001"},
+  {"id":103,"userId":null,"firstName":"Bruno","lastName":"Leclerc","email":"bruno.leclerc@corp.com","departmentId":3,"position":"Engineering Manager","hireDate":"2021-02-01","contractType":"CDI","locationId":1,"status":"active","managerEmployeeId":100,"salaryBase":72000 ,"matricule":"E0002"},
+  {"id":104,"userId":null,"firstName":"Chloe","lastName":"Dupont","email":"chloe.dupont@corp.com","departmentId":2,"position":"HR Specialist","hireDate":"2022-09-15","contractType":"CDD","locationId":1,"status":"active","managerEmployeeId":101,"salaryBase":42000 ,"matricule":"H0002"}
 ]
 
