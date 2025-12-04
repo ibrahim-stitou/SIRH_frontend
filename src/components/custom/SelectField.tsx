@@ -8,36 +8,40 @@ import { Search } from 'lucide-react';
 
 interface SelectFieldProps<T extends Record<string, any>, K extends keyof T> {
   name: string;
-  label: string;
+  label?: string;
   control: Control<T>;
-  options: Array<{ id: number | string; [key: string]: any }>;
-  displayField: string;
+  options: Array<{ id?: number | string; value?: string; label?: string; [key: string]: any }>;
+  displayField?: string;
   secondaryField?: string;
   required?: boolean;
   disabled?: boolean;
   placeholder?: string;
   error?: string;
   onFocus?: () => void;
+  className?: string;
 }
 
 export function SelectField<T extends Record<string, any>, K extends keyof T>({
                                                                                 name,
-                                                                                label,
+                                                                                label = '',
                                                                                 control,
                                                                                 options,
-                                                                                displayField,
+                                                                                displayField = 'label',
                                                                                 secondaryField,
                                                                                 required = false,
                                                                                 disabled = false,
                                                                                 placeholder = "Sélectionner",
                                                                                 error,
-                                                                                onFocus
+                                                                                onFocus,
+                                                                                className
                                                                               }: SelectFieldProps<T, K>) {
   const [searchTerm, setSearchTerm] = useState('');
 
   // Filter options based on search term
   const filteredOptions = options.filter(option => {
-    const primaryFieldValue = String(option[displayField] || '').toLowerCase();
+    // Support both {value, label} and {id, displayField} formats
+    const optionValue = option.label || option[displayField] || '';
+    const primaryFieldValue = String(optionValue).toLowerCase();
     const secondaryFieldValue = secondaryField ? String(option[secondaryField] || '').toLowerCase() : '';
     const search = searchTerm.toLowerCase();
 
@@ -71,7 +75,7 @@ export function SelectField<T extends Record<string, any>, K extends keyof T>({
               }}
               disabled={disabled}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className={className || "w-full"}>
                 <SelectValue
                   placeholder={disabled ? "Chargement..." : placeholder}
                 />
@@ -92,14 +96,20 @@ export function SelectField<T extends Record<string, any>, K extends keyof T>({
                 )}
 
                 {filteredOptions.length > 0 ? (
-                  filteredOptions.map((option) => (
-                    <SelectItem key={option.id} value={String(option.id)}>
-                      {secondaryField && option[secondaryField]
-                        ? `${option[displayField] || ''} (${option[secondaryField] || ''})`
-                        : option[displayField] || ''
-                      }
-                    </SelectItem>
-                  ))
+                  filteredOptions.map((option) => {
+                    // Support both {value, label} and {id, displayField} formats
+                    const optionValue = option.value || option.id;
+                    const optionLabel = option.label || option[displayField] || '';
+
+                    return (
+                      <SelectItem key={optionValue} value={String(optionValue)}>
+                        {secondaryField && option[secondaryField]
+                          ? `${optionLabel} (${option[secondaryField] || ''})`
+                          : optionLabel
+                        }
+                      </SelectItem>
+                    );
+                  })
                 ) : (
                   <div className="py-6 text-center text-sm text-muted-foreground">
                     Aucun résultat trouvé

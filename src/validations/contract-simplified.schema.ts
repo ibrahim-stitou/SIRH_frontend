@@ -62,7 +62,18 @@ const simplifiedScheduleSchema = z.object({
   }).optional(),
 });
 
-// Schéma pour les primes
+// Schéma pour une prime individuelle
+const primeItemSchema = z.object({
+  prime_type_id: z.union([z.string(), z.number()]),
+  prime_type_code: z.string().optional(),
+  label: z.string(),
+  amount: z.number().min(0),
+  is_taxable: z.boolean().default(true),
+  is_subject_to_cnss: z.boolean().default(true),
+  notes: z.string().optional(),
+});
+
+// Schéma pour les primes (ancien format pour compatibilité)
 const simplifiedPrimesSchema = z.object({
   prime_anciennete: z.number().min(0).optional(),
   prime_transport: z.number().min(0).optional(),
@@ -70,6 +81,8 @@ const simplifiedPrimesSchema = z.object({
   prime_performance: z.number().min(0).optional(),
   prime_panier: z.number().min(0).optional(),
   autres_primes: z.number().min(0).optional(),
+  // Nouveau: liste dynamique de primes
+  items: z.array(primeItemSchema).optional(),
 });
 
 // Schéma pour les avantages
@@ -221,6 +234,16 @@ export const simplifiedContractDefaultValues: Partial<SimplifiedContractInput> =
     convention_collective: 'Code du Travail',
     clause_confidentialite: false,
     clause_non_concurrence: false,
-  },
+    cotisations: {
+      cnss_employe_pct: 4.48,
+      cnss_employeur_pct: 8.98,
+      amo_employe_pct: 2.26,
+      amo_employeur_pct: 2.26,
+      cmir_taux_pct: 6.0,
+      cmir_numero: '',
+      rcar_taux_pct: 20.0,
+      rcar_numero: '',
+    },
+  } as any,
 };
 

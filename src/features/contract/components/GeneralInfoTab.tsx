@@ -6,9 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { FileText, User, Briefcase } from 'lucide-react';
+import { FileText } from 'lucide-react';
 import { DatePickerField } from '@/components/custom/DatePickerField';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SelectField } from '@/components/custom/SelectField';
 import type { SimplifiedContractInput } from '@/validations/contract-simplified.schema';
 import type { Employee, Department } from '@/types/employee';
 
@@ -34,85 +34,57 @@ export function GeneralInfoTab({
   workModeOptions,
 }: GeneralInfoTabProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Informations Générales du Contrat */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Informations du Contrat
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <FileText className="h-4 w-4" />
+            Informations Générales
           </CardTitle>
-          <CardDescription>
-            Type de contrat, références et dates principales
+          <CardDescription className="text-xs">
+            Informations de base du contrat et de l&apos;employé
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3">
           {/* Ligne 1: Référence, Type, Titre */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <FormField
               control={form.control}
               name="reference"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Référence</FormLabel>
+                  <FormLabel className="text-xs">Référence</FormLabel>
                   <FormControl>
-                    <Input placeholder="CTR-2024-001" {...field} />
+                    <Input placeholder="CTR-2024-001" className="h-9" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
+            <SelectField
               control={form.control}
               name="employe_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Employé *</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value?.toString()}
-                    disabled={loadingEmployees}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={loadingEmployees ? 'Chargement...' : 'Sélectionner un employé'} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {employees.map((emp) => (
-                        <SelectItem key={emp.id} value={emp.id.toString()}>
-                          {emp.firstName} {emp.lastName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Employé *"
+              displayField="label"
+              placeholder={loadingEmployees ? 'Chargement...' : 'Sélectionner un employé'}
+              options={employees.map((emp) => ({
+                id: emp.id.toString(),
+                label: `${emp.firstName} ${emp.lastName}`,
+              }))}
+              disabled={loadingEmployees}
             />
-            <FormField
+            <SelectField
               control={form.control}
               name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Type de Contrat *</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Sélectionner le type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {contractTypeOptions.map((option) => (
-                        <SelectItem key={option.id} value={option.id}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Type de Contrat *"
+              displayField="label"
+              placeholder="Sélectionner le type"
+              options={contractTypeOptions.map((option) => ({
+                id: option.id,
+                label: option.label,
+              }))}
+              className="h-9"
             />
           </div>
 
@@ -188,54 +160,28 @@ export function GeneralInfoTab({
               )}
             />
 
-            <FormField
+            <SelectField
               control={form.control}
               name="job.category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Catégorie Professionnelle *</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Sélectionner une catégorie" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {categoryOptions.map((option) => (
-                        <SelectItem key={option.id} value={option.id}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Catégorie Professionnelle *"
+              displayField="label"
+              placeholder="Sélectionner une catégorie"
+              options={categoryOptions.map((option) => ({
+                id: option.id,
+                label: option.label,
+              }))}
             />
 
-            <FormField
+            <SelectField
               control={form.control}
               name="job.work_mode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Mode de Travail</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Sélectionner le mode" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {workModeOptions.map((option) => (
-                        <SelectItem key={option.id} value={option.id}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Mode de Travail"
+              displayField="label"
+              placeholder="Sélectionner le mode"
+              options={workModeOptions.map((option) => ({
+                id: option.id,
+                label: option.label,
+              }))}
             />
           </div>
 

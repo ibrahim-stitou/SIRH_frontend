@@ -11,11 +11,10 @@ import {
 } from '@/validations/contract-simplified.schema';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { apiRoutes } from '@/config/apiRoutes';
-import { ArrowLeft, FileText, Clock, Banknote, Save, Eye } from 'lucide-react';
+import { ArrowLeft, Save, Eye } from 'lucide-react';
 import apiClient from '@/lib/api';
 import PageContainer from '@/components/layout/page-container';
 import type { Employee, Department } from '@/types/employee';
@@ -33,7 +32,6 @@ export default function CreateContractPage() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loadingEmployees, setLoadingEmployees] = useState(true);
   const [loadingDepartments, setLoadingDepartments] = useState(true);
-  const [currentTab, setCurrentTab] = useState('general');
   const [showRecapModal, setShowRecapModal] = useState(false);
   const [formDataToSubmit, setFormDataToSubmit] = useState<SimplifiedContractInput | null>(null);
 
@@ -207,60 +205,34 @@ export default function CreateContractPage() {
     <PageContainer>
       <div className="mx-auto py-4 w-full ">
         {/* Header */}
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-2 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Nouveau Contrat de Travail</h1>
-            <p className="text-muted-foreground mt-1">
-              Créer un contrat conforme au Code du Travail marocain
-            </p>
+            <h1 className="text-3xl font-bold text-primary">Nouveau Contrat de Travail</h1>
           </div>
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-            <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-3 h-8">
-                <TabsTrigger value="general" className="flex items-center gap-2">
-                  <FileText className="h-4 w-4" />
-                  <span>Informations Générales</span>
-                </TabsTrigger>
-                <TabsTrigger value="horaires" className="flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  <span>Horaires & Congés</span>
-                </TabsTrigger>
-                <TabsTrigger value="salaire" className="flex items-center gap-2">
-                  <Banknote className="h-4 w-4" />
-                  <span>Salaire & Légal</span>
-                </TabsTrigger>
-              </TabsList>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Card 1: Informations Générales */}
+            <GeneralInfoTab
+              form={form}
+              employees={employees}
+              departments={departments}
+              loadingEmployees={loadingEmployees}
+              loadingDepartments={loadingDepartments}
+              contractTypeOptions={contractTypeOptions}
+              categoryOptions={categoryOptions}
+              workModeOptions={workModeOptions}
+            />
 
-              {/* Onglet 1: Informations Générales */}
-              <TabsContent value="general" className="space-y-2 mt-2">
-                <GeneralInfoTab
-                  form={form}
-                  employees={employees}
-                  departments={departments}
-                  loadingEmployees={loadingEmployees}
-                  loadingDepartments={loadingDepartments}
-                  contractTypeOptions={contractTypeOptions}
-                  categoryOptions={categoryOptions}
-                  workModeOptions={workModeOptions}
-                />
-              </TabsContent>
+            {/* Card 2: Horaires & Congés */}
+            <WorkScheduleTab form={form} />
 
-              {/* Onglet 2: Horaires & Congés */}
-              <TabsContent value="horaires" className="space-y-2 mt-2">
-                <WorkScheduleTab form={form} />
-              </TabsContent>
-
-              {/* Onglet 3: Salaire & Légal */}
-              <TabsContent value="salaire" className="space-y-2 mt-2">
-                <SalaryAndLegalTab
-                  form={form}
-                  paymentMethodOptions={paymentMethodOptions}
-                />
-              </TabsContent>
-            </Tabs>
+            {/* Card 3: Salaire & Légal */}
+            <SalaryAndLegalTab
+              form={form}
+              paymentMethodOptions={paymentMethodOptions}
+            />
 
             {/* Action Buttons */}
             <div className="flex items-center justify-between pt-6 border-t">

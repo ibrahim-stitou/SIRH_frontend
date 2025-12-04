@@ -11,12 +11,18 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card';
 import { ArrowLeft, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import PageContainer from '@/components/layout/page-container';
@@ -25,9 +31,16 @@ import { DatePickerField } from '@/components/custom/DatePickerField';
 import { SelectField } from '@/components/custom/SelectField';
 import apiClient from '@/lib/api';
 import { apiRoutes } from '@/config/apiRoutes';
-import { employeeSchema, employeeDefaultValues, type EmployeeFormValues } from './schema';
+import {
+  employeeSchema,
+  employeeDefaultValues,
+  type EmployeeFormValues
+} from './schema';
 
-interface DepartmentOption { id: string | number; name: string; }
+interface DepartmentOption {
+  id: string | number;
+  name: string;
+}
 
 export default function EmployeeCreatePage() {
   const { t } = useLanguage();
@@ -39,13 +52,15 @@ export default function EmployeeCreatePage() {
   const form = useForm<EmployeeFormValues>({
     resolver: zodResolver(employeeSchema),
     defaultValues: employeeDefaultValues,
-    mode: 'onBlur',
+    mode: 'onBlur'
   });
 
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const response = await apiClient.get(apiRoutes.admin.departments.simpleList);
+        const response = await apiClient.get(
+          apiRoutes.admin.departments.simpleList
+        );
         const result = response.data;
         setDepartments(result.data || result || []);
       } catch (error) {
@@ -57,7 +72,6 @@ export default function EmployeeCreatePage() {
     };
     fetchDepartments();
   }, [t]);
-
 
   const onSubmit = async (data: EmployeeFormValues) => {
     console.log('Submitting employee data:', data);
@@ -84,11 +98,13 @@ export default function EmployeeCreatePage() {
         country: data.country,
         phone: data.phone,
         email: data.email,
-        emergencyContact: data.emergencyContactName ? {
-          name: data.emergencyContactName,
-          phone: data.emergencyContactPhone,
-          relationship: data.emergencyContactRelationship,
-        } : undefined,
+        emergencyContact: data.emergencyContactName
+          ? {
+              name: data.emergencyContactName,
+              phone: data.emergencyContactPhone,
+              relationship: data.emergencyContactRelationship
+            }
+          : undefined,
         departmentId: data.departmentId,
         position: data.position,
         positionAr: data.positionAr,
@@ -97,7 +113,7 @@ export default function EmployeeCreatePage() {
         isActive: true,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        createdBy: 'system',
+        createdBy: 'system'
       };
 
       toast.loading(t('common.creating'));
@@ -117,40 +133,57 @@ export default function EmployeeCreatePage() {
 
   const nationalityOptions = [
     { id: 'maroc', label: 'Maroc' },
-    { id: 'autre', label: 'Autre' },
+    { id: 'autre', label: 'Autre' }
   ];
   const genderOptions = [
     { id: 'Homme', label: 'Homme' },
-    { id: 'Femme', label: 'Femme' },
+    { id: 'Femme', label: 'Femme' }
   ];
   const maritalOptions = [
     { id: 'celibataire', label: 'Célibataire' },
-    { id: 'marie', label: 'Marié' },
+    { id: 'marie', label: 'Marié' }
   ];
 
   return (
     <PageContainer>
-      <div className="mx-auto py-6 w-full">
-        <div className="mb-6">
-          <Button variant="ghost" onClick={() => router.back()}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            {t('common.back')}
-          </Button>
-        </div>
-
-        <Card className="w-full">
+      <div className='mx-auto w-full py-6'>
+        <Card className='w-full'>
           <CardHeader>
-            <CardTitle>{t('employeeCreate.title')}</CardTitle>
-            <CardDescription>{t('employeeCreate.subtitle')}</CardDescription>
+            <div className='flex w-full flex-col gap-3 md:flex-row md:items-center md:justify-between'>
+              <div>
+                <CardTitle className='text-lg leading-tight font-semibold md:text-xl'>
+                  {t('employeeCreate.title')}
+                </CardTitle>
+                <CardDescription className='text-muted-foreground mt-1'>
+                  {t('employeeCreate.subtitle')}
+                </CardDescription>
+              </div>
+
+              <div className='flex items-center gap-2'>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  onClick={() => router.back()}
+                  aria-label={t('common.back')}
+                  className='flex items-center'
+                >
+                  <ArrowLeft className='mr-2 h-4 w-4' />
+                  <span className='hidden sm:inline'>{t('common.back')}</span>
+                </Button>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className='space-y-6'
+              >
+                <div className='grid grid-cols-1 gap-6 md:grid-cols-3'>
                   {/* Identité */}
                   <FormField
                     control={form.control}
-                    name="firstName"
+                    name='firstName'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Prénom *</FormLabel>
@@ -164,7 +197,7 @@ export default function EmployeeCreatePage() {
 
                   <FormField
                     control={form.control}
-                    name="lastName"
+                    name='lastName'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Nom *</FormLabel>
@@ -178,7 +211,7 @@ export default function EmployeeCreatePage() {
 
                   <FormField
                     control={form.control}
-                    name="matricule"
+                    name='matricule'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Matricule *</FormLabel>
@@ -192,7 +225,7 @@ export default function EmployeeCreatePage() {
 
                   <FormField
                     control={form.control}
-                    name="cin"
+                    name='cin'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>CIN *</FormLabel>
@@ -206,14 +239,13 @@ export default function EmployeeCreatePage() {
 
                   <FormField
                     control={form.control}
-                    name="numero_cnss"
+                    name='numero_cnss'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Numéro CNSS</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="Ex: 123456789" />
+                          <Input {...field} placeholder='Ex: 123456789' />
                         </FormControl>
-                        <FormDescription>Numéro de la Caisse Nationale de Sécurité Sociale</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -222,7 +254,7 @@ export default function EmployeeCreatePage() {
                   {/* Naissance */}
                   <FormField
                     control={form.control}
-                    name="birthDate"
+                    name='birthDate'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Date de naissance *</FormLabel>
@@ -240,7 +272,7 @@ export default function EmployeeCreatePage() {
 
                   <FormField
                     control={form.control}
-                    name="birthPlace"
+                    name='birthPlace'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Lieu de naissance</FormLabel>
@@ -253,48 +285,62 @@ export default function EmployeeCreatePage() {
                   />
 
                   <SelectField
-                    name="nationality"
-                    label="Nationalité *"
+                    name='nationality'
+                    label='Nationalité *'
                     control={form.control}
                     options={nationalityOptions}
-                    displayField="label"
+                    displayField='label'
                     placeholder={t('placeholders.select')}
-                    error={form.formState.errors.nationality?.message as string | undefined}
+                    error={
+                      form.formState.errors.nationality?.message as
+                        | string
+                        | undefined
+                    }
                   />
 
                   {/* État civil */}
                   <SelectField
-                    name="gender"
-                    label="Genre *"
+                    name='gender'
+                    label='Genre *'
                     control={form.control}
                     options={genderOptions}
-                    displayField="label"
+                    displayField='label'
                     placeholder={t('placeholders.select')}
-                    error={form.formState.errors.gender?.message as string | undefined}
+                    error={
+                      form.formState.errors.gender?.message as
+                        | string
+                        | undefined
+                    }
                   />
 
                   <SelectField
-                    name="maritalStatus"
-                    label="État civil *"
+                    name='maritalStatus'
+                    label='État civil *'
                     control={form.control}
                     options={maritalOptions}
-                    displayField="label"
+                    displayField='label'
                     placeholder={t('placeholders.select')}
-                    error={form.formState.errors.maritalStatus?.message as string | undefined}
+                    error={
+                      form.formState.errors.maritalStatus?.message as
+                        | string
+                        | undefined
+                    }
                   />
 
                   <FormField
                     control={form.control}
-                    name="children"
+                    name='children'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Enfants</FormLabel>
                         <FormControl>
                           <Input
-                            type="number"
+                            type='number'
                             min={0}
                             {...field}
-                            onChange={(e) => field.onChange(Number(e.target.value))}
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value))
+                            }
                           />
                         </FormControl>
                         <FormDescription>Nombre d&apos;enfants</FormDescription>
@@ -306,7 +352,7 @@ export default function EmployeeCreatePage() {
                   {/* Contact */}
                   <FormField
                     control={form.control}
-                    name="phone"
+                    name='phone'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Téléphone *</FormLabel>
@@ -320,12 +366,12 @@ export default function EmployeeCreatePage() {
 
                   <FormField
                     control={form.control}
-                    name="email"
+                    name='email'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input type="email" {...field} />
+                          <Input type='email' {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -335,12 +381,12 @@ export default function EmployeeCreatePage() {
                   {/* Adresse */}
                   <FormField
                     control={form.control}
-                    name="address"
+                    name='address'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Adresse</FormLabel>
                         <FormControl>
-                          <Textarea {...field} rows={3} />
+                          <Textarea {...field} rows={1}  />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -349,7 +395,7 @@ export default function EmployeeCreatePage() {
 
                   <FormField
                     control={form.control}
-                    name="city"
+                    name='city'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Ville</FormLabel>
@@ -363,7 +409,7 @@ export default function EmployeeCreatePage() {
 
                   <FormField
                     control={form.control}
-                    name="postalCode"
+                    name='postalCode'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Code postal</FormLabel>
@@ -377,22 +423,29 @@ export default function EmployeeCreatePage() {
 
                   {/* Détails de poste */}
                   <SelectField
-                    name="departmentId"
-                    label="Département *"
+                    name='departmentId'
+                    label='Département *'
                     control={form.control}
                     options={
                       loadingDepartments
                         ? [{ id: 'loading', label: t('common.loading') }]
-                        : departments.map((d) => ({ id: String(d.id), label: d.name }))
+                        : departments.map((d) => ({
+                            id: String(d.id),
+                            label: d.name
+                          }))
                     }
-                    displayField="label"
+                    displayField='label'
                     placeholder={t('placeholders.select')}
-                    error={form.formState.errors.departmentId?.message as string | undefined}
+                    error={
+                      form.formState.errors.departmentId?.message as
+                        | string
+                        | undefined
+                    }
                   />
 
                   <FormField
                     control={form.control}
-                    name="position"
+                    name='position'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Poste *</FormLabel>
@@ -406,12 +459,17 @@ export default function EmployeeCreatePage() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex justify-end gap-4">
-                  <Button type="button" variant="outline" onClick={() => router.back()} disabled={loading}>
+                <div className='flex justify-end gap-4'>
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={() => router.back()}
+                    disabled={loading}
+                  >
                     {t('common.cancel')}
                   </Button>
-                  <Button type="submit" disabled={loading}>
-                    <Save className="mr-2 h-4 w-4" />
+                  <Button type='submit' disabled={loading}>
+                    <Save className='mr-2 h-4 w-4' />
                     {loading ? t('common.creating') : t('common.save')}
                   </Button>
                 </div>
