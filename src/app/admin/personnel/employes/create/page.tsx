@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import {
   Form,
   FormControl,
@@ -26,32 +25,7 @@ import { DatePickerField } from '@/components/custom/DatePickerField';
 import { SelectField } from '@/components/custom/SelectField';
 import apiClient from '@/lib/api';
 import { apiRoutes } from '@/config/apiRoutes';
-
-// Validation schema
-const employeeSchema = z.object({
-  firstName: z.string().min(1, 'Prénom requis'),
-  matricule: z.string().min(1, 'Matricule requis'),
-  lastName: z.string().min(1, 'Nom requis'),
-  cin: z.string().min(1, 'CIN requis'),
-  birthDate: z.string().min(1, 'Date de naissance requise'),
-  birthPlace: z.string().optional(),
-  nationality: z.enum(['maroc', 'autre'], { required_error: 'Nationalité requise' }),
-  gender: z.enum(['Homme', 'Femme', 'Autre'], { required_error: 'Genre requis' }),
-  maritalStatus: z.enum(['celibataire', 'marie'], { required_error: 'État civil requis' }),
-  children: z
-    .number({ invalid_type_error: 'Doit être un nombre' })
-    .min(0, 'Doit être >= 0')
-    .optional(),
-  address: z.string().optional(),
-  city: z.string().optional(),
-  postalCode: z.string().optional(),
-  phone: z.string().min(1, 'Téléphone requis').regex(/^[+\d]?(?:[\s.\-]?\d){7,15}$/, 'Numéro de téléphone invalide'),
-  email: z.string().email('Email invalide').optional(),
-  departmentId: z.number({ invalid_type_error: 'Département requis' }).min(1, 'Département requis'),
-  position: z.string().min(1, 'Poste requis'),
-});
-
-type EmployeeFormValues = z.infer<typeof employeeSchema>;
+import { employeeSchema, employeeDefaultValues, type EmployeeFormValues } from './schema';
 
 interface DepartmentOption { id: string | number; name: string; }
 
@@ -64,25 +38,7 @@ export default function EmployeeCreatePage() {
 
   const form = useForm<EmployeeFormValues>({
     resolver: zodResolver(employeeSchema),
-    defaultValues: {
-      firstName: '',
-      matricule: '',
-      lastName: '',
-      cin: '',
-      birthDate: (() => { const d = new Date(); d.setFullYear(d.getFullYear() - 18); return d.toISOString().split('T')[0]; })(),
-      birthPlace: '',
-      nationality: 'maroc',
-      gender: 'Homme',
-      maritalStatus: 'celibataire',
-      children: 0,
-      address: '',
-      city: '',
-      postalCode: '',
-      phone: '',
-      email: '',
-      departmentId: undefined,
-      position: '',
-    },
+    defaultValues: employeeDefaultValues,
     mode: 'onBlur',
   });
 
@@ -111,8 +67,11 @@ export default function EmployeeCreatePage() {
         id: Date.now(),
         firstName: data.firstName,
         lastName: data.lastName,
+        firstNameAr: data.firstNameAr,
+        lastNameAr: data.lastNameAr,
         matricule: data.matricule,
         cin: data.cin,
+        numero_cnss: data.numero_cnss,
         birthDate: data.birthDate,
         birthPlace: data.birthPlace,
         nationality: data.nationality,
@@ -122,10 +81,18 @@ export default function EmployeeCreatePage() {
         address: data.address,
         city: data.city,
         postalCode: data.postalCode,
+        country: data.country,
         phone: data.phone,
         email: data.email,
+        emergencyContact: data.emergencyContactName ? {
+          name: data.emergencyContactName,
+          phone: data.emergencyContactPhone,
+          relationship: data.emergencyContactRelationship,
+        } : undefined,
         departmentId: data.departmentId,
         position: data.position,
+        positionAr: data.positionAr,
+        hireDate: data.hireDate,
         status: 'actif',
         isActive: true,
         createdAt: new Date().toISOString(),
@@ -232,6 +199,21 @@ export default function EmployeeCreatePage() {
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="numero_cnss"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Numéro CNSS</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Ex: 123456789" />
+                        </FormControl>
+                        <FormDescription>Numéro de la Caisse Nationale de Sécurité Sociale</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}

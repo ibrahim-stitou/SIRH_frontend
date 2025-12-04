@@ -1,119 +1,107 @@
-import { z } from 'zod';
-import { identitySchema, contactSchema, jobSchema } from '@/validations/employee-create';
+/**
+ * Schéma de validation pour la création d'employé
+ * Utilise Zod pour la validation des données du formulaire
+ */
 
-// Education validation with better error messages
-export const educationItemSchema = z.object({
-  level: z.string()
-    .min(2, '⚠️ Le niveau d\'éducation est requis (min. 2 caractères)')
-    .max(100, 'Le niveau ne doit pas dépasser 100 caractères'),
-  diploma: z.string()
-    .max(200, 'Le diplôme ne doit pas dépasser 200 caractères')
+import * as z from 'zod';
+
+/**
+ * Schéma de validation pour la création d'un employé
+ */
+export const employeeSchema = z.object({
+  // Identité
+  matricule: z.string().min(1, 'Matricule requis'),
+  firstName: z.string().min(1, 'Prénom requis'),
+  lastName: z.string().min(1, 'Nom requis'),
+  firstNameAr: z.string().optional(),
+  lastNameAr: z.string().optional(),
+
+  // Documents d'identité
+  cin: z.string().min(1, 'CIN requis'),
+  numero_cnss: z.string().optional(),
+
+  // Date et lieu de naissance
+  birthDate: z.string().min(1, 'Date de naissance requise'),
+  birthPlace: z.string().optional(),
+
+  // Informations personnelles
+  nationality: z.enum(['maroc', 'autre'], {
+    required_error: 'Nationalité requise'
+  }),
+  gender: z.enum(['Homme', 'Femme', 'Autre'], {
+    required_error: 'Genre requis'
+  }),
+  maritalStatus: z.enum(['celibataire', 'marie', 'divorce', 'veuf'], {
+    required_error: 'État civil requis'
+  }),
+  children: z
+    .number({ invalid_type_error: 'Doit être un nombre' })
+    .min(0, 'Doit être >= 0')
     .optional(),
-  year: z.string()
-    .regex(/^\d{4}$/, 'Année invalide (format: YYYY)')
-    .refine(
-      (val) => !val || (parseInt(val) >= 1950 && parseInt(val) <= new Date().getFullYear()),
-      'L\'année doit être entre 1950 et aujourd\'hui'
-    )
-    .optional(),
-  institution: z.string()
-    .max(200, 'L\'institution ne doit pas dépasser 200 caractères')
-    .optional(),
+
+  // Coordonnées
+  address: z.string().optional(),
+  city: z.string().optional(),
+  postalCode: z.string().optional(),
+  country: z.string().optional(),
+  phone: z
+    .string()
+    .min(1, 'Téléphone requis')
+    .regex(/^[+\d]?(?:[\s.\-]?\d){7,15}$/, 'Numéro de téléphone invalide'),
+  email: z.string().email('Email invalide').optional().or(z.literal('')),
+
+  // Contact d'urgence
+  emergencyContactName: z.string().optional(),
+  emergencyContactPhone: z.string().optional(),
+  emergencyContactRelationship: z.string().optional(),
+
+  // Informations professionnelles
+  departmentId: z
+    .number({ invalid_type_error: 'Département requis' })
+    .min(1, 'Département requis'),
+  position: z.string().min(1, 'Poste requis'),
+  positionAr: z.string().optional(),
+  hireDate: z.string().optional(),
 });
 
-// Skills validation with level constraint
-export const skillItemSchema = z.object({
-  name: z.string()
-    .min(2, '⚠️ Le nom de la compétence est requis (min. 2 caractères)')
-    .max(100, 'Le nom ne doit pas dépasser 100 caractères')
-    .regex(/^[a-zA-Z0-9\s\-\+\#\.]+$/, 'Caractères invalides dans le nom'),
-  level: z.coerce.number()
-    .min(1, '⚠️ Le niveau minimum est 1')
-    .max(5, '⚠️ Le niveau maximum est 5')
-    .default(3),
-});
+/**
+ * Type inféré du schéma pour l'utilisation dans les formulaires
+ */
+export type EmployeeFormValues = z.infer<typeof employeeSchema>;
 
-// Certification validation with date logic
-export const certificationItemSchema = z.object({
-  name: z.string()
-    .min(2, '⚠️ Le nom de la certification est requis (min. 2 caractères)')
-    .max(200, 'Le nom ne doit pas dépasser 200 caractères'),
-  issuer: z.string()
-    .max(200, 'L\'émetteur ne doit pas dépasser 200 caractères')
-    .optional(),
-  issueDate: z.string()
-    .refine(
-      (val) => !val || !isNaN(Date.parse(val)),
-      'Date d\'émission invalide'
-    )
-    .optional(),
-  expirationDate: z.string()
-    .refine(
-      (val) => !val || !isNaN(Date.parse(val)),
-      'Date d\'expiration invalide'
-    )
-    .optional(),
-}).refine(
-  (data) => {
-    if (data.issueDate && data.expirationDate) {
-      return new Date(data.issueDate) < new Date(data.expirationDate);
-    }
-    return true;
-  },
-  {
-    message: 'La date d\'expiration doit être après la date d\'émission',
-    path: ['expirationDate'],
-  }
-);
-
-// Document validation
-export const documentItemSchema = z.object({
-  title: z.string()
-    .min(2, '⚠️ Le titre du document est requis (min. 2 caractères)')
-    .max(200, 'Le titre ne doit pas dépasser 200 caractères'),
-});
-
-// Step schemas with optional arrays
-export const step1Schema = identitySchema.merge(contactSchema).extend({
-  notes: z.string()
-    .max(1000, 'Les notes ne doivent pas dépasser 1000 caractères')
-    .optional(),
-});
-
-export const step2Schema = jobSchema.extend({
-  education: z.array(educationItemSchema)
-    .max(20, 'Maximum 20 formations')
-    .optional()
-    .default([]),
-  skills: z.array(skillItemSchema)
-    .max(50, 'Maximum 50 compétences')
-    .optional()
-    .default([]),
-  certifications: z.array(certificationItemSchema)
-    .max(30, 'Maximum 30 certifications')
-    .optional()
-    .default([]),
-});
-
-export const step3Schema = z.object({
-  documents: z.array(documentItemSchema)
-    .max(50, 'Maximum 50 documents')
-    .optional()
-    .default([]),
-});
-
-// Full schema
-export const fullSchema = step1Schema.merge(step2Schema).merge(step3Schema);
-
-export type EmployeeCreateFormValues = z.infer<typeof fullSchema> & {
-  documentsFiles?: (File[] | undefined)[];
+/**
+ * Valeurs par défaut pour le formulaire de création d'employé
+ */
+export const employeeDefaultValues: Partial<EmployeeFormValues> = {
+  firstName: '',
+  matricule: '',
+  lastName: '',
+  firstNameAr: '',
+  lastNameAr: '',
+  cin: '',
+  numero_cnss: '',
+  birthDate: (() => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() - 18);
+    return d.toISOString().split('T')[0];
+  })(),
+  birthPlace: '',
+  nationality: 'maroc',
+  gender: 'Homme',
+  maritalStatus: 'celibataire',
+  children: 0,
+  address: '',
+  city: '',
+  postalCode: '',
+  country: 'Maroc',
+  phone: '',
+  email: '',
+  emergencyContactName: '',
+  emergencyContactPhone: '',
+  emergencyContactRelationship: '',
+  departmentId: undefined,
+  position: '',
+  positionAr: '',
+  hireDate: new Date().toISOString().split('T')[0],
 };
 
-// Step field mapping for validation
-export const stepFields: (keyof EmployeeCreateFormValues)[][] = [
-  [
-    'firstName','lastName','cin','birthDate','birthPlace','gender','nationality','maritalStatus','numberOfChildren','address','city','postalCode','country','phone','email','emergencyContactName','emergencyContactPhone','emergencyContactRelationship','notes'
-  ],
-  ['departmentId','position','hireDate','education','skills','certifications'],
-  ['documents'],
-];

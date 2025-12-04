@@ -205,21 +205,28 @@ export default function CreateContractPage() {
 
   return (
     <PageContainer>
-      <div className="mx-auto py-4 w-full ">
+      <div className="mx-auto py-6 w-full max-w-7xl">
         {/* Header */}
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-6 flex items-center justify-between">
           <div>
+            <Button variant="ghost" onClick={() => router.back()} className="mb-2">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Retour
+            </Button>
             <h1 className="text-3xl font-bold">Nouveau Contrat de Travail</h1>
             <p className="text-muted-foreground mt-1">
               Créer un contrat conforme au Code du Travail marocain
             </p>
           </div>
+          <Badge variant="outline" className="h-8 text-lg px-4">
+            {selectedContractType || 'CDI'}
+          </Badge>
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-3 h-8">
+              <TabsList className="grid w-full grid-cols-3 h-12">
                 <TabsTrigger value="general" className="flex items-center gap-2">
                   <FileText className="h-4 w-4" />
                   <span>Informations Générales</span>
@@ -235,7 +242,7 @@ export default function CreateContractPage() {
               </TabsList>
 
               {/* Onglet 1: Informations Générales */}
-              <TabsContent value="general" className="space-y-2 mt-2">
+              <TabsContent value="general" className="space-y-4 mt-6">
                 <GeneralInfoTab
                   form={form}
                   employees={employees}
@@ -249,12 +256,12 @@ export default function CreateContractPage() {
               </TabsContent>
 
               {/* Onglet 2: Horaires & Congés */}
-              <TabsContent value="horaires" className="space-y-2 mt-2">
+              <TabsContent value="horaires" className="space-y-4 mt-6">
                 <WorkScheduleTab form={form} />
               </TabsContent>
 
               {/* Onglet 3: Salaire & Légal */}
-              <TabsContent value="salaire" className="space-y-2 mt-2">
+              <TabsContent value="salaire" className="space-y-4 mt-6">
                 <SalaryAndLegalTab
                   form={form}
                   paymentMethodOptions={paymentMethodOptions}

@@ -58,6 +58,12 @@ export const PersonalTab: React.FC<PersonalTabProps> = ({
               onSave={(v) => onUpdate('cin', v)}
             />
             <EditableInfoRow
+              label="Numéro CNSS"
+              value={employee?.numero_cnss}
+              type="text"
+              onSave={(v) => onUpdate('numero_cnss', v)}
+            />
+            <EditableInfoRow
               label={t('employeeDetails.fields.birthDate')}
               value={employee?.birthDate}
               type="date"

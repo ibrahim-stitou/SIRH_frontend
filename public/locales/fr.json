@@ -72,6 +72,7 @@
     "validate": "Valider",
     "yes": "Oui",
     "no": "Non",
+    "deleted": "Supprimé",
     "loading": "Chargement...",
     "creating": "Création...",
     "error": "Erreur",
@@ -325,7 +326,8 @@
       "country": "Pays",
       "position": "Poste",
       "hireDate": "Date d'embauche",
-      "departmentShort": "Dépt"
+      "departmentShort": "Dépt",
+      "cnssNumber": "Numéro CNSS"
     },
     "empty": {
       "noEducation": "Aucune formation",
@@ -466,96 +468,47 @@
   },
   "contracts": {
     "title": "Contrats de travail",
-    "subtitle": "Gérer tous les contrats de travail de l'entreprise",
+    "subtitle": "Renseignez les informations du contrat",
     "create": "Créer un contrat",
     "newContract": "Nouveau contrat",
-    "contractDetails": "Détails du contrat",
-    "editContract": "Modifier le contrat",
-    "types": {
-      "CDI": "CDI - Contrat à Durée Indéterminée",
-      "CDD": "CDD - Contrat à Durée Déterminée",
-      "STAGE": "Stage",
-      "INTERIM": "Intérim",
-      "APPRENTISSAGE": "Apprentissage"
-    },
-    "status": {
-      "BROUILLON": "Brouillon",
-      "ACTIF": "Actif",
-      "TERMINE": "Terminé",
-      "ANNULE": "Annulé"
-    },
-    "sections": {
-      "employee": "Employé",
-      "typeAndDates": "Type de contrat & Dates",
-      "trialPeriod": "Période d'essai",
-      "position": "Poste & Localisation",
-      "remuneration": "Rémunération",
-      "worktime": "Durée de travail",
-      "document": "Document du contrat",
-      "notes": "Notes",
-      "avenants": "Avenants",
-      "systemInfo": "Informations système"
-    },
     "fields": {
-      "contractNumber": "N° Contrat",
       "employee": "Employé",
-      "type": "Type de contrat",
       "status": "Statut",
+      "type": "Type de contrat",
       "signatureDate": "Date de signature",
       "startDate": "Date de début",
       "endDate": "Date de fin",
-      "trialPeriodDays": "Durée (en jours)",
-      "trialPeriodRenewals": "Nombre de renouvellements",
-      "trialPeriodEndDate": "Date de fin",
-      "position": "Intitulé du poste",
+      "trialPeriodDays": "Période d'essai (jours)",
+      "trialPeriodRenewals": "Renouvellements période d'essai",
+      "position": "Poste",
       "department": "Département",
       "workLocation": "Lieu de travail",
       "baseSalary": "Salaire de base",
       "currency": "Devise",
-      "paymentFrequency": "Fréquence de paie",
-      "weeklyHours": "Heures par semaine",
-      "weeklyDays": "Jours par semaine",
-      "notes": "Notes additionnelles"
+      "paymentFrequency": "Fréquence de paiement",
+      "weeklyHours": "Heures hebdomadaires",
+      "weeklyDays": "Jours hebdomadaires",
+      "workScheduleDefault": "Lundi - Vendredi",
+      "restDayDefault": "Dimanche",
+      "notes": "Notes internes"
     },
-    "actions": {
-      "validate": "Valider le contrat",
-      "generatePdf": "Générer PDF",
-      "createAvenant": "Créer un avenant",
-      "viewEmployee": "Voir le profil employé"
+    "sections": {
+      "worktime": "Organisation du temps de travail"
+    },
+    "help": {
+      "cddEndDateRequired": "La date de fin est requise pour un CDD",
+      "trialPeriodMax": "Max 6 mois selon la législation",
+      "trialPeriodRenewals": "Nombre de renouvellements possibles",
+      "standardWeeklyHours": "Ex: 44h/semaine au Maroc",
+      "smigInfo": "Vérifiez la conformité avec le SMIG"
     },
     "messages": {
       "createSuccess": "Contrat créé avec succès",
-      "updateSuccess": "Contrat mis à jour avec succès",
-      "deleteSuccess": "Contrat supprimé avec succès",
-      "validateSuccess": "Contrat validé avec succès",
-      "pdfGenerated": "PDF généré avec succès",
-      "error": "Une erreur est survenue",
-      "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce contrat en brouillon ?",
-      "onlyDraftCanBeModified": "Seuls les contrats en brouillon peuvent être modifiés",
-      "onlyDraftCanBeDeleted": "Seuls les contrats en brouillon peuvent être supprimés"
+      "error": "Une erreur est survenue lors de la création du contrat"
     },
-    "help": {
-      "cddEndDateRequired": "Obligatoire pour un CDD",
-      "trialPeriodMax": "Max: 90 jours (cadres), 45 jours (non-cadres)",
-      "trialPeriodRenewals": "Maximum 2 renouvellements possibles",
-      "smigInfo": "SMIG: 2828.71 MAD",
-      "standardWeeklyHours": "Durée standard au Maroc: 44h",
-      "notesInternal": "Ces notes sont internes et ne seront pas visibles sur le contrat généré"
-    },
-    "stats": {
-      "total": "Total",
-      "active": "Actifs",
-      "drafts": "Brouillons",
-      "cdi": "CDI"
-    },
-    "filters": {
-      "allTypes": "Tous les types",
-      "allStatus": "Tous les statuts",
-      "searchPlaceholder": "Rechercher par numéro, employé, poste..."
-    },
-    "empty": {
-      "noContracts": "Aucun contrat",
-      "noAvenants": "Aucun avenant pour ce contrat"
+    "status": {
+      "ACTIF": "Actif",
+      "TERMINE": "Terminé"
     }
   },
   "avenants": {

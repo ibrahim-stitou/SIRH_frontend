@@ -39,7 +39,7 @@ export default function Header() {
   const flagUrls = {
     en: 'https://flagcdn.com/w320/gb.png',
     fr: 'https://flagcdn.com/w320/fr.png',
-    ar: 'https://flagcdn.com/w320/sa.png',
+    // ar: 'https://flagcdn.com/w320/sa.png',
   };
 
   return (
@@ -141,20 +141,20 @@ export default function Header() {
               <img src={flagUrls.fr} alt='Français' className='w-5 h-5 rounded-full object-cover' />
               <span>Français</span>
             </DropdownMenuItem>
-            <DropdownMenuItem
-              className={cn(
-                'flex items-center gap-2 px-3 py-2.5 my-0.5 rounded-lg',
-                'text-sm font-medium',
-                'cursor-pointer',
-                'hover:bg-gray-50 dark:hover:bg-gray-800',
-                'transition-colors duration-150',
-                language === 'fr' && 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-              )}
-              onClick={() => handleLanguageChange('ar')}
-            >
-              <img src={flagUrls.ar} alt='Français' className='w-5 h-5 rounded-full object-cover' />
-              <span>Arabe</span>
-            </DropdownMenuItem>
+            {/*<DropdownMenuItem*/}
+            {/*  className={cn(*/}
+            {/*    'flex items-center gap-2 px-3 py-2.5 my-0.5 rounded-lg',*/}
+            {/*    'text-sm font-medium',*/}
+            {/*    'cursor-pointer',*/}
+            {/*    'hover:bg-gray-50 dark:hover:bg-gray-800',*/}
+            {/*    'transition-colors duration-150',*/}
+            {/*    language === 'fr' && 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'*/}
+            {/*  )}*/}
+            {/*  onClick={() => handleLanguageChange('ar')}*/}
+            {/*>*/}
+            {/*  <img src={flagUrls.ar} alt='Français' className='w-5 h-5 rounded-full object-cover' />*/}
+            {/*  <span>Arabe</span>*/}
+            {/*</DropdownMenuItem>*/}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

@@ -168,6 +168,83 @@
     "created_at": "2021-04-01T10:00:00Z",
     "updated_at": "2024-04-30T23:59:59Z",
     "statut": "Annulé"
+  },
+  {
+    "id": "e7b9a6c6-8c1a-4b0a-9b8d-123456789abc",
+    "reference": "CTR-2025-00045",
+    "type": "CDI",
+    "status": "Actif",
+    "version": 1,
+    "dates": {
+      "signature_date": "2025-01-05",
+      "start_date": "2025-02-01",
+      "end_date": null,
+      "trial_period": { "duration_months": 3, "renewable": true }
+    },
+    "employe_id": 2,
+    "job": {
+      "title": "Développeur Full Stack",
+      "department": "IT",
+      "manager_id": "EMP-00010",
+      "work_location": "Casablanca, Maroc",
+      "work_mode": "Hybride",
+      "missions": "Développement, maintenance et documentation des applications web."
+    },
+    "work_time": {
+      "weekly_hours": 44,
+      "daily_hours": 8,
+      "work_schedule": "Lundi - Vendredi",
+      "rest_day": "Dimanche",
+      "shift": null
+    },
+    "salary": {
+      "base_salary": 9000,
+      "salary_brut": 9500,
+      "salary_net": 7500,
+      "hourly_rate": null,
+      "primes": {
+        "prime_anciennete": 0,
+        "prime_transport": 350,
+        "prime_panier": 0,
+        "prime_rendement": 0,
+        "prime_risque": 0,
+        "other_primes": []
+      },
+      "indemnites": {
+        "indemnite_logement": 0,
+        "indemnite_deplacement": 0,
+        "indemnite_km": null,
+        "autres": []
+      },
+      "avantages_nature": {
+        "voiture_fonction": false,
+        "telephone": true,
+        "laptop": true,
+        "tickets_restaurant": false,
+        "logement": false
+      }
+    },
+    "legal": {
+      "cnss_affiliation": true,
+      "amo": true,
+      "cimr": false,
+      "contrat_anapec": null,
+      "tax_ir": { "taux": 0, "exonere": false },
+      "clauses": {
+        "confidentialite": true,
+        "non_concurrence": true,
+        "mobilite": false,
+        "discipline_interne": true
+      }
+    },
+    "historique": {
+      "created_at": "2025-01-01T10:00:00",
+      "created_by": "admin_01",
+      "updated_at": "2025-01-05T15:00:00",
+      "updated_by": "admin_02",
+      "versions": [ { "version": 1, "date": "2025-01-05", "changes": "Création du contrat." } ],
+      "avenants": []
+    },
+    "custom_fields": {}
   }
 ]
-
