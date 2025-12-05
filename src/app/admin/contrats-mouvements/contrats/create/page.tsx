@@ -11,10 +11,9 @@ import {
 } from '@/validations/contract-simplified.schema';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { apiRoutes } from '@/config/apiRoutes';
-import { ArrowLeft, Save, Eye } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import apiClient from '@/lib/api';
 import PageContainer from '@/components/layout/page-container';
 import type { Employee, Department } from '@/types/employee';
@@ -41,7 +40,6 @@ export default function CreateContractPage() {
     mode: 'onBlur',
   });
 
-  const selectedContractType = form.watch('type');
   const baseSalary = form.watch('salary.base_salary');
   const cnssAffiliation = form.watch('legal.cnss_affiliation');
 
@@ -93,38 +91,46 @@ export default function CreateContractPage() {
 
       form.setValue('salary.salary_brut', Math.round(salaryBrut * 100) / 100);
       form.setValue('salary.salary_net', Math.round(salaryNet * 100) / 100);
-      form.setValue('salary.salary_net_imposable', Math.round(salaryNet * 100) / 100);
     }
   }, [baseSalary, cnssAffiliation, form]);
 
   // Auto-set trial period based on contract type and category
   useEffect(() => {
-    const category = form.watch('job.category');
-    const contractType = form.watch('type');
+    const subscription = form.watch((value) => {
+      const category = value.job?.category;
+      const contractType = value.type;
+      const trialPeriodEnabled = value.dates?.trial_period?.enabled;
 
-    if (contractType === 'CDI' && category) {
-      let durationMonths = 3; // Default for cadres
-      let durationDays = 90;
+      if (contractType === 'CDI' && category && trialPeriodEnabled) {
+        let durationMonths = 3; // Default for cadres
+        let durationDays = 90;
 
-      if (category === 'Employe' || category === 'Technicien') {
-        durationMonths = 1.5;
-        durationDays = 45;
-      } else if (category === 'Ouvrier' || category === 'Ouvrier_qualifie' || category === 'Manoeuvre') {
-        durationMonths = 0.5;
-        durationDays = 15;
-      }
+        if (category === 'Employe' || category === 'Technicien') {
+          durationMonths = 1.5;
+          durationDays = 45;
+        } else if (category === 'Ouvrier' || category === 'Ouvrier_qualifie' || category === 'Manoeuvre') {
+          durationMonths = 0.5;
+          durationDays = 15;
+        }
 
-      if (form.watch('dates.trial_period.enabled')) {
         form.setValue('dates.trial_period.duration_months', durationMonths);
         form.setValue('dates.trial_period.duration_days', durationDays);
       }
-    }
-  }, [form.watch('job.category'), form.watch('type'), form.watch('dates.trial_period.enabled'), form]);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form]);
 
   const onSubmit = async (data: SimplifiedContractInput) => {
-    console.log('📝 Prévisualisation du contrat:', data);
-    setFormDataToSubmit(data);
-    setShowRecapModal(true);
+    try {
+      console.log('📝 Prévisualisation du contrat:', data);
+      console.log('✅ Validation réussie');
+      setFormDataToSubmit(data);
+      setShowRecapModal(true);
+    } catch (error) {
+      console.error('❌ Erreur lors de la prévisualisation:', error);
+      toast.error('Erreur lors de la validation du formulaire');
+    }
   };
 
   const confirmSubmit = async () => {
@@ -212,7 +218,11 @@ export default function CreateContractPage() {
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit, (errors) => {
+            console.error('❌ Erreurs de validation:', errors);
+            const firstError = Object.values(errors)[0];
+            toast.error(firstError?.message || 'Veuillez corriger les erreurs du formulaire');
+          })} className="space-y-4">
             {/* Card 1: Informations Générales */}
             <GeneralInfoTab
               form={form}
@@ -234,6 +244,22 @@ export default function CreateContractPage() {
               paymentMethodOptions={paymentMethodOptions}
             />
 
+            {/* Affichage des erreurs de validation (debug) */}
+            {Object.keys(form.formState.errors).length > 0 && (
+              <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+                <h4 className="font-semibold text-red-900 text-sm mb-2">
+                  Erreurs de validation ({Object.keys(form.formState.errors).length})
+                </h4>
+                <ul className="text-xs text-red-800 space-y-1 list-disc list-inside">
+                  {Object.entries(form.formState.errors).map(([key, error]) => (
+                    <li key={key}>
+                      <strong>{key}</strong>: {error?.message?.toString() || 'Erreur inconnue'}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {/* Action Buttons */}
             <div className="flex items-center justify-between pt-6 border-t">
               <Button
@@ -246,20 +272,6 @@ export default function CreateContractPage() {
               </Button>
 
               <div className="flex gap-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    const values = form.getValues();
-                    console.log('Brouillon sauvegardé:', values);
-                    toast.info('Brouillon sauvegardé localement');
-                  }}
-                  disabled={loading}
-                >
-                  <Save className="mr-2 h-4 w-4" />
-                  Sauvegarder Brouillon
-                </Button>
-
                 <Button type="submit" disabled={loading}>
                   <Eye className="mr-2 h-4 w-4" />
                   {loading ? 'Traitement...' : 'Prévisualiser et Créer'}

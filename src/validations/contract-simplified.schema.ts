@@ -2,9 +2,10 @@ import { z } from 'zod';
 
 /**
  * Schéma simplifié pour le formulaire avec 3 onglets
+ * Adapté aux champs existants dans GeneralInfoTab, WorkScheduleTab, SalaryAndLegalTab
  */
 
-// Schéma pour les dates
+// Schéma pour les dates (GeneralInfoTab)
 const simplifiedDatesSchema = z.object({
   start_date: z.string().min(1, 'Date de début requise'),
   end_date: z.string().nullable().optional(),
@@ -20,15 +21,7 @@ const simplifiedDatesSchema = z.object({
   }).optional(),
 });
 
-// Schéma pour les informations de l'employé
-const employeeDetailsSchema = z.object({
-  cin: z.string().optional(),
-  cnss_number: z.string().optional(),
-  birth_place: z.string().optional(),
-  nationality: z.string().optional(),
-});
-
-// Schéma pour le poste
+// Schéma pour le poste (GeneralInfoTab)
 const simplifiedJobSchema = z.object({
   function: z.string().optional(),
   category: z.string().optional(),
@@ -37,7 +30,6 @@ const simplifiedJobSchema = z.object({
   work_location: z.string().optional(),
   level: z.string().optional(),
   responsibilities: z.string().optional(),
-  departement_id: z.union([z.string(), z.number()]).optional(),
 });
 
 // Schéma pour les horaires
@@ -92,7 +84,6 @@ const simplifiedAvantagesSchema = z.object({
   telephone: z.boolean().default(false),
   assurance_sante: z.boolean().default(false),
   tickets_restaurant: z.boolean().default(false),
-  autres: z.string().optional(),
 });
 
 // Schéma pour le salaire
@@ -109,19 +100,39 @@ const simplifiedSalarySchema = z.object({
   indemnites: z.string().optional(),
 });
 
-// Schéma pour les informations légales
+// Schéma pour les cotisations sociales (SalaryAndLegalTab)
+const cotisationsSchema = z.object({
+  cnss_employe_pct: z.number().min(0).max(100).optional(),
+  cnss_employeur_pct: z.number().min(0).max(100).optional(),
+  amo_employe_pct: z.number().min(0).max(100).optional(),
+  amo_employeur_pct: z.number().min(0).max(100).optional(),
+  cmir_taux_pct: z.number().min(0).max(100).optional(),
+  cmir_numero: z.string().optional(),
+  rcar_taux_pct: z.number().min(0).max(100).optional(),
+  rcar_numero: z.string().optional(),
+});
+
+// Schéma pour les informations légales (SalaryAndLegalTab)
 const simplifiedLegalSchema = z.object({
   cnss_affiliation: z.boolean().default(true),
   amo_affiliation: z.boolean().default(true),
+  cmir_affiliation: z.boolean().default(false).optional(),
+  rcar_affiliation: z.boolean().default(false).optional(),
+  mutuelle_affiliation: z.boolean().default(false).optional(),
+  assurance_groupe: z.boolean().default(false).optional(),
   ir_applicable: z.boolean().default(true),
   convention_collective: z.string().optional(),
   clause_confidentialite: z.boolean().default(false),
   clause_non_concurrence: z.boolean().default(false),
+  clause_mobilite: z.boolean().default(false).optional(),
+  duree_preavis_jours: z.number().min(0).optional(),
+  indemnite_depart: z.number().min(0).optional(),
   conditions_speciales: z.string().optional(),
   notes_legales: z.string().optional(),
+  cotisations: cotisationsSchema.optional(),
 });
 
-// Schéma principal simplifié
+// Schéma principal simplifié (adapté aux 3 onglets du formulaire)
 export const simplifiedContractSchema = z.object({
   // Identification
   id: z.union([z.string(), z.number()]).optional(),
@@ -132,14 +143,13 @@ export const simplifiedContractSchema = z.object({
     'Stage_PFE', 'Stage_Initiation', 'Interim',
     'Teletravail', 'Freelance', 'Consultance'
   ] as const),
-  title: z.string().optional(),
   description: z.string().optional(),
 
-  // Employé
-  employe_id: z.union([z.string(), z.number()]).refine(val => val !== '', {
-    message: 'Employé requis'
-  }),
-  employee_details: employeeDetailsSchema.optional(),
+  // Employé (GeneralInfoTab)
+  employe_id: z.union([z.string(), z.number()])
+    .refine(val => val !== '' && val !== null && val !== undefined, {
+      message: 'Employé requis'
+    }),
 
   // Sections
   dates: simplifiedDatesSchema,
@@ -154,16 +164,8 @@ export type SimplifiedContractInput = z.infer<typeof simplifiedContractSchema>;
 export const simplifiedContractDefaultValues: Partial<SimplifiedContractInput> = {
   reference: '',
   type: 'CDI',
-  title: '',
   description: '',
   employe_id: '',
-
-  employee_details: {
-    cin: '',
-    cnss_number: '',
-    birth_place: '',
-    nationality: 'Marocaine',
-  },
 
   dates: {
     start_date: new Date().toISOString().split('T')[0],
@@ -175,6 +177,7 @@ export const simplifiedContractDefaultValues: Partial<SimplifiedContractInput> =
       duration_days: 90,
       renewable: false,
       max_renewals: 1,
+      conditions: '',
     },
   },
 
@@ -195,11 +198,14 @@ export const simplifiedContractDefaultValues: Partial<SimplifiedContractInput> =
     start_time: '09:00',
     end_time: '18:00',
     break_duration: 60,
-    working_days: 'Lundi au Vendredi',
     annual_leave_days: 22,
-    sick_leave_days: 10,
+    other_leaves: '',
     shift_work: {
       enabled: false,
+      type: undefined,
+      rotation_days: undefined,
+      night_shift_premium: undefined,
+      description: '',
     },
   },
 
@@ -211,29 +217,34 @@ export const simplifiedContractDefaultValues: Partial<SimplifiedContractInput> =
     payment_method: 'Virement',
     periodicity: 'Mensuel',
     primes: {
-      prime_anciennete: 0,
-      prime_transport: 0,
-      prime_responsabilite: 0,
-      prime_performance: 0,
-      prime_panier: 0,
-      autres_primes: 0,
+      items: [],
     },
     avantages: {
       voiture: false,
       logement: false,
       telephone: false,
       assurance_sante: false,
-      tickets_restaurant: false,
+      tickets_restaurant: false
     },
+    indemnites: '',
   },
 
   legal: {
     cnss_affiliation: true,
     amo_affiliation: true,
+    cmir_affiliation: false,
+    rcar_affiliation: false,
+    mutuelle_affiliation: false,
+    assurance_groupe: false,
     ir_applicable: true,
     convention_collective: 'Code du Travail',
     clause_confidentialite: false,
     clause_non_concurrence: false,
+    clause_mobilite: false,
+    duree_preavis_jours: 30,
+    indemnite_depart: 0,
+    conditions_speciales: '',
+    notes_legales: '',
     cotisations: {
       cnss_employe_pct: 4.48,
       cnss_employeur_pct: 8.98,
@@ -244,6 +255,6 @@ export const simplifiedContractDefaultValues: Partial<SimplifiedContractInput> =
       rcar_taux_pct: 20.0,
       rcar_numero: '',
     },
-  } as any,
+  },
 };
 

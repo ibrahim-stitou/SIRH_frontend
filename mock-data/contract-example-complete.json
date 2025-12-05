@@ -1,0 +1,254 @@
+{
+  "id": "CTR-2024-001",
+  "reference": "CTR-2024-001",
+  "internal_reference": "INT-HR-2024-001",
+  "type": "CDI",
+  "status": "Brouillon",
+  "version": 1,
+  "employe_id": "EMP001",
+  "employee_name": "Ahmed Bennani",
+  "employee_matricule": "MAT-2024-001",
+  "company_id": "COMP001",
+  "company_name": "TechCorp Maroc SARL",
+  "dates": {
+    "signature_date": "2024-01-15",
+    "start_date": "2024-02-01",
+    "effective_start_date": "2024-02-01",
+    "end_date": null,
+    "trial_period": {
+      "duration_months": 3,
+      "start_date": "2024-02-01",
+      "end_date": "2024-05-01",
+      "renewable": true,
+      "status": "En_cours"
+    }
+  },
+  "job": {
+    "title": "Développeur Full Stack Senior",
+    "title_ar": "مطور برمجيات متكامل أول",
+    "department": "Département IT",
+    "department_id": "DEPT-IT-001",
+    "manager_id": "MGR-001",
+    "manager_name": "Fatima Zahra Alami",
+    "category": "Cadre",
+    "echelle": "Echelle_8",
+    "coefficient": 450,
+    "grade": "Senior",
+    "work_location": "Casablanca, Quartier des Affaires",
+    "work_location_ar": "الدار البيضاء، الحي التجاري",
+    "work_mode": "Hybride",
+    "mobility_clause": true,
+    "missions": "Développement d'applications web et mobile, architecture logicielle, mentorat des développeurs juniors, gestion de projets techniques",
+    "missions_ar": "تطوير تطبيقات الويب والهواتف المحمولة، الهندسة المعمارية للبرمجيات، إرشاد المطورين المبتدئين، إدارة المشاريع التقنية",
+    "responsibilities": [
+      "Conception et développement d'applications",
+      "Révision de code et assurance qualité",
+      "Formation des équipes techniques",
+      "Participation aux décisions d'architecture"
+    ],
+    "objectives": "Livrer 4 projets majeurs dans l'année, améliorer les performances de 30%, former 3 développeurs juniors"
+  },
+  "work_time": {
+    "weekly_hours": 40,
+    "daily_hours": 8,
+    "annual_hours": 2080,
+    "work_schedule": "9h00 - 18h00",
+    "work_schedule_type": "Hybride",
+    "schedule_details": "3 jours au bureau, 2 jours en télétravail",
+    "rest_day": "Dimanche",
+    "additional_rest_days": ["Samedi après-midi"],
+    "shift": null,
+    "rotation": false,
+    "night_work": false,
+    "weekend_work": false,
+    "on_call": true,
+    "overtime_authorized": true,
+    "compensatory_rest": true,
+    "annual_leave_days": 22,
+    "seniority_leave_bonus": 2,
+    "special_leaves": {
+      "marriage": 4,
+      "birth": 3,
+      "death_relative": 3,
+      "circumcision": 2,
+      "hajj": 30
+    }
+  },
+  "salary": {
+    "base_salary": 18000,
+    "currency": "MAD",
+    "payment_frequency": "Mensuel",
+    "salary_brut": 22500,
+    "salary_net": 17850,
+    "salary_net_imposable": 18200,
+    "salary_net_a_payer": 17850,
+    "hourly_rate": 112.5,
+    "daily_rate": 900,
+    "primes": {
+      "prime_anciennete": 900,
+      "prime_transport": 800,
+      "prime_panier": 600,
+      "prime_rendement": 1500,
+      "prime_risque": 0,
+      "prime_salissure": 0,
+      "prime_nuit": 0,
+      "prime_astreinte": 700,
+      "prime_objectif": 0,
+      "prime_13eme_mois": 0,
+      "prime_exceptionnelle": 0,
+      "treizieme_mois": true,
+      "quatorzieme_mois": false,
+      "participation_benefices": true,
+      "stock_options": false
+    },
+    "indemnites": {
+      "indemnite_logement": 0,
+      "indemnite_deplacement": 0,
+      "indemnite_representation": 500,
+      "indemnite_km": 2.5,
+      "indemnite_mission": 0,
+      "indemnite_expatriation": 0,
+      "frais_telephone": 300,
+      "frais_internet": 200
+    },
+    "avantages_nature": {
+      "voiture_fonction": false,
+      "voiture_details": null,
+      "telephone": true,
+      "telephone_model": "iPhone 14 Pro",
+      "laptop": true,
+      "laptop_model": "MacBook Pro M2",
+      "tickets_restaurant": true,
+      "tickets_amount": 40,
+      "logement": false,
+      "logement_details": null,
+      "assurance_groupe": true,
+      "mutuelle_famille": true,
+      "transport_collectif": false,
+      "creche": false,
+      "formation": true
+    },
+    "payment_method": "Virement",
+    "bank_name": "Attijariwafa Bank",
+    "rib": "007640001234567890123456",
+    "payment_day": 28,
+    "last_increase_date": null,
+    "last_increase_percentage": null,
+    "next_review_date": "2024-12-31"
+  },
+  "legal": {
+    "cnss_affiliation": true,
+    "cnss_number": "123456789",
+    "cnss_regime": "General",
+    "cnss_rate_employee": 4.48,
+    "cnss_rate_employer": 16.46,
+    "amo": true,
+    "amo_number": "AMO-123456789",
+    "amo_regime": "CNSS",
+    "amo_family_members": 3,
+    "cimr": true,
+    "cimr_rate_employee": 3,
+    "cimr_rate_employer": 6,
+    "rcar": false,
+    "other_retirement": null,
+    "contrat_anapec": null,
+    "anapec_type": null,
+    "taxe_formation": true,
+    "tax_ir": {
+      "taux": 20,
+      "exonere": false,
+      "exoneration_reason": null,
+      "deductions": []
+    },
+    "convention_collective": "Secteur Informatique et Nouvelles Technologies",
+    "convention_date": "2020-01-01",
+    "clauses": {
+      "confidentialite": true,
+      "non_concurrence": true,
+      "non_concurrence_duration": 12,
+      "non_concurrence_compensation": 9000,
+      "mobilite": true,
+      "mobilite_geographic_scope": "Région Casablanca-Settat",
+      "exclusivite": true,
+      "formation": true,
+      "formation_engagement": 2,
+      "intellectual_property": true,
+      "discipline_interne": true,
+      "deontologie": true,
+      "teletravail": {
+        "jours_par_semaine": 2,
+        "materiel_fourni": ["Ordinateur portable", "Écran", "Clavier", "Souris"],
+        "frais_rembourses": ["Internet", "Électricité (forfait)"]
+      }
+    },
+    "inspection_travail_notification": true,
+    "inspection_date": "2024-01-20",
+    "visite_medicale_embauche": true,
+    "visite_medicale_date": "2024-01-25",
+    "visite_medicale_next": "2025-01-25",
+    "aptitude_medicale": "Apte"
+  },
+  "documents": {
+    "contrat_signe": "/documents/contracts/CTR-2024-001-signed.pdf",
+    "avenants": [
+      {
+        "id": "AVN-001",
+        "numero": 1,
+        "date": "2024-06-01",
+        "objet": "Augmentation salariale",
+        "description": "Augmentation de 10% du salaire de base",
+        "document_url": "/documents/contracts/CTR-2024-001-avenant-1.pdf",
+        "signe": true
+      }
+    ],
+    "annexes": [
+      {
+        "id": "ANX-001",
+        "titre": "Description de poste détaillée",
+        "type": "Fiche de poste",
+        "document_url": "/documents/contracts/CTR-2024-001-job-desc.pdf",
+        "date_ajout": "2024-01-15"
+      },
+      {
+        "id": "ANX-002",
+        "titre": "Accord de télétravail",
+        "type": "Accord",
+        "document_url": "/documents/contracts/CTR-2024-001-teletravail.pdf",
+        "date_ajout": "2024-01-15"
+      }
+    ],
+    "attestations": [
+      {
+        "type": "Travail",
+        "date_emission": "2024-10-15",
+        "document_url": "/documents/attestations/ATT-2024-001-travail.pdf"
+      }
+    ]
+  },
+  "historique": {
+    "created_at": "2024-01-10T10:30:00Z",
+    "created_by": "USR-HR-001",
+    "created_by_name": "Amal Tazi - RH",
+    "updated_at": "2024-12-05T14:20:00Z",
+    "updated_by": "USR-HR-001",
+    "updated_by_name": "Amal Tazi - RH",
+    "versions": [
+      {
+        "version": 1,
+        "date": "2024-01-10T10:30:00Z",
+        "author": "Amal Tazi - RH",
+        "changes": "Création initiale du contrat",
+        "description": "Version initiale"
+      }
+    ],
+    "modifications": [],
+    "validations": [],
+    "signatures": []
+  },
+  "notes": "Profil très qualifié avec 8 ans d'expérience. Excellent candidat pour des projets stratégiques.",
+  "internal_notes": "À considérer pour une promotion après la période d'essai.",
+  "tags": ["Senior", "Full Stack", "Cloud", "Team Lead"],
+  "secteur": "Informatique",
+  "archived": false
+}
+

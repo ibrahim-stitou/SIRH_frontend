@@ -1,508 +1,459 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import { ArrowLeft, Edit, Check, FileText, Clock, AlertCircle } from 'lucide-react';
+import { Contract, ContractStatus } from '@/types/contract';
 import { apiRoutes } from '@/config/apiRoutes';
-import { Contract } from '@/types/contract';
-import {
-  ArrowLeft,
-  Download,
-  CheckCircle,
-  User,
-  Calendar,
-  Briefcase,
-  DollarSign,
-  Clock,
-  FileText,
-  FileEdit,
-  Building2,
-  Mail,
-  Phone,
-} from 'lucide-react';
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
-import { downloadContractPDF } from '@/lib/pdf/contract-generator';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { useLanguage } from '@/context/LanguageContext';
+import GeneralInfoDisplay from '@/features/contract/components/details/GeneralInfoDisplay';
+import WorkScheduleDisplay from '@/features/contract/components/details/WorkScheduleDisplay';
+import SalaryAndLegalDisplay from '@/features/contract/components/details/SalaryAndLegalDisplay';
+import ContractDocuments from '@/features/contract/components/details/ContractDocuments';
+import ContractActions from '@/features/contract/components/ContractActions';
 import PageContainer from '@/components/layout/page-container';
-import { ContractDetailsLoadingSkeleton } from './loading-skeleton';
-import { cn } from '@/lib/utils';
+import apiClient from '@/lib/api';
+import ContractDetailsLoadingSkeleton from '@/app/admin/contrats-mouvements/contrats/[id]/details/loading-skeleton';
 
-interface ContractDetailsPageProps {
-  params: {
-    id: string;
+// Fonction pour normaliser le statut du contrat
+const normalizeContractStatus = (data: any): Contract => {
+  // Mapper les anciens champs vers les nouveaux
+  const statusMap: Record<string, ContractStatus> = {
+    'actif': 'Actif',
+    'draft': 'Brouillon',
+    'pending': 'En_attente_signature',
+    'expired': 'Expire',
+    'termine': 'Resilie',
+    'terminated': 'Resilie',
+    'active': 'Actif',
+    'Actif': 'Actif',
+    'Brouillon': 'Brouillon',
   };
-}
 
-// Info Row Component
-const InfoRow: React.FC<{ label: string; value: string | number | undefined | null }> = ({ label, value }) => (
-  <div className="space-y-1">
-    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{label}</p>
-    <p className="text-sm font-medium">{value || '—'}</p>
-  </div>
-);
+  // Déterminer le statut à partir de différents champs possibles
+  let status: ContractStatus = 'Brouillon';
+  if (data.status) {
+    status = statusMap[data.status] || data.status;
+  } else if (data.statut_contrat) {
+    status = statusMap[data.statut_contrat] || 'Actif';
+  } else if (data.statut) {
+    status = statusMap[data.statut] || data.statut;
+  }
 
-export default function ContractDetailsPage({ params }: ContractDetailsPageProps) {
-  const { t } = useLanguage();
+  // Construire l'objet Contract normalisé
+  return {
+    id: data.id,
+    reference: data.reference || `CTR-${data.id}`,
+    internal_reference: data.internal_reference,
+    type: data.type || data.type_contrat || 'CDI',
+    status: status,
+    version: data.version || 1,
+    employe_id: data.employe_id || data.employee_id,
+    employee_name: data.employee_name,
+    employee_matricule: data.employee_matricule,
+    company_id: data.company_id,
+    company_name: data.company_name,
+    dates: data.dates || {
+      start_date: data.date_debut,
+      end_date: data.date_fin,
+      signature_date: data.signature_date,
+    },
+    job: data.job || {
+      title: data.poste || 'Non spécifié',
+      department: data.departement || 'Non spécifié',
+      category: 'Employe',
+      work_location: 'Non spécifié',
+      work_mode: 'Presentiel',
+      mobility_clause: false,
+      missions: data.notes || '',
+    },
+    work_time: data.work_time || {
+      weekly_hours: 40,
+      daily_hours: 8,
+      work_schedule: data.horaires || '9h-18h',
+      work_schedule_type: 'Normal',
+      rest_day: 'Dimanche',
+      annual_leave_days: 22,
+    },
+    salary: data.salary || {
+      base_salary: data.salaire_base || 0,
+      currency: data.salaire_devise || 'MAD',
+      payment_frequency: 'Mensuel',
+      salary_brut: data.salaire_base || 0,
+      salary_net: data.salaire_base || 0,
+      salary_net_imposable: data.salaire_base || 0,
+      payment_method: 'Virement',
+    },
+    legal: data.legal || {
+      cnss_affiliation: true,
+      cnss_regime: 'General',
+      amo: true,
+      amo_regime: 'CNSS',
+      clauses: {
+        confidentialite: false,
+        non_concurrence: false,
+        mobilite: false,
+        exclusivite: false,
+        formation: false,
+        intellectual_property: false,
+        discipline_interne: true,
+        deontologie: true,
+      },
+    },
+    documents: data.documents,
+    historique: data.historique || {
+      created_at: data.created_at || new Date().toISOString(),
+      created_by: 'system',
+      updated_at: data.updated_at || new Date().toISOString(),
+      updated_by: 'system',
+    },
+    notes: data.notes,
+    internal_notes: data.internal_notes,
+    tags: data.tags,
+    secteur: data.secteur,
+    archived: data.archived || false,
+  } as Contract;
+};
+
+export default function ContractDetailsPage() {
+  const params = useParams();
   const router = useRouter();
+  const contractId = params.id as string;
+
   const [contract, setContract] = useState<Contract | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
+  const fetchContractDetails = async () => {
+    try {
+      setLoading(true);
+      const response = await apiClient.get(apiRoutes.admin.contratsEtMovements.contrats.show(contractId));
+      const normalizedContract = normalizeContractStatus(response.data.data);
+      setContract(normalizedContract);
+    } catch (error) {
+      console.error('Erreur:', error);
+      toast.error('Impossible de charger les détails du contrat');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Charger les données du contrat
   useEffect(() => {
-    const fetchContract = async () => {
-      try {
-        const response = await fetch(apiRoutes.admin.contratsEtMovements.contrats.show(params.id));
-        const result = await response.json();
+    fetchContractDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contractId]);
 
-        if (result.status === 'success') {
-          setContract(result.data);
-        } else {
-          toast.error(result.message || t('common.errors.fetchFailed'));
-        }
-      } catch (error) {
-        console.error('Error fetching contract:', error);
-        toast.error(t('common.errors.fetchFailed'));
-      } finally {
-        setLoading(false);
-      }
-    };
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
 
-    fetchContract();
-  }, [params.id, t]);
+  const handleCancel = () => {
+    setIsEditing(false);
+    fetchContractDetails(); // Recharger les données originales
+  };
+
+  const handleSave = async (updatedData: Partial<Contract>) => {
+    try {
+      setIsSaving(true);
+      const response = await apiClient.put(
+        apiRoutes.admin.contratsEtMovements.contrats.update(contractId),
+        updatedData
+      );
+
+      const normalizedContract = normalizeContractStatus(response.data.data);
+      setContract(normalizedContract);
+      setIsEditing(false);
+      toast.success('Contrat mis à jour avec succès');
+    } catch (error) {
+      console.error('Erreur:', error);
+      toast.error('Erreur lors de la sauvegarde du contrat');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleValidate = async () => {
-    if (!contract) return;
-
     try {
-      const response = await fetch(apiRoutes.admin.contratsEtMovements.contrats.validate(contract.id), {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-      });
+      const response = await apiClient.post(
+        apiRoutes.admin.contratsEtMovements.contrats.validate(contractId)
+      );
 
-      const result = await response.json();
-      if (result.status === 'success') {
-        toast.success(t('contracts.messages.validateSuccess'));
-        setContract((prev) => (prev ? { ...prev, statut: 'Actif' } : null));
-      } else {
-        toast.error(result.message || t('contracts.messages.error'));
-      }
+      const normalizedContract = normalizeContractStatus(response.data.data);
+      setContract(normalizedContract);
+      setIsEditing(false);
+      toast.success('Contrat validé avec succès');
     } catch (error) {
-      console.error('Error validating contract:', error);
-      toast.error(t('contracts.messages.error'));
+      console.error('Erreur:', error);
+      toast.error('Erreur lors de la validation du contrat');
     }
   };
 
-  const handleGeneratePDF = () => {
-    if (!contract) return;
-    downloadContractPDF(contract);
-    toast.success(t('contracts.messages.pdfGenerated'));
+  const getStatusBadge = (status: ContractStatus | string) => {
+    const statusConfig: Record<string, { label: string; variant: any; icon: any }> = {
+      Brouillon: {
+        label: 'Brouillon',
+        variant: 'secondary',
+        icon: FileText
+      },
+      En_attente_signature: {
+        label: 'En attente de signature',
+        variant: 'warning',
+        icon: Clock
+      },
+      Actif: {
+        label: 'Actif',
+        variant: 'default',
+        icon: Check
+      },
+      Periode_essai: {
+        label: 'Période d\'essai',
+        variant: 'default',
+        icon: Clock
+      },
+      Suspendu: {
+        label: 'Suspendu',
+        variant: 'destructive',
+        icon: AlertCircle
+      },
+      En_preavis: {
+        label: 'En préavis',
+        variant: 'warning',
+        icon: Clock
+      },
+      Resilie: {
+        label: 'Résilié',
+        variant: 'destructive',
+        icon: AlertCircle
+      },
+      Expire: {
+        label: 'Expiré',
+        variant: 'secondary',
+        icon: AlertCircle
+      },
+      Renouvele: {
+        label: 'Renouvelé',
+        variant: 'default',
+        icon: Check
+      },
+      Archive: {
+        label: 'Archivé',
+        variant: 'secondary',
+        icon: FileText
+      },
+      // Mapping pour les anciens statuts
+      actif: {
+        label: 'Actif',
+        variant: 'default',
+        icon: Check
+      },
+      draft: {
+        label: 'Brouillon',
+        variant: 'secondary',
+        icon: FileText
+      },
+      pending: {
+        label: 'En attente',
+        variant: 'warning',
+        icon: Clock
+      },
+      expired: {
+        label: 'Expiré',
+        variant: 'secondary',
+        icon: AlertCircle
+      },
+      terminated: {
+        label: 'Résilié',
+        variant: 'destructive',
+        icon: AlertCircle
+      },
+    };
+
+    const config = statusConfig[status] || {
+      label: status,
+      variant: 'secondary',
+      icon: FileText
+    };
+
+    const Icon = config.icon;
+
+    return (
+      <Badge variant={config.variant as any} className="gap-1">
+        <Icon className="h-3 w-3" />
+        {config.label}
+      </Badge>
+    );
   };
 
-  const handleCreateAvenant = () => {
-    toast.info('Fonctionnalité des avenants à venir');
-  };
-
-  const formatDate = (date: string | null | undefined): string => {
-    if (!date) return 'N/A';
-    try {
-      return format(new Date(date), 'dd MMMM yyyy', { locale: fr });
-    } catch {
-      return date;
-    }
-  };
-
-  const formatCurrency = (amount: number, currency: string = 'MAD'): string => {
-    return new Intl.NumberFormat('fr-MA', {
-      style: 'currency',
-      currency: currency,
-    }).format(amount);
-  };
-
-  const getStatusBadgeVariant = (statut: string) => {
-    switch (statut) {
-      case 'Actif':
-        return 'bg-green-100 text-green-700 border-green-200';
-      case 'Brouillon':
-        return 'bg-amber-100 text-amber-700 border-amber-200';
-      case 'Terminé':
-        return 'bg-gray-100 text-gray-700 border-gray-200';
-      case 'Annulé':
-        return 'bg-red-100 text-red-700 border-red-200';
-      default:
-        return 'bg-blue-100 text-blue-700 border-blue-200';
-    }
-  };
+  const canEdit = contract?.status === 'Brouillon';
+  const canValidate = contract?.status === 'Brouillon' && !isEditing;
 
   if (loading) {
     return (
-      <PageContainer>
-        <ContractDetailsLoadingSkeleton />
-      </PageContainer>
+     <ContractDetailsLoadingSkeleton/>
     );
   }
 
   if (!contract) {
     return (
-      <PageContainer>
-        <div className="container mx-auto py-6">
-          <Card className="border-2 border-dashed">
-            <CardContent className="flex h-64 items-center justify-center">
-              <div className="text-center space-y-2">
-                <FileText className="h-12 w-12 mx-auto text-muted-foreground/50" />
-                <p className="text-muted-foreground">{t('contracts.messages.error')}</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </PageContainer>
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <AlertCircle className="h-12 w-12 text-destructive mb-4" />
+        <h2 className="text-2xl font-bold mb-2">Contrat introuvable</h2>
+        <p className="text-muted-foreground mb-6">Le contrat demandé n&apos;existe pas.</p>
+        <Button onClick={() => router.push('/admin/contrats-mouvements/contrats')}>
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Retour à la liste
+        </Button>
+      </div>
     );
   }
 
-  const employeeName = contract.employee
-    ? `${contract.employee.firstName} ${contract.employee.lastName}`
-    : 'N/A';
-
   return (
     <PageContainer>
-      <div className="w-full mx-auto px-4 py-6 space-y-4 ">
-        {/* Compact Header Section */}
-        <Card className="relative overflow-hidden py-0 mt-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-background opacity-50" />
-
-          <div className="relative p-4 md:p-6">
-            <div className="flex flex-col md:flex-row gap-4">
-              {/* Compact Contract Icon */}
-              <div className="flex-shrink-0">
-                <div className="h-16 w-16 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-md ring-2 ring-primary/20">
-                  <FileText className="h-8 w-8 text-primary-foreground" />
-                </div>
-              </div>
-
-              {/* Contract Info */}
-              <div className="flex-1 space-y-3">
-                <div className="flex items-start justify-between gap-4 flex-wrap">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <h1 className="text-xl md:text-2xl font-bold tracking-tight">
-                        Contrat #{contract.id}
-                      </h1>
-                      <Badge className={cn("px-2 py-0.5 text-xs font-medium", getStatusBadgeVariant(contract.statut))}>
-                        {contract.statut}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground flex items-center gap-2">
-                      <User className="h-3.5 w-3.5" />
-                      {employeeName}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Compact Info Cards */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-background/80 border">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                      <FileEdit className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[10px] text-muted-foreground">Type</p>
-                      <p className="text-xs font-medium truncate">{contract.type_contrat}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-background/80 border">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                      <Calendar className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[10px] text-muted-foreground">Début</p>
-                      <p className="text-xs font-medium truncate">{formatDate(contract.date_debut)}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-background/80 border">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                      <DollarSign className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[10px] text-muted-foreground">Salaire</p>
-                      <p className="text-xs font-medium truncate">
-                        {formatCurrency(contract.salaire_base, contract.salaire_devise)}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-background/80 border">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                      <Briefcase className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[10px] text-muted-foreground">Poste</p>
-                      <p className="text-xs font-medium truncate">{contract.poste}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Compact Action Buttons */}
-            <div className="flex items-center gap-2 mt-4 pt-4 border-t flex-wrap">
-              <Button onClick={handleGeneratePDF} size="sm" className="gap-2">
-                <Download className="h-3.5 w-3.5" />
-                {t('contracts.actions.generatePdf')}
-              </Button>
-
-              {contract.statut === 'Brouillon' && (
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="default" size="sm" className="gap-2">
-                      <CheckCircle className="h-3.5 w-3.5" />
-                      {t('contracts.actions.validate')}
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>{t('common.confirm')}</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Êtes-vous sûr de vouloir valider ce contrat ? Une fois validé, il ne pourra plus être modifié.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleValidate}>
-                        {t('common.validate')}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              )}
-
-              {contract.statut === 'Actif' && (
-                <Button variant="outline" size="sm" onClick={handleCreateAvenant} className="gap-2">
-                  <FileEdit className="h-3.5 w-3.5" />
-                  {t('contracts.actions.createAvenant')}
-                </Button>
-              )}
-
-              {contract.employee && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => router.push(`/admin/hr-employees/${contract.employee_id}`)}
-                  className="gap-2"
-                >
-                  <User className="h-3.5 w-3.5" />
-                  {t('contracts.actions.viewEmployee')}
-                </Button>
-              )}
-
-              <Button variant="ghost" size="sm" onClick={() => router.back()} className="gap-2 ml-auto">
-                <ArrowLeft className="h-3.5 w-3.5" />
-                {t('common.back')}
-              </Button>
+    <div className="container mx-auto py-4 space-y-3">
+      {/* En-tête compact */}
+      <div className="flex items-center justify-between pb-2 border-b">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => router.push('/admin/contrats-mouvements/contrats')}
+            className="h-8 w-8"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">
+              {contract.employee_name || 'Détails du contrat'}
+            </h1>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>{contract.reference}</span>
+              <span>•</span>
+              <span>{contract.job?.title || 'Poste non spécifié'}</span>
+              <span>•</span>
+              <span>{contract.type}</span>
             </div>
           </div>
-        </Card>
+          {getStatusBadge(contract.status)}
+        </div>
+      </div>
 
-        {/* Compact Details Grid */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {/* Employee Information */}
-          <Card className="border-l-2 border-l-primary">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-                  <User className="h-4 w-4 text-primary" />
-                </div>
-                <div>
-                  <div className="font-semibold">{t('contracts.sections.employee')}</div>
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <InfoRow label="Nom complet" value={employeeName} />
-              {contract.employee?.matricule && (
-                <InfoRow label="Matricule" value={contract.employee.matricule} />
-              )}
-              {contract.employee?.email && (
-                <div className="flex items-center gap-2">
-                  <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">{contract.employee.email}</span>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+      {/* Onglets avec actions intégrées */}
+      <Tabs defaultValue="general" className="space-y-3">
+        <div className="flex items-center justify-between gap-4">
+          <TabsList className="h-9">
+            <TabsTrigger value="general" className="text-sm">Informations générales</TabsTrigger>
+            <TabsTrigger value="schedule" className="text-sm">Temps de travail</TabsTrigger>
+            <TabsTrigger value="salary" className="text-sm">Rémunération & Légal</TabsTrigger>
+            <TabsTrigger value="documents" className="text-sm">Documents</TabsTrigger>
+          </TabsList>
 
-          {/* Contract Type & Dates */}
-          <Card className="border-l-2 border-l-muted-foreground/30">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <div>
-                  <div className="font-semibold">{t('contracts.sections.typeAndDates')}</div>
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <div>
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
-                  {t('contracts.fields.type')}
-                </p>
-                <Badge variant="outline" className="text-xs px-2 py-0.5">
-                  {contract.type_contrat}
-                </Badge>
-              </div>
-              <InfoRow label={t('contracts.fields.startDate')} value={formatDate(contract.date_debut)} />
-              <InfoRow
-                label={t('contracts.fields.endDate')}
-                value={formatDate(contract.date_fin) || 'Indéterminée'}
-              />
-            </CardContent>
-          </Card>
-
-          {/* Position & Department */}
-          <Card className="border-l-2 border-l-muted-foreground/30">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
-                  <Briefcase className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <div>
-                  <div className="font-semibold">{t('contracts.sections.position')}</div>
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <InfoRow label={t('contracts.fields.position')} value={contract.poste} />
-              <InfoRow label={t('contracts.fields.department')} value={contract.departement} />
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Building2 className="h-3.5 w-3.5" />
-                <span className="text-xs">{contract.departement}</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Remuneration */}
-          <Card className="border-l-2 border-l-primary">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-                  <DollarSign className="h-4 w-4 text-primary" />
-                </div>
-                <div>
-                  <div className="font-semibold">{t('contracts.sections.remuneration')}</div>
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <div>
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
-                  {t('contracts.fields.baseSalary')}
-                </p>
-                <p className="text-xl font-bold text-primary">
-                  {formatCurrency(contract.salaire_base, contract.salaire_devise)}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
-                  Statut contrat
-                </p>
-                <Badge variant="outline" className="text-xs">
-                  {contract.statut_contrat}
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Work Hours */}
-          <Card className="border-l-2 border-l-muted-foreground/30">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <div>
-                  <div className="font-semibold">{t('contracts.sections.worktime')}</div>
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm">
-              <p>{contract.horaires}</p>
-            </CardContent>
-          </Card>
-
-          {/* Notes */}
-          {contract.notes && (
-            <Card className="border-l-2 border-l-muted-foreground/30">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
-                    <FileText className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <div>
-                    <div className="font-semibold">{t('contracts.sections.notes')}</div>
-                  </div>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                  {contract.notes}
-                </p>
-              </CardContent>
-            </Card>
-          )}
+          <div className="flex items-center gap-2">
+            {canValidate && (
+              <Button onClick={handleValidate} size="sm" className="gap-1.5 h-9">
+                <Check className="h-3.5 w-3.5" />
+                Valider
+              </Button>
+            )}
+            {canEdit && !isEditing && (
+              <Button onClick={handleEdit} variant="outline" size="sm" className="gap-1.5 h-9">
+                <Edit className="h-3.5 w-3.5" />
+                Modifier
+              </Button>
+            )}
+            {isEditing && (
+              <>
+                <Button onClick={handleCancel} variant="outline" size="sm" className="h-9">
+                  Annuler
+                </Button>
+                <Button
+                  onClick={() => handleSave(contract)}
+                  size="sm"
+                  disabled={isSaving}
+                  className="h-9"
+                >
+                  {isSaving ? 'Enregistrement...' : 'Enregistrer'}
+                </Button>
+              </>
+            )}
+            <ContractActions
+              contract={contract}
+              onGenerate={() => toast.info('Génération du contrat en cours...')}
+              onDownload={() => toast.info('Téléchargement du contrat...')}
+              onDuplicate={() => toast.info('Duplication du contrat...')}
+              onSendSignature={() => toast.info('Envoi pour signature...')}
+              onArchive={() => toast.info('Archivage du contrat...')}
+              onDelete={() => {
+                if (confirm('Êtes-vous sûr de vouloir supprimer ce contrat ?')) {
+                  toast.error('Suppression du contrat...');
+                }
+              }}
+              onRenew={() => toast.info('Renouvellement du contrat...')}
+            />
+          </div>
         </div>
 
-        {/* System Information */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <FileText className="h-4 w-4" />
-              {t('contracts.sections.systemInfo.infoSystem')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-3 md:grid-cols-3 text-sm">
-            <InfoRow label="Créé le" value={formatDate(contract.created_at)} />
-            <InfoRow label="Mis à jour le" value={formatDate(contract.updated_at)} />
-            <InfoRow label="Identifiant" value={`#${contract.id}`} />
-          </CardContent>
-        </Card>
+        <TabsContent value="general" className="mt-0">
+          <GeneralInfoDisplay
+            contract={contract}
+            isEditing={isEditing && canEdit}
+            onUpdate={handleSave}
+          />
+        </TabsContent>
 
-        {/* Avenants Section */}
-        <Card className="border-2 border-dashed">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-                <FileEdit className="h-4 w-4 text-primary" />
+        <TabsContent value="schedule" className="mt-0">
+          <WorkScheduleDisplay
+            contract={contract}
+            isEditing={isEditing && canEdit}
+            onUpdate={handleSave}
+          />
+        </TabsContent>
+
+        <TabsContent value="salary" className="mt-0">
+          <SalaryAndLegalDisplay
+            contract={contract}
+            isEditing={isEditing && canEdit}
+            onUpdate={handleSave}
+          />
+        </TabsContent>
+
+        <TabsContent value="documents" className="mt-0">
+          <ContractDocuments contract={contract} />
+        </TabsContent>
+      </Tabs>
+
+      {/* Historique */}
+      {contract.historique && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Historique</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="text-muted-foreground">Créé par:</span>
+                <p className="font-medium">{contract.historique.created_by_name || 'N/A'}</p>
+                <p className="text-xs text-muted-foreground">
+                  {new Date(contract.historique.created_at).toLocaleString('fr-FR')}
+                </p>
               </div>
               <div>
-                <div className="font-semibold">{t('contracts.sections.avenants')}</div>
-                <CardDescription className="text-xs">Liste des avenants associés</CardDescription>
+                <span className="text-muted-foreground">Modifié par:</span>
+                <p className="font-medium">{contract.historique.updated_by_name || 'N/A'}</p>
+                <p className="text-xs text-muted-foreground">
+                  {new Date(contract.historique.updated_at).toLocaleString('fr-FR')}
+                </p>
               </div>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-8">
-              <FileEdit className="h-10 w-10 mx-auto text-muted-foreground/50 mb-3" />
-              <p className="text-sm text-muted-foreground">{t('contracts.empty.noAvenants')}</p>
             </div>
           </CardContent>
         </Card>
-      </div>
+      )}
+    </div>
     </PageContainer>
   );
 }

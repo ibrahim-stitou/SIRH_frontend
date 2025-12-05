@@ -112,20 +112,20 @@ export default function Header() {
               'border border-gray-100 dark:border-gray-800'
             )}
           >
-            <DropdownMenuItem
-              className={cn(
-                'flex items-center gap-2 px-3 py-2.5 my-0.5 rounded-lg',
-                'text-sm font-medium',
-                'cursor-pointer',
-                'hover:bg-gray-50 dark:hover:bg-gray-800',
-                'transition-colors duration-150',
-                language === 'en' && 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-              )}
-              onClick={() => handleLanguageChange('en')}
-            >
-              <img src={flagUrls.en} alt='English' className='w-5 h-5 rounded-full object-cover' />
-              <span>English</span>
-            </DropdownMenuItem>
+            {/*<DropdownMenuItem*/}
+            {/*  className={cn(*/}
+            {/*    'flex items-center gap-2 px-3 py-2.5 my-0.5 rounded-lg',*/}
+            {/*    'text-sm font-medium',*/}
+            {/*    'cursor-pointer',*/}
+            {/*    'hover:bg-gray-50 dark:hover:bg-gray-800',*/}
+            {/*    'transition-colors duration-150',*/}
+            {/*    language === 'en' && 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'*/}
+            {/*  )}*/}
+            {/*  onClick={() => handleLanguageChange('en')}*/}
+            {/*>*/}
+            {/*  <img src={flagUrls.en} alt='English' className='w-5 h-5 rounded-full object-cover' />*/}
+            {/*  <span>English</span>*/}
+            {/*</DropdownMenuItem>*/}
 
             <DropdownMenuItem
               className={cn(

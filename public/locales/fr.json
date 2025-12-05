@@ -508,7 +508,8 @@
     },
     "status": {
       "ACTIF": "Actif",
-      "TERMINE": "Terminé"
+      "TERMINE": "Terminé",
+      "BROUILLON": "Brouillon"
     }
   },
   "avenants": {

@@ -795,7 +795,7 @@ export function SalaryAndLegalTab({
 
             <FormField
               control={form.control}
-              name='salary.avantages.autres'
+              name='salary.avantages.tickets_restaurant'
               render={({ field }) => (
                 <FormItem className='flex flex-row items-start space-y-0 space-x-3 rounded-md border p-3'>
                   <FormControl>
@@ -805,7 +805,9 @@ export function SalaryAndLegalTab({
                     />
                   </FormControl>
                   <div className='space-y-0.5 leading-none'>
-                    <FormLabel className='text-xs'>Autres Avantages</FormLabel>
+                    <FormLabel className='text-xs'>
+                      Tickets Restaurant
+                    </FormLabel>
                   </div>
                 </FormItem>
               )}

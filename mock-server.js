@@ -189,9 +189,15 @@ server.get('/contracts', (req, res) => {
   // Enrich with employee data
   const hrEmployees = db.get('hrEmployees').value() || [];
   all = all.map(contract => {
-    const employee = hrEmployees.find(emp => emp.id === contract.employee_id);
+    // Support both employee_id and employe_id
+    const empId = contract.employee_id || contract.employe_id;
+    const employee = hrEmployees.find(emp => emp.id === empId);
+
     return {
       ...contract,
+      // Ensure employee_name is present (from contract or from employee lookup)
+      employee_name: contract.employee_name || (employee ? `${employee.firstName} ${employee.lastName}` : 'N/A'),
+      employee_matricule: contract.employee_matricule || employee?.matricule,
       employee: employee ? {
         id: employee.id,
         firstName: employee.firstName,
@@ -246,17 +252,24 @@ server.get('/contracts', (req, res) => {
 
 // Contract details with employee enrichment
 server.get('/contracts/:id', (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const contract = db.get('contracts').find({ id }).value();
+  const id = req.params.id;
+  // Support both string and numeric IDs
+  const contract = db.get('contracts').find(c => c.id == id || c.id === id).value();
+
   if (!contract) {
     return res.status(404).json({ status: 'error', message: 'Contrat introuvable' });
   }
 
   const hrEmployees = db.get('hrEmployees').value() || [];
-  const employee = hrEmployees.find(emp => emp.id === contract.employee_id);
+  // Support both employee_id and employe_id
+  const empId = contract.employee_id || contract.employe_id;
+  const employee = hrEmployees.find(emp => emp.id === empId);
 
   const enriched = {
     ...contract,
+    // Ensure employee_name is present
+    employee_name: contract.employee_name || (employee ? `${employee.firstName} ${employee.lastName}` : 'N/A'),
+    employee_matricule: contract.employee_matricule || employee?.matricule,
     employee: employee ? {
       id: employee.id,
       firstName: employee.firstName,
@@ -271,42 +284,72 @@ server.get('/contracts/:id', (req, res) => {
   return res.json({ status: 'success', message: 'Contrat récupéré avec succès', data: enriched });
 });
 
-// Validate contract
-server.patch('/contracts/:id/validate', (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const contract = db.get('contracts').find({ id }).value();
+// Validate contract (POST endpoint)
+server.post('/contracts/:id/validate', (req, res) => {
+  const id = req.params.id;
+  const contract = db.get('contracts').find(c => c.id == id || c.id === id).value();
+
   if (!contract) {
     return res.status(404).json({ status: 'error', message: 'Contrat introuvable' });
   }
-  if (contract.statut !== 'Brouillon') {
+
+  // Support both 'statut' and 'status' fields
+  const currentStatus = contract.status || contract.statut;
+  if (currentStatus !== 'Brouillon') {
     return res.status(400).json({ status: 'error', message: 'Seuls les contrats en brouillon peuvent être validés' });
   }
 
-  db.get('contracts').find({ id }).assign({ statut: 'Actif', updated_at: new Date().toISOString() }).write();
-  return res.json({ status: 'success', message: 'Contrat validé avec succès', data: db.get('contracts').find({ id }).value() });
+  // Update both status and statut for compatibility
+  const updates = {
+    status: 'Actif',
+    statut: 'Actif',
+    updated_at: new Date().toISOString()
+  };
+
+  if (contract.historique) {
+    updates['historique.updated_at'] = new Date().toISOString();
+  }
+
+  db.get('contracts').find(c => c.id == id || c.id === id).assign(updates).write();
+  return res.json({
+    status: 'success',
+    message: 'Contrat validé avec succès',
+    data: db.get('contracts').find(c => c.id == id || c.id === id).value()
+  });
 });
 
 // Generate PDF (mock)
-server.get('/contracts/:id/generate', (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const contract = db.get('contracts').find({ id }).value();
+server.post('/contracts/:id/generate', (req, res) => {
+  const id = req.params.id;
+  const contract = db.get('contracts').find(c => c.id == id || c.id === id).value();
+
   if (!contract) {
     return res.status(404).json({ status: 'error', message: 'Contrat introuvable' });
   }
-  return res.json({ status: 'success', message: 'PDF généré avec succès', data: { url: `/generated/contract-${id}.pdf` } });
+
+  return res.json({
+    status: 'success',
+    message: 'PDF généré avec succès',
+    data: { url: `/generated/contract-${id}.pdf` }
+  });
 });
 
 // Custom delete endpoint for contracts
 server.delete('/contracts/:id', (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const exists = db.get('contracts').find({ id }).value();
+  const id = req.params.id;
+  const exists = db.get('contracts').find(c => c.id == id || c.id === id).value();
+
   if (!exists) {
     return res.status(404).json({ status: 'error', message: "Contrat introuvable" });
   }
-  if (exists.statut !== 'Brouillon') {
+
+  // Support both 'statut' and 'status' fields
+  const currentStatus = exists.status || exists.statut;
+  if (currentStatus !== 'Brouillon') {
     return res.status(400).json({ status: 'error', message: "Seuls les contrats en brouillon peuvent être supprimés" });
   }
-  db.get('contracts').remove({ id }).write();
+
+  db.get('contracts').remove(c => c.id == id || c.id === id).write();
   return res.json({ status: 'success', message: `Contrat #${id} supprimé` });
 });
 

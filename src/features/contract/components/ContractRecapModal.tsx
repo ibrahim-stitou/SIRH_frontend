@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { CheckCircle2, AlertCircle, FileText, User, Briefcase, Clock, Banknote, Shield } from 'lucide-react';
+import { CheckCircle2, AlertCircle, FileText, Briefcase, Clock, Banknote, Shield } from 'lucide-react';
 import type { SimplifiedContractInput } from '@/validations/contract-simplified.schema';
 
 interface ContractRecapModalProps {
@@ -71,7 +71,7 @@ export function ContractRecapModal({
             <RecapSection icon={FileText} title="Informations Générales">
               <RecapItem label="Référence" value={formData.reference} />
               <RecapItem label="Type" value={formData.type} />
-              <RecapItem label="Titre" value={formData.title} />
+              <RecapItem label="ID Employé" value={formData.employe_id} />
               <RecapItem
                 label="Date de début"
                 value={formData.dates?.start_date ? new Date(formData.dates.start_date).toLocaleDateString('fr-FR') : '-'}
@@ -82,16 +82,13 @@ export function ContractRecapModal({
                   value={new Date(formData.dates.end_date).toLocaleDateString('fr-FR')}
                 />
               )}
-            </RecapSection>
-
-            <Separator />
-
-            {/* Informations Employé */}
-            <RecapSection icon={User} title="Employé">
-              <RecapItem label="ID Employé" value={formData.employe_id} />
-              <RecapItem label="CIN" value={formData.employee_details?.cin} />
-              <RecapItem label="CNSS" value={formData.employee_details?.cnss_number} />
-              <RecapItem label="Lieu de naissance" value={formData.employee_details?.birth_place} />
+              <RecapItem
+                label="Date de signature"
+                value={formData.dates?.signature_date ? new Date(formData.dates.signature_date).toLocaleDateString('fr-FR') : '-'}
+              />
+              {formData.description && (
+                <RecapItem label="Description" value={formData.description} />
+              )}
             </RecapSection>
 
             <Separator />
@@ -101,27 +98,62 @@ export function ContractRecapModal({
               <RecapItem label="Fonction" value={formData.job?.function} />
               <RecapItem label="Catégorie" value={formData.job?.category} />
               <RecapItem label="Mode de travail" value={formData.job?.work_mode} />
+              <RecapItem label="Classification" value={formData.job?.classification} />
               <RecapItem label="Lieu de travail" value={formData.job?.work_location} />
+              <RecapItem label="Niveau" value={formData.job?.level} />
+              {formData.job?.responsibilities && (
+                <div className="col-span-2">
+                  <span className="text-muted-foreground text-xs">Responsabilités:</span>
+                  <p className="text-xs mt-1">{formData.job.responsibilities}</p>
+                </div>
+              )}
             </RecapSection>
 
             <Separator />
 
             {/* Horaires */}
-            <RecapSection icon={Clock} title="Horaires">
+            <RecapSection icon={Clock} title="Horaires de Travail">
               <RecapItem label="Heures/jour" value={formData.schedule?.hours_per_day} />
               <RecapItem label="Jours/semaine" value={formData.schedule?.days_per_week} />
               <RecapItem label="Heures/semaine" value={formData.schedule?.hours_per_week} />
+              <RecapItem label="Heure de début" value={formData.schedule?.start_time} />
+              <RecapItem label="Heure de fin" value={formData.schedule?.end_time} />
+              <RecapItem label="Pause (min)" value={formData.schedule?.break_duration} />
+              <RecapItem label="Congés annuels" value={`${formData.schedule?.annual_leave_days || 0} jours`} />
+
               {formData.schedule?.shift_work?.enabled && (
                 <>
-                  <RecapItem label="Travail en shift" value="Oui" />
+                  <div className="col-span-2 mt-2">
+                    <span className="text-green-600 font-medium text-xs flex items-center gap-1">
+                      <CheckCircle2 className="h-3 w-3" /> Travail en shifts activé
+                    </span>
+                  </div>
                   <RecapItem label="Type de shift" value={formData.schedule.shift_work.type} />
+                  {formData.schedule.shift_work.rotation_days && (
+                    <RecapItem label="Rotation" value={`${formData.schedule.shift_work.rotation_days} jours`} />
+                  )}
+                  {formData.schedule.shift_work.night_shift_premium && (
+                    <RecapItem label="Prime de nuit" value={`${formData.schedule.shift_work.night_shift_premium} MAD`} />
+                  )}
                 </>
               )}
+
               {formData.dates?.trial_period?.enabled && (
-                <RecapItem
-                  label="Période d'essai"
-                  value={`${formData.dates.trial_period.duration_months || 0} mois`}
-                />
+                <>
+                  <div className="col-span-2 mt-2">
+                    <span className="text-blue-600 font-medium text-xs flex items-center gap-1">
+                      <CheckCircle2 className="h-3 w-3" /> Période d&apos;essai activée
+                    </span>
+                  </div>
+                  <RecapItem
+                    label="Durée"
+                    value={`${formData.dates.trial_period.duration_months || 0} mois (${formData.dates.trial_period.duration_days || 0} jours)`}
+                  />
+                  <RecapItem
+                    label="Renouvelable"
+                    value={formData.dates.trial_period.renewable ? 'Oui' : 'Non'}
+                  />
+                </>
               )}
             </RecapSection>
 
@@ -142,17 +174,45 @@ export function ContractRecapModal({
                 value={`${formData.salary?.salary_net?.toFixed(2)} MAD`}
               />
               <RecapItem label="Méthode de paiement" value={formData.salary?.payment_method} />
-              {formData.salary?.primes?.prime_anciennete && (
-                <RecapItem
-                  label="Prime d'ancienneté"
-                  value={`${formData.salary.primes.prime_anciennete} MAD`}
-                />
+              <RecapItem label="Périodicité" value={formData.salary?.periodicity} />
+
+              {/* Primes dynamiques */}
+              {(formData.salary?.primes as any)?.items && (formData.salary.primes as any).items.length > 0 && (
+                <div className="col-span-2 mt-2">
+                  <span className="font-medium text-xs">Primes:</span>
+                  <div className="space-y-1 mt-1">
+                    {(formData.salary.primes as any).items.map((prime: any, idx: number) => (
+                      <div key={idx} className="flex justify-between text-xs">
+                        <span className="text-muted-foreground">{prime.label}</span>
+                        <span className="font-medium">{prime.amount?.toFixed(2)} MAD</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
-              {formData.salary?.primes?.prime_transport && (
-                <RecapItem
-                  label="Prime de transport"
-                  value={`${formData.salary.primes.prime_transport} MAD`}
-                />
+
+              {/* Avantages */}
+              {formData.salary?.avantages && (
+                <div className="col-span-2 mt-2">
+                  <span className="font-medium text-xs">Avantages en nature:</span>
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    {formData.salary.avantages.voiture && (
+                      <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded">Voiture</span>
+                    )}
+                    {formData.salary.avantages.logement && (
+                      <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded">Logement</span>
+                    )}
+                    {formData.salary.avantages.telephone && (
+                      <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded">Téléphone</span>
+                    )}
+                    {formData.salary.avantages.assurance_sante && (
+                      <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded">Assurance Santé</span>
+                    )}
+                    {(formData.salary.avantages as any).autres && (
+                      <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded">Autres</span>
+                    )}
+                  </div>
+                </div>
               )}
             </RecapSection>
 
@@ -168,6 +228,12 @@ export function ContractRecapModal({
                 label="Affiliation AMO"
                 value={formData.legal?.amo_affiliation ? 'Oui' : 'Non'}
               />
+              {(formData.legal as any)?.cmir_affiliation && (
+                <RecapItem label="Affiliation CMIR" value="Oui" />
+              )}
+              {(formData.legal as any)?.rcar_affiliation && (
+                <RecapItem label="Affiliation RCAR" value="Oui" />
+              )}
               <RecapItem
                 label="IR Applicable"
                 value={formData.legal?.ir_applicable ? 'Oui' : 'Non'}
@@ -175,18 +241,34 @@ export function ContractRecapModal({
               {formData.legal?.convention_collective && (
                 <RecapItem label="Convention collective" value={formData.legal.convention_collective} />
               )}
-              {formData.legal?.clause_confidentialite && (
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-3 w-3 text-green-600" />
-                  <span className="text-sm">Clause de confidentialité</span>
-                </div>
+              {(formData.legal as any)?.duree_preavis_jours && (
+                <RecapItem label="Durée de préavis" value={`${(formData.legal as any).duree_preavis_jours} jours`} />
               )}
-              {formData.legal?.clause_non_concurrence && (
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-3 w-3 text-green-600" />
-                  <span className="text-sm">Clause de non-concurrence</span>
+
+              {/* Clauses */}
+              <div className="col-span-2 mt-2">
+                <span className="font-medium text-xs">Clauses contractuelles:</span>
+                <div className="flex flex-col gap-1 mt-1">
+                  {formData.legal?.clause_confidentialite && (
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-3 w-3 text-green-600" />
+                      <span className="text-xs">Clause de confidentialité</span>
+                    </div>
+                  )}
+                  {formData.legal?.clause_non_concurrence && (
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-3 w-3 text-green-600" />
+                      <span className="text-xs">Clause de non-concurrence</span>
+                    </div>
+                  )}
+                  {(formData.legal as any)?.clause_mobilite && (
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-3 w-3 text-green-600" />
+                      <span className="text-xs">Clause de mobilité</span>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </RecapSection>
 
             {/* Alerte */}

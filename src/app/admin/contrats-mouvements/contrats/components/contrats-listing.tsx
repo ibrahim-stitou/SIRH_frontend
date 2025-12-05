@@ -17,7 +17,8 @@ import type { Contract } from '@/types/contract';
 
 // Row type mapped for CustomTable consumption
 interface ContractRow {
-  id: number;
+  id: number | string;
+  reference?: string;
   employee?: {
     id: number;
     firstName: string;
@@ -25,14 +26,30 @@ interface ContractRow {
     matricule: string;
     email?: string;
   } | null;
-  type_contrat: string; // 'CDI' | 'CDD' | 'Stage' | 'Intérim' | 'Apprentissage' | 'Autre'
-  poste: string;
-  departement: string;
-  date_debut: string;
-  date_fin: string | null;
-  salaire_base: number;
-  salaire_devise: string;
-  statut: string; // 'Brouillon' | 'Actif' | 'Terminé' | 'Annulé'
+  employee_name?: string;
+  employee_matricule?: string;
+  type?: string; // New format
+  type_contrat?: string; // Old format: 'CDI' | 'CDD' | 'Stage' | 'Intérim' | 'Apprentissage' | 'Autre'
+  job?: {
+    title: string;
+    department: string;
+  };
+  poste?: string; // Old format
+  departement?: string; // Old format
+  dates?: {
+    start_date: string;
+    end_date: string | null;
+  };
+  date_debut?: string; // Old format
+  date_fin?: string | null; // Old format
+  salary?: {
+    base_salary: number;
+    currency: string;
+  };
+  salaire_base?: number; // Old format
+  salaire_devise?: string; // Old format
+  status?: string; // New format
+  statut?: string; // Old format: 'Brouillon' | 'Actif' | 'Terminé' | 'Annulé'
   actions?: number;
 }
 
@@ -44,7 +61,8 @@ export function ContratsListing() {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
   const handleDelete = (row: ContractRow) => {
-    if (row.statut !== 'Brouillon') {
+    const currentStatus = row.status || row.statut;
+    if (currentStatus !== 'Brouillon') {
       toast.error(t('contracts.messages.onlyDraftCanBeDeleted'));
       return;
     }
@@ -72,12 +90,13 @@ export function ContratsListing() {
   };
 
   const handleValidate = async (row: ContractRow) => {
-    if (row.statut !== 'Brouillon') {
+    const currentStatus = row.status || row.statut;
+    if (currentStatus !== 'Brouillon') {
       toast.error(t('contracts.messages.onlyDraftCanBeModified'));
       return;
     }
     try {
-      const response = await apiClient.patch(apiRoutes.admin.contratsEtMovements.contrats.validate(row.id));
+      const response = await apiClient.post(apiRoutes.admin.contratsEtMovements.contrats.validate(row.id));
       const data = response.data;
       if (data?.status === 'success' || response.status === 200) {
         toast.success(t('contracts.messages.validateSuccess'));
@@ -107,12 +126,26 @@ export function ContratsListing() {
   };
 
   const columns: CustomTableColumn<ContractRow>[] = [
-    { data: 'id', label: 'ID', sortable: true, render: (v) => `#${v}` },
+    {
+      data: 'id',
+      label: 'ID',
+      sortable: true,
+      render: (v, row) => row.reference ? row.reference : `#${v}`
+    },
     {
       data: 'employee',
       label: t('contracts.fields.employee'),
       sortable: false,
       render: (_value, row) => {
+        // Support both formats
+        if (row.employee_name) {
+          return (
+            <div>
+              <div className="font-medium">{row.employee_name}</div>
+              {row.employee_matricule && <div className="text-xs text-muted-foreground">{row.employee_matricule}</div>}
+            </div>
+          );
+        }
         const emp = row.employee;
         if (!emp) return <span className="text-muted-foreground">N/A</span>;
         return (
@@ -127,35 +160,67 @@ export function ContratsListing() {
       data: 'type_contrat',
       label: t('contracts.fields.type'),
       sortable: true,
-      render: (value) => <span className="rounded-md border px-2 py-0.5 text-xs">{value}</span>
+      render: (_value, row) => {
+        const type = row.type || row.type_contrat || 'N/A';
+        return <span className="rounded-md border px-2 py-0.5 text-xs">{type}</span>;
+      }
     },
-    { data: 'poste', label: t('contracts.fields.position'), sortable: true },
-    { data: 'departement', label: t('contracts.fields.department'), sortable: true },
-    { data: 'date_debut', label: t('contracts.fields.startDate'), sortable: true },
+    {
+      data: 'poste',
+      label: t('contracts.fields.position'),
+      sortable: true,
+      render: (_value, row) => row.job?.title || row.poste || 'N/A'
+    },
+    {
+      data: 'departement',
+      label: t('contracts.fields.department'),
+      sortable: true,
+      render: (_value, row) => row.job?.department || row.departement || 'N/A'
+    },
+    {
+      data: 'date_debut',
+      label: t('contracts.fields.startDate'),
+      sortable: true,
+      render: (_value, row) => {
+        const date = row.dates?.start_date || row.date_debut;
+        return date ? new Date(date).toLocaleDateString('fr-FR') : 'N/A';
+      }
+    },
     {
       data: 'date_fin',
       label: t('contracts.fields.endDate'),
       sortable: true,
-      render: (value) => value ? value : <span className="text-muted-foreground">—</span>
+      render: (_value, row) => {
+        const date = row.dates?.end_date || row.date_fin;
+        return date ? new Date(date).toLocaleDateString('fr-FR') : <span className="text-muted-foreground">—</span>;
+      }
     },
     {
       data: 'salaire_base',
       label: t('contracts.fields.baseSalary'),
       sortable: true,
-      render: (_value, row) => new Intl.NumberFormat('fr-MA', { style: 'currency', currency: row.salaire_devise }).format(row.salaire_base)
+      render: (_value, row) => {
+        const salary = row.salary?.base_salary || row.salaire_base || 0;
+        const currency = row.salary?.currency || row.salaire_devise || 'MAD';
+        return new Intl.NumberFormat('fr-MA', { style: 'currency', currency }).format(salary);
+      }
     },
     {
       data: 'statut',
       label: t('contracts.fields.status'),
       sortable: true,
-      render: (value) => {
+      render: (_value, row) => {
+        const status = row.status || row.statut || 'N/A';
         const map: Record<string, string> = {
-          Brouillon: t('contracts.status.BROUILLON'),
-          Actif: t('contracts.status.ACTIF'),
-          Terminé: t('contracts.status.TERMINE'),
-          Annulé: t('contracts.status.ANNULE'),
+          'Brouillon': t('contracts.status.BROUILLON'),
+          'Actif': t('contracts.status.ACTIF'),
+          'Periode_essai': 'Période d\'essai',
+          'En_attente_signature': 'En attente signature',
+          'Termine': t('contracts.status.TERMINE'),
+          'Resilie': 'Résilié',
+          'Annule': t('contracts.status.ANNULE'),
         };
-        return map[value] || value;
+        return map[status] || status;
       }
     },
     {
@@ -176,32 +241,8 @@ export function ContratsListing() {
             </TooltipTrigger>
             <TooltipContent>{t('common.view')}</TooltipContent>
           </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                className="h-8 w-8 p-1.5"
-                onClick={() => handleGeneratePDF(row)}
-              >
-                <Download className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{t('contracts.actions.generatePdf')}</TooltipContent>
-          </Tooltip>
-          {row.statut === 'Brouillon' && (
+          {(row.status === 'Brouillon' || row.statut === 'Brouillon') && (
             <>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="h-8 w-8 p-1.5"
-                    onClick={() => handleValidate(row)}
-                  >
-                    <CheckCircle className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>{t('contracts.actions.validate')}</TooltipContent>
-              </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
@@ -220,20 +261,6 @@ export function ContratsListing() {
                 </TooltipContent>
               </Tooltip>
             </>
-          )}
-          {row.statut === 'Actif' && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="h-8 w-8 p-1.5"
-                  onClick={() => router.push(`/admin/contrats-mouvements/contrats/${row.id}/avenants/create`)}
-                >
-                  <FileEdit className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>{t('contracts.actions.createAvenant')}</TooltipContent>
-            </Tooltip>
           )}
         </div>
       )

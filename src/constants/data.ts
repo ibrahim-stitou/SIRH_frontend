@@ -18,8 +18,8 @@ export const useNavItems = (): NavItem[] => {
       isActive: false,
       items: [
         { title: t('sidebar.employes'), url: '/admin/personnel/employes', icon: 'user', shortcut: ['r','e'], description: 'US-EMP-001' },
-        { title: t('sidebar.orgChart'), url: '/admin/personnel/organigramme', icon: 'companies', shortcut: ['o','g'], description: 'US-EMP-006' },
-        { title: t('sidebar.certificates'), url: '/admin/personnel/attestations', icon: 'fileText', shortcut: ['a','t'], description: 'US-EMP-007' }
+        // { title: t('sidebar.orgChart'), url: '/admin/personnel/organigramme', icon: 'companies', shortcut: ['o','g'], description: 'US-EMP-006' },
+         { title: t('sidebar.certificates'), url: '/admin/personnel/attestations', icon: 'fileText', shortcut: ['a','t'], description: 'US-EMP-007' }
       ]
     },
     {
