@@ -265,7 +265,7 @@ export default function CreateContractPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router.back()}
+                  onClick={() => router.back()}
                 disabled={loading}
               >
                 Annuler

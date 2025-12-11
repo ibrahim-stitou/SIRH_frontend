@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
@@ -194,6 +194,20 @@ export default function ContractDetailsPage() {
     }
   };
 
+  // Nouvelle fonction: suppression du contrat
+  const handleDelete = async () => {
+    try {
+      await apiClient.delete(
+        apiRoutes.admin.contratsEtMovements.contrats.delete(contractId)
+      );
+      toast.success('Contrat supprimé avec succès');
+      router.push('/admin/contrats-mouvements/contrats');
+    } catch (error) {
+      console.error('Erreur:', error);
+      toast.error('Erreur lors de la suppression du contrat');
+    }
+  };
+
   const getStatusBadge = (status: ContractStatus | string) => {
     const statusConfig: Record<string, { label: string; variant: any; icon: any }> = {
       Brouillon: {
@@ -314,8 +328,8 @@ export default function ContractDetailsPage() {
   }
 
   return (
-    <PageContainer>
-    <div className="container mx-auto py-4 space-y-3">
+    <PageContainer >
+    <div className=" mx-auto py-4 space-y-3 w-full">
       {/* En-tête compact */}
       <div className="flex items-center justify-between pb-2 border-b">
         <div className="flex items-center gap-3">
@@ -385,14 +399,9 @@ export default function ContractDetailsPage() {
               contract={contract}
               onGenerate={() => toast.info('Génération du contrat en cours...')}
               onDownload={() => toast.info('Téléchargement du contrat...')}
-              onDuplicate={() => toast.info('Duplication du contrat...')}
               onSendSignature={() => toast.info('Envoi pour signature...')}
               onArchive={() => toast.info('Archivage du contrat...')}
-              onDelete={() => {
-                if (confirm('Êtes-vous sûr de vouloir supprimer ce contrat ?')) {
-                  toast.error('Suppression du contrat...');
-                }
-              }}
+              onDelete={handleDelete}
               onRenew={() => toast.info('Renouvellement du contrat...')}
             />
           </div>

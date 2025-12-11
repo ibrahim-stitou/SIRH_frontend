@@ -12,6 +12,7 @@ interface Document {
   fileName?: string;
   mimeType?: string;
   size?: number;
+  documentType?: 'cin' | 'certificate' | 'diploma' | 'experience' | 'other';
 }
 
 interface DocumentsTabProps {
@@ -33,6 +34,11 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({
 }) => {
   const { t } = useLanguage();
 
+  // Filter to show only documents without a specific type or marked as 'other'
+  const otherDocuments = documents.filter(d =>
+    !d.documentType || d.documentType === 'other'
+  );
+
   return (
     <AnimatedTabContent active={active}>
       <Card className="p-6 space-y-6">
@@ -46,7 +52,7 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({
                 {t('employeeDetails.sections.documents')}
               </h3>
               <p className="text-xs text-muted-foreground">
-                Documents officiels et pièces jointes
+                Autres documents (CIN, diplômes et certificats dans leurs sections respectives)
               </p>
             </div>
           </div>
@@ -61,9 +67,12 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({
           </Button>
         </div>
 
-        {documents.length ? (
+        {otherDocuments.length ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {documents.map((d, idx) => (
+            {otherDocuments.map((d) => {
+              // Find original index in full documents array
+              const idx = documents.findIndex(doc => doc.id === d.id);
+              return (
               <div key={d.id} className="group relative rounded-lg border bg-card hover:shadow-lg transition-all overflow-hidden">
                 {/* Preview Area - Clickable */}
                 <button
@@ -131,7 +140,8 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({
                   </Button>
                 </div>
               </div>
-            ))}
+            );
+            })}
           </div>
         ) : (
           <div className="text-center py-12 border-2 border-dashed rounded-lg">

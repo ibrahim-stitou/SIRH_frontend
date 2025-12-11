@@ -10,17 +10,20 @@ interface EmergencyContact {
   name: string;
   phone: string;
   relationship: string;
+  CIN?: string;
+  birthDate?: string;
+  cin?: string; // add lowercase support
 }
 
 interface EmergencyContactsTabProps {
   active: boolean;
-  contacts?: EmergencyContact[];
+  contacts?: EmergencyContact[] | EmergencyContact | null;
   onAdd: () => void;
   onEdit: (index: number) => void;
   onDelete: (index: number) => void;
 }
 
-export const EmergencyContactsTab: React.FC<EmergencyContactsTabProps> = ({
+export const PeploeInCharge: React.FC<EmergencyContactsTabProps> = ({
   active,
   contacts = [],
   onAdd,
@@ -28,6 +31,13 @@ export const EmergencyContactsTab: React.FC<EmergencyContactsTabProps> = ({
   onDelete
 }) => {
   const { t } = useLanguage();
+
+  // Normalize to array if server returns a single object
+  const contactList: EmergencyContact[] = Array.isArray(contacts)
+    ? contacts
+    : contacts
+    ? [contacts]
+    : [];
 
   return (
     <AnimatedTabContent active={active}>
@@ -38,9 +48,9 @@ export const EmergencyContactsTab: React.FC<EmergencyContactsTabProps> = ({
               <Users className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold text-lg">Contacts d&apos;urgence</h3>
+              <h3 className="font-semibold text-lg">Personnes en charge</h3>
               <p className="text-xs text-muted-foreground">
-                Personnes à contacter en cas d&apos;urgence
+                Personnes responsables ou à contacter
               </p>
             </div>
           </div>
@@ -55,9 +65,9 @@ export const EmergencyContactsTab: React.FC<EmergencyContactsTabProps> = ({
           </Button>
         </div>
 
-        {contacts.length > 0 ? (
+        {contactList.length > 0 ? (
           <div className="space-y-3">
-            {contacts.map((contact, index) => (
+            {contactList.map((contact, index) => (
               <div
                 key={index}
                 className="p-4 rounded-lg border bg-muted/30 space-y-2 hover:shadow-md transition-shadow"
@@ -66,18 +76,26 @@ export const EmergencyContactsTab: React.FC<EmergencyContactsTabProps> = ({
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-2">
                       <Badge variant="secondary" className="text-xs">
-                        Contact {index + 1}
+                        Personne {index + 1}
                       </Badge>
                       <span className="font-medium text-sm">{contact.name}</span>
                     </div>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-muted-foreground">Téléphone: </span>
-                        <span>{contact.phone}</span>
+                        <span>{contact.phone || '—'}</span>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Relation: </span>
-                        <span>{contact.relationship}</span>
+                        <span>{contact.relationship || '—'}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">CIN: </span>
+                        <span>{contact.cin || contact.CIN || '—'}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Date de naissance: </span>
+                        <span>{contact.birthDate || '—'}</span>
                       </div>
                     </div>
                   </div>
@@ -105,11 +123,11 @@ export const EmergencyContactsTab: React.FC<EmergencyContactsTabProps> = ({
           <div className="text-center py-12 border-2 border-dashed rounded-lg">
             <Users className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
             <p className="text-sm text-muted-foreground mb-4">
-              Aucun contact d&apos;urgence enregistré
+              Aucune personne en charge enregistrée
             </p>
             <Button variant="outline" onClick={onAdd} className="gap-2">
               <Plus className="h-4 w-4" />
-              Ajouter un contact
+              Ajouter une personne
             </Button>
           </div>
         )}
@@ -117,4 +135,3 @@ export const EmergencyContactsTab: React.FC<EmergencyContactsTabProps> = ({
     </AnimatedTabContent>
   );
 };
-

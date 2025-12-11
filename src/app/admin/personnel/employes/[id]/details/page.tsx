@@ -24,7 +24,8 @@ import {
   NotebookText,
   Pencil,
   Download,
-  Check
+  Check,
+  Trash2
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -38,11 +39,13 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { DatePickerField } from '@/components/custom/DatePickerField';
-// Import new components
-import { PersonalTab } from './components/PersonalTab';
-import { SkillsTab } from './components/SkillsTab';
-import { DocumentsTab } from './components/DocumentsTab';
-import { EmergencyContactsTab } from './components/EmergencyContactsTab';
+import { SelectField } from '@/components/custom/SelectField';
+import { useForm } from 'react-hook-form';
+import { PeploeInCharge } from '@/app/admin/personnel/employes/[id]/details/components/PeploeInCharge';
+import { SkillsTab } from '@/app/admin/personnel/employes/[id]/details/components/SkillsTab';
+import { DocumentsTab } from '@/app/admin/personnel/employes/[id]/details/components/DocumentsTab';
+import { PersonalTab } from '@/app/admin/personnel/employes/[id]/details/components/PersonalTab';
+import { ExperiencesTab } from './components/ExperiencesTab';
 
 interface EmployeeRow {
   id: number;
@@ -73,12 +76,15 @@ interface EmployeeRow {
   education?: { level: string; diploma?: string; year?: string; institution?: string }[];
   skills?: { name: string; level: number }[];
   certifications?: { name: string; issuer?: string; issueDate?: string; expirationDate?: string }[];
-  documents?: { id: string; title: string; fileName?: string; mimeType?: string; size?: number }[];
+  documents?: { id: string; title: string; fileName?: string; mimeType?: string; size?: number; documentType?: 'cin' | 'certificate' | 'diploma' | 'experience' | 'other' }[];
+  experiences?: { title: string; company?: string; startDate?: string; endDate?: string; description?: string; documents?: { fileName: string; mimeType?: string; size?: number }[] }[];
   status?: string;
   cin?: string;
-  emergencyContacts?: {
+  peopleInCharge?: {
     name: string;
     phone: string;
+    cin?: string; // standardized to lowercase
+    birthDate?: string;
     relationship: string;
   }[];
 }
@@ -98,9 +104,12 @@ export default function EmployeeDetailsPage() {
   const [selectedPhotoFiles, setSelectedPhotoFiles] = useState<File[]>([]);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
-  const [openEditItem, setOpenEditItem] = useState<{section: 'education'|'skills'|'certifications'|'documents'|'emergencyContacts'; index?: number}|null>(null);
+  const [openEditItem, setOpenEditItem] = useState<{section: 'education'|'skills'|'certifications'|'documents'|'peopleInCharge'|'experiences'; index?: number}|null>(null);
   const [tempItem, setTempItem] = useState<any>(null);
   const [docFiles, setDocFiles] = useState<File[]>([]);
+
+  // relationship form control for SelectField
+  const relForm = useForm<{ relationship: string }>({ defaultValues: { relationship: '' } });
 
   useEffect(() => {
     if (!id) return;
@@ -109,6 +118,18 @@ export default function EmployeeDetailsPage() {
         setLoading(true);
         const res = await apiClient.get(apiRoutes.admin.employees.details(id));
         const payload: any = res.data && typeof res.data === 'object' && 'data' in res.data ? res.data.data : res.data;
+        // Normalize peopleInCharge: object -> array, map CIN->cin
+        if (payload && payload.peopleInCharge) {
+          const pic = payload.peopleInCharge;
+          const arr = Array.isArray(pic) ? pic : pic ? [pic] : [];
+          payload.peopleInCharge = arr.map((c: any) => {
+            const mapped = { ...c };
+            if (mapped.CIN && !mapped.cin) {
+              mapped.cin = mapped.CIN;
+            }
+            return mapped;
+          });
+        }
         setEmp(payload as EmployeeRow);
 
         const mediaRes = await apiClient.get(apiRoutes.admin.media.list);
@@ -211,14 +232,30 @@ export default function EmployeeDetailsPage() {
     await patchEmployee({ [key]: value } as Partial<EmployeeRow>);
   };
 
-  const openItemDialog = (section: 'education'|'skills'|'certifications'|'documents'|'emergencyContacts', index?: number) => {
+  const [currentDocumentType, setCurrentDocumentType] = useState<'cin' | 'certificate' | 'diploma' | 'experience' | 'other'>('other');
+
+  const openItemDialog = (section: 'education'|'skills'|'certifications'|'documents'|'peopleInCharge'|'experiences', index?: number, docType?: 'cin' | 'certificate' | 'diploma' | 'experience' | 'other') => {
     setOpenEditItem({ section, index });
     let base: any = {};
     if (section === 'education') base = index!=null ? (emp?.education?.[index] ?? {}) : { level: '', diploma: '', year: '', institution: '' };
     if (section === 'skills') base = index!=null ? (emp?.skills?.[index] ?? {}) : { name: '', level: 3 };
     if (section === 'certifications') base = index!=null ? (emp?.certifications?.[index] ?? {}) : { name: '', issuer: '', issueDate: '', expirationDate: '' };
-    if (section === 'documents') base = index!=null ? (emp?.documents?.[index] ?? {}) : { title: '' };
-    if (section === 'emergencyContacts') base = index!=null ? (emp?.emergencyContacts?.[index] ?? {}) : { name: '', phone: '', relationship: '' };
+    if (section === 'documents') {
+      // Auto-set title based on document type
+      let autoTitle = '';
+      if (docType === 'cin') autoTitle = 'CIN';
+      else if (docType === 'certificate') autoTitle = 'Certificat';
+      else if (docType === 'diploma') autoTitle = 'Diplôme';
+      else if (docType === 'experience') autoTitle = 'Document expérience';
+
+      base = index!=null ? (emp?.documents?.[index] ?? {}) : { title: autoTitle, documentType: docType || 'other' };
+      if (docType) setCurrentDocumentType(docType);
+    }
+    if (section === 'experiences') base = index!=null ? (emp?.experiences?.[index] ?? {}) : { title: '', company: '', startDate: '', endDate: '', description: '', documents: [] };
+    if (section === 'peopleInCharge') {
+      base = index!=null ? (emp?.peopleInCharge?.[index] ?? {}) : { name: '', phone: '', relationship: '', cin: '', birthDate: '' };
+      if (base.CIN && !base.cin) base.cin = base.CIN;
+    }
     setTempItem(base);
     setDocFiles([]);
   };
@@ -230,6 +267,7 @@ export default function EmployeeDetailsPage() {
     const list = (current as any)[section] || [];
     let newList = Array.isArray(list) ? list.slice() : [];
 
+    // Handle document uploads for documents section
     if (section === 'documents' && docFiles.length) {
       try {
         const formData = new FormData();
@@ -246,10 +284,59 @@ export default function EmployeeDetailsPage() {
       }
     }
 
+    // Ensure documentType is preserved for documents
+    if (section === 'documents' && !tempItem.documentType) {
+      tempItem.documentType = currentDocumentType;
+    }
+
+    // Handle document uploads for experiences, education, and certifications sections
+    if ((section === 'experiences' || section === 'education' || section === 'certifications') && docFiles.length > 0) {
+      try {
+        const uploadedDocs = [];
+        for (const file of docFiles) {
+          const formData = new FormData();
+          formData.append('file', file);
+          const up = await apiClient.post(apiRoutes.files.uploadTemp, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+          const payload: any = up.data && typeof up.data === 'object' && 'data' in up.data ? up.data.data : up.data;
+          uploadedDocs.push({
+            fileName: payload?.fileName || payload?.filename || file.name,
+            mimeType: payload?.mimeType || file.type,
+            size: payload?.size || file.size
+          });
+        }
+        // Add uploaded documents to existing ones
+        tempItem.documents = [...(tempItem.documents || []), ...uploadedDocs];
+      } catch (e) {
+        console.error(e);
+        toast.error('Échec du téléversement des documents');
+        return;
+      }
+    }
+
+    // Validate peopleInCharge inputs
+    let itemForSave = tempItem;
+    if (section === 'peopleInCharge') {
+      const item = { ...tempItem };
+      // Ensure relationship from SelectField is captured
+      item.relationship = relForm.getValues('relationship') || item.relationship || '';
+      // Ensure lowercase cin property
+      if (item.CIN && !item.cin) item.cin = item.CIN;
+      // Basic validation: name, phone, relationship required, cin format if provided
+      const cinRegex = /^[A-Z]{1,2}\d{3,6}$/;
+      if (!item.name?.trim()) { toast.error('Le nom est requis'); return; }
+      if (!item.phone?.trim()) { toast.error('Le téléphone est requis'); return; }
+      if (!item.relationship?.trim()) { toast.error('La relation est requise'); return; }
+      if (item.cin && !cinRegex.test(String(item.cin).toUpperCase())) {
+        toast.error('Format CIN invalide (ex: AB123456)');
+        return;
+      }
+      itemForSave = item;
+    }
+
     if (index != null) {
-      newList[index] = tempItem;
+      newList[index] = itemForSave;
     } else {
-      newList.push(tempItem);
+      newList.push(itemForSave);
     }
 
     await patchEmployee({ [section]: newList } as any);
@@ -257,7 +344,7 @@ export default function EmployeeDetailsPage() {
     setTempItem(null);
   };
 
-  const removeItem = async (section: 'education'|'skills'|'certifications'|'documents'|'emergencyContacts', index: number) => {
+  const removeItem = async (section: 'education'|'skills'|'certifications'|'documents'|'peopleInCharge'|'experiences', index: number) => {
     const list = ((emp as any)?.[section] || []).slice();
     list.splice(index, 1);
     await patchEmployee({ [section]: list } as any, t('common.deleted'));
@@ -273,17 +360,17 @@ export default function EmployeeDetailsPage() {
 
   return (
     <PageContainer>
-      <div className="w-full mx-auto px-4 py-6 space-y-2 mt-2">
+      <div className='mx-auto mt-2 w-full space-y-2 px-4 py-6'>
         {/* Header Section - Modern Hero */}
-        <Card className="relative overflow-hidden border-2 py-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-primary/10 to-background opacity-50" />
+        <Card className='relative overflow-hidden border-2 py-0'>
+          <div className='from-primary/5 via-primary/10 to-background absolute inset-0 bg-gradient-to-br opacity-50' />
 
-          <div className="relative p-2 md:p-8">
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="flex-shrink-0 relative">
-                <Avatar className="h-24 w-24 md:h-32 md:w-32 ring-4 ring-primary/20 shadow-lg">
+          <div className='relative p-2 md:p-8'>
+            <div className='flex flex-col gap-6 md:flex-row'>
+              <div className='relative flex-shrink-0'>
+                <Avatar className='ring-primary/20 h-24 w-24 shadow-lg ring-4 md:h-32 md:w-32'>
                   <AvatarImage src={currentAvatarSrc} alt={fullName} />
-                  <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-primary to-primary/60 text-primary-foreground">
+                  <AvatarFallback className='from-primary to-primary/60 text-primary-foreground bg-gradient-to-br text-2xl font-bold'>
                     {initials}
                   </AvatarFallback>
                 </Avatar>
@@ -291,80 +378,99 @@ export default function EmployeeDetailsPage() {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
-                        type="button"
-                        variant="secondary"
-                        size="icon"
+                        type='button'
+                        variant='secondary'
+                        size='icon'
                         onClick={() => setOpenChangePhoto(true)}
-                        className="absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4 h-8 w-8 rounded-full shadow-md hover:shadow-lg border"
-                        aria-label={t('employeeDetails.actions.editPhotoTooltip') || 'Modifier la photo de profil'}
+                        className='absolute right-0 bottom-0 h-8 w-8 translate-x-1/4 translate-y-1/4 rounded-full border shadow-md hover:shadow-lg'
+                        aria-label={
+                          t('employeeDetails.actions.editPhotoTooltip') ||
+                          'Modifier la photo de profil'
+                        }
                       >
-                        <Pencil className="h-4 w-4" />
+                        <Pencil className='h-4 w-4' />
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      {t('employeeDetails.actions.editPhotoTooltip') || 'Modifier la photo de profil'}
+                      {t('employeeDetails.actions.editPhotoTooltip') ||
+                        'Modifier la photo de profil'}
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>
 
-              <div className="flex-1 space-y-4">
-                <div className="space-y-2">
-                  <div className="flex items-start justify-between gap-4">
+              <div className='flex-1 space-y-4'>
+                <div className='space-y-2'>
+                  <div className='flex items-start justify-between gap-4'>
                     <div>
-                      <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
+                      <h1 className='from-foreground to-foreground/70 bg-gradient-to-r bg-clip-text text-3xl font-bold tracking-tight'>
                         {fullName}
                       </h1>
-                      <p className="text-lg text-muted-foreground mt-1">
+                      <p className='text-muted-foreground mt-1 text-lg'>
                         {emp?.position || '—'}
                       </p>
                     </div>
                     {emp?.status && (
-                      <Badge className={cn("px-3 py-1 font-medium", getStatusColor(emp.status))}>
+                      <Badge
+                        className={cn(
+                          'px-3 py-1 font-medium',
+                          getStatusColor(emp.status)
+                        )}
+                      >
                         {emp.status}
                       </Badge>
                     )}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-background/80 border">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                      <Mail className="h-5 w-5" />
+                <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4'>
+                  <div className='bg-background/80 flex items-center gap-3 rounded-lg border p-3'>
+                    <div className='bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg'>
+                      <Mail className='h-5 w-5' />
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs text-muted-foreground">Matricule</p>
-                      <p className="text-sm font-medium truncate">{emp?.matricule || '—'}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-background/80 border">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                      <Phone className="h-5 w-5" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs text-muted-foreground">Téléphone</p>
-                      <p className="text-sm font-medium truncate">{emp?.phone || '—'}</p>
+                    <div className='min-w-0 flex-1'>
+                      <p className='text-muted-foreground text-xs'>Matricule</p>
+                      <p className='truncate text-sm font-medium'>
+                        {emp?.matricule || '—'}
+                      </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-background/80 border">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                      <Building2 className="h-5 w-5" />
+                  <div className='bg-background/80 flex items-center gap-3 rounded-lg border p-3'>
+                    <div className='bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg'>
+                      <Phone className='h-5 w-5' />
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs text-muted-foreground">Département</p>
-                      <p className="text-sm font-medium truncate">{emp?.departement?.name|| '—'}</p>
+                    <div className='min-w-0 flex-1'>
+                      <p className='text-muted-foreground text-xs'>Téléphone</p>
+                      <p className='truncate text-sm font-medium'>
+                        {emp?.phone || '—'}
+                      </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-background/80 border">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                      <Calendar className="h-5 w-5" />
+                  <div className='bg-background/80 flex items-center gap-3 rounded-lg border p-3'>
+                    <div className='bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg'>
+                      <Building2 className='h-5 w-5' />
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs text-muted-foreground">Embauche</p>
-                      <p className="text-sm font-medium truncate">{formatDate(emp?.hireDate)}</p>
+                    <div className='min-w-0 flex-1'>
+                      <p className='text-muted-foreground text-xs'>
+                        Département
+                      </p>
+                      <p className='truncate text-sm font-medium'>
+                        {emp?.departement?.name || '—'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className='bg-background/80 flex items-center gap-3 rounded-lg border p-3'>
+                    <div className='bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg'>
+                      <Calendar className='h-5 w-5' />
+                    </div>
+                    <div className='min-w-0 flex-1'>
+                      <p className='text-muted-foreground text-xs'>Embauche</p>
+                      <p className='truncate text-sm font-medium'>
+                        {formatDate(emp?.hireDate)}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -374,60 +480,104 @@ export default function EmployeeDetailsPage() {
         </Card>
 
         {/* Tabs Section */}
-        <Tabs value={active} onValueChange={setActive} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7 h-auto p-1 bg-muted/50">
-            <TabsTrigger value="personal" className="gap-2 data-[state=active]:bg-background">
-              <UserRound className="h-4 w-4" />
-              <span className="hidden sm:inline">{t('employeeDetails.tabs.personal')}</span>
+        <Tabs value={active} onValueChange={setActive} className='space-y-4'>
+          <TabsList className='bg-muted/50 grid h-auto w-full grid-cols-3 p-1 lg:grid-cols-8'>
+            <TabsTrigger
+              value='personal'
+              className='data-[state=active]:bg-background gap-2'
+            >
+              <UserRound className='h-4 w-4' />
+              <span className='hidden sm:inline'>
+                {t('employeeDetails.tabs.personal')}
+              </span>
             </TabsTrigger>
-            <TabsTrigger value="emergency" className="gap-2 data-[state=active]:bg-background">
-              <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">Urgence</span>
+            <TabsTrigger
+              value='peopleInCharge'
+              className='data-[state=active]:bg-background gap-2'
+            >
+              <Users className='h-4 w-4' />
+              <span className='hidden sm:inline'>
+                {t('employeeDetails.tabs.peopleInCharge')}
+              </span>
             </TabsTrigger>
-            <TabsTrigger value="skills" className="gap-2 data-[state=active]:bg-background">
-              <GraduationCap className="h-4 w-4" />
-              <span className="hidden sm:inline">{t('employeeDetails.tabs.skills')}</span>
+            <TabsTrigger
+              value='skills'
+              className='data-[state=active]:bg-background gap-2'
+            >
+              <GraduationCap className='h-4 w-4' />
+              <span className='hidden sm:inline'>
+                {t('employeeDetails.tabs.skills')}
+              </span>
             </TabsTrigger>
-            <TabsTrigger value="documents" className="gap-2 data-[state=active]:bg-background">
-              <FileText className="h-4 w-4" />
-              <span className="hidden sm:inline">{t('employeeDetails.tabs.documents')}</span>
+            <TabsTrigger
+              value='documents'
+              className='data-[state=active]:bg-background gap-2'
+            >
+              <FileText className='h-4 w-4' />
+              <span className='hidden sm:inline'>
+                {t('employeeDetails.tabs.documents')}
+              </span>
             </TabsTrigger>
-            <TabsTrigger value="social" className="gap-2 data-[state=active]:bg-background">
-              <Heart className="h-4 w-4" />
-              <span className="hidden sm:inline">{t('employeeDetails.tabs.social')}</span>
+            <TabsTrigger
+              value='social'
+              className='data-[state=active]:bg-background gap-2'
+            >
+              <Heart className='h-4 w-4' />
+              <span className='hidden sm:inline'>
+                {t('employeeDetails.tabs.social')}
+              </span>
             </TabsTrigger>
-            <TabsTrigger value="contracts" className="gap-2 data-[state=active]:bg-background">
-              <NotebookText className="h-4 w-4" />
-              <span className="hidden sm:inline">{t('employeeDetails.tabs.contracts')}</span>
+            <TabsTrigger
+              value='contracts'
+              className='data-[state=active]:bg-background gap-2'
+            >
+              <NotebookText className='h-4 w-4' />
+              <span className='hidden sm:inline'>
+                {t('employeeDetails.tabs.contracts')}
+              </span>
             </TabsTrigger>
-            <TabsTrigger value="leaves" className="gap-2 data-[state=active]:bg-background">
-              <Calendar className="h-4 w-4" />
-              <span className="hidden sm:inline">{t('employeeDetails.tabs.leaves')}</span>
+            <TabsTrigger
+              value='leaves'
+              className='data-[state=active]:bg-background gap-2'
+            >
+              <Calendar className='h-4 w-4' />
+              <span className='hidden sm:inline'>
+                {t('employeeDetails.tabs.leaves')}
+              </span>
+            </TabsTrigger>
+            <TabsTrigger value='experiences' className='data-[state=active]:bg-background gap-2'>
+              <NotebookText className='h-4 w-4' />
+              <span className='hidden sm:inline'>{t('employeeDetails.tabs.experiences')}</span>
             </TabsTrigger>
           </TabsList>
 
           {/* Personal Tab */}
-          <TabsContent value="personal" className="space-y-4">
+          <TabsContent value='personal' className='space-y-4'>
             <PersonalTab
               active={active === 'personal'}
               employee={emp}
               onUpdate={updateField}
+              documents={emp?.documents || []}
+              onAddDocument={(docType) => openItemDialog('documents', undefined, docType)}
+              onEditDocument={(index) => openItemDialog('documents', index)}
+              onDeleteDocument={(index) => removeItem('documents', index)}
+              onPreviewDocument={handleOpen}
             />
           </TabsContent>
 
-          {/* Emergency Contacts Tab */}
-          <TabsContent value="emergency" className="space-y-4">
-            <EmergencyContactsTab
-              active={active === 'emergency'}
-              contacts={emp?.emergencyContacts || []}
-              onAdd={() => openItemDialog('emergencyContacts')}
-              onEdit={(index) => openItemDialog('emergencyContacts', index)}
-              onDelete={(index) => removeItem('emergencyContacts', index)}
+          {/* peopleInCharge Tab */}
+          <TabsContent value='peopleInCharge' className='space-y-4'>
+            <PeploeInCharge
+              active={active === 'peopleInCharge'}
+              contacts={emp?.peopleInCharge || []}
+              onAdd={() => openItemDialog('peopleInCharge')}
+              onEdit={(index) => openItemDialog('peopleInCharge', index)}
+              onDelete={(index) => removeItem('peopleInCharge', index)}
             />
           </TabsContent>
 
           {/* Skills Tab */}
-          <TabsContent value="skills" className="space-y-4">
+          <TabsContent value='skills' className='space-y-4'>
             <SkillsTab
               active={active === 'skills'}
               education={emp?.education}
@@ -440,17 +590,26 @@ export default function EmployeeDetailsPage() {
               onEditSkill={(index) => openItemDialog('skills', index)}
               onDeleteSkill={(index) => removeItem('skills', index)}
               onAddCertification={() => openItemDialog('certifications')}
-              onEditCertification={(index) => openItemDialog('certifications', index)}
-              onDeleteCertification={(index) => removeItem('certifications', index)}
+              onEditCertification={(index) =>
+                openItemDialog('certifications', index)
+              }
+              onDeleteCertification={(index) =>
+                removeItem('certifications', index)
+              }
+              documents={emp?.documents || []}
+              onAddDocument={(docType) => openItemDialog('documents', undefined, docType)}
+              onEditDocument={(index) => openItemDialog('documents', index)}
+              onDeleteDocument={(index) => removeItem('documents', index)}
+              onPreviewDocument={handleOpen}
             />
           </TabsContent>
 
           {/* Documents Tab */}
-          <TabsContent value="documents">
+          <TabsContent value='documents'>
             <DocumentsTab
               active={active === 'documents'}
-              documents={combinedDocs}
-              onAdd={() => openItemDialog('documents')}
+              documents={emp?.documents || []}
+              onAdd={() => openItemDialog('documents', undefined, 'other')}
               onEdit={(index) => openItemDialog('documents', index)}
               onDelete={(index) => removeItem('documents', index)}
               onPreview={handleOpen}
@@ -458,25 +617,29 @@ export default function EmployeeDetailsPage() {
           </TabsContent>
 
           {/* Social Tab */}
-          <TabsContent value="social">
-            <AnimatedTabContent active={active==='social'}>
-              <Card className="p-8 text-center border-2 border-dashed">
-                <Heart className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Section en développement</h3>
-                <p className="text-sm text-muted-foreground">
-                  Informations CNSS, Mutuelle et autres données sociales à venir
+          <TabsContent value='social'>
+            <AnimatedTabContent active={active === 'social'}>
+              <Card className='border-2 border-dashed p-8 text-center'>
+                <Heart className='text-muted-foreground/50 mx-auto mb-4 h-12 w-12' />
+                <h3 className='mb-2 text-lg font-semibold'>
+                  Section en développement
+                </h3>
+                <p className='text-muted-foreground text-sm'>
+                  Informations assurances, Mutuelle et autres données sociales à venir
                 </p>
               </Card>
             </AnimatedTabContent>
           </TabsContent>
 
           {/* Contracts Tab */}
-          <TabsContent value="contracts">
-            <AnimatedTabContent active={active==='contracts'}>
-              <Card className="p-8 text-center border-2 border-dashed">
-                <NotebookText className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Historique des contrats</h3>
-                <p className="text-sm text-muted-foreground">
+          <TabsContent value='contracts'>
+            <AnimatedTabContent active={active === 'contracts'}>
+              <Card className='border-2 border-dashed p-8 text-center'>
+                <NotebookText className='text-muted-foreground/50 mx-auto mb-4 h-12 w-12' />
+                <h3 className='mb-2 text-lg font-semibold'>
+                  Historique des contrats
+                </h3>
+                <p className='text-muted-foreground text-sm'>
                   Contrats, avenants et mouvements RH à brancher
                 </p>
               </Card>
@@ -484,54 +647,67 @@ export default function EmployeeDetailsPage() {
           </TabsContent>
 
           {/* Leaves Tab */}
-          <TabsContent value="leaves">
-            <AnimatedTabContent active={active==='leaves'}>
-              <Card className="p-8 text-center border-2 border-dashed">
-                <Calendar className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Gestion des congés</h3>
-                <p className="text-sm text-muted-foreground">
+          <TabsContent value='leaves'>
+            <AnimatedTabContent active={active === 'leaves'}>
+              <Card className='border-2 border-dashed p-8 text-center'>
+                <Calendar className='text-muted-foreground/50 mx-auto mb-4 h-12 w-12' />
+                <h3 className='mb-2 text-lg font-semibold'>
+                  Gestion des congés
+                </h3>
+                <p className='text-muted-foreground text-sm'>
                   Congés, absences et planning à développer
                 </p>
               </Card>
             </AnimatedTabContent>
+          </TabsContent>
+
+          {/* Experiences Tab */}
+          <TabsContent value='experiences' className='space-y-4'>
+            <ExperiencesTab
+              active={active === 'experiences'}
+              experiences={emp?.experiences}
+              onAdd={() => openItemDialog('experiences')}
+              onEdit={(index: number) => openItemDialog('experiences', index)}
+              onDelete={(index: number) => removeItem('experiences', index)}
+            />
           </TabsContent>
         </Tabs>
       </div>
 
       {/* Preview Dialog */}
       <Dialog open={openPreview} onOpenChange={setOpenPreview}>
-        <DialogContent className="max-w-4xl max-h-[90vh]">
+        <DialogContent className='max-h-[90vh] max-w-4xl'>
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-between">
+            <DialogTitle className='flex items-center justify-between'>
               <span>{previewItem?.title}</span>
               {previewItem?.fileName && (
                 <Button
-                  variant="outline"
-                  size="sm"
+                  variant='outline'
+                  size='sm'
                   onClick={() => {
                     toast.success(t('common.download'));
                   }}
-                  className="gap-2"
+                  className='gap-2'
                 >
-                  <Download className="h-4 w-4" />
+                  <Download className='h-4 w-4' />
                   {t('common.download')}
                 </Button>
               )}
             </DialogTitle>
           </DialogHeader>
-          <div className="overflow-auto max-h-[70vh]">
+          <div className='max-h-[70vh] overflow-auto'>
             {previewItem?.fileName?.match(/\.(png|jpg|jpeg|gif)$/i) && (
               <img
                 src={`/images/user/${previewItem.fileName}`}
                 alt={previewItem.title}
-                className="w-full h-auto rounded-lg"
+                className='h-auto w-full rounded-lg'
               />
             )}
             {previewItem?.fileName?.endsWith('.pdf') && (
               <iframe
                 title={previewItem.title}
                 src={`/images/user/${previewItem.fileName}`}
-                className="w-full h-[70vh] rounded-lg border"
+                className='h-[70vh] w-full rounded-lg border'
               />
             )}
           </div>
@@ -540,23 +716,29 @@ export default function EmployeeDetailsPage() {
 
       {/* Change Photo Dialog */}
       <Dialog open={openChangePhoto} onOpenChange={setOpenChangePhoto}>
-        <DialogContent className="max-w-md">
+        <DialogContent className='max-w-md'>
           <DialogHeader>
-            <DialogTitle>{t('employeeDetails.actions.changePhoto') || 'Changer la photo de profil'}</DialogTitle>
+            <DialogTitle>
+              {t('employeeDetails.actions.changePhoto') ||
+                'Changer la photo de profil'}
+            </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className='space-y-4'>
             <FileUploader
               value={selectedPhotoFiles}
               onValueChange={setSelectedPhotoFiles}
               accept={{ 'image/*': [] }}
               maxFiles={1}
-              description={t('employeeDetails.actions.photoRequirements') || 'Formats: JPG, PNG. Taille max: 2MB'}
-              variant="default"
+              description={
+                t('employeeDetails.actions.photoRequirements') ||
+                'Formats: JPG, PNG. Taille max: 2MB'
+              }
+              variant='default'
             />
           </div>
           <DialogFooter>
             <Button
-              variant="outline"
+              variant='outline'
               onClick={() => {
                 setOpenChangePhoto(false);
                 setSelectedPhotoFiles([]);
@@ -564,8 +746,17 @@ export default function EmployeeDetailsPage() {
             >
               {t('common.cancel')}
             </Button>
-            <Button onClick={handleSaveAvatar} disabled={avatarUploading || selectedPhotoFiles.length === 0} className="gap-2">
-              {avatarUploading && <span className="h-4 w-4 animate-spin border-2 border-t-transparent rounded-full" aria-hidden="true" />}
+            <Button
+              onClick={handleSaveAvatar}
+              disabled={avatarUploading || selectedPhotoFiles.length === 0}
+              className='gap-2'
+            >
+              {avatarUploading && (
+                <span
+                  className='h-4 w-4 animate-spin rounded-full border-2 border-t-transparent'
+                  aria-hidden='true'
+                />
+              )}
               {t('common.save')}
             </Button>
           </DialogFooter>
@@ -573,35 +764,126 @@ export default function EmployeeDetailsPage() {
       </Dialog>
 
       {/* Edit Item Dialog */}
-      <Dialog open={!!openEditItem} onOpenChange={(o)=>{ if (!o) { setOpenEditItem(null); setTempItem(null); } }}>
-        <DialogContent className="max-w-lg">
+      <Dialog
+        open={!!openEditItem}
+        onOpenChange={(o) => {
+          if (!o) {
+            setOpenEditItem(null);
+            setTempItem(null);
+          }
+        }}
+      >
+        <DialogContent className='max-w-lg'>
           <DialogHeader>
             <DialogTitle>
-              {openEditItem?.section === 'education' && (openEditItem.index!=null ? 'Modifier formation' : 'Ajouter formation')}
-              {openEditItem?.section === 'skills' && (openEditItem.index!=null ? 'Modifier compétence' : 'Ajouter compétence')}
-              {openEditItem?.section === 'certifications' && (openEditItem.index!=null ? 'Modifier certification' : 'Ajouter certification')}
-              {openEditItem?.section === 'documents' && (openEditItem.index!=null ? 'Modifier document' : 'Ajouter document')}
-              {openEditItem?.section === 'emergencyContacts' && (openEditItem.index!=null ? 'Modifier contact' : 'Ajouter contact d\'urgence')}
+              {openEditItem?.section === 'education' &&
+                (openEditItem.index != null
+                  ? 'Modifier formation'
+                  : 'Ajouter formation')}
+              {openEditItem?.section === 'skills' &&
+                (openEditItem.index != null
+                  ? 'Modifier compétence'
+                  : 'Ajouter compétence')}
+              {openEditItem?.section === 'certifications' &&
+                (openEditItem.index != null
+                  ? 'Modifier certification'
+                  : 'Ajouter certification')}
+              {openEditItem?.section === 'documents' &&
+                (openEditItem.index != null
+                  ? 'Modifier document'
+                  : 'Ajouter document')}
+              {openEditItem?.section === 'peopleInCharge' &&
+                (openEditItem.index != null
+                  ? 'Modifier les personnes en charge'
+                  : 'Ajouter personnes en charge')}
+              {openEditItem?.section === 'experiences' &&
+                (openEditItem.index != null
+                  ? 'Modifier expérience'
+                  : 'Ajouter expérience')}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className='space-y-4'>
             {openEditItem?.section === 'education' && (
               <>
                 <div>
-                  <Label className="mb-1">Niveau</Label>
-                  <Input value={tempItem?.level || ''} onChange={(e)=>setTempItem((p:any)=>({ ...p, level: e.target.value }))} />
+                  <Label className='mb-1'>Niveau</Label>
+                  <Input
+                    value={tempItem?.level || ''}
+                    onChange={(e) =>
+                      setTempItem((p: any) => ({ ...p, level: e.target.value }))
+                    }
+                  />
                 </div>
                 <div>
-                  <Label className="mb-1">Diplôme</Label>
-                  <Input value={tempItem?.diploma || ''} onChange={(e)=>setTempItem((p:any)=>({ ...p, diploma: e.target.value }))} />
+                  <Label className='mb-1'>Diplôme</Label>
+                  <Input
+                    value={tempItem?.diploma || ''}
+                    onChange={(e) =>
+                      setTempItem((p: any) => ({
+                        ...p,
+                        diploma: e.target.value
+                      }))
+                    }
+                  />
                 </div>
                 <div>
-                  <Label className="mb-1">Année</Label>
-                  <Input value={tempItem?.year || ''} onChange={(e)=>setTempItem((p:any)=>({ ...p, year: e.target.value }))} />
+                  <Label className='mb-1'>Année</Label>
+                  <Input
+                    value={tempItem?.year || ''}
+                    onChange={(e) =>
+                      setTempItem((p: any) => ({ ...p, year: e.target.value }))
+                    }
+                  />
                 </div>
                 <div>
-                  <Label className="mb-1">Établissement</Label>
-                  <Input value={tempItem?.institution || ''} onChange={(e)=>setTempItem((p:any)=>({ ...p, institution: e.target.value }))} />
+                  <Label className='mb-1'>Établissement</Label>
+                  <Input
+                    value={tempItem?.institution || ''}
+                    onChange={(e) =>
+                      setTempItem((p: any) => ({
+                        ...p,
+                        institution: e.target.value
+                      }))
+                    }
+                  />
+                </div>
+
+                {/* Documents section for education/diplomas */}
+                <div className='border-t pt-4 mt-4'>
+                  <Label className='mb-2'>Diplômes et attestations (optionnel)</Label>
+                  <p className='text-xs text-muted-foreground mb-3'>Ajoutez les documents de votre diplôme</p>
+                  <FileUploader
+                    value={docFiles}
+                    onValueChange={setDocFiles}
+                    maxFiles={5}
+                    accept={{ 'image/*': [], 'application/pdf': [] }}
+                    description='Plusieurs documents possibles'
+                  />
+
+                  {tempItem?.documents && tempItem.documents.length > 0 && (
+                    <div className='mt-3 space-y-2'>
+                      <p className='text-sm font-medium'>Documents existants:</p>
+                      {tempItem.documents.map((doc: any, idx: number) => (
+                        <div key={idx} className='flex items-center justify-between p-2 bg-muted rounded text-sm'>
+                          <span className='flex items-center gap-2'>
+                            <FileText className='h-4 w-4' />
+                            {doc.fileName}
+                          </span>
+                          <Button
+                            variant='ghost'
+                            size='sm'
+                            onClick={() => {
+                              const newDocs = [...(tempItem.documents || [])];
+                              newDocs.splice(idx, 1);
+                              setTempItem((p: any) => ({ ...p, documents: newDocs }));
+                            }}
+                          >
+                            <Trash2 className='h-4 w-4 text-destructive' />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </>
             )}
@@ -609,12 +891,28 @@ export default function EmployeeDetailsPage() {
             {openEditItem?.section === 'skills' && (
               <>
                 <div>
-                  <Label className="mb-1">Compétence</Label>
-                  <Input value={tempItem?.name || ''} onChange={(e)=>setTempItem((p:any)=>({ ...p, name: e.target.value }))} />
+                  <Label className='mb-1'>Compétence</Label>
+                  <Input
+                    value={tempItem?.name || ''}
+                    onChange={(e) =>
+                      setTempItem((p: any) => ({ ...p, name: e.target.value }))
+                    }
+                  />
                 </div>
                 <div>
-                  <Label className="mb-1">Niveau (1-5)</Label>
-                  <Input type="number" min={1} max={5} value={tempItem?.level ?? 3} onChange={(e)=>setTempItem((p:any)=>({ ...p, level: Number(e.target.value) }))} />
+                  <Label className='mb-1'>Niveau (1-5)</Label>
+                  <Input
+                    type='number'
+                    min={1}
+                    max={5}
+                    value={tempItem?.level ?? 3}
+                    onChange={(e) =>
+                      setTempItem((p: any) => ({
+                        ...p,
+                        level: Number(e.target.value)
+                      }))
+                    }
+                  />
                 </div>
               </>
             )}
@@ -622,38 +920,154 @@ export default function EmployeeDetailsPage() {
             {openEditItem?.section === 'certifications' && (
               <>
                 <div>
-                  <Label className="mb-1">Nom</Label>
-                  <Input value={tempItem?.name || ''} onChange={(e)=>setTempItem((p:any)=>({ ...p, name: e.target.value }))} />
+                  <Label className='mb-1'>Nom</Label>
+                  <Input
+                    value={tempItem?.name || ''}
+                    onChange={(e) =>
+                      setTempItem((p: any) => ({ ...p, name: e.target.value }))
+                    }
+                  />
                 </div>
                 <div>
-                  <Label className="mb-1">Émetteur</Label>
-                  <Input value={tempItem?.issuer || ''} onChange={(e)=>setTempItem((p:any)=>({ ...p, issuer: e.target.value }))} />
+                  <Label className='mb-1'>Émetteur</Label>
+                  <Input
+                    value={tempItem?.issuer || ''}
+                    onChange={(e) =>
+                      setTempItem((p: any) => ({
+                        ...p,
+                        issuer: e.target.value
+                      }))
+                    }
+                  />
                 </div>
                 <div>
-                  <Label className="mb-1">Date d&apos;émission</Label>
-                  <DatePickerField value={tempItem?.issueDate || ''} onChange={(d)=>setTempItem((p:any)=>({ ...p, issueDate: d || '' }))} />
+                  <Label className='mb-1'>Date d&apos;émission</Label>
+                  <DatePickerField
+                    value={tempItem?.issueDate || ''}
+                    onChange={(d) =>
+                      setTempItem((p: any) => ({ ...p, issueDate: d || '' }))
+                    }
+                  />
                 </div>
                 <div>
-                  <Label className="mb-1">Date d&apos;expiration</Label>
-                  <DatePickerField value={tempItem?.expirationDate || ''} onChange={(d)=>setTempItem((p:any)=>({ ...p, expirationDate: d || '' }))} />
+                  <Label className='mb-1'>Date d&apos;expiration</Label>
+                  <DatePickerField
+                    value={tempItem?.expirationDate || ''}
+                    onChange={(d) =>
+                      setTempItem((p: any) => ({
+                        ...p,
+                        expirationDate: d || ''
+                      }))
+                    }
+                  />
+                </div>
+
+                {/* Documents section for certifications */}
+                <div className='border-t pt-4 mt-4'>
+                  <Label className='mb-2'>Certificats et attestations (optionnel)</Label>
+                  <p className='text-xs text-muted-foreground mb-3'>Ajoutez les documents de certification</p>
+                  <FileUploader
+                    value={docFiles}
+                    onValueChange={setDocFiles}
+                    maxFiles={5}
+                    accept={{ 'image/*': [], 'application/pdf': [] }}
+                    description='Plusieurs documents possibles'
+                  />
+
+                  {tempItem?.documents && tempItem.documents.length > 0 && (
+                    <div className='mt-3 space-y-2'>
+                      <p className='text-sm font-medium'>Documents existants:</p>
+                      {tempItem.documents.map((doc: any, idx: number) => (
+                        <div key={idx} className='flex items-center justify-between p-2 bg-muted rounded text-sm'>
+                          <span className='flex items-center gap-2'>
+                            <FileText className='h-4 w-4' />
+                            {doc.fileName}
+                          </span>
+                          <Button
+                            variant='ghost'
+                            size='sm'
+                            onClick={() => {
+                              const newDocs = [...(tempItem.documents || [])];
+                              newDocs.splice(idx, 1);
+                              setTempItem((p: any) => ({ ...p, documents: newDocs }));
+                            }}
+                          >
+                            <Trash2 className='h-4 w-4 text-destructive' />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </>
             )}
 
             {openEditItem?.section === 'documents' && (
               <>
+                {/* Only show type and title for 'other' documents */}
+                {currentDocumentType === 'other' && (
+                  <>
+                    <div>
+                      <Label className='mb-1'>Type de document</Label>
+                      <select
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        value={tempItem?.documentType || 'other'}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setTempItem((p: any) => ({ ...p, documentType: value }));
+                          setCurrentDocumentType(value as any);
+                        }}
+                      >
+                        <option value="cin">CIN</option>
+                        <option value="certificate">Certificat</option>
+                        <option value="diploma">Diplôme</option>
+                        <option value="experience">Expérience</option>
+                        <option value="other">Autre</option>
+                      </select>
+                    </div>
+                    <div>
+                      <Label className='mb-1'>Titre</Label>
+                      <Input
+                        value={tempItem?.title || ''}
+                        onChange={(e) =>
+                          setTempItem((p: any) => ({ ...p, title: e.target.value }))
+                        }
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Show document type badge for non-other types */}
+                {currentDocumentType !== 'other' && (
+                  <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+                    <FileText className="h-5 w-5 text-primary" />
+                    <div>
+                      <p className="font-medium text-sm">{tempItem?.title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        Type: {currentDocumentType === 'cin' ? 'CIN' :
+                               currentDocumentType === 'certificate' ? 'Certificat' :
+                               currentDocumentType === 'diploma' ? 'Diplôme' : 'Document'}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 <div>
-                  <Label className="mb-1">Titre</Label>
-                  <Input value={tempItem?.title || ''} onChange={(e)=>setTempItem((p:any)=>({ ...p, title: e.target.value }))} />
-                </div>
-                <div>
-                  <Label className="mb-1">Fichier</Label>
-                  <FileUploader value={docFiles} onValueChange={setDocFiles} maxFiles={1} accept={{ 'image/*': [], 'application/pdf': [] }} description={t('employeeCreate.documents.help') || 'PDF ou image'} />
+                  <Label className='mb-1'>Fichier</Label>
+                  <FileUploader
+                    value={docFiles}
+                    onValueChange={setDocFiles}
+                    maxFiles={1}
+                    accept={{ 'image/*': [], 'application/pdf': [] }}
+                    description={
+                      t('employeeCreate.documents.help') || 'PDF ou image'
+                    }
+                  />
                 </div>
               </>
             )}
 
-            {openEditItem?.section === 'emergencyContacts' && (
+            {openEditItem?.section === 'peopleInCharge' && (
               <>
                 <div>
                   <Label className="mb-1">Nom complet</Label>
@@ -665,15 +1079,112 @@ export default function EmployeeDetailsPage() {
                 </div>
                 <div>
                   <Label className="mb-1">Relation</Label>
-                  <Input value={tempItem?.relationship || ''} onChange={(e)=>setTempItem((p:any)=>({ ...p, relationship: e.target.value }))} placeholder="Ex: Époux(se), Parent, Frère..." />
+                  <SelectField
+                    name="relationship"
+                    control={relForm.control}
+                    placeholder="Sélectionner"
+                    options={[
+                      { label: 'Époux(se)', value: 'Époux(se)' },
+                      { label: 'Parent', value: 'Parent' },
+                      { label: 'Fils', value: 'Fils' },
+                      { label: 'Fille', value: 'Fille' },
+                      { label: 'Frère', value: 'Frère' },
+                      { label: 'Soeur', value: 'Soeur' },
+                      { label: 'Tuteur', value: 'Tuteur' },
+                      { label: 'Autre', value: 'Autre' },
+                    ]}
+                  />
+                </div>
+                <div>
+                  <Label className="mb-1">CIN</Label>
+                  <Input value={tempItem?.cin || ''} onChange={(e)=>setTempItem((p:any)=>({ ...p, cin: e.target.value }))} placeholder="Ex: AB123456" />
+                </div>
+                <div>
+                  <Label className="mb-1">Date de naissance</Label>
+                  <DatePickerField value={tempItem?.birthDate || ''} onChange={(d)=>setTempItem((p:any)=>({ ...p, birthDate: d || '' }))} />
+                </div>
+              </>
+            )}
+
+            {openEditItem?.section === 'experiences' && (
+              <>
+                <div>
+                  <Label className='mb-1'>Intitulé</Label>
+                  <Input value={tempItem?.title || ''} onChange={(e)=>setTempItem((p:any)=>({ ...p, title: e.target.value }))} placeholder="Ex: Développeur Frontend" />
+                </div>
+                <div>
+                  <Label className='mb-1'>Entreprise</Label>
+                  <Input value={tempItem?.company || ''} onChange={(e)=>setTempItem((p:any)=>({ ...p, company: e.target.value }))} placeholder='Ex: ACME Corp' />
+                </div>
+                <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+                  <div>
+                    <Label className='mb-1'>Début</Label>
+                    <DatePickerField value={tempItem?.startDate || ''} onChange={(d)=>setTempItem((p:any)=>({ ...p, startDate: d || '' }))} />
+                  </div>
+                  <div>
+                    <Label className='mb-1'>Fin</Label>
+                    <DatePickerField value={tempItem?.endDate || ''} onChange={(d)=>setTempItem((p:any)=>({ ...p, endDate: d || '' }))} />
+                  </div>
+                </div>
+                <div>
+                  <Label className='mb-1'>Description</Label>
+                  <Input value={tempItem?.description || ''} onChange={(e)=>setTempItem((p:any)=>({ ...p, description: e.target.value }))} placeholder='Résumé des missions' />
+                </div>
+
+                {/* Documents section for experience */}
+                <div className='border-t pt-4 mt-4'>
+                  <Label className='mb-2'>Documents justificatifs (optionnel)</Label>
+                  <p className='text-xs text-muted-foreground mb-3'>Attestations de travail, certificats, références...</p>
+                  <FileUploader
+                    value={docFiles}
+                    onValueChange={setDocFiles}
+                    maxFiles={5}
+                    accept={{ 'image/*': [], 'application/pdf': [] }}
+                    description='Vous pouvez ajouter plusieurs documents'
+                  />
+
+                  {/* Show existing documents */}
+                  {tempItem?.documents && tempItem.documents.length > 0 && (
+                    <div className='mt-3 space-y-2'>
+                      <p className='text-sm font-medium'>Documents existants:</p>
+                      {tempItem.documents.map((doc: any, idx: number) => (
+                        <div key={idx} className='flex items-center justify-between p-2 bg-muted rounded text-sm'>
+                          <span className='flex items-center gap-2'>
+                            <FileText className='h-4 w-4' />
+                            {doc.fileName}
+                          </span>
+                          <Button
+                            variant='ghost'
+                            size='sm'
+                            onClick={() => {
+                              const newDocs = [...(tempItem.documents || [])];
+                              newDocs.splice(idx, 1);
+                              setTempItem((p: any) => ({ ...p, documents: newDocs }));
+                            }}
+                          >
+                            <Trash2 className='h-4 w-4 text-destructive' />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </>
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={()=>{ setOpenEditItem(null); setTempItem(null); }}> {t('common.cancel')} </Button>
-            <Button onClick={saveItemDialog} className="gap-2">
-              <Check className="h-4 w-4" />
+            <Button
+              variant='outline'
+              onClick={() => {
+                setOpenEditItem(null);
+                setTempItem(null);
+              }}
+            >
+              {' '}
+              {t('common.cancel')}{' '}
+            </Button>
+            <Button onClick={saveItemDialog} className='gap-2'>
+              <Check className='h-4 w-4' />
               {t('common.save')}
             </Button>
           </DialogFooter>
@@ -682,4 +1193,3 @@ export default function EmployeeDetailsPage() {
     </PageContainer>
   );
 }
-

@@ -73,6 +73,7 @@
     "yes": "Oui",
     "no": "Non",
     "deleted": "Supprimé",
+    "saved": "Enregistré",
     "loading": "Chargement...",
     "creating": "Création...",
     "error": "Erreur",
@@ -290,9 +291,11 @@
     "loadError": "Impossible de charger l'employé",
     "tabs": {
       "personal": "Personnel",
-      "skills": "Skills & Studies",
-      "social": "CNSS & Mutuelle",
+      "skills": "Compétences & Formations",
+      "social": "Assurance & Mutuelle",
+      "experiences": "Expériences",
       "contracts": "Contrats & Mouvements",
+      "peopleInCharge": "Personnes en charge",
       "documents": "Documents",
       "leaves": "Congés & Absences"
     },

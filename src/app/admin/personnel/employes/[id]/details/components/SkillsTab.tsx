@@ -2,12 +2,13 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { GraduationCap, Layers, Award, Plus, Edit, Trash2, Building2 } from 'lucide-react';
+import { GraduationCap, Layers, Award, Plus, Edit, Trash2, Building2, FileText } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { AnimatedTabContent } from '../components';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { DocumentUploadSection, DocumentItem } from './DocumentUploadSection';
 
 // Skill level indicator component
 const SkillLevelBar: React.FC<{ level: number }> = ({ level }) => (
@@ -38,6 +39,11 @@ interface SkillsTabProps {
   onAddCertification: () => void;
   onEditCertification: (index: number) => void;
   onDeleteCertification: (index: number) => void;
+  documents?: DocumentItem[];
+  onAddDocument?: (documentType: 'cin' | 'certificate' | 'diploma' | 'experience' | 'other') => void;
+  onEditDocument?: (index: number) => void;
+  onDeleteDocument?: (index: number) => void;
+  onPreviewDocument?: (doc: DocumentItem) => void;
 }
 
 export const SkillsTab: React.FC<SkillsTabProps> = ({
@@ -68,7 +74,8 @@ export const SkillsTab: React.FC<SkillsTabProps> = ({
 
   return (
     <AnimatedTabContent active={active}>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Education */}
         <Card className="p-6 space-y-4 border-l-4 border-l-indigo-500">
           <div className="flex items-center justify-between mb-4">
@@ -132,6 +139,22 @@ export const SkillsTab: React.FC<SkillsTabProps> = ({
                       <Building2 className="h-3 w-3" />
                       {e.institution}
                     </p>
+                  )}
+                  {e.documents && e.documents.length > 0 && (
+                    <div className="pt-2 border-t mt-2">
+                      <div className="flex items-center gap-2 mb-1">
+                        <FileText className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-xs font-medium">Documents ({e.documents.length})</span>
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {e.documents.map((doc: any, docIdx: number) => (
+                          <div key={docIdx} className="flex items-center gap-1 text-xs bg-muted px-2 py-0.5 rounded">
+                            <FileText className="h-3 w-3" />
+                            <span className="max-w-[100px] truncate">{doc.fileName}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   )}
                 </div>
               ))}
@@ -273,6 +296,22 @@ export const SkillsTab: React.FC<SkillsTabProps> = ({
                     {c.expirationDate && ` · Expire le ${formatDate(c.expirationDate)}`}
                   </p>
                 )}
+                {c.documents && c.documents.length > 0 && (
+                  <div className="pt-2 border-t mt-2">
+                    <div className="flex items-center gap-2 mb-1">
+                      <FileText className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-xs font-medium">Documents ({c.documents.length})</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {c.documents.map((doc: any, docIdx: number) => (
+                        <div key={docIdx} className="flex items-center gap-1 text-xs bg-muted px-2 py-0.5 rounded">
+                          <FileText className="h-3 w-3" />
+                          <span className="max-w-[100px] truncate">{doc.fileName}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -282,6 +321,7 @@ export const SkillsTab: React.FC<SkillsTabProps> = ({
           </div>
         )}
       </Card>
+      </div>
     </AnimatedTabContent>
   );
 };

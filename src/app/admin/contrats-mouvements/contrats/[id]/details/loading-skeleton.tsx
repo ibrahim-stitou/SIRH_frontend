@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 export default function ContractDetailsLoadingSkeleton() {
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <div className=" mx-auto py-6 space-y-6">
       {/* En-tête */}
       <div className="flex items-start justify-between">
         <div className="space-y-2">

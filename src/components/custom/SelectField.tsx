@@ -36,8 +36,6 @@ export function SelectField<T extends Record<string, any>, K extends keyof T>({
                                                                                 className
                                                                               }: SelectFieldProps<T, K>) {
   const [searchTerm, setSearchTerm] = useState('');
-
-  // Filter options based on search term
   const filteredOptions = options.filter(option => {
     // Support both {value, label} and {id, displayField} formats
     const optionValue = option.label || option[displayField] || '';

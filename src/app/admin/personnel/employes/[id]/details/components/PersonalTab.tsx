@@ -1,22 +1,33 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { Card } from '@/components/ui/card';
-import { IdCard, MapPin, NotebookText } from 'lucide-react';
+import { IdCard, MapPin, NotebookText, FileText } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { AnimatedTabContent } from '../components';
 import EditableInfoRow from './EditableInfoRow';
 import { toast } from 'sonner';
+import { DocumentUploadSection, DocumentItem } from './DocumentUploadSection';
 
 interface PersonalTabProps {
   active: boolean;
   employee: any;
   onUpdate: (key: string, value: any) => Promise<void>;
+  documents?: DocumentItem[];
+  onAddDocument?: (documentType: 'cin' | 'certificate' | 'diploma' | 'experience' | 'other') => void;
+  onEditDocument?: (index: number) => void;
+  onDeleteDocument?: (index: number) => void;
+  onPreviewDocument?: (doc: DocumentItem) => void;
 }
 
 export const PersonalTab: React.FC<PersonalTabProps> = ({
   active,
   employee,
-  onUpdate
+  onUpdate,
+  documents = [],
+  onAddDocument,
+  onEditDocument,
+  onDeleteDocument,
+  onPreviewDocument
 }) => {
   const { t } = useLanguage();
   const fullName = employee ? `${employee.firstName} ${employee.lastName}` : '';
@@ -25,7 +36,8 @@ export const PersonalTab: React.FC<PersonalTabProps> = ({
 
   return (
     <AnimatedTabContent active={active}>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Identity Card */}
         <Card className="p-6 space-y-4 border-l-4 border-l-primary">
           <div className="flex items-center gap-3 mb-4">
@@ -162,9 +174,25 @@ export const PersonalTab: React.FC<PersonalTabProps> = ({
             />
           </div>
         </Card>
-      </div>
+        </div>
 
-      {/* Notes */}
+        {/* CIN Documents Section */}
+        {onAddDocument && onEditDocument && onDeleteDocument && onPreviewDocument && (
+          <DocumentUploadSection
+            title="Documents CIN"
+            description="Carte d'identité nationale et documents associés"
+            documents={documents}
+            documentType="cin"
+            onAdd={() => onAddDocument('cin')}
+            onEdit={onEditDocument}
+            onDelete={onDeleteDocument}
+            onPreview={onPreviewDocument}
+            icon={<FileText className="h-5 w-5 text-primary" />}
+            borderColor="border-l-blue-500"
+          />
+        )}
+
+        {/* Notes */}
       {employee?.notes && (
         <Card className="p-6 space-y-4 border-l-4 border-l-muted-foreground/30">
           <div className="flex items-center gap-3 mb-4">
@@ -186,6 +214,7 @@ export const PersonalTab: React.FC<PersonalTabProps> = ({
           />
         </Card>
       )}
+      </div>
     </AnimatedTabContent>
   );
 };
