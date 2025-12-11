@@ -101,12 +101,6 @@ export function ContractRecapModal({
               <RecapItem label="Mode de travail" value={formData.job?.work_mode} />
               <RecapItem label="Classification" value={formData.job?.classification} />
               <RecapItem label="Lieu de travail" value={formData.job?.work_location} />
-              {formData.job?.responsibilities && (
-                <div className="col-span-2">
-                  <span className="text-muted-foreground text-xs">Responsabilités:</span>
-                  <p className="text-xs mt-1">{formData.job.responsibilities}</p>
-                </div>
-              )}
             </RecapSection>
 
             <Separator />
@@ -128,10 +122,28 @@ export function ContractRecapModal({
                     label="Durée"
                     value={`${formData.dates.trial_period.duration_months || 0} mois (${formData.dates.trial_period.duration_days || 0} jours)`}
                   />
+                  {formData.dates.trial_period.end_date && (
+                    <RecapItem
+                      label="Date de fin d'essai"
+                      value={new Date(formData.dates.trial_period.end_date).toLocaleDateString('fr-FR')}
+                    />
+                  )}
                   <RecapItem
                     label="Renouvelable"
                     value={formData.dates.trial_period.renewable ? 'Oui' : 'Non'}
                   />
+                  {formData.dates.trial_period.max_renewals && (
+                    <RecapItem
+                      label="Nombre max de renouvellements"
+                      value={formData.dates.trial_period.max_renewals}
+                    />
+                  )}
+                  {formData.dates.trial_period.conditions && (
+                    <div className="col-span-2">
+                      <span className="text-muted-foreground text-xs">Conditions:</span>
+                      <p className="text-xs mt-1">{formData.dates.trial_period.conditions}</p>
+                    </div>
+                  )}
                 </>
               )}
             </RecapSection>
@@ -150,6 +162,14 @@ export function ContractRecapModal({
               />
               <RecapItem label="Méthode de paiement" value={formData.salary?.payment_method} />
               <RecapItem label="Périodicité" value={formData.salary?.periodicity} />
+
+              {/* Indemnités */}
+              {formData.salary?.indemnites && (
+                <div className="col-span-2 mt-2">
+                  <span className="text-muted-foreground text-xs">Indemnités:</span>
+                  <p className="text-xs mt-1">{formData.salary.indemnites}</p>
+                </div>
+              )}
 
               {/* Primes dynamiques */}
               {(formData.salary?.primes as any)?.items && (formData.salary.primes as any).items.length > 0 && (
@@ -183,82 +203,13 @@ export function ContractRecapModal({
                     {formData.salary.avantages.assurance_sante && (
                       <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded">Assurance Santé</span>
                     )}
-                    {(formData.salary.avantages as any).autres && (
-                      <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded">Autres</span>
+                    {formData.salary.avantages.tickets_restaurant && (
+                      <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded">Tickets Restaurant</span>
                     )}
                   </div>
                 </div>
               )}
             </RecapSection>
-
-            <Separator />
-
-            {/* Légal */}
-            <RecapSection icon={Shield} title="Informations Légales">
-              <RecapItem
-                label="Affiliation CNSS"
-                value={formData.legal?.cnss_affiliation ? 'Oui' : 'Non'}
-              />
-              <RecapItem
-                label="Affiliation AMO"
-                value={formData.legal?.amo_affiliation ? 'Oui' : 'Non'}
-              />
-              {(formData.legal as any)?.cmir_affiliation && (
-                <RecapItem label="Affiliation CMIR" value="Oui" />
-              )}
-              {(formData.legal as any)?.rcar_affiliation && (
-                <RecapItem label="Affiliation RCAR" value="Oui" />
-              )}
-              <RecapItem
-                label="IR Applicable"
-                value={formData.legal?.ir_applicable ? 'Oui' : 'Non'}
-              />
-              {formData.legal?.convention_collective && (
-                <RecapItem label="Convention collective" value={formData.legal.convention_collective} />
-              )}
-              {(formData.legal as any)?.duree_preavis_jours && (
-                <RecapItem label="Durée de préavis" value={`${(formData.legal as any).duree_preavis_jours} jours`} />
-              )}
-
-              {/* Clauses */}
-              <div className="col-span-2 mt-2">
-                <span className="font-medium text-xs">Clauses contractuelles:</span>
-                <div className="flex flex-col gap-1 mt-1">
-                  {formData.legal?.clause_confidentialite && (
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-3 w-3 text-green-600" />
-                      <span className="text-xs">Clause de confidentialité</span>
-                    </div>
-                  )}
-                  {formData.legal?.clause_non_concurrence && (
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-3 w-3 text-green-600" />
-                      <span className="text-xs">Clause de non-concurrence</span>
-                    </div>
-                  )}
-                  {(formData.legal as any)?.clause_mobilite && (
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-3 w-3 text-green-600" />
-                      <span className="text-xs">Clause de mobilité</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </RecapSection>
-
-            {/* Alerte */}
-            <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-              <div className="flex items-start gap-3">
-                <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
-                <div>
-                  <h4 className="font-semibold text-blue-900 text-sm">Important</h4>
-                  <p className="text-xs text-blue-800 mt-1">
-                    Une fois créé, ce contrat sera enregistré dans le système et pourra être édité
-                    uniquement par les administrateurs.
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
         </ScrollArea>
 

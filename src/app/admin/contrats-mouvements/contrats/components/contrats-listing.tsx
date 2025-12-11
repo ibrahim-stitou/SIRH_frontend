@@ -31,11 +31,20 @@ interface ContractRow {
   type?: string; // New format
   type_contrat?: string; // Old format: 'CDI' | 'CDD' | 'Stage' | 'Intérim' | 'Apprentissage' | 'Autre'
   job?: {
-    title: string;
-    department: string;
+    metier?: string;
+    emploie?: string;
+    poste?: string;
+    work_mode?: string;
+    // Old format
+    title?: string;
+    department?: string;
   };
   poste?: string; // Old format
   departement?: string; // Old format
+  schedule?: {
+    schedule_type?: string;
+    shift_work?: string;
+  };
   dates?: {
     start_date: string;
     end_date: string | null;
@@ -43,7 +52,9 @@ interface ContractRow {
   date_debut?: string; // Old format
   date_fin?: string | null; // Old format
   salary?: {
-    base_salary: number;
+    salary_brut?: number;
+    salary_net?: number;
+    base_salary?: number; // Old format
     currency: string;
   };
   salaire_base?: number; // Old format
@@ -166,16 +177,42 @@ export function ContratsListing() {
       }
     },
     {
-      data: 'poste',
-      label: t('contracts.fields.position'),
+      data: 'job',
+      label: 'Métier',
       sortable: true,
-      render: (_value, row) => row.job?.title || row.poste || 'N/A'
+      render: (_value, row) => row.job?.metier || 'N/A'
     },
     {
-      data: 'departement',
-      label: t('contracts.fields.department'),
+      data: 'job',
+      label: 'Emploi',
       sortable: true,
-      render: (_value, row) => row.job?.department || row.departement || 'N/A'
+      render: (_value, row) => row.job?.emploie || 'N/A'
+    },
+    {
+      data: 'poste',
+      label: 'Poste',
+      sortable: true,
+      render: (_value, row) => row.job?.poste || row.job?.title || row.poste || 'N/A'
+    },
+    {
+      data: 'schedule',
+      label: 'Horaire',
+      sortable: true,
+      render: (_value, row) => {
+        const scheduleType = row.schedule?.schedule_type;
+        const shiftWork = row.schedule?.shift_work;
+        if (scheduleType) {
+          return (
+            <div className="text-xs">
+              <div>{scheduleType}</div>
+              {shiftWork === 'Oui' && (
+                <span className="text-orange-600">Shift</span>
+              )}
+            </div>
+          );
+        }
+        return 'N/A';
+      }
     },
     {
       data: 'date_debut',
@@ -196,13 +233,23 @@ export function ContratsListing() {
       }
     },
     {
-      data: 'salaire_base',
-      label: t('contracts.fields.baseSalary'),
+      data: 'salary',
+      label: 'Salaire',
       sortable: true,
       render: (_value, row) => {
-        const salary = row.salary?.base_salary || row.salaire_base || 0;
+        const salaryBrut = row.salary?.salary_brut || row.salary?.base_salary || row.salaire_base || 0;
+        const salaryNet = row.salary?.salary_net;
         const currency = row.salary?.currency || row.salaire_devise || 'MAD';
-        return new Intl.NumberFormat('fr-MA', { style: 'currency', currency }).format(salary);
+        const formatter = new Intl.NumberFormat('fr-MA', { style: 'currency', currency });
+
+        return (
+          <div className="text-xs">
+            <div className="font-medium">{formatter.format(salaryBrut)} Brut</div>
+            {salaryNet && (
+              <div className="text-muted-foreground">{formatter.format(salaryNet)} Net</div>
+            )}
+          </div>
+        );
       }
     },
     {

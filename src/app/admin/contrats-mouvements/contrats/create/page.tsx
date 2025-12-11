@@ -105,7 +105,7 @@ export default function CreateContractPage() {
       toast.loading('Création du contrat en cours...');
       await apiClient.post(apiRoutes.admin.contratsEtMovements.contrats.create, payload);
       toast.dismiss();
-      toast.success('✅ Contrat créé avec succès !');
+      toast.success(' Contrat créé avec succès !');
 
       setTimeout(() => {
         router.push('/admin/contrats-mouvements/contrats');

@@ -2,69 +2,87 @@
   {
     "id": "CTR-2024-001",
     "reference": "CTR-2024-001",
-    "internal_reference": "INT-HR-2024-001",
     "type": "CDI",
-    "status": "Brouillon",
-    "version": 1,
+    "status": "Actif",
     "employe_id": "EMP001",
     "employee_name": "Ahmed Bennani",
     "employee_matricule": "MAT-2024-001",
-    "company_id": "COMP001",
-    "company_name": "TechCorp Maroc SARL",
+    "description": "Contrat CDI pour développeur full stack",
     "dates": {
       "signature_date": "2024-01-15",
       "start_date": "2024-02-01",
-      "effective_start_date": "2024-02-01",
       "end_date": null,
       "trial_period": {
+        "enabled": true,
         "duration_months": 3,
-        "start_date": "2024-02-01",
+        "duration_days": 90,
         "end_date": "2024-05-01",
         "renewable": false,
-        "status": "Validee"
+        "max_renewals": 1,
+        "conditions": "Évaluation des performances à mi-parcours"
       }
     },
     "job": {
-      "title": "Développeur Full Stack Senior",
-      "department": "IT",
-      "category": "Cadre",
-      "work_location": "Casablanca",
+      "metier": "Informatique",
+      "emploie": "Développeur",
+      "poste": "Développeur Full Stack Senior",
       "work_mode": "Hybride",
-      "mobility_clause": true,
-      "missions": "Développement d'applications web et mobile"
+      "classification": "Niveau 5 - Échelon 2",
+      "work_location": "Casablanca, Maroc",
+      "level": "Senior",
+      "responsibilities": "Développement d'applications web et mobile, gestion d'équipe"
     },
-    "work_time": {
-      "weekly_hours": 40,
-      "daily_hours": 8,
-      "work_schedule": "9h00 - 18h00",
-      "work_schedule_type": "Normal",
-      "rest_day": "Dimanche",
-      "annual_leave_days": 22
+    "schedule": {
+      "schedule_type": "Administratif",
+      "shift_work": "Non",
+      "hours_per_day": 8,
+      "days_per_week": 5,
+      "hours_per_week": 40,
+      "start_time": "09:00",
+      "end_time": "18:00",
+      "break_duration": 60,
+      "annual_leave_days": 22,
+      "other_leaves": "Congés exceptionnels selon convention collective"
     },
     "salary": {
-      "base_salary": 18000,
-      "currency": "MAD",
-      "payment_frequency": "Mensuel",
       "salary_brut": 18000,
       "salary_net": 14500,
-      "salary_net_imposable": 15000,
-      "payment_method": "Virement"
+      "currency": "MAD",
+      "payment_method": "Virement",
+      "periodicity": "Mensuel",
+      "primes": {
+        "items": [
+          {
+            "prime_type_id": "PRIME_TRANSPORT",
+            "label": "Prime de Transport",
+            "amount": 500,
+            "is_taxable": false,
+            "is_subject_to_cnss": false
+          },
+          {
+            "prime_type_id": "PRIME_PERFORMANCE",
+            "label": "Prime de Performance",
+            "amount": 2000,
+            "is_taxable": true,
+            "is_subject_to_cnss": true
+          }
+        ]
+      },
+      "avantages": {
+        "voiture": false,
+        "logement": false,
+        "telephone": true,
+        "assurance_sante": true,
+        "tickets_restaurant": true
+      },
+      "indemnites": "Indemnité de déplacement selon barème"
     },
     "legal": {
       "cnss_affiliation": true,
-      "cnss_regime": "General",
-      "amo": true,
-      "amo_regime": "CNSS",
-      "clauses": {
-        "confidentialite": true,
-        "non_concurrence": true,
-        "mobilite": true,
-        "exclusivite": true,
-        "formation": false,
-        "intellectual_property": true,
-        "discipline_interne": true,
-        "deontologie": true
-      }
+      "amo_affiliation": true,
+      "ir_applicable": true,
+      "clause_confidentialite": true,
+      "clause_non_concurrence": true
     },
     "historique": {
       "created_at": "2024-01-10T10:30:00Z",
@@ -78,69 +96,71 @@
   {
     "id": "CTR-2024-002",
     "reference": "CTR-2024-002",
-    "internal_reference": "INT-FIN-2024-002",
     "type": "CDD",
     "status": "Actif",
-    "version": 1,
     "employe_id": "EMP002",
     "employee_name": "Fatima Zahra Alami",
     "employee_matricule": "MAT-2024-002",
-    "company_id": "COMP001",
-    "company_name": "TechCorp Maroc SARL",
+    "description": "Contrat CDD pour comptable",
     "dates": {
       "signature_date": "2024-03-10",
       "start_date": "2024-04-01",
-      "effective_start_date": "2024-04-01",
       "end_date": "2025-03-31",
       "trial_period": {
+        "enabled": true,
         "duration_months": 1,
-        "start_date": "2024-04-01",
+        "duration_days": 30,
         "end_date": "2024-05-01",
         "renewable": false,
-        "status": "Validee"
+        "max_renewals": 0
       }
     },
     "job": {
-      "title": "Comptable",
-      "department": "Finance",
-      "category": "Employe",
-      "work_location": "Casablanca",
+      "metier": "Finance",
+      "emploie": "Comptable",
+      "poste": "Comptable Général",
       "work_mode": "Presentiel",
-      "mobility_clause": false,
-      "missions": "Gestion de la comptabilité générale et analytique"
+      "classification": "Niveau 3",
+      "work_location": "Casablanca, Maroc",
+      "level": "Confirmé",
+      "responsibilities": "Gestion de la comptabilité générale et analytique"
     },
-    "work_time": {
-      "weekly_hours": 44,
-      "daily_hours": 8.8,
-      "work_schedule": "8h30 - 17h30",
-      "work_schedule_type": "Normal",
-      "rest_day": "Dimanche",
-      "annual_leave_days": 18
+    "schedule": {
+      "schedule_type": "Administratif",
+      "shift_work": "Non",
+      "hours_per_day": 8.8,
+      "days_per_week": 5,
+      "hours_per_week": 44,
+      "start_time": "08:30",
+      "end_time": "17:30",
+      "break_duration": 60,
+      "annual_leave_days": 18,
+      "other_leaves": ""
     },
     "salary": {
-      "base_salary": 7500,
-      "currency": "MAD",
-      "payment_frequency": "Mensuel",
       "salary_brut": 7500,
       "salary_net": 6200,
-      "salary_net_imposable": 6500,
-      "payment_method": "Virement"
+      "currency": "MAD",
+      "payment_method": "Virement",
+      "periodicity": "Mensuel",
+      "primes": {
+        "items": []
+      },
+      "avantages": {
+        "voiture": false,
+        "logement": false,
+        "telephone": false,
+        "assurance_sante": true,
+        "tickets_restaurant": false
+      },
+      "indemnites": ""
     },
     "legal": {
       "cnss_affiliation": true,
-      "cnss_regime": "General",
-      "amo": true,
-      "amo_regime": "CNSS",
-      "clauses": {
-        "confidentialite": true,
-        "non_concurrence": false,
-        "mobilite": false,
-        "exclusivite": true,
-        "formation": false,
-        "intellectual_property": false,
-        "discipline_interne": true,
-        "deontologie": true
-      }
+      "amo_affiliation": true,
+      "ir_applicable": true,
+      "clause_confidentialite": true,
+      "clause_non_concurrence": false
     },
     "historique": {
       "created_at": "2024-03-05T09:00:00Z",
