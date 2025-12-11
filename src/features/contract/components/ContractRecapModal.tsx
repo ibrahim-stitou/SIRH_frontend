@@ -95,12 +95,12 @@ export function ContractRecapModal({
 
             {/* Poste */}
             <RecapSection icon={Briefcase} title="Poste">
-              <RecapItem label="Fonction" value={formData.job?.function} />
-              <RecapItem label="Catégorie" value={formData.job?.category} />
+              <RecapItem label="Métier" value={formData.job?.metier} />
+              <RecapItem label="Emploi" value={formData.job?.emploie} />
+              <RecapItem label="Poste" value={formData.job?.poste} />
               <RecapItem label="Mode de travail" value={formData.job?.work_mode} />
               <RecapItem label="Classification" value={formData.job?.classification} />
               <RecapItem label="Lieu de travail" value={formData.job?.work_location} />
-              <RecapItem label="Niveau" value={formData.job?.level} />
               {formData.job?.responsibilities && (
                 <div className="col-span-2">
                   <span className="text-muted-foreground text-xs">Responsabilités:</span>
@@ -113,30 +113,9 @@ export function ContractRecapModal({
 
             {/* Horaires */}
             <RecapSection icon={Clock} title="Horaires de Travail">
-              <RecapItem label="Heures/jour" value={formData.schedule?.hours_per_day} />
-              <RecapItem label="Jours/semaine" value={formData.schedule?.days_per_week} />
-              <RecapItem label="Heures/semaine" value={formData.schedule?.hours_per_week} />
-              <RecapItem label="Heure de début" value={formData.schedule?.start_time} />
-              <RecapItem label="Heure de fin" value={formData.schedule?.end_time} />
-              <RecapItem label="Pause (min)" value={formData.schedule?.break_duration} />
-              <RecapItem label="Congés annuels" value={`${formData.schedule?.annual_leave_days || 0} jours`} />
-
-              {formData.schedule?.shift_work?.enabled && (
-                <>
-                  <div className="col-span-2 mt-2">
-                    <span className="text-green-600 font-medium text-xs flex items-center gap-1">
-                      <CheckCircle2 className="h-3 w-3" /> Travail en shifts activé
-                    </span>
-                  </div>
-                  <RecapItem label="Type de shift" value={formData.schedule.shift_work.type} />
-                  {formData.schedule.shift_work.rotation_days && (
-                    <RecapItem label="Rotation" value={`${formData.schedule.shift_work.rotation_days} jours`} />
-                  )}
-                  {formData.schedule.shift_work.night_shift_premium && (
-                    <RecapItem label="Prime de nuit" value={`${formData.schedule.shift_work.night_shift_premium} MAD`} />
-                  )}
-                </>
-              )}
+              <RecapItem label="Type d'horaire" value={formData.schedule?.schedule_type} />
+              <RecapItem label="Travail en shift" value={formData.schedule?.shift_work} />
+              <RecapItem label="Congés annuels" value={formData.schedule?.annual_leave_days ? `${formData.schedule.annual_leave_days} jours` : undefined} />
 
               {formData.dates?.trial_period?.enabled && (
                 <>
@@ -161,10 +140,6 @@ export function ContractRecapModal({
 
             {/* Salaire */}
             <RecapSection icon={Banknote} title="Rémunération">
-              <RecapItem
-                label="Salaire de base"
-                value={`${formData.salary?.base_salary?.toFixed(2)} MAD`}
-              />
               <RecapItem
                 label="Salaire brut"
                 value={`${formData.salary?.salary_brut?.toFixed(2)} MAD`}

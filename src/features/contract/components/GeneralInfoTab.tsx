@@ -19,7 +19,6 @@ interface GeneralInfoTabProps {
   loadingEmployees: boolean;
   loadingDepartments: boolean;
   contractTypeOptions: Array<{ id: string; label: string }>;
-  categoryOptions: Array<{ id: string; label: string }>;
   workModeOptions: Array<{ id: string; label: string }>;
 }
 
@@ -30,7 +29,6 @@ export function GeneralInfoTab({
   loadingEmployees,
   loadingDepartments,
   contractTypeOptions,
-  categoryOptions,
   workModeOptions,
 }: GeneralInfoTabProps) {
   return (
@@ -144,14 +142,42 @@ export function GeneralInfoTab({
               )}
             />
           </div>
-          {/* Ligne 1: Fonction, Catégorie, Mode de Travail */}
+          {/* Ligne 1: Métier, Emploi, Poste */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <FormField
               control={form.control}
-              name="job.function"
+              name="job.metier"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Fonction</FormLabel>
+                  <FormLabel>Métier</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: Informatique" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="job.emploie"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Emploi</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: Développeur" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="job.poste"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Poste</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: Développeur Full Stack" {...field} />
                   </FormControl>
@@ -159,19 +185,10 @@ export function GeneralInfoTab({
                 </FormItem>
               )}
             />
+          </div>
 
-            <SelectField
-              control={form.control}
-              name="job.category"
-              label="Catégorie Professionnelle *"
-              displayField="label"
-              placeholder="Sélectionner une catégorie"
-              options={categoryOptions.map((option) => ({
-                id: option.id,
-                label: option.label,
-              }))}
-            />
-
+          {/* Ligne 2: Mode de Travail, Classification, Lieu de Travail */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <SelectField
               control={form.control}
               name="job.work_mode"
@@ -183,10 +200,7 @@ export function GeneralInfoTab({
                 label: option.label,
               }))}
             />
-          </div>
 
-          {/* Ligne 2: Classification, Lieu de Travail, Niveau */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <FormField
               control={form.control}
               name="job.classification"
@@ -209,20 +223,6 @@ export function GeneralInfoTab({
                   <FormLabel>Lieu de Travail</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: Casablanca, Maroc" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="job.level"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Niveau</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: Senior" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

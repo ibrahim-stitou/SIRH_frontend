@@ -23,8 +23,9 @@ const simplifiedDatesSchema = z.object({
 
 // Schéma pour le poste (GeneralInfoTab)
 const simplifiedJobSchema = z.object({
-  function: z.string().optional(),
-  category: z.string().optional(),
+  metier: z.string().optional(),
+  emploie: z.string().optional(),
+  poste: z.string().optional(),
   work_mode: z.string().optional(),
   classification: z.string().optional(),
   work_location: z.string().optional(),
@@ -32,8 +33,12 @@ const simplifiedJobSchema = z.object({
   responsibilities: z.string().optional(),
 });
 
-// Schéma pour les horaires
+// Schéma pour les horaires (simplifié)
 const simplifiedScheduleSchema = z.object({
+  // Champs principaux utilisés
+  schedule_type: z.enum(['Administratif', 'Continu'] as const),
+  shift_work: z.enum(['Non', 'Oui'] as const).optional(),
+  // Champs optionnels conservés pour compatibilité
   hours_per_day: z.number().min(4).max(10).optional(),
   days_per_week: z.number().min(1).max(7).optional(),
   hours_per_week: z.number().min(20).max(48).optional(),
@@ -44,14 +49,6 @@ const simplifiedScheduleSchema = z.object({
   annual_leave_days: z.number().min(18).max(30).optional(),
   sick_leave_days: z.number().min(0).optional(),
   other_leaves: z.string().optional(),
-  // Travail en shifts
-  shift_work: z.object({
-    enabled: z.boolean().default(false),
-    type: z.enum(['Matin', 'Apres_midi', 'Nuit', 'Rotation', 'Continu'] as const).optional(),
-    rotation_days: z.number().min(1).max(30).optional(),
-    night_shift_premium: z.number().min(0).optional(),
-    description: z.string().optional(),
-  }).optional(),
 });
 
 // Schéma pour une prime individuelle
@@ -88,9 +85,8 @@ const simplifiedAvantagesSchema = z.object({
 
 // Schéma pour le salaire
 const simplifiedSalarySchema = z.object({
-  base_salary: z.number().min(1, 'Salaire de base requis'),
-  salary_brut: z.number().optional(),
-  salary_net: z.number().optional(),
+  salary_brut: z.number().min(1, 'Salaire brut requis'),
+  salary_net: z.number().min(1, 'Salaire net requis'),
   salary_net_imposable: z.number().optional(),
   currency: z.string().default('MAD'),
   payment_method: z.string().optional(),
@@ -182,8 +178,9 @@ export const simplifiedContractDefaultValues: Partial<SimplifiedContractInput> =
   },
 
   job: {
-    function: '',
-    category: 'Employe',
+    metier: '',
+    emploie: '',
+    poste: '',
     work_mode: 'Presentiel',
     classification: '',
     work_location: '',
@@ -192,6 +189,8 @@ export const simplifiedContractDefaultValues: Partial<SimplifiedContractInput> =
   },
 
   schedule: {
+    schedule_type: 'Administratif',
+    shift_work: 'Non',
     hours_per_day: 8,
     days_per_week: 5,
     hours_per_week: 40,
@@ -200,17 +199,9 @@ export const simplifiedContractDefaultValues: Partial<SimplifiedContractInput> =
     break_duration: 60,
     annual_leave_days: 22,
     other_leaves: '',
-    shift_work: {
-      enabled: false,
-      type: undefined,
-      rotation_days: undefined,
-      night_shift_premium: undefined,
-      description: '',
-    },
   },
 
   salary: {
-    base_salary: 0,
     salary_brut: 0,
     salary_net: 0,
     currency: 'MAD',

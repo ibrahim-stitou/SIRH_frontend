@@ -40,8 +40,6 @@ export default function CreateContractPage() {
     mode: 'onBlur',
   });
 
-  const baseSalary = form.watch('salary.base_salary');
-  const cnssAffiliation = form.watch('legal.cnss_affiliation');
 
   // Fetch employees
   useEffect(() => {
@@ -77,49 +75,7 @@ export default function CreateContractPage() {
     fetchDepartments();
   }, []);
 
-  // Auto-calculate salary components
-  useEffect(() => {
-    if (baseSalary && baseSalary > 0) {
-      const primes = form.getValues('salary.primes');
-      const totalPrimes = Object.values(primes || {}).reduce((sum: number, val) => {
-        return sum + (typeof val === 'number' ? val : 0);
-      }, 0);
 
-      const salaryBrut = baseSalary + totalPrimes;
-      const cnssDeduction = cnssAffiliation ? salaryBrut * 0.0448 : 0;
-      const salaryNet = salaryBrut - cnssDeduction;
-
-      form.setValue('salary.salary_brut', Math.round(salaryBrut * 100) / 100);
-      form.setValue('salary.salary_net', Math.round(salaryNet * 100) / 100);
-    }
-  }, [baseSalary, cnssAffiliation, form]);
-
-  // Auto-set trial period based on contract type and category
-  useEffect(() => {
-    const subscription = form.watch((value) => {
-      const category = value.job?.category;
-      const contractType = value.type;
-      const trialPeriodEnabled = value.dates?.trial_period?.enabled;
-
-      if (contractType === 'CDI' && category && trialPeriodEnabled) {
-        let durationMonths = 3; // Default for cadres
-        let durationDays = 90;
-
-        if (category === 'Employe' || category === 'Technicien') {
-          durationMonths = 1.5;
-          durationDays = 45;
-        } else if (category === 'Ouvrier' || category === 'Ouvrier_qualifie' || category === 'Manoeuvre') {
-          durationMonths = 0.5;
-          durationDays = 15;
-        }
-
-        form.setValue('dates.trial_period.duration_months', durationMonths);
-        form.setValue('dates.trial_period.duration_days', durationDays);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [form]);
 
   const onSubmit = async (data: SimplifiedContractInput) => {
     try {
@@ -182,16 +138,6 @@ export default function CreateContractPage() {
     { id: 'Consultance', label: 'Consultance' },
   ];
 
-  const categoryOptions = [
-    { id: 'Cadre_superieur', label: 'Cadre Supérieur' },
-    { id: 'Cadre', label: 'Cadre' },
-    { id: 'Agent_maitrise', label: 'Agent de Maîtrise' },
-    { id: 'Technicien', label: 'Technicien' },
-    { id: 'Employe', label: 'Employé' },
-    { id: 'Ouvrier_qualifie', label: 'Ouvrier Qualifié' },
-    { id: 'Ouvrier', label: 'Ouvrier' },
-    { id: 'Manoeuvre', label: 'Manœuvre' },
-  ];
 
   const workModeOptions = [
     { id: 'Presentiel', label: 'Présentiel' },
@@ -231,7 +177,6 @@ export default function CreateContractPage() {
               loadingEmployees={loadingEmployees}
               loadingDepartments={loadingDepartments}
               contractTypeOptions={contractTypeOptions}
-              categoryOptions={categoryOptions}
               workModeOptions={workModeOptions}
             />
 
