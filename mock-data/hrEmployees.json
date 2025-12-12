@@ -125,13 +125,22 @@
     "updatedAt": "2025-01-15T08:00:00Z",
     "createdBy": "system",
     "notes": "Responsable RH principal",
-    "tags": [
-      "management",
-      "hr"
-    ],
+    "tags": ["management", "hr"],
     "experiences": [
-      { "title": "Développeur Frontend", "company": "TechCorp", "startDate": "2016-03-01", "endDate": "2018-08-31", "description": "Développement d'interfaces React" },
-      { "title": "Chef de projet", "company": "InnovateX", "startDate": "2018-09-01", "endDate": "2021-12-31", "description": "Gestion de projets digitaux" }
+      {
+        "title": "Développeur Frontend",
+        "company": "TechCorp",
+        "startDate": "2016-03-01",
+        "endDate": "2018-08-31",
+        "description": "Développement d'interfaces React"
+      },
+      {
+        "title": "Chef de projet",
+        "company": "InnovateX",
+        "startDate": "2018-09-01",
+        "endDate": "2021-12-31",
+        "description": "Gestion de projets digitaux"
+      }
     ],
     "professionalCategory": "cadres_assimiles"
   },
@@ -229,10 +238,7 @@
     "updatedAt": "2025-01-15T08:00:00Z",
     "createdBy": "system",
     "notes": "Employée front-end",
-    "tags": [
-      "engineering",
-      "frontend"
-    ],
+    "tags": ["engineering", "frontend"],
     "professionalCategory": "employes_assimiles"
   },
   {
@@ -265,9 +271,9 @@
     },
     "departmentId": "3",
     "departement": {
-        "id": 3,
-        "name": "Engineering",
-        "nameAr": "الهندسة"
+      "id": 3,
+      "name": "Engineering",
+      "nameAr": "الهندسة"
     },
     "hireDate": "2021-02-01",
     "education": [
@@ -334,13 +340,22 @@
     "updatedAt": "2025-01-15T08:00:00Z",
     "createdBy": "system",
     "notes": "Manager équipe technique",
-    "tags": [
-      "engineering",
-      "management"
-    ],
+    "tags": ["engineering", "management"],
     "experiences": [
-      { "title": "Ingénieur DevOps", "company": "Cloudify", "startDate": "2014-01-01", "endDate": "2017-06-30", "description": "CI/CD, infrastructure as code" },
-      { "title": "Engineering Manager", "company": "MegaSoft", "startDate": "2017-07-01", "endDate": "2020-12-31", "description": "Management d'équipe et architecture" }
+      {
+        "title": "Ingénieur DevOps",
+        "company": "Cloudify",
+        "startDate": "2014-01-01",
+        "endDate": "2017-06-30",
+        "description": "CI/CD, infrastructure as code"
+      },
+      {
+        "title": "Engineering Manager",
+        "company": "MegaSoft",
+        "startDate": "2017-07-01",
+        "endDate": "2020-12-31",
+        "description": "Management d'équipe et architecture"
+      }
     ],
     "professionalCategory": "cadres_assimiles"
   },
@@ -435,9 +450,7 @@
     "updatedAt": "2025-01-15T08:00:00Z",
     "createdBy": "system",
     "notes": "Spécialiste RH contrat CDD",
-    "tags": [
-      "hr"
-    ],
+    "tags": ["hr"],
     "professionalCategory": "employes_assimiles"
   }
 ]

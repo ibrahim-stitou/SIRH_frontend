@@ -33,7 +33,7 @@ declare module 'next-auth' {
       name?: string | null;
       full_name?: string;
       email?: string | null;
-    }
+    };
   }
 }
 
@@ -64,8 +64,8 @@ export const authConfig = {
     Credentials({
       name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials): Promise<User | null> {
         try {
@@ -75,14 +75,20 @@ export const authConfig = {
           });
           const payload = response.data || {};
           const inner = payload.data || payload; // unwrap envelope {status,message,data}
-          const accessToken = inner.access_token || inner.accessToken || inner.token;
-          const refreshToken = inner.refresh_token || inner.refreshToken || inner.refresh;
+          const accessToken =
+            inner.access_token || inner.accessToken || inner.token;
+          const refreshToken =
+            inner.refresh_token || inner.refreshToken || inner.refresh;
           if (!accessToken) {
             console.error('Login failed - no access token received');
             return null;
           }
           let role = inner.role || inner.user?.role;
-          if (!role && Array.isArray(inner.user?.roles) && inner.user.roles.length > 0) {
+          if (
+            !role &&
+            Array.isArray(inner.user?.roles) &&
+            inner.user.roles.length > 0
+          ) {
             const r0 = inner.user.roles[0];
             role = {
               id: r0.id || r0.pivot?.role_id || 1,
@@ -92,11 +98,20 @@ export const authConfig = {
             };
           }
           if (!role) {
-            role = { id: 1, name: 'User', code: 'USER', description: 'Default user role' };
+            role = {
+              id: 1,
+              name: 'User',
+              code: 'USER',
+              description: 'Default user role'
+            };
           }
           return {
             id: (inner.user?.id ?? role.id).toString(),
-            full_name: inner.full_name || inner.user?.full_name || inner.user?.name || 'User',
+            full_name:
+              inner.full_name ||
+              inner.user?.full_name ||
+              inner.user?.name ||
+              'User',
             name: inner.full_name || inner.user?.name || 'User',
             email: (credentials?.email as string) || inner.user?.email,
             accessToken,
@@ -104,10 +119,13 @@ export const authConfig = {
             role
           };
         } catch (err: any) {
-          console.error('Authentication error:', err.response?.data || err.message);
+          console.error(
+            'Authentication error:',
+            err.response?.data || err.message
+          );
           return null;
         }
-       }
+      }
     })
   ],
   callbacks: {
@@ -126,7 +144,7 @@ export const authConfig = {
       }
 
       // Handle session updates (e.g., from client-side updates)
-      if (trigger === "update" && session?.accessToken) {
+      if (trigger === 'update' && session?.accessToken) {
         return { ...token, ...session };
       }
 
@@ -134,36 +152,41 @@ export const authConfig = {
       if (token.error) return token;
 
       // Check if token needs refresh (within 5 minutes of expiration)
-      const shouldRefresh = token.expiresAt && Date.now() > token.expiresAt - 5 * 60 * 1000;
+      const shouldRefresh =
+        token.expiresAt && Date.now() > token.expiresAt - 5 * 60 * 1000;
 
       if (shouldRefresh && token.refreshToken && !isRefreshing) {
-         try {
-           isRefreshing = true;
-          const response = await apiClient.post(apiRoutes.auth.refreshToken, { refresh_token: token.refreshToken });
+        try {
+          isRefreshing = true;
+          const response = await apiClient.post(apiRoutes.auth.refreshToken, {
+            refresh_token: token.refreshToken
+          });
           const payload = response.data || {};
           const inner = payload.data || payload;
-          const newAccess = inner.access_token || inner.accessToken || inner.token;
-          const newRefresh = inner.refresh_token || inner.refreshToken || token.refreshToken;
+          const newAccess =
+            inner.access_token || inner.accessToken || inner.token;
+          const newRefresh =
+            inner.refresh_token || inner.refreshToken || token.refreshToken;
           if (!newAccess) throw new Error('Invalid refresh response');
           return {
-             ...token,
-             accessToken: newAccess,
-             refreshToken: newRefresh,
-             expiresAt: Date.now() + 30 * 60 * 1000,
-             refreshAttempt: 0,
-             lastRefreshTime: Date.now(),
-             error: undefined
-           };
-         } catch (error) {
-           console.error('Refresh token failed:', error);
-           return {
-             ...token,
-             error: 'RefreshAccessTokenError'
-           };
-         } finally {
+            ...token,
+            accessToken: newAccess,
+            refreshToken: newRefresh,
+            expiresAt: Date.now() + 30 * 60 * 1000,
+            refreshAttempt: 0,
+            lastRefreshTime: Date.now(),
+            error: undefined
+          };
+        } catch (error) {
+          console.error('Refresh token failed:', error);
+          return {
+            ...token,
+            error: 'RefreshAccessTokenError'
+          };
+        } finally {
           isRefreshing = false;
-         }
-       }
+        }
+      }
 
       return token;
     },
@@ -194,8 +217,8 @@ export const authConfig = {
     }
   },
   session: {
-    strategy: "jwt",
-    maxAge: 30 * 60, // 30 minutes (matches token expiration)
+    strategy: 'jwt',
+    maxAge: 30 * 60 // 30 minutes (matches token expiration)
   },
   pages: {
     signIn: '/login',
@@ -203,5 +226,5 @@ export const authConfig = {
   },
   secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET,
   // Allow localhost:3003 as a trusted host in development
-  trustHost: true,
+  trustHost: true
 } satisfies NextAuthConfig;

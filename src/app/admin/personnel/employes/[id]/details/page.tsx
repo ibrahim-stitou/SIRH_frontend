@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -28,14 +28,25 @@ import {
   Trash2
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
+} from '@/components/ui/dialog';
 import { useLanguage } from '@/context/LanguageContext';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { EmployeeDetailsLoadingSkeleton } from '@/app/admin/personnel/employes/[id]/details/loading-skeleton';
 import { FileUploader } from '@/components/file-uploader';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from '@/components/ui/tooltip';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { DatePickerField } from '@/components/custom/DatePickerField';
@@ -56,13 +67,13 @@ interface EmployeeRow {
   phone: string;
   birthDate?: string;
   birthPlace?: string;
-  gender?: 'M'|'F';
+  gender?: 'M' | 'F';
   nationality?: string;
-  departement?:{
-    id:number;
-    name:string;
-    nameAr?:string;
-  }
+  departement?: {
+    id: number;
+    name: string;
+    nameAr?: string;
+  };
   maritalStatus?: string;
   numberOfChildren?: number;
   address?: string;
@@ -73,11 +84,35 @@ interface EmployeeRow {
   departmentId?: string;
   hireDate?: string;
   notes?: string;
-  education?: { level: string; diploma?: string; year?: string; institution?: string }[];
+  education?: {
+    level: string;
+    diploma?: string;
+    year?: string;
+    institution?: string;
+  }[];
   skills?: { name: string; level: number }[];
-  certifications?: { name: string; issuer?: string; issueDate?: string; expirationDate?: string }[];
-  documents?: { id: string; title: string; fileName?: string; mimeType?: string; size?: number; documentType?: 'cin' | 'certificate' | 'diploma' | 'experience' | 'other' }[];
-  experiences?: { title: string; company?: string; startDate?: string; endDate?: string; description?: string; documents?: { fileName: string; mimeType?: string; size?: number }[] }[];
+  certifications?: {
+    name: string;
+    issuer?: string;
+    issueDate?: string;
+    expirationDate?: string;
+  }[];
+  documents?: {
+    id: string;
+    title: string;
+    fileName?: string;
+    mimeType?: string;
+    size?: number;
+    documentType?: 'cin' | 'certificate' | 'diploma' | 'experience' | 'other';
+  }[];
+  experiences?: {
+    title: string;
+    company?: string;
+    startDate?: string;
+    endDate?: string;
+    description?: string;
+    documents?: { fileName: string; mimeType?: string; size?: number }[];
+  }[];
   status?: string;
   cin?: string;
   peopleInCharge?: {
@@ -104,12 +139,23 @@ export default function EmployeeDetailsPage() {
   const [selectedPhotoFiles, setSelectedPhotoFiles] = useState<File[]>([]);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
-  const [openEditItem, setOpenEditItem] = useState<{section: 'education'|'skills'|'certifications'|'documents'|'peopleInCharge'|'experiences'; index?: number}|null>(null);
+  const [openEditItem, setOpenEditItem] = useState<{
+    section:
+      | 'education'
+      | 'skills'
+      | 'certifications'
+      | 'documents'
+      | 'peopleInCharge'
+      | 'experiences';
+    index?: number;
+  } | null>(null);
   const [tempItem, setTempItem] = useState<any>(null);
   const [docFiles, setDocFiles] = useState<File[]>([]);
 
   // relationship form control for SelectField
-  const relForm = useForm<{ relationship: string }>({ defaultValues: { relationship: '' } });
+  const relForm = useForm<{ relationship: string }>({
+    defaultValues: { relationship: '' }
+  });
 
   useEffect(() => {
     if (!id) return;
@@ -117,7 +163,10 @@ export default function EmployeeDetailsPage() {
       try {
         setLoading(true);
         const res = await apiClient.get(apiRoutes.admin.employees.details(id));
-        const payload: any = res.data && typeof res.data === 'object' && 'data' in res.data ? res.data.data : res.data;
+        const payload: any =
+          res.data && typeof res.data === 'object' && 'data' in res.data
+            ? res.data.data
+            : res.data;
         // Normalize peopleInCharge: object -> array, map CIN->cin
         if (payload && payload.peopleInCharge) {
           const pic = payload.peopleInCharge;
@@ -133,7 +182,12 @@ export default function EmployeeDetailsPage() {
         setEmp(payload as EmployeeRow);
 
         const mediaRes = await apiClient.get(apiRoutes.admin.media.list);
-        const mediaPayload: any[] = mediaRes.data && typeof mediaRes.data === 'object' && 'data' in mediaRes.data ? mediaRes.data.data : mediaRes.data;
+        const mediaPayload: any[] =
+          mediaRes.data &&
+          typeof mediaRes.data === 'object' &&
+          'data' in mediaRes.data
+            ? mediaRes.data.data
+            : mediaRes.data;
         setMedia(mediaPayload);
       } catch (e) {
         toast.error("Impossible de charger l'employé");
@@ -166,10 +220,14 @@ export default function EmployeeDetailsPage() {
 
   const getStatusColor = (status?: string) => {
     switch (status?.toLowerCase()) {
-      case 'actif': return 'bg-green-100 text-green-700 border-green-200';
-      case 'inactif': return 'bg-gray-100 text-gray-700 border-gray-200';
-      case 'suspendu': return 'bg-orange-100 text-orange-700 border-orange-200';
-      default: return 'bg-blue-100 text-blue-700 border-blue-200';
+      case 'actif':
+        return 'bg-green-100 text-green-700 border-green-200';
+      case 'inactif':
+        return 'bg-gray-100 text-gray-700 border-gray-200';
+      case 'suspendu':
+        return 'bg-orange-100 text-orange-700 border-orange-200';
+      default:
+        return 'bg-blue-100 text-blue-700 border-blue-200';
     }
   };
 
@@ -184,12 +242,17 @@ export default function EmployeeDetailsPage() {
       const formData = new FormData();
       formData.append('file', file);
       const res = await apiClient.post(apiRoutes.files.uploadTemp, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
-      const payload: any = res.data && typeof res.data === 'object' && 'data' in res.data ? res.data.data : res.data;
+      const payload: any =
+        res.data && typeof res.data === 'object' && 'data' in res.data
+          ? res.data.data
+          : res.data;
       const fileName = payload?.fileName || payload?.filename || payload?.name;
-      const url = payload?.url || (fileName ? `/images/user/${fileName}` : undefined);
-      const finalUrl = url || (file instanceof File ? URL.createObjectURL(file) : undefined);
+      const url =
+        payload?.url || (fileName ? `/images/user/${fileName}` : undefined);
+      const finalUrl =
+        url || (file instanceof File ? URL.createObjectURL(file) : undefined);
       if (!finalUrl) {
         toast.error('Échec du téléchargement de la photo');
         return;
@@ -206,7 +269,10 @@ export default function EmployeeDetailsPage() {
     }
   };
 
-  const patchEmployee = async (partial: Partial<EmployeeRow>, successMsg = t('common.saved')) => {
+  const patchEmployee = async (
+    partial: Partial<EmployeeRow>,
+    successMsg = t('common.saved')
+  ) => {
     try {
       await apiClient.patch(apiRoutes.admin.employees.details(id!), partial);
       setEmp((prev) => ({ ...(prev as EmployeeRow), ...(partial as any) }));
@@ -221,14 +287,36 @@ export default function EmployeeDetailsPage() {
     await patchEmployee({ [key]: value } as Partial<EmployeeRow>);
   };
 
-  const [currentDocumentType, setCurrentDocumentType] = useState<'cin' | 'certificate' | 'diploma' | 'experience' | 'other'>('other');
+  const [currentDocumentType, setCurrentDocumentType] = useState<
+    'cin' | 'certificate' | 'diploma' | 'experience' | 'other'
+  >('other');
 
-  const openItemDialog = (section: 'education'|'skills'|'certifications'|'documents'|'peopleInCharge'|'experiences', index?: number, docType?: 'cin' | 'certificate' | 'diploma' | 'experience' | 'other') => {
+  const openItemDialog = (
+    section:
+      | 'education'
+      | 'skills'
+      | 'certifications'
+      | 'documents'
+      | 'peopleInCharge'
+      | 'experiences',
+    index?: number,
+    docType?: 'cin' | 'certificate' | 'diploma' | 'experience' | 'other'
+  ) => {
     setOpenEditItem({ section, index });
     let base: any = {};
-    if (section === 'education') base = index!=null ? (emp?.education?.[index] ?? {}) : { level: '', diploma: '', year: '', institution: '' };
-    if (section === 'skills') base = index!=null ? (emp?.skills?.[index] ?? {}) : { name: '', level: 3 };
-    if (section === 'certifications') base = index!=null ? (emp?.certifications?.[index] ?? {}) : { name: '', issuer: '', issueDate: '', expirationDate: '' };
+    if (section === 'education')
+      base =
+        index != null
+          ? (emp?.education?.[index] ?? {})
+          : { level: '', diploma: '', year: '', institution: '' };
+    if (section === 'skills')
+      base =
+        index != null ? (emp?.skills?.[index] ?? {}) : { name: '', level: 3 };
+    if (section === 'certifications')
+      base =
+        index != null
+          ? (emp?.certifications?.[index] ?? {})
+          : { name: '', issuer: '', issueDate: '', expirationDate: '' };
     if (section === 'documents') {
       // Auto-set title based on document type
       let autoTitle = '';
@@ -237,12 +325,29 @@ export default function EmployeeDetailsPage() {
       else if (docType === 'diploma') autoTitle = 'Diplôme';
       else if (docType === 'experience') autoTitle = 'Document expérience';
 
-      base = index!=null ? (emp?.documents?.[index] ?? {}) : { title: autoTitle, documentType: docType || 'other' };
+      base =
+        index != null
+          ? (emp?.documents?.[index] ?? {})
+          : { title: autoTitle, documentType: docType || 'other' };
       if (docType) setCurrentDocumentType(docType);
     }
-    if (section === 'experiences') base = index!=null ? (emp?.experiences?.[index] ?? {}) : { title: '', company: '', startDate: '', endDate: '', description: '', documents: [] };
+    if (section === 'experiences')
+      base =
+        index != null
+          ? (emp?.experiences?.[index] ?? {})
+          : {
+              title: '',
+              company: '',
+              startDate: '',
+              endDate: '',
+              description: '',
+              documents: []
+            };
     if (section === 'peopleInCharge') {
-      base = index!=null ? (emp?.peopleInCharge?.[index] ?? {}) : { name: '', phone: '', relationship: '', cin: '', birthDate: '' };
+      base =
+        index != null
+          ? (emp?.peopleInCharge?.[index] ?? {})
+          : { name: '', phone: '', relationship: '', cin: '', birthDate: '' };
       if (base.CIN && !base.cin) base.cin = base.CIN;
     }
     setTempItem(base);
@@ -261,9 +366,15 @@ export default function EmployeeDetailsPage() {
       try {
         const formData = new FormData();
         formData.append('file', docFiles[0]);
-        const up = await apiClient.post(apiRoutes.files.uploadTemp, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-        const payload: any = up.data && typeof up.data === 'object' && 'data' in up.data ? up.data.data : up.data;
-        tempItem.fileName = payload?.fileName || payload?.filename || docFiles[0].name;
+        const up = await apiClient.post(apiRoutes.files.uploadTemp, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        const payload: any =
+          up.data && typeof up.data === 'object' && 'data' in up.data
+            ? up.data.data
+            : up.data;
+        tempItem.fileName =
+          payload?.fileName || payload?.filename || docFiles[0].name;
         tempItem.mimeType = payload?.mimeType || docFiles[0].type;
         tempItem.size = payload?.size || docFiles[0].size;
       } catch (e) {
@@ -279,14 +390,26 @@ export default function EmployeeDetailsPage() {
     }
 
     // Handle document uploads for experiences, education, and certifications sections
-    if ((section === 'experiences' || section === 'education' || section === 'certifications') && docFiles.length > 0) {
+    if (
+      (section === 'experiences' ||
+        section === 'education' ||
+        section === 'certifications') &&
+      docFiles.length > 0
+    ) {
       try {
         const uploadedDocs = [];
         for (const file of docFiles) {
           const formData = new FormData();
           formData.append('file', file);
-          const up = await apiClient.post(apiRoutes.files.uploadTemp, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-          const payload: any = up.data && typeof up.data === 'object' && 'data' in up.data ? up.data.data : up.data;
+          const up = await apiClient.post(
+            apiRoutes.files.uploadTemp,
+            formData,
+            { headers: { 'Content-Type': 'multipart/form-data' } }
+          );
+          const payload: any =
+            up.data && typeof up.data === 'object' && 'data' in up.data
+              ? up.data.data
+              : up.data;
           uploadedDocs.push({
             fileName: payload?.fileName || payload?.filename || file.name,
             mimeType: payload?.mimeType || file.type,
@@ -307,14 +430,24 @@ export default function EmployeeDetailsPage() {
     if (section === 'peopleInCharge') {
       const item = { ...tempItem };
       // Ensure relationship from SelectField is captured
-      item.relationship = relForm.getValues('relationship') || item.relationship || '';
+      item.relationship =
+        relForm.getValues('relationship') || item.relationship || '';
       // Ensure lowercase cin property
       if (item.CIN && !item.cin) item.cin = item.CIN;
       // Basic validation: name, phone, relationship required, cin format if provided
       const cinRegex = /^[A-Z]{1,2}\d{3,6}$/;
-      if (!item.name?.trim()) { toast.error('Le nom est requis'); return; }
-      if (!item.phone?.trim()) { toast.error('Le téléphone est requis'); return; }
-      if (!item.relationship?.trim()) { toast.error('La relation est requise'); return; }
+      if (!item.name?.trim()) {
+        toast.error('Le nom est requis');
+        return;
+      }
+      if (!item.phone?.trim()) {
+        toast.error('Le téléphone est requis');
+        return;
+      }
+      if (!item.relationship?.trim()) {
+        toast.error('La relation est requise');
+        return;
+      }
       if (item.cin && !cinRegex.test(String(item.cin).toUpperCase())) {
         toast.error('Format CIN invalide (ex: AB123456)');
         return;
@@ -333,7 +466,16 @@ export default function EmployeeDetailsPage() {
     setTempItem(null);
   };
 
-  const removeItem = async (section: 'education'|'skills'|'certifications'|'documents'|'peopleInCharge'|'experiences', index: number) => {
+  const removeItem = async (
+    section:
+      | 'education'
+      | 'skills'
+      | 'certifications'
+      | 'documents'
+      | 'peopleInCharge'
+      | 'experiences',
+    index: number
+  ) => {
     const list = ((emp as any)?.[section] || []).slice();
     list.splice(index, 1);
     await patchEmployee({ [section]: list } as any, t('common.deleted'));
@@ -342,7 +484,7 @@ export default function EmployeeDetailsPage() {
   if (loading) {
     return (
       <PageContainer>
-        <EmployeeDetailsLoadingSkeleton/>
+        <EmployeeDetailsLoadingSkeleton />
       </PageContainer>
     );
   }
@@ -531,9 +673,14 @@ export default function EmployeeDetailsPage() {
                 {t('employeeDetails.tabs.leaves')}
               </span>
             </TabsTrigger>
-            <TabsTrigger value='experiences' className='data-[state=active]:bg-background gap-2'>
+            <TabsTrigger
+              value='experiences'
+              className='data-[state=active]:bg-background gap-2'
+            >
               <NotebookText className='h-4 w-4' />
-              <span className='hidden sm:inline'>{t('employeeDetails.tabs.experiences')}</span>
+              <span className='hidden sm:inline'>
+                {t('employeeDetails.tabs.experiences')}
+              </span>
             </TabsTrigger>
           </TabsList>
 
@@ -544,7 +691,9 @@ export default function EmployeeDetailsPage() {
               employee={emp}
               onUpdate={updateField}
               documents={emp?.documents || []}
-              onAddDocument={(docType) => openItemDialog('documents', undefined, docType)}
+              onAddDocument={(docType) =>
+                openItemDialog('documents', undefined, docType)
+              }
               onEditDocument={(index) => openItemDialog('documents', index)}
               onDeleteDocument={(index) => removeItem('documents', index)}
               onPreviewDocument={handleOpen}
@@ -583,7 +732,9 @@ export default function EmployeeDetailsPage() {
                 removeItem('certifications', index)
               }
               documents={emp?.documents || []}
-              onAddDocument={(docType) => openItemDialog('documents', undefined, docType)}
+              onAddDocument={(docType) =>
+                openItemDialog('documents', undefined, docType)
+              }
               onEditDocument={(index) => openItemDialog('documents', index)}
               onDeleteDocument={(index) => removeItem('documents', index)}
               onPreviewDocument={handleOpen}
@@ -611,7 +762,8 @@ export default function EmployeeDetailsPage() {
                   Section en développement
                 </h3>
                 <p className='text-muted-foreground text-sm'>
-                  Informations assurances, Mutuelle et autres données sociales à venir
+                  Informations assurances, Mutuelle et autres données sociales à
+                  venir
                 </p>
               </Card>
             </AnimatedTabContent>
@@ -683,7 +835,7 @@ export default function EmployeeDetailsPage() {
           </DialogHeader>
           <div className='max-h-[70vh] overflow-auto'>
             {previewItem?.fileName?.match(/\.(png|jpg|jpeg|gif)$/i) && (
-              <div className='relative w-full h-auto min-h-[200px]'>
+              <div className='relative h-auto min-h-[200px] w-full'>
                 <Image
                   src={`/images/user/${previewItem.fileName}`}
                   alt={previewItem.title}
@@ -839,9 +991,13 @@ export default function EmployeeDetailsPage() {
                 </div>
 
                 {/* Documents section for education/diplomas */}
-                <div className='border-t pt-4 mt-4'>
-                  <Label className='mb-2'>Diplômes et attestations (optionnel)</Label>
-                  <p className='text-xs text-muted-foreground mb-3'>Ajoutez les documents de votre diplôme</p>
+                <div className='mt-4 border-t pt-4'>
+                  <Label className='mb-2'>
+                    Diplômes et attestations (optionnel)
+                  </Label>
+                  <p className='text-muted-foreground mb-3 text-xs'>
+                    Ajoutez les documents de votre diplôme
+                  </p>
                   <FileUploader
                     value={docFiles}
                     onValueChange={setDocFiles}
@@ -852,9 +1008,14 @@ export default function EmployeeDetailsPage() {
 
                   {tempItem?.documents && tempItem.documents.length > 0 && (
                     <div className='mt-3 space-y-2'>
-                      <p className='text-sm font-medium'>Documents existants:</p>
+                      <p className='text-sm font-medium'>
+                        Documents existants:
+                      </p>
                       {tempItem.documents.map((doc: any, idx: number) => (
-                        <div key={idx} className='flex items-center justify-between p-2 bg-muted rounded text-sm'>
+                        <div
+                          key={idx}
+                          className='bg-muted flex items-center justify-between rounded p-2 text-sm'
+                        >
                           <span className='flex items-center gap-2'>
                             <FileText className='h-4 w-4' />
                             {doc.fileName}
@@ -865,10 +1026,13 @@ export default function EmployeeDetailsPage() {
                             onClick={() => {
                               const newDocs = [...(tempItem.documents || [])];
                               newDocs.splice(idx, 1);
-                              setTempItem((p: any) => ({ ...p, documents: newDocs }));
+                              setTempItem((p: any) => ({
+                                ...p,
+                                documents: newDocs
+                              }));
                             }}
                           >
-                            <Trash2 className='h-4 w-4 text-destructive' />
+                            <Trash2 className='text-destructive h-4 w-4' />
                           </Button>
                         </div>
                       ))}
@@ -953,9 +1117,13 @@ export default function EmployeeDetailsPage() {
                 </div>
 
                 {/* Documents section for certifications */}
-                <div className='border-t pt-4 mt-4'>
-                  <Label className='mb-2'>Certificats et attestations (optionnel)</Label>
-                  <p className='text-xs text-muted-foreground mb-3'>Ajoutez les documents de certification</p>
+                <div className='mt-4 border-t pt-4'>
+                  <Label className='mb-2'>
+                    Certificats et attestations (optionnel)
+                  </Label>
+                  <p className='text-muted-foreground mb-3 text-xs'>
+                    Ajoutez les documents de certification
+                  </p>
                   <FileUploader
                     value={docFiles}
                     onValueChange={setDocFiles}
@@ -966,9 +1134,14 @@ export default function EmployeeDetailsPage() {
 
                   {tempItem?.documents && tempItem.documents.length > 0 && (
                     <div className='mt-3 space-y-2'>
-                      <p className='text-sm font-medium'>Documents existants:</p>
+                      <p className='text-sm font-medium'>
+                        Documents existants:
+                      </p>
                       {tempItem.documents.map((doc: any, idx: number) => (
-                        <div key={idx} className='flex items-center justify-between p-2 bg-muted rounded text-sm'>
+                        <div
+                          key={idx}
+                          className='bg-muted flex items-center justify-between rounded p-2 text-sm'
+                        >
                           <span className='flex items-center gap-2'>
                             <FileText className='h-4 w-4' />
                             {doc.fileName}
@@ -979,10 +1152,13 @@ export default function EmployeeDetailsPage() {
                             onClick={() => {
                               const newDocs = [...(tempItem.documents || [])];
                               newDocs.splice(idx, 1);
-                              setTempItem((p: any) => ({ ...p, documents: newDocs }));
+                              setTempItem((p: any) => ({
+                                ...p,
+                                documents: newDocs
+                              }));
                             }}
                           >
-                            <Trash2 className='h-4 w-4 text-destructive' />
+                            <Trash2 className='text-destructive h-4 w-4' />
                           </Button>
                         </div>
                       ))}
@@ -1000,19 +1176,22 @@ export default function EmployeeDetailsPage() {
                     <div>
                       <Label className='mb-1'>Type de document</Label>
                       <select
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        className='border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50'
                         value={tempItem?.documentType || 'other'}
                         onChange={(e) => {
                           const value = e.target.value;
-                          setTempItem((p: any) => ({ ...p, documentType: value }));
+                          setTempItem((p: any) => ({
+                            ...p,
+                            documentType: value
+                          }));
                           setCurrentDocumentType(value as any);
                         }}
                       >
-                        <option value="cin">CIN</option>
-                        <option value="certificate">Certificat</option>
-                        <option value="diploma">Diplôme</option>
-                        <option value="experience">Expérience</option>
-                        <option value="other">Autre</option>
+                        <option value='cin'>CIN</option>
+                        <option value='certificate'>Certificat</option>
+                        <option value='diploma'>Diplôme</option>
+                        <option value='experience'>Expérience</option>
+                        <option value='other'>Autre</option>
                       </select>
                     </div>
                     <div>
@@ -1020,7 +1199,10 @@ export default function EmployeeDetailsPage() {
                       <Input
                         value={tempItem?.title || ''}
                         onChange={(e) =>
-                          setTempItem((p: any) => ({ ...p, title: e.target.value }))
+                          setTempItem((p: any) => ({
+                            ...p,
+                            title: e.target.value
+                          }))
                         }
                       />
                     </div>
@@ -1029,14 +1211,19 @@ export default function EmployeeDetailsPage() {
 
                 {/* Show document type badge for non-other types */}
                 {currentDocumentType !== 'other' && (
-                  <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-                    <FileText className="h-5 w-5 text-primary" />
+                  <div className='bg-muted flex items-center gap-2 rounded-lg p-3'>
+                    <FileText className='text-primary h-5 w-5' />
                     <div>
-                      <p className="font-medium text-sm">{tempItem?.title}</p>
-                      <p className="text-xs text-muted-foreground">
-                        Type: {currentDocumentType === 'cin' ? 'CIN' :
-                               currentDocumentType === 'certificate' ? 'Certificat' :
-                               currentDocumentType === 'diploma' ? 'Diplôme' : 'Document'}
+                      <p className='text-sm font-medium'>{tempItem?.title}</p>
+                      <p className='text-muted-foreground text-xs'>
+                        Type:{' '}
+                        {currentDocumentType === 'cin'
+                          ? 'CIN'
+                          : currentDocumentType === 'certificate'
+                            ? 'Certificat'
+                            : currentDocumentType === 'diploma'
+                              ? 'Diplôme'
+                              : 'Document'}
                       </p>
                     </div>
                   </div>
@@ -1060,19 +1247,31 @@ export default function EmployeeDetailsPage() {
             {openEditItem?.section === 'peopleInCharge' && (
               <>
                 <div>
-                  <Label className="mb-1">Nom complet</Label>
-                  <Input value={tempItem?.name || ''} onChange={(e)=>setTempItem((p:any)=>({ ...p, name: e.target.value }))} placeholder="Ex: Ahmed El Fassi" />
+                  <Label className='mb-1'>Nom complet</Label>
+                  <Input
+                    value={tempItem?.name || ''}
+                    onChange={(e) =>
+                      setTempItem((p: any) => ({ ...p, name: e.target.value }))
+                    }
+                    placeholder='Ex: Ahmed El Fassi'
+                  />
                 </div>
                 <div>
-                  <Label className="mb-1">Téléphone</Label>
-                  <Input value={tempItem?.phone || ''} onChange={(e)=>setTempItem((p:any)=>({ ...p, phone: e.target.value }))} placeholder="+212 6XX XX XX XX" />
+                  <Label className='mb-1'>Téléphone</Label>
+                  <Input
+                    value={tempItem?.phone || ''}
+                    onChange={(e) =>
+                      setTempItem((p: any) => ({ ...p, phone: e.target.value }))
+                    }
+                    placeholder='+212 6XX XX XX XX'
+                  />
                 </div>
                 <div>
-                  <Label className="mb-1">Relation</Label>
+                  <Label className='mb-1'>Relation</Label>
                   <SelectField
-                    name="relationship"
+                    name='relationship'
                     control={relForm.control}
-                    placeholder="Sélectionner"
+                    placeholder='Sélectionner'
                     options={[
                       { label: 'Époux(se)', value: 'Époux(se)' },
                       { label: 'Parent', value: 'Parent' },
@@ -1081,17 +1280,28 @@ export default function EmployeeDetailsPage() {
                       { label: 'Frère', value: 'Frère' },
                       { label: 'Soeur', value: 'Soeur' },
                       { label: 'Tuteur', value: 'Tuteur' },
-                      { label: 'Autre', value: 'Autre' },
+                      { label: 'Autre', value: 'Autre' }
                     ]}
                   />
                 </div>
                 <div>
-                  <Label className="mb-1">CIN</Label>
-                  <Input value={tempItem?.cin || ''} onChange={(e)=>setTempItem((p:any)=>({ ...p, cin: e.target.value }))} placeholder="Ex: AB123456" />
+                  <Label className='mb-1'>CIN</Label>
+                  <Input
+                    value={tempItem?.cin || ''}
+                    onChange={(e) =>
+                      setTempItem((p: any) => ({ ...p, cin: e.target.value }))
+                    }
+                    placeholder='Ex: AB123456'
+                  />
                 </div>
                 <div>
-                  <Label className="mb-1">Date de naissance</Label>
-                  <DatePickerField value={tempItem?.birthDate || ''} onChange={(d)=>setTempItem((p:any)=>({ ...p, birthDate: d || '' }))} />
+                  <Label className='mb-1'>Date de naissance</Label>
+                  <DatePickerField
+                    value={tempItem?.birthDate || ''}
+                    onChange={(d) =>
+                      setTempItem((p: any) => ({ ...p, birthDate: d || '' }))
+                    }
+                  />
                 </div>
               </>
             )}
@@ -1100,31 +1310,69 @@ export default function EmployeeDetailsPage() {
               <>
                 <div>
                   <Label className='mb-1'>Intitulé</Label>
-                  <Input value={tempItem?.title || ''} onChange={(e)=>setTempItem((p:any)=>({ ...p, title: e.target.value }))} placeholder="Ex: Développeur Frontend" />
+                  <Input
+                    value={tempItem?.title || ''}
+                    onChange={(e) =>
+                      setTempItem((p: any) => ({ ...p, title: e.target.value }))
+                    }
+                    placeholder='Ex: Développeur Frontend'
+                  />
                 </div>
                 <div>
                   <Label className='mb-1'>Entreprise</Label>
-                  <Input value={tempItem?.company || ''} onChange={(e)=>setTempItem((p:any)=>({ ...p, company: e.target.value }))} placeholder='Ex: ACME Corp' />
+                  <Input
+                    value={tempItem?.company || ''}
+                    onChange={(e) =>
+                      setTempItem((p: any) => ({
+                        ...p,
+                        company: e.target.value
+                      }))
+                    }
+                    placeholder='Ex: ACME Corp'
+                  />
                 </div>
-                <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+                <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
                   <div>
                     <Label className='mb-1'>Début</Label>
-                    <DatePickerField value={tempItem?.startDate || ''} onChange={(d)=>setTempItem((p:any)=>({ ...p, startDate: d || '' }))} />
+                    <DatePickerField
+                      value={tempItem?.startDate || ''}
+                      onChange={(d) =>
+                        setTempItem((p: any) => ({ ...p, startDate: d || '' }))
+                      }
+                    />
                   </div>
                   <div>
                     <Label className='mb-1'>Fin</Label>
-                    <DatePickerField value={tempItem?.endDate || ''} onChange={(d)=>setTempItem((p:any)=>({ ...p, endDate: d || '' }))} />
+                    <DatePickerField
+                      value={tempItem?.endDate || ''}
+                      onChange={(d) =>
+                        setTempItem((p: any) => ({ ...p, endDate: d || '' }))
+                      }
+                    />
                   </div>
                 </div>
                 <div>
                   <Label className='mb-1'>Description</Label>
-                  <Input value={tempItem?.description || ''} onChange={(e)=>setTempItem((p:any)=>({ ...p, description: e.target.value }))} placeholder='Résumé des missions' />
+                  <Input
+                    value={tempItem?.description || ''}
+                    onChange={(e) =>
+                      setTempItem((p: any) => ({
+                        ...p,
+                        description: e.target.value
+                      }))
+                    }
+                    placeholder='Résumé des missions'
+                  />
                 </div>
 
                 {/* Documents section for experience */}
-                <div className='border-t pt-4 mt-4'>
-                  <Label className='mb-2'>Documents justificatifs (optionnel)</Label>
-                  <p className='text-xs text-muted-foreground mb-3'>Attestations de travail, certificats, références...</p>
+                <div className='mt-4 border-t pt-4'>
+                  <Label className='mb-2'>
+                    Documents justificatifs (optionnel)
+                  </Label>
+                  <p className='text-muted-foreground mb-3 text-xs'>
+                    Attestations de travail, certificats, références...
+                  </p>
                   <FileUploader
                     value={docFiles}
                     onValueChange={setDocFiles}
@@ -1136,9 +1384,14 @@ export default function EmployeeDetailsPage() {
                   {/* Show existing documents */}
                   {tempItem?.documents && tempItem.documents.length > 0 && (
                     <div className='mt-3 space-y-2'>
-                      <p className='text-sm font-medium'>Documents existants:</p>
+                      <p className='text-sm font-medium'>
+                        Documents existants:
+                      </p>
                       {tempItem.documents.map((doc: any, idx: number) => (
-                        <div key={idx} className='flex items-center justify-between p-2 bg-muted rounded text-sm'>
+                        <div
+                          key={idx}
+                          className='bg-muted flex items-center justify-between rounded p-2 text-sm'
+                        >
                           <span className='flex items-center gap-2'>
                             <FileText className='h-4 w-4' />
                             {doc.fileName}
@@ -1149,10 +1402,13 @@ export default function EmployeeDetailsPage() {
                             onClick={() => {
                               const newDocs = [...(tempItem.documents || [])];
                               newDocs.splice(idx, 1);
-                              setTempItem((p: any) => ({ ...p, documents: newDocs }));
+                              setTempItem((p: any) => ({
+                                ...p,
+                                documents: newDocs
+                              }));
                             }}
                           >
-                            <Trash2 className='h-4 w-4 text-destructive' />
+                            <Trash2 className='text-destructive h-4 w-4' />
                           </Button>
                         </div>
                       ))}

@@ -33,7 +33,7 @@ const DEFAULT_COMPANY: CompanyData = {
   phone: '+212 5 22 XX XX XX',
   email: 'contact@sirh-company.ma',
   ice: 'ICE000123456789',
-  rc: 'RC 12345',
+  rc: 'RC 12345'
 };
 
 export class AttestationPDFGenerator {
@@ -46,7 +46,7 @@ export class AttestationPDFGenerator {
     this.doc = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
-      format: 'a4',
+      format: 'a4'
     });
     this.pageWidth = this.doc.internal.pageSize.getWidth();
     this.pageHeight = this.doc.internal.pageSize.getHeight();
@@ -68,7 +68,11 @@ export class AttestationPDFGenerator {
     yPos += 4;
     doc.text(company.city, margins.left, yPos);
     yPos += 4;
-    doc.text(`Tél: ${company.phone} | Email: ${company.email}`, margins.left, yPos);
+    doc.text(
+      `Tél: ${company.phone} | Email: ${company.email}`,
+      margins.left,
+      yPos
+    );
 
     if (company.ice || company.rc) {
       yPos += 4;
@@ -155,14 +159,21 @@ export class AttestationPDFGenerator {
     yPos += 15;
     doc.setFontSize(18);
     doc.setFont('helvetica', 'bold');
-    doc.text('ATTESTATION DE TRAVAIL', pageWidth / 2, yPos, { align: 'center' });
+    doc.text('ATTESTATION DE TRAVAIL', pageWidth / 2, yPos, {
+      align: 'center'
+    });
 
     // Date and location
     yPos += 15;
     doc.setFontSize(11);
     doc.setFont('helvetica', 'normal');
     const dateStr = this.formatDate(dateGeneration);
-    doc.text(`${company.city.split(',')[0]}, le ${dateStr}`, pageWidth - margins.right, yPos, { align: 'right' });
+    doc.text(
+      `${company.city.split(',')[0]}, le ${dateStr}`,
+      pageWidth - margins.right,
+      yPos,
+      { align: 'right' }
+    );
 
     // Body
     yPos += 20;
@@ -179,7 +190,9 @@ export class AttestationPDFGenerator {
       `Monsieur/Madame ${fullName}`,
       '',
       employee.cin ? `Titulaire de la CIN N° : ${employee.cin}` : '',
-      employee.birthDate ? `Né(e) le : ${this.formatDate(employee.birthDate)}` : '',
+      employee.birthDate
+        ? `Né(e) le : ${this.formatDate(employee.birthDate)}`
+        : '',
       employee.nationality ? `De nationalité : ${employee.nationality}` : '',
       '',
       `Occupe le poste de : ${employee.position}`,
@@ -188,10 +201,10 @@ export class AttestationPDFGenerator {
       '',
       seniority ? `Soit une ancienneté de : ${seniority}` : '',
       '',
-      `Cette attestation est délivrée à l'intéressé(e) pour servir et valoir ce que de droit.`,
-    ].filter(line => line !== '');
+      `Cette attestation est délivrée à l'intéressé(e) pour servir et valoir ce que de droit.`
+    ].filter((line) => line !== '');
 
-    bodyText.forEach(line => {
+    bodyText.forEach((line) => {
       if (line === '') {
         yPos += lineHeight / 2;
       } else {
@@ -203,7 +216,11 @@ export class AttestationPDFGenerator {
     // Signature section
     yPos += 20;
     doc.setFont('helvetica', 'bold');
-    doc.text('Le Directeur des Ressources Humaines', pageWidth - margins.right - 60, yPos);
+    doc.text(
+      'Le Directeur des Ressources Humaines',
+      pageWidth - margins.right - 60,
+      yPos
+    );
     yPos += 25;
     doc.text('Signature et Cachet', pageWidth - margins.right - 60, yPos);
 
@@ -225,14 +242,21 @@ export class AttestationPDFGenerator {
     yPos += 15;
     doc.setFontSize(18);
     doc.setFont('helvetica', 'bold');
-    doc.text('ATTESTATION DE SALAIRE', pageWidth / 2, yPos, { align: 'center' });
+    doc.text('ATTESTATION DE SALAIRE', pageWidth / 2, yPos, {
+      align: 'center'
+    });
 
     // Date and location
     yPos += 15;
     doc.setFontSize(11);
     doc.setFont('helvetica', 'normal');
     const dateStr = this.formatDate(dateGeneration);
-    doc.text(`${company.city.split(',')[0]}, le ${dateStr}`, pageWidth - margins.right, yPos, { align: 'right' });
+    doc.text(
+      `${company.city.split(',')[0]}, le ${dateStr}`,
+      pageWidth - margins.right,
+      yPos,
+      { align: 'right' }
+    );
 
     // Body
     yPos += 20;
@@ -242,7 +266,10 @@ export class AttestationPDFGenerator {
     const fullName = `${employee.firstName} ${employee.lastName}`.toUpperCase();
     const hireDate = this.formatDate(employee.hireDate);
     const salaryFormatted = employee.salaryBase
-      ? new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'MAD' }).format(employee.salaryBase)
+      ? new Intl.NumberFormat('fr-FR', {
+          style: 'currency',
+          currency: 'MAD'
+        }).format(employee.salaryBase)
       : 'N/A';
 
     const bodyText = [
@@ -258,10 +285,10 @@ export class AttestationPDFGenerator {
       '',
       `Perçoit un salaire mensuel brut de : ${salaryFormatted}`,
       '',
-      `Cette attestation est délivrée à l'intéressé(e) pour servir et valoir ce que de droit.`,
-    ].filter(line => line !== '');
+      `Cette attestation est délivrée à l'intéressé(e) pour servir et valoir ce que de droit.`
+    ].filter((line) => line !== '');
 
-    bodyText.forEach(line => {
+    bodyText.forEach((line) => {
       if (line === '') {
         yPos += lineHeight / 2;
       } else {
@@ -273,7 +300,11 @@ export class AttestationPDFGenerator {
     // Signature section
     yPos += 20;
     doc.setFont('helvetica', 'bold');
-    doc.text('Le Directeur des Ressources Humaines', pageWidth - margins.right - 60, yPos);
+    doc.text(
+      'Le Directeur des Ressources Humaines',
+      pageWidth - margins.right - 60,
+      yPos
+    );
     yPos += 25;
     doc.text('Signature et Cachet', pageWidth - margins.right - 60, yPos);
 
@@ -295,14 +326,21 @@ export class AttestationPDFGenerator {
     yPos += 15;
     doc.setFontSize(18);
     doc.setFont('helvetica', 'bold');
-    doc.text('ATTESTATION DE TRAVAIL ET DE SALAIRE', pageWidth / 2, yPos, { align: 'center' });
+    doc.text('ATTESTATION DE TRAVAIL ET DE SALAIRE', pageWidth / 2, yPos, {
+      align: 'center'
+    });
 
     // Date and location
     yPos += 15;
     doc.setFontSize(11);
     doc.setFont('helvetica', 'normal');
     const dateStr = this.formatDate(dateGeneration);
-    doc.text(`${company.city.split(',')[0]}, le ${dateStr}`, pageWidth - margins.right, yPos, { align: 'right' });
+    doc.text(
+      `${company.city.split(',')[0]}, le ${dateStr}`,
+      pageWidth - margins.right,
+      yPos,
+      { align: 'right' }
+    );
 
     // Body
     yPos += 20;
@@ -313,7 +351,10 @@ export class AttestationPDFGenerator {
     const hireDate = this.formatDate(employee.hireDate);
     const seniority = this.calculateSeniority(employee.hireDate);
     const salaryFormatted = employee.salaryBase
-      ? new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'MAD' }).format(employee.salaryBase)
+      ? new Intl.NumberFormat('fr-FR', {
+          style: 'currency',
+          currency: 'MAD'
+        }).format(employee.salaryBase)
       : 'N/A';
 
     const bodyText = [
@@ -322,7 +363,9 @@ export class AttestationPDFGenerator {
       `Monsieur/Madame ${fullName}`,
       '',
       employee.cin ? `Titulaire de la CIN N° : ${employee.cin}` : '',
-      employee.birthDate ? `Né(e) le : ${this.formatDate(employee.birthDate)}` : '',
+      employee.birthDate
+        ? `Né(e) le : ${this.formatDate(employee.birthDate)}`
+        : '',
       employee.nationality ? `De nationalité : ${employee.nationality}` : '',
       '',
       `Occupe le poste de : ${employee.position}`,
@@ -333,10 +376,10 @@ export class AttestationPDFGenerator {
       '',
       `Perçoit un salaire mensuel brut de : ${salaryFormatted}`,
       '',
-      `Cette attestation est délivrée à l'intéressé(e) pour servir et valoir ce que de droit.`,
-    ].filter(line => line !== '');
+      `Cette attestation est délivrée à l'intéressé(e) pour servir et valoir ce que de droit.`
+    ].filter((line) => line !== '');
 
-    bodyText.forEach(line => {
+    bodyText.forEach((line) => {
       if (line === '') {
         yPos += lineHeight / 2;
       } else {
@@ -348,7 +391,11 @@ export class AttestationPDFGenerator {
     // Signature section
     yPos += 20;
     doc.setFont('helvetica', 'bold');
-    doc.text('Le Directeur des Ressources Humaines', pageWidth - margins.right - 60, yPos);
+    doc.text(
+      'Le Directeur des Ressources Humaines',
+      pageWidth - margins.right - 60,
+      yPos
+    );
     yPos += 25;
     doc.text('Signature et Cachet', pageWidth - margins.right - 60, yPos);
 
@@ -379,7 +426,12 @@ export class AttestationPDFGenerator {
     doc.setFontSize(11);
     doc.setFont('helvetica', 'normal');
     const dateStr = this.formatDate(dateGeneration);
-    doc.text(`${company.city.split(',')[0]}, le ${dateStr}`, pageWidth - margins.right, yPos, { align: 'right' });
+    doc.text(
+      `${company.city.split(',')[0]}, le ${dateStr}`,
+      pageWidth - margins.right,
+      yPos,
+      { align: 'right' }
+    );
 
     // Body
     yPos += 20;
@@ -404,10 +456,10 @@ export class AttestationPDFGenerator {
       `Durant cette période, l'intéressé(e) a fait preuve de sérieux et de compétence dans l'accomplissement`,
       `de ses missions.`,
       '',
-      `Cette attestation est délivrée à l'intéressé(e) pour servir et valoir ce que de droit.`,
-    ].filter(line => line !== '');
+      `Cette attestation est délivrée à l'intéressé(e) pour servir et valoir ce que de droit.`
+    ].filter((line) => line !== '');
 
-    bodyText.forEach(line => {
+    bodyText.forEach((line) => {
       if (line === '') {
         yPos += lineHeight / 2;
       } else {
@@ -419,7 +471,11 @@ export class AttestationPDFGenerator {
     // Signature section
     yPos += 20;
     doc.setFont('helvetica', 'bold');
-    doc.text('Le Directeur des Ressources Humaines', pageWidth - margins.right - 60, yPos);
+    doc.text(
+      'Le Directeur des Ressources Humaines',
+      pageWidth - margins.right - 60,
+      yPos
+    );
     yPos += 25;
     doc.text('Signature et Cachet', pageWidth - margins.right - 60, yPos);
 
@@ -438,22 +494,43 @@ export class AttestationPDFGenerator {
   ): jsPDF {
     switch (type) {
       case 'travail':
-        return this.generateAttestationTravail(employee, numeroAttestation, dateGeneration, company);
+        return this.generateAttestationTravail(
+          employee,
+          numeroAttestation,
+          dateGeneration,
+          company
+        );
       case 'salaire':
-        return this.generateAttestationSalaire(employee, numeroAttestation, dateGeneration, company);
+        return this.generateAttestationSalaire(
+          employee,
+          numeroAttestation,
+          dateGeneration,
+          company
+        );
       case 'travail_salaire':
-        return this.generateAttestationTravailSalaire(employee, numeroAttestation, dateGeneration, company);
+        return this.generateAttestationTravailSalaire(
+          employee,
+          numeroAttestation,
+          dateGeneration,
+          company
+        );
       case 'stage':
         return this.generateAttestationStage(
           employee,
           numeroAttestation,
           dateGeneration,
           additionalData?.stageStartDate || employee.hireDate || '',
-          additionalData?.stageEndDate || new Date().toISOString().split('T')[0],
+          additionalData?.stageEndDate ||
+            new Date().toISOString().split('T')[0],
           company
         );
       default:
-        return this.generateAttestationTravail(employee, numeroAttestation, dateGeneration, company);
+        return this.generateAttestationTravail(
+          employee,
+          numeroAttestation,
+          dateGeneration,
+          company
+        );
     }
   }
 }
@@ -466,7 +543,13 @@ export function generateAttestationPDF(
   additionalData?: any
 ): jsPDF {
   const generator = new AttestationPDFGenerator();
-  return generator.generate(type, employee, numeroAttestation, dateGeneration, additionalData);
+  return generator.generate(
+    type,
+    employee,
+    numeroAttestation,
+    dateGeneration,
+    additionalData
+  );
 }
 
 export function downloadAttestationPDF(
@@ -476,8 +559,13 @@ export function downloadAttestationPDF(
   dateGeneration: string,
   additionalData?: any
 ): void {
-  const pdf = generateAttestationPDF(type, employee, numeroAttestation, dateGeneration, additionalData);
+  const pdf = generateAttestationPDF(
+    type,
+    employee,
+    numeroAttestation,
+    dateGeneration,
+    additionalData
+  );
   const fileName = `${numeroAttestation}_${employee.lastName}_${employee.firstName}.pdf`;
   pdf.save(fileName);
 }
-

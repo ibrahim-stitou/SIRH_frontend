@@ -6,9 +6,7 @@
       "password": "password",
       "name": "Admin User",
       "full_name": "Admin User",
-      "roleIds": [
-        1
-      ],
+      "roleIds": [1],
       "status": "active"
     },
     {
@@ -17,9 +15,7 @@
       "password": "password",
       "name": "HR Manager",
       "full_name": "HR Manager",
-      "roleIds": [
-        2
-      ],
+      "roleIds": [2],
       "status": "active"
     }
   ],
@@ -29,9 +25,7 @@
       "name": "Admin",
       "code": "ADMIN",
       "description": "Administrator",
-      "permissions": [
-        "*"
-      ]
+      "permissions": ["*"]
     },
     {
       "id": 2,
@@ -50,9 +44,7 @@
       "name": "Employee",
       "code": "EMPLOYEE",
       "description": "Standard Employee",
-      "permissions": [
-        "self.read"
-      ]
+      "permissions": ["self.read"]
     }
   ],
   "sessions": [
@@ -305,10 +297,7 @@
       "updatedAt": "2025-01-15T08:00:00Z",
       "createdBy": "system",
       "notes": "Responsable RH principal",
-      "tags": [
-        "management",
-        "hr"
-      ]
+      "tags": ["management", "hr"]
     },
     {
       "id": 1001,
@@ -346,10 +335,7 @@
       "updatedAt": "2025-01-15T08:00:00Z",
       "createdBy": "system",
       "notes": "Employée front-end",
-      "tags": [
-        "engineering",
-        "frontend"
-      ]
+      "tags": ["engineering", "frontend"]
     },
     {
       "id": 1002,
@@ -387,10 +373,7 @@
       "updatedAt": "2025-01-15T08:00:00Z",
       "createdBy": "system",
       "notes": "Manager équipe technique",
-      "tags": [
-        "engineering",
-        "management"
-      ]
+      "tags": ["engineering", "management"]
     },
     {
       "id": 1003,
@@ -429,9 +412,7 @@
       "updatedAt": "2025-01-15T08:00:00Z",
       "createdBy": "system",
       "notes": "Spécialiste RH contrat CDD",
-      "tags": [
-        "hr"
-      ]
+      "tags": ["hr"]
     }
   ],
   "contracts": [
@@ -616,10 +597,7 @@
   ],
   "systemSettings": {
     "localeDefault": "fr",
-    "supportedLocales": [
-      "fr",
-      "en"
-    ],
+    "supportedLocales": ["fr", "en"],
     "timezone": "Europe/Paris"
   },
   "featureFlags": [

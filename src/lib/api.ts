@@ -2,16 +2,15 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import { getSession } from 'next-auth/react';
 import { auth } from '@/lib/auth';
 
-
 const apiClient = axios.create({
   baseURL:
-    process.env.NEXT_PUBLIC_USE_MOCK === "true"
-      ? "http://localhost:3001"
-      : process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8003/api/v1",
+    process.env.NEXT_PUBLIC_USE_MOCK === 'true'
+      ? 'http://localhost:3001'
+      : process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:8003/api/v1',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json'
+    Accept: 'application/json'
   }
 });
 const getAuthToken = async (isServerSide: boolean): Promise<string | null> => {
@@ -34,12 +33,15 @@ const getLocale = (): string => {
     return 'fr';
   }
 
-  return localStorage.getItem('locale') ||
-    navigator.language.split('-')[0] ||
-    'fr';
+  return (
+    localStorage.getItem('locale') || navigator.language.split('-')[0] || 'fr'
+  );
 };
 let isRefreshingToken = false;
-let refreshPromise: Promise<{ accessToken: string; refreshToken: string } | null> | null = null;
+let refreshPromise: Promise<{
+  accessToken: string;
+  refreshToken: string;
+} | null> | null = null;
 
 apiClient.interceptors.request.use(
   async (config: any) => {
@@ -65,7 +67,10 @@ apiClient.interceptors.request.use(
   },
   (error: AxiosError) => Promise.reject(error)
 );
-async function refreshToken(): Promise<{ accessToken: string; refreshToken: string } | null> {
+async function refreshToken(): Promise<{
+  accessToken: string;
+  refreshToken: string;
+} | null> {
   try {
     if (isRefreshingToken && refreshPromise) {
       return refreshPromise;
@@ -79,19 +84,20 @@ async function refreshToken(): Promise<{ accessToken: string; refreshToken: stri
       }
       // Use /refresh for the mock server
       const refreshUrl = `${
-        process.env.NEXT_PUBLIC_USE_MOCK === "true"
-          ? "http://localhost:3001/refresh"
-          : (process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8002/api/v1") + "/refresh-token"
+        process.env.NEXT_PUBLIC_USE_MOCK === 'true'
+          ? 'http://localhost:3001/refresh'
+          : (process.env.NEXT_PUBLIC_API_BASE_URL ||
+              'http://127.0.0.1:8002/api/v1') + '/refresh-token'
       }`;
       const response = await axios.post(
         refreshUrl,
         { refresh_token: session.refreshToken },
         {
           headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
           },
-          timeout: 5000,
+          timeout: 5000
         }
       );
 
@@ -105,12 +111,12 @@ async function refreshToken(): Promise<{ accessToken: string; refreshToken: stri
       await fetch('/api/auth/session', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           accessToken,
           refreshToken
-        }),
+        })
       });
 
       return {
@@ -143,12 +149,18 @@ apiClient.interceptors.response.use(
       : 'unknown';
 
     // Do not treat all errors as auth endpoint errors; only skip refresh/login endpoints
-    if (originalRequest.url?.includes('/login') || originalRequest.url?.includes('/refresh') || originalRequest.url?.includes('/refresh-token')) {
+    if (
+      originalRequest.url?.includes('/login') ||
+      originalRequest.url?.includes('/refresh') ||
+      originalRequest.url?.includes('/refresh-token')
+    ) {
       console.error(`Auth endpoint error (${duration}):`, error.message);
       return Promise.reject(error);
     }
     if (error.response?.status === 401 && !originalRequest._retry) {
-      console.log(`Request failed with 401 (${duration}), attempting token refresh`);
+      console.log(
+        `Request failed with 401 (${duration}), attempting token refresh`
+      );
 
       originalRequest._retry = true;
 

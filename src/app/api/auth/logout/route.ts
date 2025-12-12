@@ -7,15 +7,17 @@ export async function GET(request: Request) {
   // @ts-ignore
   if (session?.accessToken) {
     try {
-
-      await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:8002/api/v1'}/logout`, {
-        method: 'POST',
-        headers: {
-          // @ts-ignore
-          'Authorization': `Bearer ${session.accessToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:8002/api/v1'}/logout`,
+        {
+          method: 'POST',
+          headers: {
+            // @ts-ignore
+            Authorization: `Bearer ${session.accessToken}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
     } catch (error) {
       console.error('Logout API error:', error);
     }

@@ -18,6 +18,7 @@ src/app/admin/contrats-mouvements/contrats/[id]/details/
 ### 1. Page Principale (`page.tsx`)
 
 **Fonctionnalités :**
+
 - Chargement dynamique des données du contrat depuis l'API
 - Gestion des états (chargement, édition, sauvegarde)
 - Système de permissions basé sur le statut
@@ -26,6 +27,7 @@ src/app/admin/contrats-mouvements/contrats/[id]/details/
 - Menu d'actions contextuelles
 
 **États du contrat :**
+
 - **Brouillon** : Peut être modifié et validé
 - **Actif** : Lecture seule, modifications via avenant
 - **Autres statuts** : Lecture seule
@@ -33,20 +35,25 @@ src/app/admin/contrats-mouvements/contrats/[id]/details/
 ### 2. Onglets de Contenu
 
 #### Onglet 1 : Informations Générales
+
 **Composant :** `GeneralInfoDisplay.tsx`
 
 Sections :
+
 - **Informations de Base**
+
   - Référence du contrat
   - Référence interne
   - Type de contrat (CDI, CDD, etc.)
 
 - **Informations Employé**
+
   - Nom et prénom
   - Matricule
   - Entreprise
 
 - **Dates du Contrat**
+
   - Date de signature
   - Date de début
   - Date de fin (si CDD)
@@ -62,10 +69,13 @@ Sections :
   - Missions et responsabilités
 
 #### Onglet 2 : Temps de Travail
+
 **Composant :** `WorkScheduleDisplay.tsx`
 
 Sections :
+
 - **Horaires de Travail**
+
   - Heures hebdomadaires
   - Heures journalières
   - Heures annuelles
@@ -73,6 +83,7 @@ Sections :
   - Type d'horaire
 
 - **Organisation du Travail**
+
   - Jour de repos
   - Équipe/Shift
   - Rotation d'équipes
@@ -88,10 +99,13 @@ Sections :
   - Congés spéciaux (mariage, naissance, décès, etc.)
 
 #### Onglet 3 : Rémunération & Légal
+
 **Composant :** `SalaryAndLegalDisplay.tsx`
 
 Sections :
+
 - **Rémunération de Base**
+
   - Salaire de base
   - Salaire brut
   - Salaire net
@@ -101,6 +115,7 @@ Sections :
   - Informations bancaires (RIB)
 
 - **Primes et Indemnités**
+
   - Prime d'ancienneté
   - Prime de transport
   - Prime de panier
@@ -111,6 +126,7 @@ Sections :
   - Indemnités diverses
 
 - **Avantages en Nature**
+
   - Voiture de fonction
   - Téléphone professionnel
   - Ordinateur portable
@@ -127,21 +143,26 @@ Sections :
   - Clauses contractuelles (confidentialité, non-concurrence, mobilité, etc.)
 
 #### Onglet 4 : Documents
+
 **Composant :** `ContractDocuments.tsx`
 
 Sections :
+
 - **Contrat Principal**
+
   - Document signé
   - Date de signature
   - Actions : Visualiser, Télécharger
 
 - **Avenants**
+
   - Liste des avenants
   - Numéro, objet, date
   - Statut (Signé/En attente)
   - Actions : Ajouter, Visualiser, Télécharger
 
 - **Annexes**
+
   - Documents annexes
   - Type, titre, date d'ajout
   - Actions : Visualiser, Télécharger
@@ -154,7 +175,9 @@ Sections :
 ### 3. Composants Auxiliaires
 
 #### ContractActions (`ContractActions.tsx`)
+
 Menu dropdown avec actions contextuelles :
+
 - Générer le contrat
 - Télécharger
 - Envoyer pour signature
@@ -166,22 +189,25 @@ Menu dropdown avec actions contextuelles :
 ## Fonctionnalités Clés
 
 ### 1. Mode Édition
+
 - **Activation** : Bouton "Modifier" (visible uniquement si statut = Brouillon)
-- **Comportement** : 
+- **Comportement** :
   - Les champs deviennent éditables
   - Affichage des boutons "Annuler" et "Enregistrer"
   - Validation en temps réel
 - **Sauvegarde** : Envoi PATCH à l'API avec les données modifiées
 
 ### 2. Validation du Contrat
+
 - **Condition** : Statut = Brouillon
 - **Action** : POST vers `/contracts/{id}/validate`
-- **Effet** : 
+- **Effet** :
   - Changement de statut
   - Verrouillage des modifications
   - Affichage du message d'information
 
 ### 3. Affichage Dynamique
+
 - **Champs conditionnels** : Affichage selon les données disponibles
 - **Format adaptatif** :
   - Dates : Format français (ex: 5 décembre 2024)
@@ -189,12 +215,14 @@ Menu dropdown avec actions contextuelles :
   - Booléens : Checkbox visuelles
 
 ### 4. Gestion des Permissions
+
 ```typescript
 const canEdit = contract?.status === 'Brouillon';
 const canValidate = contract?.status === 'Brouillon' && !isEditing;
 ```
 
 ### 5. États de Chargement
+
 - **Skeleton Loading** : Animation pendant le chargement
 - **Gestion d'erreurs** : Message si contrat introuvable
 - **Feedback utilisateur** : Toasts pour les actions
@@ -202,12 +230,15 @@ const canValidate = contract?.status === 'Brouillon' && !isEditing;
 ## Style et Design
 
 ### Thème
+
 - **Moderne et professionnel**
 - **Responsive** : Grilles adaptatives (mobile, tablette, desktop)
 - **Cohérence** : Utilisation du système de design (shadcn/ui)
 
 ### Badges de Statut
+
 Chaque statut a son propre style visuel :
+
 - 🟡 **Brouillon** : Secondary, icône FileText
 - 🔵 **En attente signature** : Warning, icône Clock
 - 🟢 **Actif** : Default, icône Check
@@ -216,6 +247,7 @@ Chaque statut a son propre style visuel :
 - ⚪ **Archivé** : Secondary, icône FileText
 
 ### Layout
+
 - **Grilles** : 2-3 colonnes selon l'écran
 - **Espacement** : Cohérent avec gap-4 et gap-6
 - **Cards** : Sections bien délimitées
@@ -227,19 +259,20 @@ Chaque statut a son propre style visuel :
 
 ```typescript
 // Récupérer les détails
-GET /contracts/{id}
+GET / contracts / { id };
 
 // Mettre à jour
-PATCH /contracts/{id}
+PATCH / contracts / { id };
 
 // Valider
-POST /contracts/{id}/validate
+POST / contracts / { id } / validate;
 
 // Générer le document
-POST /contracts/{id}/generate
+POST / contracts / { id } / generate;
 ```
 
 ### Format de Réponse
+
 ```typescript
 interface ContractResponse {
   data: Contract;
@@ -249,6 +282,7 @@ interface ContractResponse {
 ## Améliorations Futures
 
 ### Phase 2
+
 - [ ] Ajout d'avenants en ligne
 - [ ] Prévisualisation des documents PDF
 - [ ] Signature électronique intégrée
@@ -256,6 +290,7 @@ interface ContractResponse {
 - [ ] Export en différents formats
 
 ### Phase 3
+
 - [ ] Notifications automatiques
 - [ ] Workflows de validation multi-niveaux
 - [ ] Templates personnalisables
@@ -265,16 +300,19 @@ interface ContractResponse {
 ## Utilisation
 
 ### Navigation
+
 1. Liste des contrats → Clic sur un contrat
 2. URL : `/admin/contrats-mouvements/contrats/{id}/details`
 
 ### Modification
+
 1. Vérifier que le statut est "Brouillon"
 2. Cliquer sur "Modifier"
 3. Modifier les champs dans les onglets
 4. Cliquer sur "Enregistrer" (ou "Annuler")
 
 ### Validation
+
 1. S'assurer que toutes les informations sont correctes
 2. Cliquer sur "Valider le contrat"
 3. Le contrat passe en statut "Actif" ou "En attente signature"
@@ -282,6 +320,7 @@ interface ContractResponse {
 ## Tests
 
 ### Scénarios à Tester
+
 1. **Chargement** : Vérifier l'affichage du skeleton
 2. **Affichage** : Tous les champs sont visibles
 3. **Édition** : Mode édition fonctionne (si Brouillon)
@@ -302,4 +341,3 @@ interface ContractResponse {
 ## Support
 
 Pour toute question ou problème, consultez la documentation complète dans `/docs/CONTRACT_SYSTEM_COMPLETE.md`
-

@@ -5,9 +5,8 @@ export default function ContratsPage() {
   return (
     <PageContainer scrollable={false}>
       <div className='flex flex-1 flex-col space-y-6'>
-      <ContratsListing />
-    </div>
+        <ContratsListing />
+      </div>
     </PageContainer>
   );
 }
-

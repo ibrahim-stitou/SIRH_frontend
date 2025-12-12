@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   simplifiedContractSchema,
   simplifiedContractDefaultValues,
-  type SimplifiedContractInput,
+  type SimplifiedContractInput
 } from '@/validations/contract-simplified.schema';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
@@ -32,20 +32,22 @@ export default function CreateContractPage() {
   const [loadingEmployees, setLoadingEmployees] = useState(true);
   const [loadingDepartments, setLoadingDepartments] = useState(true);
   const [showRecapModal, setShowRecapModal] = useState(false);
-  const [formDataToSubmit, setFormDataToSubmit] = useState<SimplifiedContractInput | null>(null);
+  const [formDataToSubmit, setFormDataToSubmit] =
+    useState<SimplifiedContractInput | null>(null);
 
   const form = useForm<SimplifiedContractInput>({
     resolver: zodResolver(simplifiedContractSchema),
     defaultValues: simplifiedContractDefaultValues,
-    mode: 'onBlur',
+    mode: 'onBlur'
   });
-
 
   // Fetch employees
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await apiClient.get(apiRoutes.admin.employees.simpleList);
+        const response = await apiClient.get(
+          apiRoutes.admin.employees.simpleList
+        );
         const result = response.data;
         setEmployees(result.data || result || []);
       } catch (error) {
@@ -62,7 +64,9 @@ export default function CreateContractPage() {
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const response = await apiClient.get(apiRoutes.admin.departments.simpleList);
+        const response = await apiClient.get(
+          apiRoutes.admin.departments.simpleList
+        );
         const result = response.data;
         setDepartments(result.data || result || []);
       } catch (error) {
@@ -74,8 +78,6 @@ export default function CreateContractPage() {
     };
     fetchDepartments();
   }, []);
-
-
 
   const onSubmit = async (data: SimplifiedContractInput) => {
     try {
@@ -99,11 +101,14 @@ export default function CreateContractPage() {
       const payload = {
         ...formDataToSubmit,
         id: formDataToSubmit.id || crypto.randomUUID(),
-        reference: formDataToSubmit.reference || `CTR-${Date.now()}`,
+        reference: formDataToSubmit.reference || `CTR-${Date.now()}`
       };
 
       toast.loading('Création du contrat en cours...');
-      await apiClient.post(apiRoutes.admin.contratsEtMovements.contrats.create, payload);
+      await apiClient.post(
+        apiRoutes.admin.contratsEtMovements.contrats.create,
+        payload
+      );
       toast.dismiss();
       toast.success(' Contrat créé avec succès !');
 
@@ -113,7 +118,10 @@ export default function CreateContractPage() {
     } catch (error: any) {
       toast.dismiss();
       console.error('❌ Erreur création contrat:', error);
-      toast.error(error?.response?.data?.message || 'Erreur lors de la création du contrat');
+      toast.error(
+        error?.response?.data?.message ||
+          'Erreur lors de la création du contrat'
+      );
     } finally {
       setLoading(false);
       setFormDataToSubmit(null);
@@ -127,48 +135,55 @@ export default function CreateContractPage() {
     { id: 'CDD_Saisonnier', label: 'CDD Saisonnier' },
     { id: 'CDD_Temporaire', label: 'CDD Temporaire' },
     { id: 'ANAPEC', label: 'ANAPEC (Idmaj)' },
-    { id: 'SIVP', label: 'SIVP - Stage d\'Insertion' },
+    { id: 'SIVP', label: "SIVP - Stage d'Insertion" },
     { id: 'TAHIL', label: 'TAHIL' },
-    { id: 'Apprentissage', label: 'Contrat d\'Apprentissage' },
+    { id: 'Apprentissage', label: "Contrat d'Apprentissage" },
     { id: 'Stage_PFE', label: 'Stage PFE' },
-    { id: 'Stage_Initiation', label: 'Stage d\'Initiation' },
+    { id: 'Stage_Initiation', label: "Stage d'Initiation" },
     { id: 'Interim', label: 'Intérim' },
     { id: 'Teletravail', label: 'Télétravail' },
     { id: 'Freelance', label: 'Freelance' },
-    { id: 'Consultance', label: 'Consultance' },
+    { id: 'Consultance', label: 'Consultance' }
   ];
-
 
   const workModeOptions = [
     { id: 'Presentiel', label: 'Présentiel' },
     { id: 'Hybride', label: 'Hybride' },
     { id: 'Teletravail', label: 'Télétravail' },
     { id: 'Itinerant', label: 'Itinérant' },
-    { id: 'Horaire_variable', label: 'Horaire Variable' },
+    { id: 'Horaire_variable', label: 'Horaire Variable' }
   ];
 
   const paymentMethodOptions = [
     { id: 'Virement', label: 'Virement Bancaire' },
     { id: 'Cheque', label: 'Chèque' },
-    { id: 'Especes', label: 'Espèces' },
+    { id: 'Especes', label: 'Espèces' }
   ];
 
   return (
     <PageContainer>
-      <div className="mx-auto py-4 w-full ">
+      <div className='mx-auto w-full py-4'>
         {/* Header */}
-        <div className="mb-2 flex items-center justify-between">
+        <div className='mb-2 flex items-center justify-between'>
           <div>
-            <h1 className="text-3xl font-bold text-primary">Nouveau Contrat de Travail</h1>
+            <h1 className='text-primary text-3xl font-bold'>
+              Nouveau Contrat de Travail
+            </h1>
           </div>
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit, (errors) => {
-            console.error('❌ Erreurs de validation:', errors);
-            const firstError = Object.values(errors)[0];
-            toast.error(firstError?.message || 'Veuillez corriger les erreurs du formulaire');
-          })} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit, (errors) => {
+              console.error('❌ Erreurs de validation:', errors);
+              const firstError = Object.values(errors)[0];
+              toast.error(
+                firstError?.message ||
+                  'Veuillez corriger les erreurs du formulaire'
+              );
+            })}
+            className='space-y-4'
+          >
             {/* Card 1: Informations Générales */}
             <GeneralInfoTab
               form={form}
@@ -191,14 +206,16 @@ export default function CreateContractPage() {
 
             {/* Affichage des erreurs de validation (debug) */}
             {Object.keys(form.formState.errors).length > 0 && (
-              <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-                <h4 className="font-semibold text-red-900 text-sm mb-2">
-                  Erreurs de validation ({Object.keys(form.formState.errors).length})
+              <div className='rounded-lg border border-red-200 bg-red-50 p-4'>
+                <h4 className='mb-2 text-sm font-semibold text-red-900'>
+                  Erreurs de validation (
+                  {Object.keys(form.formState.errors).length})
                 </h4>
-                <ul className="text-xs text-red-800 space-y-1 list-disc list-inside">
+                <ul className='list-inside list-disc space-y-1 text-xs text-red-800'>
                   {Object.entries(form.formState.errors).map(([key, error]) => (
                     <li key={key}>
-                      <strong>{key}</strong>: {error?.message?.toString() || 'Erreur inconnue'}
+                      <strong>{key}</strong>:{' '}
+                      {error?.message?.toString() || 'Erreur inconnue'}
                     </li>
                   ))}
                 </ul>
@@ -206,19 +223,19 @@ export default function CreateContractPage() {
             )}
 
             {/* Action Buttons */}
-            <div className="flex items-center justify-between pt-6 border-t">
+            <div className='flex items-center justify-between border-t pt-6'>
               <Button
-                type="button"
-                variant="outline"
-                  onClick={() => router.back()}
+                type='button'
+                variant='outline'
+                onClick={() => router.back()}
                 disabled={loading}
               >
                 Annuler
               </Button>
 
-              <div className="flex gap-3">
-                <Button type="submit" disabled={loading}>
-                  <Eye className="mr-2 h-4 w-4" />
+              <div className='flex gap-3'>
+                <Button type='submit' disabled={loading}>
+                  <Eye className='mr-2 h-4 w-4' />
                   {loading ? 'Traitement...' : 'Prévisualiser et Créer'}
                 </Button>
               </div>
@@ -238,4 +255,3 @@ export default function CreateContractPage() {
     </PageContainer>
   );
 }
-

@@ -28,6 +28,7 @@ admin: {
 ```
 
 **Avantages :**
+
 - ✅ Centralisation des URLs
 - ✅ Type-safe avec TypeScript
 - ✅ Facilite la maintenance
@@ -40,6 +41,7 @@ admin: {
 **Fichier :** `demande-attestation-listing.tsx`
 
 **Fonctionnalités :**
+
 - ✅ DataTable pour les demandes d'attestations
 - ✅ Filtres intégrés (Type, Statut)
 - ✅ Actions contextuelles (Approuver, Rejeter, Générer)
@@ -50,6 +52,7 @@ admin: {
   - Tooltip explicatif
 
 **Props :**
+
 ```typescript
 interface DemandeAttestationListingProps {
   employees: any[];
@@ -61,6 +64,7 @@ interface DemandeAttestationListingProps {
 ```
 
 **Code clé - Suppression conditionnelle :**
+
 ```typescript
 // Bouton supprimer affiché uniquement si :
 const canDelete = row.status === 'en_attente' || row.status === 'rejete';
@@ -77,12 +81,14 @@ const canDelete = row.status === 'en_attente' || row.status === 'rejete';
 **Fichier :** `attestation-listing.tsx`
 
 **Fonctionnalités :**
+
 - ✅ DataTable pour les attestations générées
 - ✅ Filtres intégrés (Numéro, Type)
 - ✅ Bouton de téléchargement pour chaque attestation
 - ✅ Affichage des notes tronquées
 
 **Props :**
+
 ```typescript
 interface AttestationListingProps {
   employees: any[];
@@ -98,6 +104,7 @@ interface AttestationListingProps {
 **Changements :**
 
 #### Imports simplifiés
+
 ```typescript
 // Avant
 import CustomTable from '@/components/custom/data-table/custom-table';
@@ -111,19 +118,21 @@ import { apiRoutes } from '@/config/apiRoutes';
 ```
 
 #### Utilisation des routes API
+
 ```typescript
 // Avant
-apiClient.get('/employees')
-apiClient.post('/attestationRequests', payload)
-apiClient.patch(`/attestationRequests/${id}`, data)
+apiClient.get('/employees');
+apiClient.post('/attestationRequests', payload);
+apiClient.patch(`/attestationRequests/${id}`, data);
 
 // Après
-apiClient.get(apiRoutes.admin.employees.list)
-apiClient.post(apiRoutes.admin.attestations.requests.create, payload)
-apiClient.patch(apiRoutes.admin.attestations.requests.update(id), data)
+apiClient.get(apiRoutes.admin.employees.list);
+apiClient.post(apiRoutes.admin.attestations.requests.create, payload);
+apiClient.patch(apiRoutes.admin.attestations.requests.update(id), data);
 ```
 
 #### Remplacement des DataTables
+
 ```typescript
 // Avant
 <CustomTable
@@ -167,12 +176,12 @@ src/
 
 ### Règles de Suppression
 
-| Statut | Peut Supprimer | Raison |
-|--------|---------------|---------|
-| `en_attente` | ✅ OUI | Demande pas encore traitée |
-| `rejete` | ✅ OUI | Demande déjà refusée, nettoyage possible |
-| `approuve` | ❌ NON | En cours de traitement |
-| `genere` | ❌ NON | Attestation créée, traçabilité nécessaire |
+| Statut       | Peut Supprimer | Raison                                    |
+| ------------ | -------------- | ----------------------------------------- |
+| `en_attente` | ✅ OUI         | Demande pas encore traitée                |
+| `rejete`     | ✅ OUI         | Demande déjà refusée, nettoyage possible  |
+| `approuve`   | ❌ NON         | En cours de traitement                    |
+| `genere`     | ❌ NON         | Attestation créée, traçabilité nécessaire |
 
 ### Interface de Suppression
 
@@ -226,24 +235,27 @@ src/
 ## 🎯 Utilisation des Routes API
 
 ### Avant (URLs en dur)
+
 ```typescript
 // ❌ Problème : URLs dispersées, erreurs de frappe possibles
-apiClient.get('/employees')
-apiClient.post('/attestationRequests', data)
-apiClient.patch(`/attestationRequests/${id}`, data)
-apiClient.delete(`/attestationRequests/${id}`)
+apiClient.get('/employees');
+apiClient.post('/attestationRequests', data);
+apiClient.patch(`/attestationRequests/${id}`, data);
+apiClient.delete(`/attestationRequests/${id}`);
 ```
 
 ### Après (Routes centralisées)
+
 ```typescript
 // ✅ Solution : Centralisé, type-safe, maintenable
-apiClient.get(apiRoutes.admin.employees.list)
-apiClient.post(apiRoutes.admin.attestations.requests.create, data)
-apiClient.patch(apiRoutes.admin.attestations.requests.update(id), data)
-apiClient.delete(apiRoutes.admin.attestations.requests.delete(id))
+apiClient.get(apiRoutes.admin.employees.list);
+apiClient.post(apiRoutes.admin.attestations.requests.create, data);
+apiClient.patch(apiRoutes.admin.attestations.requests.update(id), data);
+apiClient.delete(apiRoutes.admin.attestations.requests.delete(id));
 ```
 
 ### Avantages
+
 1. **Autocomplete** : IntelliSense dans l'IDE
 2. **Type-safe** : TypeScript vérifie les types
 3. **Refactoring** : Changement d'URL en un seul endroit
@@ -255,6 +267,7 @@ apiClient.delete(apiRoutes.admin.attestations.requests.delete(id))
 ## 📊 Composants Séparés - Avantages
 
 ### Avant (Tout dans page_old.tsx)
+
 ```typescript
 // ❌ Fichier unique de ~700 lignes
 // - Difficile à maintenir
@@ -263,6 +276,7 @@ apiClient.delete(apiRoutes.admin.attestations.requests.delete(id))
 ```
 
 ### Après (Composants modulaires)
+
 ```typescript
 // ✅ 3 fichiers de ~150 lignes chacun
 // - page_old.tsx : Orchestration
@@ -271,6 +285,7 @@ apiClient.delete(apiRoutes.admin.attestations.requests.delete(id))
 ```
 
 ### Bénéfices
+
 1. **Maintenabilité** : Fichiers plus petits et focalisés
 2. **Réutilisabilité** : Composants peuvent être réutilisés
 3. **Testabilité** : Plus facile à tester individuellement
@@ -282,6 +297,7 @@ apiClient.delete(apiRoutes.admin.attestations.requests.delete(id))
 ## ✅ Tests de Validation
 
 ### Routes API
+
 ```bash
 ✅ Routes correctement définies dans apiRoutes.ts
 ✅ Toutes les routes utilisent apiRoutes
@@ -290,6 +306,7 @@ apiClient.delete(apiRoutes.admin.attestations.requests.delete(id))
 ```
 
 ### Composants
+
 ```bash
 ✅ DemandeAttestationListing créé
 ✅ AttestationListing créé
@@ -298,6 +315,7 @@ apiClient.delete(apiRoutes.admin.attestations.requests.delete(id))
 ```
 
 ### Suppression
+
 ```bash
 ✅ Bouton visible pour en_attente et rejete
 ✅ Bouton caché pour approuve et genere
@@ -307,6 +325,7 @@ apiClient.delete(apiRoutes.admin.attestations.requests.delete(id))
 ```
 
 ### Compilation
+
 ```bash
 ✅ 0 erreurs TypeScript critiques
 ⚠️ 3 warnings (normaux pour composants client)
@@ -318,6 +337,7 @@ apiClient.delete(apiRoutes.admin.attestations.requests.delete(id))
 ## 🚀 Pour Tester
 
 ### 1. Démarrer les serveurs
+
 ```bash
 # Terminal 1
 npm run mock-server
@@ -327,6 +347,7 @@ npm run dev
 ```
 
 ### 2. Accéder au module
+
 ```
 http://localhost:3003/admin/personnel/attestations
 ```
@@ -334,6 +355,7 @@ http://localhost:3003/admin/personnel/attestations
 ### 3. Scénarios de test
 
 #### Test Suppression - Demande en Attente
+
 ```
 1. Aller dans l'onglet "Demandes"
 2. Trouver une demande avec statut "En attente"
@@ -347,6 +369,7 @@ http://localhost:3003/admin/personnel/attestations
 ```
 
 #### Test Suppression - Demande Rejetée
+
 ```
 1. Trouver une demande avec statut "Rejetée"
 2. Vérifier que le bouton [🗑️] est visible
@@ -355,6 +378,7 @@ http://localhost:3003/admin/personnel/attestations
 ```
 
 #### Test Suppression - Demande Approuvée
+
 ```
 1. Trouver une demande avec statut "Approuvée"
 2. ✅ Vérifier que le bouton [🗑️] n'est PAS visible
@@ -362,6 +386,7 @@ http://localhost:3003/admin/personnel/attestations
 ```
 
 #### Test Suppression - Demande Générée
+
 ```
 1. Trouver une demande avec statut "Générée"
 2. ✅ Vérifier que le bouton [🗑️] n'est PAS visible
@@ -372,14 +397,14 @@ http://localhost:3003/admin/personnel/attestations
 
 ## 📈 Comparaison Avant/Après
 
-| Aspect | v2.0 | v2.1 |
-|--------|------|------|
-| Routes API | ❌ URLs en dur | ✅ apiRoutes centralisé |
-| Composants | ❌ Tout dans page_old.tsx | ✅ 3 composants séparés |
-| Suppression | ❌ Non disponible | ✅ Pour demandes non validées |
-| Maintenabilité | ⚠️ Difficile | ✅ Excellente |
-| Type-safety | ⚠️ Partiel | ✅ Total |
-| Réutilisabilité | ❌ Faible | ✅ Haute |
+| Aspect          | v2.0                      | v2.1                          |
+| --------------- | ------------------------- | ----------------------------- |
+| Routes API      | ❌ URLs en dur            | ✅ apiRoutes centralisé       |
+| Composants      | ❌ Tout dans page_old.tsx | ✅ 3 composants séparés       |
+| Suppression     | ❌ Non disponible         | ✅ Pour demandes non validées |
+| Maintenabilité  | ⚠️ Difficile              | ✅ Excellente                 |
+| Type-safety     | ⚠️ Partiel                | ✅ Total                      |
+| Réutilisabilité | ❌ Faible                 | ✅ Haute                      |
 
 ---
 
@@ -393,27 +418,33 @@ Le module Attestations v2.1 est maintenant :
 ✅ **Maintenable** - Code organisé et propre  
 ✅ **Cohérent** - Même pattern que module employés  
 ✅ **Sécurisé** - Suppression conditionnelle intelligente  
-✅ **Fonctionnel** - 100% opérationnel  
+✅ **Fonctionnel** - 100% opérationnel
 
 ---
 
 ## 📝 Notes Importantes
 
 ### Suppression Intelligente
+
 Le système empêche la suppression des demandes importantes :
+
 - **Approuvées** : En cours de traitement, ne pas perturber
 - **Générées** : Attestation déjà créée, traçabilité nécessaire
 
 Seules les demandes "en attente" ou "rejetées" peuvent être supprimées car :
+
 - **En attente** : Pas encore traitée, erreur possible
 - **Rejetée** : Déjà refusée, nettoyage autorisé
 
 ### Routes API
+
 Toutes les URLs sont maintenant dans `apiRoutes.ts`.  
 Pour changer une URL, modifier uniquement ce fichier.
 
 ### Composants
+
 Chaque composant est maintenant :
+
 - **Autonome** : Peut fonctionner indépendamment
 - **Testable** : Peut être testé isolément
 - **Réutilisable** : Peut être utilisé ailleurs
@@ -423,4 +454,3 @@ Chaque composant est maintenant :
 **Version :** 2.1  
 **Date :** 2 Décembre 2024  
 **Status :** ✅ Production Ready
-

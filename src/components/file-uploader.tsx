@@ -80,47 +80,56 @@ export function FileUploader(props: FileUploaderProps) {
     const typeLabels: Record<string, string> = {
       'application/pdf': 'PDF',
       'application/msword': 'DOC',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'DOCX',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+        'DOCX',
       'image/jpeg': 'JPEG',
       'image/png': 'PNG',
       'image/*': 'Images',
       'text/*': 'Text'
     };
 
-    return Object.keys(accept).map(key => {
-      return typeLabels[key] || key.split('/')[1]?.toUpperCase() || key;
-    }).join(', ');
+    return Object.keys(accept)
+      .map((key) => {
+        return typeLabels[key] || key.split('/')[1]?.toUpperCase() || key;
+      })
+      .join(', ');
   }, [accept]);
 
   const onDrop = React.useCallback(
     async (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
       if (!multiple && acceptedFiles.length > 1) {
-        toast.error('Vous ne pouvez télécharger qu\'un seul fichier à la fois');
+        toast.error("Vous ne pouvez télécharger qu'un seul fichier à la fois");
         return;
       }
 
       if ((files?.length ?? 0) + acceptedFiles.length > maxFiles) {
-        toast.error(`Vous ne pouvez pas télécharger plus de ${maxFiles} fichier(s)`);
+        toast.error(
+          `Vous ne pouvez pas télécharger plus de ${maxFiles} fichier(s)`
+        );
         return;
       }
 
       const newFiles = acceptedFiles.map((file) =>
         Object.assign(file, {
-          preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
+          preview: file.type.startsWith('image/')
+            ? URL.createObjectURL(file)
+            : undefined,
           id: `${file.name}-${Date.now()}-${Math.random()}`
         })
       );
 
-      const updatedFiles = multiple ?
-        (files ? [...files, ...newFiles] : newFiles) :
-        newFiles;
+      const updatedFiles = multiple
+        ? files
+          ? [...files, ...newFiles]
+          : newFiles
+        : newFiles;
 
       setFiles(updatedFiles);
 
       // Gestion améliorée des erreurs
       if (rejectedFiles.length > 0) {
         const errorMessages = rejectedFiles.map(({ file, errors }) => {
-          const errorTexts = errors.map(e => {
+          const errorTexts = errors.map((e) => {
             switch (e.code) {
               case 'file-too-large':
                 return `Fichier trop volumineux (max: ${formatBytes(maxSize)})`;
@@ -135,24 +144,29 @@ export function FileUploader(props: FileUploaderProps) {
           return `${file.name}: ${errorTexts.join(', ')}`;
         });
 
-        errorMessages.forEach(message => toast.error(message, { duration: 5000 }));
+        errorMessages.forEach((message) =>
+          toast.error(message, { duration: 5000 })
+        );
       }
 
       // Upload automatique si configuré
       if (onUpload && updatedFiles.length > 0) {
-        const target = updatedFiles.length > 1 ? `${updatedFiles.length} fichiers` : `le fichier`;
+        const target =
+          updatedFiles.length > 1
+            ? `${updatedFiles.length} fichiers`
+            : `le fichier`;
         setUploading(true);
 
         try {
           await onUpload(updatedFiles);
           toast.success(`${target} téléchargé avec succès`, {
             duration: 3000,
-            icon: <Check className="h-4 w-4" />
+            icon: <Check className='h-4 w-4' />
           });
         } catch (error) {
           toast.error(`Échec du téléchargement de ${target}`, {
             duration: 5000,
-            icon: <AlertCircle className="h-4 w-4" />
+            icon: <AlertCircle className='h-4 w-4' />
           });
           console.error('Upload error:', error);
         } finally {
@@ -196,7 +210,7 @@ export function FileUploader(props: FileUploaderProps) {
   const hasFiles = files && files.length > 0;
 
   return (
-    <div className="relative flex flex-col gap-4 overflow-hidden">
+    <div className='relative flex flex-col gap-4 overflow-hidden'>
       <Dropzone
         onDrop={onDrop}
         accept={accept}
@@ -214,12 +228,12 @@ export function FileUploader(props: FileUploaderProps) {
             {...getRootProps()}
             className={cn(
               'group relative w-full rounded-xl border-2 border-dashed transition-all duration-300 ease-in-out',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+              'focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
               variant === 'compact' ? 'px-4 py-3' : 'px-6 py-5',
               dragActive || libDragActive
-                ? 'border-primary bg-primary/8 shadow-lg shadow-primary/10 scale-[1.02]'
+                ? 'border-primary bg-primary/8 shadow-primary/10 scale-[1.02] shadow-lg'
                 : 'border-muted-foreground/20 hover:border-muted-foreground/40 hover:bg-muted/20',
-              isDisabled && 'opacity-50 cursor-not-allowed pointer-events-none',
+              isDisabled && 'pointer-events-none cursor-not-allowed opacity-50',
               !isDisabled && 'cursor-pointer',
               className
             )}
@@ -229,58 +243,84 @@ export function FileUploader(props: FileUploaderProps) {
 
             {/* Zone de dépôt améliorée */}
             {(!isMaxed || multiple) && (
-              <div className={cn(
-                "flex flex-col items-center justify-center gap-4 text-center",
-                variant === 'compact' ? 'py-4' : 'py-8',
-                hasFiles && variant !== 'compact' && 'border-b border-dashed border-muted-foreground/20 pb-6 mb-6'
-              )}>
-                <div className={cn(
-                  "rounded-full p-4 transition-all duration-300",
-                  dragActive || libDragActive
-                    ? "bg-primary/15 text-primary shadow-lg"
-                    : "bg-muted/50 text-muted-foreground group-hover:bg-muted group-hover:text-foreground"
-                )}>
-                  <Upload className={cn(
-                    "transition-transform duration-300",
-                    variant === 'compact' ? 'size-5' : 'size-7',
-                    dragActive || libDragActive && 'scale-110'
-                  )} aria-hidden="true" />
+              <div
+                className={cn(
+                  'flex flex-col items-center justify-center gap-4 text-center',
+                  variant === 'compact' ? 'py-4' : 'py-8',
+                  hasFiles &&
+                    variant !== 'compact' &&
+                    'border-muted-foreground/20 mb-6 border-b border-dashed pb-6'
+                )}
+              >
+                <div
+                  className={cn(
+                    'rounded-full p-4 transition-all duration-300',
+                    dragActive || libDragActive
+                      ? 'bg-primary/15 text-primary shadow-lg'
+                      : 'bg-muted/50 text-muted-foreground group-hover:bg-muted group-hover:text-foreground'
+                  )}
+                >
+                  <Upload
+                    className={cn(
+                      'transition-transform duration-300',
+                      variant === 'compact' ? 'size-5' : 'size-7',
+                      dragActive || (libDragActive && 'scale-110')
+                    )}
+                    aria-hidden='true'
+                  />
                 </div>
 
-                <div className="space-y-2 max-w-sm">
+                <div className='max-w-sm space-y-2'>
                   <div>
-                    <p className={cn(
-                      "font-semibold",
-                      variant === 'compact' ? 'text-sm' : 'text-base'
-                    )}>
-                      {dragActive || libDragActive ? (
-                        "Déposez vos fichiers ici"
-                      ) : (
-                        multiple ? "Glissez-déposez vos fichiers" : "Glissez-déposez votre fichier"
+                    <p
+                      className={cn(
+                        'font-semibold',
+                        variant === 'compact' ? 'text-sm' : 'text-base'
                       )}
+                    >
+                      {dragActive || libDragActive
+                        ? 'Déposez vos fichiers ici'
+                        : multiple
+                          ? 'Glissez-déposez vos fichiers'
+                          : 'Glissez-déposez votre fichier'}
                     </p>
-                    <p className={cn(
-                      "text-muted-foreground",
-                      variant === 'compact' ? 'text-xs' : 'text-sm'
-                    )}>
+                    <p
+                      className={cn(
+                        'text-muted-foreground',
+                        variant === 'compact' ? 'text-xs' : 'text-sm'
+                      )}
+                    >
                       ou cliquez pour parcourir
                     </p>
                   </div>
 
                   {description ? (
-                    <p className="text-xs text-muted-foreground/80">{description}</p>
+                    <p className='text-muted-foreground/80 text-xs'>
+                      {description}
+                    </p>
                   ) : (
-                    <div className="text-xs text-muted-foreground/80 space-y-1">
-                      <p>Formats: <span className="font-medium">{acceptedFileTypes}</span></p>
-                      <p>Taille max: <span className="font-medium">{formatBytes(maxSize)}</span></p>
+                    <div className='text-muted-foreground/80 space-y-1 text-xs'>
+                      <p>
+                        Formats:{' '}
+                        <span className='font-medium'>{acceptedFileTypes}</span>
+                      </p>
+                      <p>
+                        Taille max:{' '}
+                        <span className='font-medium'>
+                          {formatBytes(maxSize)}
+                        </span>
+                      </p>
                     </div>
                   )}
                 </div>
 
                 {multiple && maxFiles > 1 && (
-                  <Badge variant="outline" className="font-normal bg-background/50">
-                    <span className="font-medium">{files?.length || 0}</span>
-                    <span className="text-muted-foreground">/{maxFiles}</span>
+                  <Badge
+                    variant='outline'
+                    className='bg-background/50 font-normal'
+                  >
+                    <span className='font-medium'>{files?.length || 0}</span>
+                    <span className='text-muted-foreground'>/{maxFiles}</span>
                   </Badge>
                 )}
               </div>
@@ -289,10 +329,10 @@ export function FileUploader(props: FileUploaderProps) {
             {/* Liste des fichiers améliorée */}
             {hasFiles && (
               <div
-                className="w-full space-y-3"
+                className='w-full space-y-3'
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="grid gap-3">
+                <div className='grid gap-3'>
                   {files.map((file, index) => (
                     <FileCard
                       //@ts-ignore
@@ -314,25 +354,29 @@ export function FileUploader(props: FileUploaderProps) {
 
       {/* Informations supplémentaires */}
       {hasFiles && multiple && maxFiles > 1 && (
-        <div className="flex justify-between items-center text-xs text-muted-foreground bg-muted/30 rounded-lg px-3 py-2">
-          <div className="flex items-center gap-2">
-            <div className={cn(
-              "w-2 h-2 rounded-full",
-              isMaxed ? "bg-orange-500" : "bg-green-500"
-            )} />
+        <div className='text-muted-foreground bg-muted/30 flex items-center justify-between rounded-lg px-3 py-2 text-xs'>
+          <div className='flex items-center gap-2'>
+            <div
+              className={cn(
+                'h-2 w-2 rounded-full',
+                isMaxed ? 'bg-orange-500' : 'bg-green-500'
+              )}
+            />
             <span>
-              {files.length} fichier{files.length > 1 ? 's' : ''} sélectionné{files.length > 1 ? 's' : ''}
+              {files.length} fichier{files.length > 1 ? 's' : ''} sélectionné
+              {files.length > 1 ? 's' : ''}
             </span>
           </div>
-          <span className="font-medium">
-            {maxFiles - files.length} restant{maxFiles - files.length > 1 ? 's' : ''}
+          <span className='font-medium'>
+            {maxFiles - files.length} restant
+            {maxFiles - files.length > 1 ? 's' : ''}
           </span>
         </div>
       )}
 
       {uploading && (
-        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground bg-blue-50 rounded-lg px-3 py-2">
-          <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+        <div className='text-muted-foreground flex items-center justify-center gap-2 rounded-lg bg-blue-50 px-3 py-2 text-sm'>
+          <Loader2 className='h-4 w-4 animate-spin text-blue-600' />
           <span>Téléchargement en cours...</span>
         </div>
       )}
@@ -350,26 +394,30 @@ interface FileCardProps {
 }
 
 function FileCard({
-                    file,
-                    progress,
-                    onRemove,
-                    disabled,
-                    showPreview = true,
-                    variant = 'default'
-                  }: FileCardProps) {
+  file,
+  progress,
+  onRemove,
+  disabled,
+  showPreview = true,
+  variant = 'default'
+}: FileCardProps) {
   const fileSize = formatBytes(file.size);
   const isUploading = progress !== undefined && progress < 100;
   const isComplete = progress === 100;
   const isImage = isImageFile(file);
 
   const fileIcon = React.useMemo(() => {
-    const iconProps = { className: "h-5 w-5" };
+    const iconProps = { className: 'h-5 w-5' };
 
-    if (file.type.includes('pdf')) return <FileArchive {...iconProps} className="h-5 w-5 text-red-500" />;
-    if (file.type.includes('image')) return <FileImage {...iconProps} className="h-5 w-5 text-blue-500" />;
-    if (file.type.includes('word') || file.type.includes('doc')) return <FileText {...iconProps} className="h-5 w-5 text-blue-700" />;
-    if (file.type.includes('text') || file.type.includes('code')) return <FileCode {...iconProps} className="h-5 w-5 text-green-600" />;
-    return <FileText {...iconProps} className="h-5 w-5 text-slate-500" />;
+    if (file.type.includes('pdf'))
+      return <FileArchive {...iconProps} className='h-5 w-5 text-red-500' />;
+    if (file.type.includes('image'))
+      return <FileImage {...iconProps} className='h-5 w-5 text-blue-500' />;
+    if (file.type.includes('word') || file.type.includes('doc'))
+      return <FileText {...iconProps} className='h-5 w-5 text-blue-700' />;
+    if (file.type.includes('text') || file.type.includes('code'))
+      return <FileCode {...iconProps} className='h-5 w-5 text-green-600' />;
+    return <FileText {...iconProps} className='h-5 w-5 text-slate-500' />;
   }, [file.type]);
 
   const getStatusColor = () => {
@@ -379,67 +427,77 @@ function FileCard({
   };
 
   return (
-    <div className={cn(
-      'flex items-center gap-3 p-3 border rounded-xl transition-all duration-200 hover:shadow-sm',
-      getStatusColor(),
-      variant === 'compact' && 'p-2'
-    )}>
+    <div
+      className={cn(
+        'flex items-center gap-3 rounded-xl border p-3 transition-all duration-200 hover:shadow-sm',
+        getStatusColor(),
+        variant === 'compact' && 'p-2'
+      )}
+    >
       {/* Aperçu ou icône */}
-      <div className="flex-shrink-0">
+      <div className='flex-shrink-0'>
         {isImage && isFileWithPreview(file) && showPreview ? (
-          <div className={cn(
-            "relative rounded-lg overflow-hidden border bg-muted/20",
-            variant === 'compact' ? 'size-8' : 'size-12'
-          )}>
+          <div
+            className={cn(
+              'bg-muted/20 relative overflow-hidden rounded-lg border',
+              variant === 'compact' ? 'size-8' : 'size-12'
+            )}
+          >
             <Image
               src={file.preview}
               alt={file.name}
               fill
-              className="object-cover"
+              className='object-cover'
             />
           </div>
         ) : (
-          <div className={cn(
-            "flex items-center justify-center rounded-lg bg-muted/30 border",
-            variant === 'compact' ? 'size-8' : 'size-12'
-          )}>
+          <div
+            className={cn(
+              'bg-muted/30 flex items-center justify-center rounded-lg border',
+              variant === 'compact' ? 'size-8' : 'size-12'
+            )}
+          >
             {fileIcon}
           </div>
         )}
       </div>
 
       {/* Informations du fichier */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between">
-          <p className={cn(
-            "font-medium truncate",
-            variant === 'compact' ? 'text-sm' : 'text-sm'
-          )}>
+      <div className='min-w-0 flex-1'>
+        <div className='flex items-center justify-between'>
+          <p
+            className={cn(
+              'truncate font-medium',
+              variant === 'compact' ? 'text-sm' : 'text-sm'
+            )}
+          >
             {file.name}
           </p>
 
           {/* Statut */}
           {isComplete && (
-            <div className="flex items-center gap-1 text-green-600">
-              <Check className="h-3 w-3" />
-              <span className="text-xs font-medium">Terminé</span>
+            <div className='flex items-center gap-1 text-green-600'>
+              <Check className='h-3 w-3' />
+              <span className='text-xs font-medium'>Terminé</span>
             </div>
           )}
 
           {isUploading && (
-            <div className="flex items-center gap-1 text-blue-600">
-              <Loader2 className="h-3 w-3 animate-spin" />
-              <span className="text-xs font-medium">{Math.round(progress)}%</span>
+            <div className='flex items-center gap-1 text-blue-600'>
+              <Loader2 className='h-3 w-3 animate-spin' />
+              <span className='text-xs font-medium'>
+                {Math.round(progress)}%
+              </span>
             </div>
           )}
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+        <div className='text-muted-foreground mt-1 flex items-center gap-2 text-xs'>
           <span>{fileSize}</span>
           {file.type && (
             <>
               <span>•</span>
-              <span className="uppercase font-medium">
+              <span className='font-medium uppercase'>
                 {file.type.split('/')[1]}
               </span>
             </>
@@ -448,27 +506,24 @@ function FileCard({
 
         {/* Barre de progression */}
         {isUploading && (
-          <Progress
-            value={progress}
-            className="h-1.5 mt-2 bg-muted"
-          />
+          <Progress value={progress} className='bg-muted mt-2 h-1.5' />
         )}
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-1">
+      <div className='flex items-center gap-1'>
         {isImage && isFileWithPreview(file) && (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
+                  type='button'
+                  variant='ghost'
+                  size='icon'
                   onClick={() => window.open(file.preview, '_blank')}
-                  className="h-7 w-7 hover:bg-blue-50 hover:text-blue-600"
+                  className='h-7 w-7 hover:bg-blue-50 hover:text-blue-600'
                 >
-                  <Eye className="h-3 w-3" />
+                  <Eye className='h-3 w-3' />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Aperçu</TooltipContent>
@@ -480,18 +535,18 @@ function FileCard({
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                type="button"
-                variant="ghost"
-                size="icon"
+                type='button'
+                variant='ghost'
+                size='icon'
                 onClick={onRemove}
                 disabled={disabled || isUploading}
-                className="h-7 w-7 hover:bg-red-50 hover:text-red-600"
+                className='h-7 w-7 hover:bg-red-50 hover:text-red-600'
               >
-                <span className="sr-only">Supprimer</span>
+                <span className='sr-only'>Supprimer</span>
                 {isUploading ? (
-                  <Loader2 className="h-3 w-3 text-muted-foreground animate-spin" />
+                  <Loader2 className='text-muted-foreground h-3 w-3 animate-spin' />
                 ) : (
-                  <X className="h-3 w-3" />
+                  <X className='h-3 w-3' />
                 )}
               </Button>
             </TooltipTrigger>

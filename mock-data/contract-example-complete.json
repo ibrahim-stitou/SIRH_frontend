@@ -177,7 +177,12 @@
       "deontologie": true,
       "teletravail": {
         "jours_par_semaine": 2,
-        "materiel_fourni": ["Ordinateur portable", "Écran", "Clavier", "Souris"],
+        "materiel_fourni": [
+          "Ordinateur portable",
+          "Écran",
+          "Clavier",
+          "Souris"
+        ],
         "frais_rembourses": ["Internet", "Électricité (forfait)"]
       }
     },
@@ -251,4 +256,3 @@
   "secteur": "Informatique",
   "archived": false
 }
-

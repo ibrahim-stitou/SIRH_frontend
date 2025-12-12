@@ -240,7 +240,7 @@ function Sidebar({
             ? 'left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
             : 'right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',
           // When collapsed in icon mode, shrink the container width to icon width and remove outer padding
-          'group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:overflow-visible',
+          'group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[collapsible=icon]:overflow-visible group-data-[collapsible=icon]:p-0',
           // Padding only for floating variant to create the gap around the inner card
           variant === 'floating' && 'p-3',
           className
@@ -253,7 +253,8 @@ function Sidebar({
           className={cn(
             'bg-sidebar relative flex h-full w-full flex-col overflow-hidden',
             // Apply floating card look conditionally
-            variant === 'floating' && 'rounded-xl border border-sidebar-border shadow-xl',
+            variant === 'floating' &&
+              'border-sidebar-border rounded-xl border shadow-xl',
             // Ensure inner shrinks with icon collapsed to avoid background staying expanded
             'group-data-[collapsible=icon]:w-full',
             // Allow flyout content to overflow in collapsed mode
@@ -351,7 +352,11 @@ function SidebarHeader({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot='sidebar-header'
       data-sidebar='header'
-      className={cn('flex flex-col gap-2 p-2', 'group-data-[collapsible=icon]:p-1', className)}
+      className={cn(
+        'flex flex-col gap-2 p-2',
+        'group-data-[collapsible=icon]:p-1',
+        className
+      )}
       {...props}
     />
   );
@@ -362,7 +367,11 @@ function SidebarFooter({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot='sidebar-footer'
       data-sidebar='footer'
-      className={cn('flex flex-col gap-2 p-2', 'group-data-[collapsible=icon]:p-1', className)}
+      className={cn(
+        'flex flex-col gap-2 p-2',
+        'group-data-[collapsible=icon]:p-1',
+        className
+      )}
       {...props}
     />
   );
@@ -403,7 +412,11 @@ function SidebarGroup({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot='sidebar-group'
       data-sidebar='group'
-      className={cn('relative flex w-full min-w-0 flex-col p-2', 'group-data-[collapsible=icon]:p-1', className)}
+      className={cn(
+        'relative flex w-full min-w-0 flex-col p-2',
+        'group-data-[collapsible=icon]:p-1',
+        className
+      )}
       {...props}
     />
   );
@@ -657,7 +670,11 @@ function SidebarMenuSkeleton({
   );
 }
 
-function SidebarMenuSub({ className, showInCollapsed = false, ...props }: React.ComponentProps<'ul'> & { showInCollapsed?: boolean }) {
+function SidebarMenuSub({
+  className,
+  showInCollapsed = false,
+  ...props
+}: React.ComponentProps<'ul'> & { showInCollapsed?: boolean }) {
   return (
     <ul
       data-slot='sidebar-menu-sub'
@@ -672,12 +689,20 @@ function SidebarMenuSub({ className, showInCollapsed = false, ...props }: React.
   );
 }
 
-function SidebarMenuSubItem({ className, showInCollapsed = false, ...props }: React.ComponentProps<'li'> & { showInCollapsed?: boolean }) {
+function SidebarMenuSubItem({
+  className,
+  showInCollapsed = false,
+  ...props
+}: React.ComponentProps<'li'> & { showInCollapsed?: boolean }) {
   return (
     <li
       data-slot='sidebar-menu-sub-item'
       data-sidebar='menu-sub-item'
-      className={cn('group/menu-sub-item relative', !showInCollapsed && 'group-data-[collapsible=icon]:hidden', className)}
+      className={cn(
+        'group/menu-sub-item relative',
+        !showInCollapsed && 'group-data-[collapsible=icon]:hidden',
+        className
+      )}
       {...props}
     />
   );
@@ -705,7 +730,7 @@ function SidebarMenuSubButton({
       data-size={size}
       data-active={isActive}
       className={cn(
-        'text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground flex h-8 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-foreground hover:[&>svg]:text-sidebar-accent-foreground data-[active=true]:[&>svg]:text-primary',
+        'text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground [&>svg]:text-sidebar-foreground hover:[&>svg]:text-sidebar-accent-foreground data-[active=true]:[&>svg]:text-primary flex h-8 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0',
         'data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground',
         size === 'sm' && 'text-sm',
         size === 'md' && 'text-base',

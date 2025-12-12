@@ -2,13 +2,13 @@
 @import './theme.css'; /* Importe les variables définies ci-dessus */
 
 @layer base {
-    * {
-        @apply border-border outline-ring/50;
-    }
-    body {
-        @apply bg-background text-foreground antialiased;
-        font-feature-settings: "cv02", "cv03", "cv04", "cv11"; /* Font plus moderne */
-    }
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11'; /* Font plus moderne */
+  }
 }
 
 /* Remove global forced floating sidebar styles to defer to component variants */
@@ -16,107 +16,109 @@
 
 /* Cards avec effet "Clean SaaS" */
 .card {
-    @apply bg-card text-card-foreground rounded-2xl border border-border/50 shadow-soft transition-all duration-300;
+  @apply bg-card text-card-foreground border-border/50 shadow-soft rounded-2xl border transition-all duration-300;
 }
 
 .card:hover {
-    @apply shadow-lg -translate-y-1;
-    border-color: var(--primary);
+  @apply -translate-y-1 shadow-lg;
+  border-color: var(--primary);
 }
 
 .card-header {
-    @apply p-6 border-b border-border/40;
+  @apply border-border/40 border-b p-6;
 }
 
 .card-title {
-    @apply text-lg font-semibold tracking-tight;
+  @apply text-lg font-semibold tracking-tight;
 }
 
 .card-content {
-    @apply p-6;
+  @apply p-6;
 }
 
 /* Inputs Modernes */
-.input, .form-control {
-    @apply h-11 w-full rounded-xl border border-input bg-transparent px-3 py-2 text-sm shadow-sm transition-all duration-200;
+.input,
+.form-control {
+  @apply border-input h-11 w-full rounded-xl border bg-transparent px-3 py-2 text-sm shadow-sm transition-all duration-200;
 }
 
-.input:focus, .form-control:focus {
-    @apply ring-2 ring-ring ring-offset-2 border-primary;
-    outline: none;
-    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+.input:focus,
+.form-control:focus {
+  @apply ring-ring border-primary ring-2 ring-offset-2;
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
 }
 
 /* Boutons Modernes */
 .btn {
-    @apply inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-200 shadow-sm h-11 px-5;
+  @apply inline-flex h-11 items-center justify-center rounded-xl px-5 text-sm font-medium whitespace-nowrap shadow-sm transition-all duration-200;
 }
 
 .btn:active {
-    @apply scale-95;
+  @apply scale-95;
 }
 
 .btn-primary {
-    background: var(--primary);
-    color: var(--primary-foreground);
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
 
 .btn-primary:hover {
-    background: var(--primary-hover);
-    box-shadow: 0 8px 20px -4px rgba(79, 70, 229, 0.4); /* Colored shadow */
+  background: var(--primary-hover);
+  box-shadow: 0 8px 20px -4px rgba(79, 70, 229, 0.4); /* Colored shadow */
 }
 
 .btn-secondary {
-    background: var(--secondary);
-    color: var(--secondary-foreground);
+  background: var(--secondary);
+  color: var(--secondary-foreground);
 }
 
 .btn-secondary:hover {
-    filter: brightness(0.95);
+  filter: brightness(0.95);
 }
 
 .btn-outline {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--foreground);
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--foreground);
 }
 
 .btn-outline:hover {
-    background: var(--accent);
-    border-color: var(--primary);
-    color: var(--primary);
+  background: var(--accent);
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 /* Tableaux Modernes */
 .table-container {
-    @apply w-full overflow-hidden rounded-2xl border border-border bg-card shadow-sm;
+  @apply border-border bg-card w-full overflow-hidden rounded-2xl border shadow-sm;
 }
 
 table {
-    @apply w-full text-sm text-left;
+  @apply w-full text-left text-sm;
 }
 
 thead th {
-    @apply h-12 px-4 text-left align-middle font-medium text-muted-foreground bg-muted/50;
+  @apply text-muted-foreground bg-muted/50 h-12 px-4 text-left align-middle font-medium;
 }
 
 tbody tr {
-    @apply border-b border-border/50 transition-colors hover:bg-muted/30;
+  @apply border-border/50 hover:bg-muted/30 border-b transition-colors;
 }
 
 tbody td {
-    @apply p-4 align-middle;
+  @apply p-4 align-middle;
 }
 
 /* Glassmorphism Utilities */
 .glass {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .dark .glass {
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }

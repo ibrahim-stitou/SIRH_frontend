@@ -71,14 +71,11 @@ export function NavMain({
                   </SidebarMenuSub>
                 </CollapsibleContent>
                 {item.items && item.items.length > 0 && (
-                  <div
-                    className='
-                      absolute left-full top-0 z-[70] ml-2 hidden min-w-56 rounded-md border bg-popover p-1 shadow-md
-                      group-data-[collapsible=icon]:block group-hover/menu-item:opacity-100 group-hover/menu-item:pointer-events-auto
-                      opacity-0 pointer-events-none transition-opacity duration-150 hover:opacity-100 hover:pointer-events-auto
-                    '
-                  >
-                    <SidebarMenuSub showInCollapsed className='mx-0 border-0 px-0 py-0'>
+                  <div className='bg-popover pointer-events-none absolute top-0 left-full z-[70] ml-2 hidden min-w-56 rounded-md border p-1 opacity-0 shadow-md transition-opacity duration-150 group-hover/menu-item:pointer-events-auto group-hover/menu-item:opacity-100 group-data-[collapsible=icon]:block hover:pointer-events-auto hover:opacity-100'>
+                    <SidebarMenuSub
+                      showInCollapsed
+                      className='mx-0 border-0 px-0 py-0'
+                    >
                       {item.items.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title} showInCollapsed>
                           <SidebarMenuSubButton asChild showInCollapsed>

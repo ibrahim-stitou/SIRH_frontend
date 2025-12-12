@@ -1,7 +1,12 @@
 import jsPDF from 'jspdf';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import type { Contract, ContractType, SimplifiedSchedule, WorkTime } from '@/types/contract';
+import type {
+  Contract,
+  ContractType,
+  SimplifiedSchedule,
+  WorkTime
+} from '@/types/contract';
 
 interface CompanyData {
   name: string;
@@ -20,7 +25,7 @@ const DEFAULT_COMPANY: CompanyData = {
   phone: '+212 5 22 XX XX XX',
   email: 'contact@sirh-company.ma',
   ice: 'ICE000123456789',
-  rc: 'RC 12345',
+  rc: 'RC 12345'
 };
 
 export class ContractPDFGenerator {
@@ -34,7 +39,7 @@ export class ContractPDFGenerator {
     this.doc = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
-      format: 'a4',
+      format: 'a4'
     });
     this.pageWidth = this.doc.internal.pageSize.getWidth();
     this.pageHeight = this.doc.internal.pageSize.getHeight();
@@ -56,7 +61,11 @@ export class ContractPDFGenerator {
     yPos += 4;
     doc.text(company.city, margins.left, yPos);
     yPos += 4;
-    doc.text(`Tél: ${company.phone} | Email: ${company.email}`, margins.left, yPos);
+    doc.text(
+      `Tél: ${company.phone} | Email: ${company.email}`,
+      margins.left,
+      yPos
+    );
 
     if (company.ice || company.rc) {
       yPos += 4;
@@ -106,11 +115,16 @@ export class ContractPDFGenerator {
   private formatCurrency(amount: number, currency: string = 'MAD'): string {
     return new Intl.NumberFormat('fr-MA', {
       style: 'currency',
-      currency: currency,
+      currency: currency
     }).format(amount);
   }
 
-  private addText(text: string, fontSize: number = 11, style: 'normal' | 'bold' = 'normal', indent: number = 0) {
+  private addText(
+    text: string,
+    fontSize: number = 11,
+    style: 'normal' | 'bold' = 'normal',
+    indent: number = 0
+  ) {
     const { doc, margins, pageWidth } = this;
     doc.setFontSize(fontSize);
     doc.setFont('helvetica', style);
@@ -160,7 +174,7 @@ export class ContractPDFGenerator {
       Interim: 'Contrat de Travail Temporaire (Intérim)',
       Teletravail: 'Contrat de Télétravail',
       Freelance: 'Contrat Freelance',
-      Consultance: 'Contrat de Consultance',
+      Consultance: 'Contrat de Consultance'
     } as any;
     return labels[type] || String(type);
   }
@@ -169,7 +183,9 @@ export class ContractPDFGenerator {
   private getNowString(): string {
     return this.formatDate(new Date().toISOString());
   }
-  private getSignatureOrStartDate(contract: Contract & Record<string, any>): string {
+  private getSignatureOrStartDate(
+    contract: Contract & Record<string, any>
+  ): string {
     return (
       contract?.dates?.signature_date ||
       contract?.dates?.start_date ||
@@ -177,44 +193,62 @@ export class ContractPDFGenerator {
       null
     );
   }
-  private getStartDate(contract: Contract & Record<string, any>): string | null {
+  private getStartDate(
+    contract: Contract & Record<string, any>
+  ): string | null {
     return contract?.dates?.start_date || contract?.date_debut || null;
   }
   private getEndDate(contract: Contract & Record<string, any>): string | null {
     return contract?.dates?.end_date ?? contract?.date_fin ?? null;
   }
   private getEmployeeName(contract: Contract & Record<string, any>): string {
-    const full = contract.employee_name
-      || (contract.employee ? `${contract.employee.firstName ?? ''} ${contract.employee.lastName ?? ''}`.trim() : '')
-      || '';
+    const full =
+      contract.employee_name ||
+      (contract.employee
+        ? `${contract.employee.firstName ?? ''} ${contract.employee.lastName ?? ''}`.trim()
+        : '') ||
+      '';
     return full ? full.toUpperCase() : 'N/A';
   }
-  private getEmployeeMatricule(contract: Contract & Record<string, any>): string | null {
+  private getEmployeeMatricule(
+    contract: Contract & Record<string, any>
+  ): string | null {
     return contract.employee_matricule || contract.employee?.matricule || null;
   }
   private getJobTitle(contract: Contract & Record<string, any>): string {
-    return contract?.job?.title || contract?.job?.poste || contract?.poste || '—';
+    return (
+      contract?.job?.title || contract?.job?.poste || contract?.poste || '—'
+    );
   }
   private getDepartment(contract: Contract & Record<string, any>): string {
     return contract?.job?.department || contract?.departement || '—';
   }
-  private getWorkScheduleText(contract: Contract & Record<string, any>): string {
-    const schedule: SimplifiedSchedule | WorkTime | undefined = (contract as any).schedule ?? (contract as any).work_time;
+  private getWorkScheduleText(
+    contract: Contract & Record<string, any>
+  ): string {
+    const schedule: SimplifiedSchedule | WorkTime | undefined =
+      (contract as any).schedule ?? (contract as any).work_time;
 
-    const isSimplified = (s: any): s is SimplifiedSchedule => !!s && (
-      'schedule_type' in s || 'start_time' in s || 'hours_per_week' in s
-    );
+    const isSimplified = (s: any): s is SimplifiedSchedule =>
+      !!s &&
+      ('schedule_type' in s || 'start_time' in s || 'hours_per_week' in s);
 
     if (isSimplified(schedule)) {
       const parts: string[] = [];
       if (schedule.schedule_type) parts.push(`Type: ${schedule.schedule_type}`);
       if (schedule.shift_work) parts.push(`Shift: ${schedule.shift_work}`);
-      if (schedule.start_time && schedule.end_time) parts.push(`Heures: ${schedule.start_time} - ${schedule.end_time}`);
+      if (schedule.start_time && schedule.end_time)
+        parts.push(`Heures: ${schedule.start_time} - ${schedule.end_time}`);
       if (schedule.hours_per_day) parts.push(`${schedule.hours_per_day}h/jour`);
-      if (schedule.days_per_week) parts.push(`${schedule.days_per_week} j/semaine`);
-      if (schedule.hours_per_week) parts.push(`${schedule.hours_per_week} h/semaine`);
-      if (schedule.annual_leave_days) parts.push(`Congés annuels: ${schedule.annual_leave_days} j/an`);
-      return parts.length ? parts.join(' | ') : 'Organisation du travail selon les besoins du service';
+      if (schedule.days_per_week)
+        parts.push(`${schedule.days_per_week} j/semaine`);
+      if (schedule.hours_per_week)
+        parts.push(`${schedule.hours_per_week} h/semaine`);
+      if (schedule.annual_leave_days)
+        parts.push(`Congés annuels: ${schedule.annual_leave_days} j/an`);
+      return parts.length
+        ? parts.join(' | ')
+        : 'Organisation du travail selon les besoins du service';
     }
 
     if (schedule) {
@@ -223,12 +257,18 @@ export class ContractPDFGenerator {
       if (wt.work_schedule) parts.push(`Horaire: ${wt.work_schedule}`);
       if (wt.weekly_hours) parts.push(`Hebdo: ${wt.weekly_hours}h`);
       if (wt.daily_hours) parts.push(`Quotidien: ${wt.daily_hours}h`);
-      if (wt.annual_leave_days) parts.push(`Congés: ${wt.annual_leave_days} j/an`);
-      return parts.length ? parts.join(' | ') : 'Organisation du travail selon les besoins du service';
+      if (wt.annual_leave_days)
+        parts.push(`Congés: ${wt.annual_leave_days} j/an`);
+      return parts.length
+        ? parts.join(' | ')
+        : 'Organisation du travail selon les besoins du service';
     }
 
     // Very legacy fallback
-    return String((contract as any).horaires || 'Organisation du travail selon les besoins du service');
+    return String(
+      (contract as any).horaires ||
+        'Organisation du travail selon les besoins du service'
+    );
   }
   private getSalaryBrut(contract: Contract & Record<string, any>): number {
     return (
@@ -239,13 +279,20 @@ export class ContractPDFGenerator {
     );
   }
   private getCurrency(contract: Contract & Record<string, any>): string {
-    return contract?.salary?.currency || (contract as any).salaire_devise || 'MAD';
+    return (
+      contract?.salary?.currency || (contract as any).salaire_devise || 'MAD'
+    );
   }
   private getContractRef(contract: Contract & Record<string, any>): string {
-    return String(contract.reference || contract.internal_reference || contract.id || 'N/A');
+    return String(
+      contract.reference || contract.internal_reference || contract.id || 'N/A'
+    );
   }
 
-  generateCDI(contract: Contract, company: CompanyData = DEFAULT_COMPANY): jsPDF {
+  generateCDI(
+    contract: Contract,
+    company: CompanyData = DEFAULT_COMPANY
+  ): jsPDF {
     this.currentY = this.drawHeader(company);
     const { pageWidth, margins } = this;
 
@@ -253,11 +300,18 @@ export class ContractPDFGenerator {
     this.addTitle(this.getContractTypeLabel(contract.type));
 
     // Date and location
-    const dateStr = this.formatDate(this.getSignatureOrStartDate(contract as any) || this.getNowString());
+    const dateStr = this.formatDate(
+      this.getSignatureOrStartDate(contract as any) || this.getNowString()
+    );
     this.doc.setFontSize(11);
-    this.doc.text(`Fait à ${company.city.split(',')[0]}, le ${dateStr}`, pageWidth - margins.right, this.currentY, {
-      align: 'right',
-    });
+    this.doc.text(
+      `Fait à ${company.city.split(',')[0]}, le ${dateStr}`,
+      pageWidth - margins.right,
+      this.currentY,
+      {
+        align: 'right'
+      }
+    );
     this.addSpace(10);
 
     // Entre les soussignés
@@ -268,7 +322,12 @@ export class ContractPDFGenerator {
     this.addText("L'EMPLOYEUR", 11, 'bold');
     this.addSpace(2);
     this.addText(`${company.name}`, 11, 'normal', 5);
-    this.addText(`Adresse : ${company.address}, ${company.city}`, 11, 'normal', 5);
+    this.addText(
+      `Adresse : ${company.address}, ${company.city}`,
+      11,
+      'normal',
+      5
+    );
     if (company.ice) this.addText(`ICE : ${company.ice}`, 11, 'normal', 5);
     if (company.rc) this.addText(`RC : ${company.rc}`, 11, 'normal', 5);
     this.addSpace(5);
@@ -280,7 +339,7 @@ export class ContractPDFGenerator {
     this.addSpace(8);
 
     // L'employé
-    this.addText("LE SALARIÉ", 11, 'bold');
+    this.addText('LE SALARIÉ', 11, 'bold');
     this.addSpace(2);
     const employeeName = this.getEmployeeName(contract as any);
     this.addText(`${employeeName}`, 11, 'normal', 5);
@@ -332,7 +391,11 @@ export class ContractPDFGenerator {
     // Article 4 - Lieu de travail
     this.addText('Article 4 - LIEU DE TRAVAIL', 11, 'bold');
     this.addSpace(3);
-    this.addText(`Le Salarié exercera ses fonctions à : ${company.city}`, 11, 'normal');
+    this.addText(
+      `Le Salarié exercera ses fonctions à : ${company.city}`,
+      11,
+      'normal'
+    );
     this.addSpace(5);
 
     // Article 5 - Durée du travail
@@ -363,19 +426,25 @@ export class ContractPDFGenerator {
 
     const signatureY = this.currentY;
     // Signature employeur (gauche)
-    this.doc.text('L\'Employeur', margins.left + 20, signatureY);
+    this.doc.text("L'Employeur", margins.left + 20, signatureY);
     this.doc.text('Signature et Cachet', margins.left + 20, signatureY + 20);
 
     // Signature salarié (droite)
     this.doc.text('Le Salarié', pageWidth - margins.right - 40, signatureY);
     this.doc.text('Signature', pageWidth - margins.right - 40, signatureY + 20);
 
-    this.drawFooter(`CONTRACT-${this.getContractRef(contract as any)}`, dateStr);
+    this.drawFooter(
+      `CONTRACT-${this.getContractRef(contract as any)}`,
+      dateStr
+    );
 
     return this.doc;
   }
 
-  generateCDD(contract: Contract, company: CompanyData = DEFAULT_COMPANY): jsPDF {
+  generateCDD(
+    contract: Contract,
+    company: CompanyData = DEFAULT_COMPANY
+  ): jsPDF {
     this.currentY = this.drawHeader(company);
     const { pageWidth, margins } = this;
 
@@ -383,11 +452,18 @@ export class ContractPDFGenerator {
     this.addTitle(this.getContractTypeLabel(contract.type));
 
     // Date and location
-    const dateStr = this.formatDate(this.getSignatureOrStartDate(contract as any) || this.getNowString());
+    const dateStr = this.formatDate(
+      this.getSignatureOrStartDate(contract as any) || this.getNowString()
+    );
     this.doc.setFontSize(11);
-    this.doc.text(`Fait à ${company.city.split(',')[0]}, le ${dateStr}`, pageWidth - margins.right, this.currentY, {
-      align: 'right',
-    });
+    this.doc.text(
+      `Fait à ${company.city.split(',')[0]}, le ${dateStr}`,
+      pageWidth - margins.right,
+      this.currentY,
+      {
+        align: 'right'
+      }
+    );
     this.addSpace(10);
 
     // Entre les soussignés
@@ -398,7 +474,12 @@ export class ContractPDFGenerator {
     this.addText("L'EMPLOYEUR", 11, 'bold');
     this.addSpace(2);
     this.addText(`${company.name}`, 11, 'normal', 5);
-    this.addText(`Adresse : ${company.address}, ${company.city}`, 11, 'normal', 5);
+    this.addText(
+      `Adresse : ${company.address}, ${company.city}`,
+      11,
+      'normal',
+      5
+    );
     if (company.ice) this.addText(`ICE : ${company.ice}`, 11, 'normal', 5);
     if (company.rc) this.addText(`RC : ${company.rc}`, 11, 'normal', 5);
     this.addSpace(5);
@@ -410,7 +491,7 @@ export class ContractPDFGenerator {
     this.addSpace(8);
 
     // L'employé
-    this.addText("LE SALARIÉ", 11, 'bold');
+    this.addText('LE SALARIÉ', 11, 'bold');
     this.addSpace(2);
     const employeeName = this.getEmployeeName(contract as any);
     this.addText(`${employeeName}`, 11, 'normal', 5);
@@ -475,7 +556,11 @@ export class ContractPDFGenerator {
     // Article 5 - Lieu de travail
     this.addText('Article 5 - LIEU DE TRAVAIL', 11, 'bold');
     this.addSpace(3);
-    this.addText(`Le Salarié exercera ses fonctions à : ${company.city}`, 11, 'normal');
+    this.addText(
+      `Le Salarié exercera ses fonctions à : ${company.city}`,
+      11,
+      'normal'
+    );
     this.addSpace(5);
 
     // Article 6 - Durée du travail
@@ -506,14 +591,17 @@ export class ContractPDFGenerator {
 
     const signatureY = this.currentY;
     // Signature employeur (gauche)
-    this.doc.text('L\'Employeur', margins.left + 20, signatureY);
+    this.doc.text("L'Employeur", margins.left + 20, signatureY);
     this.doc.text('Signature et Cachet', margins.left + 20, signatureY + 20);
 
     // Signature salarié (droite)
     this.doc.text('Le Salarié', pageWidth - margins.right - 40, signatureY);
     this.doc.text('Signature', pageWidth - margins.right - 40, signatureY + 20);
 
-    this.drawFooter(`CONTRACT-${this.getContractRef(contract as any)}`, dateStr);
+    this.drawFooter(
+      `CONTRACT-${this.getContractRef(contract as any)}`,
+      dateStr
+    );
 
     return this.doc;
   }
@@ -534,9 +622,12 @@ export function generateContractPDF(contract: Contract): jsPDF {
 
 export function downloadContractPDF(contract: Contract): void {
   const pdf = generateContractPDF(contract);
-  const namePart = (contract as any).employee_name
-    || ((contract as any).employee ? `${(contract as any).employee.lastName}_${(contract as any).employee.firstName}` : null)
-    || 'Unknown';
+  const namePart =
+    (contract as any).employee_name ||
+    ((contract as any).employee
+      ? `${(contract as any).employee.lastName}_${(contract as any).employee.firstName}`
+      : null) ||
+    'Unknown';
   const fileName = `Contrat_${contract.id}_${namePart}.pdf`;
   pdf.save(fileName);
 }

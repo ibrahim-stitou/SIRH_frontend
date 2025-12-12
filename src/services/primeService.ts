@@ -17,7 +17,7 @@ const MOCK_PRIME_TYPES: PrimeType[] = [
     default_amount: 500,
     is_active: true,
     category: 'transport',
-    order: 1,
+    order: 1
   },
   {
     id: 2,
@@ -29,19 +29,19 @@ const MOCK_PRIME_TYPES: PrimeType[] = [
     default_amount: 300,
     is_active: true,
     category: 'panier',
-    order: 2,
+    order: 2
   },
   {
     id: 3,
     code: 'PRIME_ANCIENNETE',
-    label: 'Prime d\'Ancienneté',
-    description: 'Prime basée sur l\'ancienneté',
+    label: "Prime d'Ancienneté",
+    description: "Prime basée sur l'ancienneté",
     is_taxable: true,
     is_subject_to_cnss: true,
     default_amount: 0,
     is_active: true,
     category: 'anciennete',
-    order: 3,
+    order: 3
   },
   {
     id: 4,
@@ -53,7 +53,7 @@ const MOCK_PRIME_TYPES: PrimeType[] = [
     default_amount: 0,
     is_active: true,
     category: 'responsabilite',
-    order: 4,
+    order: 4
   },
   {
     id: 5,
@@ -65,7 +65,7 @@ const MOCK_PRIME_TYPES: PrimeType[] = [
     default_amount: 0,
     is_active: true,
     category: 'performance',
-    order: 5,
+    order: 5
   },
   {
     id: 6,
@@ -77,19 +77,19 @@ const MOCK_PRIME_TYPES: PrimeType[] = [
     default_amount: 0,
     is_active: true,
     category: 'autre',
-    order: 6,
+    order: 6
   },
   {
     id: 7,
     code: 'PRIME_ASTREINTE',
-    label: 'Prime d\'Astreinte',
+    label: "Prime d'Astreinte",
     description: 'Prime pour disponibilité hors horaires',
     is_taxable: true,
     is_subject_to_cnss: true,
     default_amount: 0,
     is_active: true,
     category: 'autre',
-    order: 7,
+    order: 7
   },
   {
     id: 8,
@@ -101,8 +101,8 @@ const MOCK_PRIME_TYPES: PrimeType[] = [
     default_amount: 0,
     is_active: true,
     category: 'autre',
-    order: 8,
-  },
+    order: 8
+  }
 ];
 
 /**
@@ -113,43 +113,52 @@ export async function getPrimeTypes(): Promise<PrimeType[]> {
   // const response = await fetch('/api/prime-types');
   // return response.json();
 
-  return Promise.resolve(MOCK_PRIME_TYPES.filter(p => p.is_active));
+  return Promise.resolve(MOCK_PRIME_TYPES.filter((p) => p.is_active));
 }
 
 /**
  * Récupère un type de prime par son ID
  */
-export async function getPrimeTypeById(id: string | number): Promise<PrimeType | undefined> {
+export async function getPrimeTypeById(
+  id: string | number
+): Promise<PrimeType | undefined> {
   const primes = await getPrimeTypes();
-  return primes.find(p => p.id === id);
+  return primes.find((p) => p.id === id);
 }
 
 /**
  * Récupère les types de primes par catégorie
  */
-export async function getPrimeTypesByCategory(category: string): Promise<PrimeType[]> {
+export async function getPrimeTypesByCategory(
+  category: string
+): Promise<PrimeType[]> {
   const primes = await getPrimeTypes();
-  return primes.filter(p => p.category === category);
+  return primes.filter((p) => p.category === category);
 }
 
 /**
  * Hook pour utiliser les types de primes (version synchrone avec les données mockées)
  */
 export function usePrimeTypes(): PrimeType[] {
-  return MOCK_PRIME_TYPES.filter(p => p.is_active);
+  return MOCK_PRIME_TYPES.filter((p) => p.is_active);
 }
 
 /**
  * Calcule le montant soumis à l'IR pour une prime
  */
-export function calculateTaxableAmount(amount: number, isTaxable: boolean): number {
+export function calculateTaxableAmount(
+  amount: number,
+  isTaxable: boolean
+): number {
   return isTaxable ? amount : 0;
 }
 
 /**
  * Calcule le montant soumis aux cotisations CNSS pour une prime
  */
-export function calculateCnssAmount(amount: number, isSubjectToCnss: boolean): number {
+export function calculateCnssAmount(
+  amount: number,
+  isSubjectToCnss: boolean
+): number {
   return isSubjectToCnss ? amount : 0;
 }
-

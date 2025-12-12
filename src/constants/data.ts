@@ -6,10 +6,10 @@ export const useNavItems = (): NavItem[] => {
   return [
     {
       title: t('sidebar.dashboard'),
-      url:'/admin/overview',
-      icon:'dashboard',
-      isActive:true,
-      items:[]
+      url: '/admin/overview',
+      icon: 'dashboard',
+      isActive: true,
+      items: []
     },
     {
       title: t('sidebar.employeeFolder'),
@@ -17,9 +17,21 @@ export const useNavItems = (): NavItem[] => {
       icon: 'users',
       isActive: false,
       items: [
-        { title: t('sidebar.employes'), url: '/admin/personnel/employes', icon: 'user', shortcut: ['r','e'], description: 'US-EMP-001' },
+        {
+          title: t('sidebar.employes'),
+          url: '/admin/personnel/employes',
+          icon: 'user',
+          shortcut: ['r', 'e'],
+          description: 'US-EMP-001'
+        },
         // { title: t('sidebar.orgChart'), url: '/admin/personnel/organigramme', icon: 'companies', shortcut: ['o','g'], description: 'US-EMP-006' },
-         { title: t('sidebar.certificates'), url: '/admin/personnel/attestations', icon: 'fileText', shortcut: ['a','t'], description: 'US-EMP-007' }
+        {
+          title: t('sidebar.certificates'),
+          url: '/admin/personnel/attestations',
+          icon: 'fileText',
+          shortcut: ['a', 't'],
+          description: 'US-EMP-007'
+        }
       ]
     },
     {
@@ -28,7 +40,13 @@ export const useNavItems = (): NavItem[] => {
       icon: 'fileText',
       isActive: false,
       items: [
-        { title: t('sidebar.contrat'), url: '/admin/contrats-mouvements/contrats', icon: 'fileText', shortcut: ['r','e'], description: 'US-PRO-001' },
+        {
+          title: t('sidebar.contrat'),
+          url: '/admin/contrats-mouvements/contrats',
+          icon: 'fileText',
+          shortcut: ['r', 'e'],
+          description: 'US-PRO-001'
+        }
       ]
     }
   ];

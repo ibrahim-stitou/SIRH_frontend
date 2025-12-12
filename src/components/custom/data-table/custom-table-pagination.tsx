@@ -1,12 +1,30 @@
 import { cn } from '@/lib/utils';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { ChevronLeftIcon, ChevronRightIcon, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronsLeft,
+  ChevronsRight
+} from 'lucide-react';
 import React from 'react';
-import { UseCustomTableHook, UseCustomTableReturnType } from '@/components/custom/data-table/types';
+import {
+  UseCustomTableHook,
+  UseCustomTableReturnType
+} from '@/components/custom/data-table/types';
 import { useLanguage } from '@/context/LanguageContext';
 
-const CustomTablePagination =<T extends Record<string, any>>({table}:{table:UseCustomTableReturnType<T>}) => {
+const CustomTablePagination = <T extends Record<string, any>>({
+  table
+}: {
+  table: UseCustomTableReturnType<T>;
+}) => {
   const { t } = useLanguage();
   const pageSizeOptions = [10, 25, 50, 100];
 
@@ -20,10 +38,13 @@ const CustomTablePagination =<T extends Record<string, any>>({table}:{table:UseC
         <div className='text-muted-foreground flex-1 text-sm whitespace-nowrap'>
           {table.selectedRows.length > 0 ? (
             <>
-              {table.selectedRows.length} {t('table.selected')} / {table.data.length}
+              {table.selectedRows.length} {t('table.selected')} /{' '}
+              {table.data.length}
             </>
           ) : (
-            <>{table.data.length} {t('table.totalRows')}</>
+            <>
+              {table.data.length} {t('table.totalRows')}
+            </>
           )}
         </div>
         <div className='flex flex-col-reverse items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8'>
@@ -50,7 +71,8 @@ const CustomTablePagination =<T extends Record<string, any>>({table}:{table:UseC
             </Select>
           </div>
           <div className='flex items-center justify-center text-sm font-medium'>
-            {t('table.page')} {table.currentPage + 1} {t('table.of')} {table.pages}
+            {t('table.page')} {table.currentPage + 1} {t('table.of')}{' '}
+            {table.pages}
           </div>
           <div className='flex items-center space-x-2'>
             <Button
@@ -97,7 +119,6 @@ const CustomTablePagination =<T extends Record<string, any>>({table}:{table:UseC
         </div>
       </div>
     </div>
-
   );
 };
 

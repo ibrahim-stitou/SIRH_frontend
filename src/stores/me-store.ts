@@ -35,9 +35,13 @@ export const useMeStore = create<MeStore>((set) => ({
       const response = await apiClient.get(apiRoutes.auth.me);
       set({ user: response.data, loading: false });
     } catch (err) {
-      set({ error: err instanceof Error ? err : new Error('An unknown error occurred'), loading: false });
+      set({
+        error:
+          err instanceof Error ? err : new Error('An unknown error occurred'),
+        loading: false
+      });
     }
   },
 
-  clear: () => set({ user: null, error: null }),
+  clear: () => set({ user: null, error: null })
 }));

@@ -1,6 +1,32 @@
 [
-  {"id":2000,"employeeId":102,"period":"2025-01","gross":4000,"net":3100,"bonuses":200,"taxes":900,"status":"published"},
-  {"id":2001,"employeeId":103,"period":"2025-01","gross":6000,"net":4500,"bonuses":500,"taxes":1500,"status":"processing"},
-  {"id":2002,"employeeId":101,"period":"2025-01","gross":5000,"net":3700,"bonuses":300,"taxes":1300,"status":"published"}
+  {
+    "id": 2000,
+    "employeeId": 102,
+    "period": "2025-01",
+    "gross": 4000,
+    "net": 3100,
+    "bonuses": 200,
+    "taxes": 900,
+    "status": "published"
+  },
+  {
+    "id": 2001,
+    "employeeId": 103,
+    "period": "2025-01",
+    "gross": 6000,
+    "net": 4500,
+    "bonuses": 500,
+    "taxes": 1500,
+    "status": "processing"
+  },
+  {
+    "id": 2002,
+    "employeeId": 101,
+    "period": "2025-01",
+    "gross": 5000,
+    "net": 3700,
+    "bonuses": 300,
+    "taxes": 1300,
+    "status": "published"
+  }
 ]
-

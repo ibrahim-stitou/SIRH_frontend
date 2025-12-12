@@ -39,28 +39,40 @@ export const formatDateSafe = (
 /**
  * Formate une date courte (ex: 05/12/2024)
  */
-export const formatDateShort = (dateValue: any, fallback: string = 'N/A'): string => {
+export const formatDateShort = (
+  dateValue: any,
+  fallback: string = 'N/A'
+): string => {
   return formatDateSafe(dateValue, 'dd/MM/yyyy', fallback);
 };
 
 /**
  * Formate une date longue (ex: 5 décembre 2024)
  */
-export const formatDateLong = (dateValue: any, fallback: string = 'N/A'): string => {
+export const formatDateLong = (
+  dateValue: any,
+  fallback: string = 'N/A'
+): string => {
   return formatDateSafe(dateValue, 'PPP', fallback);
 };
 
 /**
  * Formate une date avec l'heure (ex: 5 décembre 2024 à 14:30)
  */
-export const formatDateTime = (dateValue: any, fallback: string = 'N/A'): string => {
+export const formatDateTime = (
+  dateValue: any,
+  fallback: string = 'N/A'
+): string => {
   return formatDateSafe(dateValue, 'PPP à HH:mm', fallback);
 };
 
 /**
  * Formate une date relative (ex: il y a 2 jours)
  */
-export const formatDateRelative = (dateValue: any, fallback: string = 'N/A'): string => {
+export const formatDateRelative = (
+  dateValue: any,
+  fallback: string = 'N/A'
+): string => {
   if (!isValidDate(dateValue)) return fallback;
 
   try {
@@ -72,11 +84,11 @@ export const formatDateRelative = (dateValue: any, fallback: string = 'N/A'): st
     if (diffInDays === 0) return "Aujourd'hui";
     if (diffInDays === 1) return 'Hier';
     if (diffInDays < 7) return `Il y a ${diffInDays} jours`;
-    if (diffInDays < 30) return `Il y a ${Math.floor(diffInDays / 7)} semaine${Math.floor(diffInDays / 7) > 1 ? 's' : ''}`;
+    if (diffInDays < 30)
+      return `Il y a ${Math.floor(diffInDays / 7)} semaine${Math.floor(diffInDays / 7) > 1 ? 's' : ''}`;
     if (diffInDays < 365) return `Il y a ${Math.floor(diffInDays / 30)} mois`;
     return `Il y a ${Math.floor(diffInDays / 365)} an${Math.floor(diffInDays / 365) > 1 ? 's' : ''}`;
   } catch {
     return fallback;
   }
 };
-

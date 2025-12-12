@@ -1,7 +1,6 @@
 [
-  {"id":1,"name":"Administration","managerUserId":1},
-  {"id":2,"name":"Human Resources","managerUserId":2},
-  {"id":3,"name":"Engineering","managerUserId":1},
-  {"id":4,"name":"Sales","managerUserId":2}
+  { "id": 1, "name": "Administration", "managerUserId": 1 },
+  { "id": 2, "name": "Human Resources", "managerUserId": 2 },
+  { "id": 3, "name": "Engineering", "managerUserId": 1 },
+  { "id": 4, "name": "Sales", "managerUserId": 2 }
 ]
-

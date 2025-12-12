@@ -1,6 +1,12 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode
+} from 'react';
 import CreativeLoader from '@/components/custom/loader';
 
 type Translations = Record<string, any>;
@@ -14,12 +20,15 @@ type LanguageContextType = {
   isRTL: boolean; // added
 };
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const LanguageContext = createContext<LanguageContextType | undefined>(
+  undefined
+);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-
   const [language, setLanguage] = useState('fr');
-  const [translations, setTranslations] = useState<Record<string, Translations>>({});
+  const [translations, setTranslations] = useState<
+    Record<string, Translations>
+  >({});
   const [isLoading, setIsLoading] = useState(true);
   const isRTL = language === 'ar';
 
@@ -37,7 +46,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     const loadAllTranslations = async () => {
       setIsLoading(true);
       try {
-        const availableLanguages = ['en', 'ar','fr'];
+        const availableLanguages = ['en', 'ar', 'fr'];
 
         const translationPromises = availableLanguages.map(async (lang) => {
           const response = await fetch(`/locales/${lang}.json`);
@@ -45,7 +54,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           return { lang, data };
         });
 
-        const loadedTranslations = (await Promise.all(translationPromises)).reduce(
+        const loadedTranslations = (
+          await Promise.all(translationPromises)
+        ).reduce(
           (acc, { lang, data }) => {
             acc[lang] = data;
             return acc;
@@ -90,7 +101,16 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t, isLoading, handleLanguageChange, isRTL }}>
+    <LanguageContext.Provider
+      value={{
+        language,
+        setLanguage,
+        t,
+        isLoading,
+        handleLanguageChange,
+        isRTL
+      }}
+    >
       {isLoading ? <CreativeLoader /> : children}
     </LanguageContext.Provider>
   );

@@ -6,7 +6,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialogTitle
 } from '@/components/ui/alert-dialog';
 
 interface Props {
@@ -30,7 +30,7 @@ const CustomAlertDialog = ({
   cancelText = 'Cancel',
   onConfirm,
   onCancel,
-  children,
+  children
 }: Props) => {
   const handleConfirm = () => {
     if (onConfirm) {

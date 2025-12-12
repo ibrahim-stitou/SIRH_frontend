@@ -6,4 +6,3 @@ export { ContractRecapModal } from './ContractRecapModal';
 
 // Standalone components (not used in create form)
 export { CotisationsSocialesCard } from './CotisationsSocialesCard';
-

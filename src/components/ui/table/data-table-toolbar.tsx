@@ -23,7 +23,6 @@ export function DataTableToolbar<TData>({
   className,
   searchPlaceholder,
   ...props
-
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
 
@@ -51,7 +50,8 @@ export function DataTableToolbar<TData>({
           <DataTableToolbarFilter
             key={column.id}
             column={column}
-            searchPlaceholder={searchPlaceholder} />
+            searchPlaceholder={searchPlaceholder}
+          />
         ))}
         {isFiltered && (
           <Button

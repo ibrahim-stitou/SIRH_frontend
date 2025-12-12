@@ -1,2 +1,5 @@
-{"localeDefault":"fr","supportedLocales":["fr","en"],"timezone":"Europe/Paris"}
-
+{
+  "localeDefault": "fr",
+  "supportedLocales": ["fr", "en"],
+  "timezone": "Europe/Paris"
+}

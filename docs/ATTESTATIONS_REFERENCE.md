@@ -17,41 +17,42 @@ npm run dev
 
 ## 🗂️ Fichiers clés
 
-| Fichier | Description |
-|---------|-------------|
+| Fichier                                             | Description          |
+| --------------------------------------------------- | -------------------- |
 | `src/app/admin/personnel/attestations/page_old.tsx` | Interface principale |
-| `src/lib/pdf/attestation-generator.ts` | Générateur PDF |
-| `src/types/attestation.ts` | Types TypeScript |
-| `mock-data/attestationRequests.json` | Données demandes |
-| `mock-data/attestations.json` | Données attestations |
+| `src/lib/pdf/attestation-generator.ts`              | Générateur PDF       |
+| `src/types/attestation.ts`                          | Types TypeScript     |
+| `mock-data/attestationRequests.json`                | Données demandes     |
+| `mock-data/attestations.json`                       | Données attestations |
 
 ---
 
 ## 🎨 Types d'attestations
 
-| Type | Code | Usage |
-|------|------|-------|
-| Travail | `travail` | Emploi + ancienneté |
-| Salaire | `salaire` | Emploi + salaire |
-| Travail + Salaire | `travail_salaire` | Document complet |
-| Stage | `stage` | Pour stagiaires |
+| Type              | Code              | Usage               |
+| ----------------- | ----------------- | ------------------- |
+| Travail           | `travail`         | Emploi + ancienneté |
+| Salaire           | `salaire`         | Emploi + salaire    |
+| Travail + Salaire | `travail_salaire` | Document complet    |
+| Stage             | `stage`           | Pour stagiaires     |
 
 ---
 
 ## 🔄 Statuts des demandes
 
-| Statut | Badge | Signification |
-|--------|-------|---------------|
-| `en_attente` | 🟡 | À traiter |
-| `approuve` | 🟢 | Validée |
-| `rejete` | 🔴 | Refusée |
-| `genere` | 🔵 | PDF créé |
+| Statut       | Badge | Signification |
+| ------------ | ----- | ------------- |
+| `en_attente` | 🟡    | À traiter     |
+| `approuve`   | 🟢    | Validée       |
+| `rejete`     | 🔴    | Refusée       |
+| `genere`     | 🔵    | PDF créé      |
 
 ---
 
 ## 🎯 Actions rapides
 
 ### Créer une demande
+
 ```
 Bouton [+ Nouvelle demande]
 → Sélectionner employé
@@ -60,12 +61,14 @@ Bouton [+ Nouvelle demande]
 ```
 
 ### Approuver
+
 ```
 Demande en attente
 → Bouton [✓ Approuver]
 ```
 
 ### Rejeter
+
 ```
 Demande en attente
 → Bouton [✗ Rejeter]
@@ -74,6 +77,7 @@ Demande en attente
 ```
 
 ### Générer PDF
+
 ```
 Demande approuvée
 → Bouton [Générer PDF]
@@ -81,6 +85,7 @@ Demande approuvée
 ```
 
 ### Génération directe
+
 ```
 Bouton [Générer une attestation]
 → Sélectionner employé
@@ -108,16 +113,18 @@ GET    /employees               # Liste employés
 ## 🔧 Personnalisation rapide
 
 ### Changer l'entreprise
+
 ```typescript
 // src/lib/pdf/attestation-generator.ts
 const DEFAULT_COMPANY = {
   name: 'VOTRE NOM',
-  address: 'VOTRE ADRESSE',
+  address: 'VOTRE ADRESSE'
   // ...
 };
 ```
 
 ### Modifier numérotation
+
 ```typescript
 // src/app/admin/personnel/attestations/page_old.tsx (ligne ~200)
 const numeroAttestation = `ATT-${year}-${String(nextNum).padStart(3, '0')}`;
@@ -128,6 +135,7 @@ const numeroAttestation = `ATT-${year}-${String(nextNum).padStart(3, '0')}`;
 ## 🌍 Traductions
 
 ### Ajouter une clé
+
 ```json
 // public/locales/fr.json
 {
@@ -138,9 +146,10 @@ const numeroAttestation = `ATT-${year}-${String(nextNum).padStart(3, '0')}`;
 ```
 
 ### Utiliser dans le code
+
 ```typescript
 const { t } = useLanguage();
-t('attestations.votre_cle')
+t('attestations.votre_cle');
 ```
 
 ---
@@ -148,12 +157,14 @@ t('attestations.votre_cle')
 ## 🐛 Debug rapide
 
 ### Vérifier API
+
 ```bash
 curl http://localhost:3001/attestationRequests
 curl http://localhost:3001/employees
 ```
 
 ### Console navigateur
+
 ```javascript
 // F12 → Console
 // Vérifier les erreurs
@@ -161,6 +172,7 @@ curl http://localhost:3001/employees
 ```
 
 ### Réinitialiser les données
+
 ```bash
 # Supprimer db.json
 rm db.json
@@ -205,14 +217,17 @@ Générées          →  status === 'genere'
 ## 🔐 Validation
 
 ### Formulaire demande
+
 - ✅ employeeId requis
 - ✅ typeAttestation requis
 - ⚪ notes optionnel
 
 ### Formulaire rejet
+
 - ✅ raisonRejet requis
 
 ### Génération stage
+
 - ✅ stageStartDate requis
 - ✅ stageEndDate requis
 
@@ -265,6 +280,7 @@ DEMANDE → EN_ATTENTE → APPROUVE → GENERE
 ## 📚 Documentation complète
 
 Pour plus de détails, consultez :
+
 - `ATTESTATIONS_MODULE.md` - Documentation technique
 - `ATTESTATIONS_QUICK_START.md` - Guide démarrage
 - `ATTESTATIONS_WORKFLOW.md` - Diagrammes
@@ -306,6 +322,7 @@ Documentation: /docs/ATTESTATIONS_*.md
 ## 📞 Aide rapide
 
 **Problème ?**
+
 1. Console navigateur (F12)
 2. Documentation dans `docs/`
 3. Vérifier serveur mock
@@ -314,4 +331,3 @@ Documentation: /docs/ATTESTATIONS_*.md
 ---
 
 **✨ Carte de référence - Module Attestations v1.0.0 ✨**
-

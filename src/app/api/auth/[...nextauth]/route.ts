@@ -13,4 +13,4 @@ export const GET = async (req: NextRequest) => {
   }
 };
 
-export const POST   = handlers.POST;
+export const POST = handlers.POST;

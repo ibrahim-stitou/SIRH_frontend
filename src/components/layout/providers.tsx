@@ -11,14 +11,14 @@ interface ProvidersProps {
 }
 
 export default function Providers({
-                                    session,
-                                    activeThemeValue,
-                                    children,
-                                  }: ProvidersProps) {
+  session,
+  activeThemeValue,
+  children
+}: ProvidersProps) {
   return (
     <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
+      attribute='class'
+      defaultTheme='system'
       enableSystem
       disableTransitionOnChange
       enableColorScheme

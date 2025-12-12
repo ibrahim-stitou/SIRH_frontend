@@ -12,97 +12,118 @@
  * Types de contrats selon le code du travail marocain (Dahir n° 1-03-194)
  */
 export type ContractType =
-  | 'CDI'              // Contrat à Durée Indéterminée
-  | 'CDD'              // Contrat à Durée Déterminée
-  | 'CDD_Saisonnier'   // CDD pour travaux saisonniers
-  | 'CDD_Temporaire'   // CDD pour travaux temporaires
-  | 'ANAPEC'           // Contrat ANAPEC (Idmaj)
-  | 'SIVP'             // Stage d'Insertion à la Vie Professionnelle
-  | 'TAHIL'            // Programme TAHIL
-  | 'Apprentissage'    // Contrat d'apprentissage
-  | 'Stage_PFE'        // Stage de fin d'études
+  | 'CDI' // Contrat à Durée Indéterminée
+  | 'CDD' // Contrat à Durée Déterminée
+  | 'CDD_Saisonnier' // CDD pour travaux saisonniers
+  | 'CDD_Temporaire' // CDD pour travaux temporaires
+  | 'ANAPEC' // Contrat ANAPEC (Idmaj)
+  | 'SIVP' // Stage d'Insertion à la Vie Professionnelle
+  | 'TAHIL' // Programme TAHIL
+  | 'Apprentissage' // Contrat d'apprentissage
+  | 'Stage_PFE' // Stage de fin d'études
   | 'Stage_Initiation' // Stage d'initiation
-  | 'Interim'          // Travail intérimaire
-  | 'Teletravail'      // Contrat de télétravail (loi 2022)
-  | 'Freelance'        // Travail indépendant
-  | 'Consultance';     // Contrat de consultance
+  | 'Interim' // Travail intérimaire
+  | 'Teletravail' // Contrat de télétravail (loi 2022)
+  | 'Freelance' // Travail indépendant
+  | 'Consultance'; // Contrat de consultance
 
 /**
  * Statuts possibles d'un contrat
  */
 export type ContractStatus =
-  | 'Brouillon'       // En cours de rédaction
+  | 'Brouillon' // En cours de rédaction
   | 'En_attente_signature' // Envoyé pour signature
-  | 'Actif'           // En cours d'exécution
-  | 'Periode_essai'   // En période d'essai
-  | 'Suspendu'        // Suspension temporaire
-  | 'En_preavis'      // Période de préavis en cours
-  | 'Resilie'         // Résilié
-  | 'Expire'          // CDD expiré
-  | 'Renouvele'       // Renouvelé
-  | 'Archive';        // Archivé
+  | 'Actif' // En cours d'exécution
+  | 'Periode_essai' // En période d'essai
+  | 'Suspendu' // Suspension temporaire
+  | 'En_preavis' // Période de préavis en cours
+  | 'Resilie' // Résilié
+  | 'Expire' // CDD expiré
+  | 'Renouvele' // Renouvelé
+  | 'Archive'; // Archivé
 
 /**
  * Motifs de résiliation selon Code du Travail
  */
 export type ResiliationReason =
-  | 'Demission'                    // Démission volontaire
-  | 'Demission_legitime'           // Démission considérée comme légitime
-  | 'Licenciement_economique'      // Licenciement pour raisons économiques
-  | 'Licenciement_faute_grave'     // Licenciement pour faute grave
-  | 'Licenciement_faute_lourde'    // Licenciement pour faute lourde
-  | 'Fin_CDD'                      // Terme du CDD
-  | 'Fin_periode_essai'            // Rupture pendant période d'essai
-  | 'Retraite'                     // Départ en retraite
-  | 'Retraite_anticipee'           // Retraite anticipée
-  | 'Deces'                        // Décès
-  | 'Inaptitude_medicale'          // Inaptitude constatée
-  | 'Force_majeure'                // Force majeure
-  | 'Commun_accord'                // Rupture d'un commun accord
-  | 'Abandon_poste'                // Abandon de poste
-  | 'Mutation_externe'             // Mutation vers autre entité
-  | 'Fin_mission'                  // Fin de mission (intérim)
-  | 'Non_renouvellement';          // Non-renouvellement CDD
+  | 'Demission' // Démission volontaire
+  | 'Demission_legitime' // Démission considérée comme légitime
+  | 'Licenciement_economique' // Licenciement pour raisons économiques
+  | 'Licenciement_faute_grave' // Licenciement pour faute grave
+  | 'Licenciement_faute_lourde' // Licenciement pour faute lourde
+  | 'Fin_CDD' // Terme du CDD
+  | 'Fin_periode_essai' // Rupture pendant période d'essai
+  | 'Retraite' // Départ en retraite
+  | 'Retraite_anticipee' // Retraite anticipée
+  | 'Deces' // Décès
+  | 'Inaptitude_medicale' // Inaptitude constatée
+  | 'Force_majeure' // Force majeure
+  | 'Commun_accord' // Rupture d'un commun accord
+  | 'Abandon_poste' // Abandon de poste
+  | 'Mutation_externe' // Mutation vers autre entité
+  | 'Fin_mission' // Fin de mission (intérim)
+  | 'Non_renouvellement'; // Non-renouvellement CDD
 
 /**
  * Modes de travail
  */
 export type WorkMode =
-  | 'Presentiel'      // Sur site uniquement
-  | 'Hybride'         // Mixte présentiel/télétravail
-  | 'Teletravail'     // Télétravail complet
-  | 'Itinerant'       // Travail itinérant
+  | 'Presentiel' // Sur site uniquement
+  | 'Hybride' // Mixte présentiel/télétravail
+  | 'Teletravail' // Télétravail complet
+  | 'Itinerant' // Travail itinérant
   | 'Horaire_variable'; // Horaires variables
 
 /**
  * Catégories professionnelles selon Convention Collective
  */
 export type ProfessionalCategory =
-  | 'Cadre_superieur'    // Cadre supérieur
-  | 'Cadre'              // Cadre
-  | 'Agent_maitrise'     // Agent de maîtrise
-  | 'Technicien'         // Technicien
-  | 'Employe'            // Employé
-  | 'Ouvrier_qualifie'   // Ouvrier qualifié
-  | 'Ouvrier'            // Ouvrier
-  | 'Manoeuvre';         // Manœuvre
+  | 'Cadre_superieur' // Cadre supérieur
+  | 'Cadre' // Cadre
+  | 'Agent_maitrise' // Agent de maîtrise
+  | 'Technicien' // Technicien
+  | 'Employe' // Employé
+  | 'Ouvrier_qualifie' // Ouvrier qualifié
+  | 'Ouvrier' // Ouvrier
+  | 'Manoeuvre'; // Manœuvre
 
 /**
  * Niveaux d'échelle (classification)
  */
 export type EchelleLevel =
-  | 'Echelle_1' | 'Echelle_2' | 'Echelle_3' | 'Echelle_4' | 'Echelle_5'
-  | 'Echelle_6' | 'Echelle_7' | 'Echelle_8' | 'Echelle_9' | 'Echelle_10'
-  | 'Echelle_11' | 'Echelle_12' | 'Hors_echelle';
+  | 'Echelle_1'
+  | 'Echelle_2'
+  | 'Echelle_3'
+  | 'Echelle_4'
+  | 'Echelle_5'
+  | 'Echelle_6'
+  | 'Echelle_7'
+  | 'Echelle_8'
+  | 'Echelle_9'
+  | 'Echelle_10'
+  | 'Echelle_11'
+  | 'Echelle_12'
+  | 'Hors_echelle';
 
 /**
  * Secteurs d'activité
  */
 export type SecteurActivite =
-  | 'Industrie' | 'Commerce' | 'Services' | 'BTP'
-  | 'Agriculture' | 'Transport' | 'Banque' | 'Assurance'
-  | 'Telecom' | 'Informatique' | 'Education' | 'Sante'
-  | 'Hotellerie' | 'Tourisme' | 'Autre';
+  | 'Industrie'
+  | 'Commerce'
+  | 'Services'
+  | 'BTP'
+  | 'Agriculture'
+  | 'Transport'
+  | 'Banque'
+  | 'Assurance'
+  | 'Telecom'
+  | 'Informatique'
+  | 'Education'
+  | 'Sante'
+  | 'Hotellerie'
+  | 'Tourisme'
+  | 'Autre';
 
 // ============================================
 // Interfaces principales
@@ -186,42 +207,48 @@ export interface JobInfo {
  * Temps de travail selon le Code du Travail
  */
 export interface WorkTime {
-   // Durées légales
+  // Durées légales
   weekly_hours?: number;
   daily_hours?: number;
-   annual_hours?: number;              // Pour modulation
+  annual_hours?: number; // Pour modulation
 
-   // Horaires
-  work_schedule?: string;              // Horaire normal (ex: 9h-18h)
-  work_schedule_type?: 'Normal' | 'Equipe' | 'Continu' | 'Variable' | 'Modulation';
-   schedule_details?: string;
+  // Horaires
+  work_schedule?: string; // Horaire normal (ex: 9h-18h)
+  work_schedule_type?:
+    | 'Normal'
+    | 'Equipe'
+    | 'Continu'
+    | 'Variable'
+    | 'Modulation';
+  schedule_details?: string;
 
-   // Repos
-  rest_day?: string;                   // Jour de repos hebdomadaire
-   additional_rest_days?: string[];    // Repos additionnels
+  // Repos
+  rest_day?: string; // Jour de repos hebdomadaire
+  additional_rest_days?: string[]; // Repos additionnels
 
-   // Organisation
-   shift?: string | null;              // Équipe (matin/soir/nuit)
-   rotation?: boolean;                 // Rotation d'équipes
-   night_work?: boolean;               // Travail de nuit (21h-6h)
-   weekend_work?: boolean;             // Travail week-end
+  // Organisation
+  shift?: string | null; // Équipe (matin/soir/nuit)
+  rotation?: boolean; // Rotation d'équipes
+  night_work?: boolean; // Travail de nuit (21h-6h)
+  weekend_work?: boolean; // Travail week-end
 
-   // Astreintes et heures sup
-   on_call?: boolean;                  // Astreintes
-   overtime_authorized?: boolean;      // Heures supplémentaires autorisées
-   compensatory_rest?: boolean;        // Repos compensateur
+  // Astreintes et heures sup
+  on_call?: boolean; // Astreintes
+  overtime_authorized?: boolean; // Heures supplémentaires autorisées
+  compensatory_rest?: boolean; // Repos compensateur
 
-   // Congés selon Code du Travail
-  annual_leave_days?: number;          // Min 1.5j par mois (18j/an après 6 mois)
-   seniority_leave_bonus?: number;     // Jours bonus ancienneté
-   special_leaves?: {                  // Congés spéciaux
-     marriage: number;                 // 4 jours
-     birth: number;                    // 3 jours
-     death_relative: number;           // 3 jours
-     circumcision: number;             // 2 jours
-     hajj: number;                     // 30 jours (1 fois)
-   };
- }
+  // Congés selon Code du Travail
+  annual_leave_days?: number; // Min 1.5j par mois (18j/an après 6 mois)
+  seniority_leave_bonus?: number; // Jours bonus ancienneté
+  special_leaves?: {
+    // Congés spéciaux
+    marriage: number; // 4 jours
+    birth: number; // 3 jours
+    death_relative: number; // 3 jours
+    circumcision: number; // 2 jours
+    hajj: number; // 30 jours (1 fois)
+  };
+}
 
 // Simplified schedule used by forms and mock data
 export interface SimplifiedSchedule {
@@ -243,22 +270,22 @@ export interface SimplifiedSchedule {
  * Primes et indemnités détaillées
  */
 export interface Primes {
-  prime_anciennete?: number;          // Prime d'ancienneté (5% après 2 ans)
+  prime_anciennete?: number; // Prime d'ancienneté (5% après 2 ans)
   prime_anciennete_percentage?: number;
-  prime_transport?: number;           // Indemnité de transport
-  prime_panier?: number;              // Indemnité de panier/repas
-  prime_rendement?: number;           // Prime de rendement
-  prime_risque?: number;              // Prime de risque
-  prime_salissure?: number;           // Prime de salissure
-  prime_nuit?: number;                // Prime de nuit (majoration 25-50%)
-  prime_astreinte?: number;           // Prime d'astreinte
-  prime_objectif?: number;            // Prime sur objectifs
-  prime_13eme_mois?: number;          // 13ème mois
-  prime_exceptionnelle?: number;      // Prime exceptionnelle
-  treizieme_mois?: boolean;           // 13ème mois annuel
-  quatorzieme_mois?: boolean;         // 14ème mois
-  participation_benefices?: boolean;  // Participation aux bénéfices
-  stock_options?: boolean;            // Stock options
+  prime_transport?: number; // Indemnité de transport
+  prime_panier?: number; // Indemnité de panier/repas
+  prime_rendement?: number; // Prime de rendement
+  prime_risque?: number; // Prime de risque
+  prime_salissure?: number; // Prime de salissure
+  prime_nuit?: number; // Prime de nuit (majoration 25-50%)
+  prime_astreinte?: number; // Prime d'astreinte
+  prime_objectif?: number; // Prime sur objectifs
+  prime_13eme_mois?: number; // 13ème mois
+  prime_exceptionnelle?: number; // Prime exceptionnelle
+  treizieme_mois?: boolean; // 13ème mois annuel
+  quatorzieme_mois?: boolean; // 14ème mois
+  participation_benefices?: boolean; // Participation aux bénéfices
+  stock_options?: boolean; // Stock options
   other_primes?: Array<{
     name: string;
     name_ar?: string;
@@ -272,14 +299,14 @@ export interface Primes {
  * Indemnités et remboursements
  */
 export interface Indemnites {
-  indemnite_logement?: number;        // Indemnité de logement
-  indemnite_deplacement?: number;     // Indemnité de déplacement
-  indemnite_representation?: number;  // Indemnité de représentation
-  indemnite_km?: number | null;       // Indemnité kilométrique (tarif)
-  indemnite_mission?: number;         // Indemnité de mission
-  indemnite_expatriation?: number;    // Indemnité d'expatriation
-  frais_telephone?: number;           // Forfait téléphone
-  frais_internet?: number;            // Forfait internet (télétravail)
+  indemnite_logement?: number; // Indemnité de logement
+  indemnite_deplacement?: number; // Indemnité de déplacement
+  indemnite_representation?: number; // Indemnité de représentation
+  indemnite_km?: number | null; // Indemnité kilométrique (tarif)
+  indemnite_mission?: number; // Indemnité de mission
+  indemnite_expatriation?: number; // Indemnité d'expatriation
+  frais_telephone?: number; // Forfait téléphone
+  frais_internet?: number; // Forfait internet (télétravail)
   autres?: Array<{
     name: string;
     name_ar?: string;
@@ -293,21 +320,21 @@ export interface Indemnites {
  * Avantages en nature
  */
 export interface AvantagesNature {
-  voiture_fonction?: boolean;         // Voiture de fonction
+  voiture_fonction?: boolean; // Voiture de fonction
   voiture_details?: string;
-  telephone?: boolean;                // Téléphone professionnel
+  telephone?: boolean; // Téléphone professionnel
   telephone_model?: string;
-  laptop?: boolean;                   // Ordinateur portable
+  laptop?: boolean; // Ordinateur portable
   laptop_model?: string;
-  tickets_restaurant?: boolean;       // Tickets restaurant
+  tickets_restaurant?: boolean; // Tickets restaurant
   tickets_amount?: number;
-  logement?: boolean;                 // Logement de fonction
+  logement?: boolean; // Logement de fonction
   logement_details?: string;
-  assurance_groupe?: boolean;         // Assurance groupe
-  mutuelle_famille?: boolean;         // Mutuelle famille
-  transport_collectif?: boolean;      // Transport entreprise
-  creche?: boolean;                   // Crèche d'entreprise
-  formation?: boolean;                // Formation continue
+  assurance_groupe?: boolean; // Assurance groupe
+  mutuelle_famille?: boolean; // Mutuelle famille
+  transport_collectif?: boolean; // Transport entreprise
+  creche?: boolean; // Crèche d'entreprise
+  formation?: boolean; // Formation continue
   autres?: Array<{
     name: string;
     description?: string;
@@ -320,31 +347,33 @@ export interface AvantagesNature {
  */
 export interface SalaryInfo {
   // Salaire de base
-  base_salary?: number;                // Salaire de base brut
-  currency?: string;                   // MAD par défaut
+  base_salary?: number; // Salaire de base brut
+  currency?: string; // MAD par défaut
   payment_frequency?: 'Mensuel' | 'Horaire' | 'Journalier';
 
   // Calculs
-  salary_brut?: number;                // Salaire brut total
-  salary_net?: number;                 // Salaire net avant IR
-  salary_net_imposable?: number;       // Salaire net imposable
-   salary_net_a_payer?: number;        // Salaire net à payer
+  salary_brut?: number; // Salaire brut total
+  salary_net?: number; // Salaire net avant IR
+  salary_net_imposable?: number; // Salaire net imposable
+  salary_net_a_payer?: number; // Salaire net à payer
 
-   hourly_rate?: number | null;        // Taux horaire
-   daily_rate?: number | null;         // Taux journalier
+  hourly_rate?: number | null; // Taux horaire
+  daily_rate?: number | null; // Taux journalier
 
-   // Composantes
-   primes?: Primes & { items?: Array<{
-    prime_type_id: string | number;
-    prime_type_code?: string;
-    label: string;
-    amount: number;
-    is_taxable?: boolean;
-    is_subject_to_cnss?: boolean;
-    notes?: string;
-  }>; };
-   indemnites?: Indemnites;
-   avantages_nature?: AvantagesNature;
+  // Composantes
+  primes?: Primes & {
+    items?: Array<{
+      prime_type_id: string | number;
+      prime_type_code?: string;
+      label: string;
+      amount: number;
+      is_taxable?: boolean;
+      is_subject_to_cnss?: boolean;
+      notes?: string;
+    }>;
+  };
+  indemnites?: Indemnites;
+  avantages_nature?: AvantagesNature;
 
   // Simplified additions
   payment_method?: string;
@@ -362,44 +391,45 @@ export interface SalaryInfo {
  * Informations légales et protection sociale
  */
 export interface LegalInfo {
-   // CNSS (Caisse Nationale de Sécurité Sociale)
-   cnss_affiliation: boolean;
-   cnss_number?: string;               // Numéro d'affiliation CNSS
-   cnss_regime: 'General' | 'Agricole' | 'Artisanal' | 'Pecheurs';
-   cnss_rate_employee?: number;        // Taux cotisation salarié (4.48%)
-   cnss_rate_employer?: number;        // Taux cotisation employeur (16.46%)
+  // CNSS (Caisse Nationale de Sécurité Sociale)
+  cnss_affiliation: boolean;
+  cnss_number?: string; // Numéro d'affiliation CNSS
+  cnss_regime: 'General' | 'Agricole' | 'Artisanal' | 'Pecheurs';
+  cnss_rate_employee?: number; // Taux cotisation salarié (4.48%)
+  cnss_rate_employer?: number; // Taux cotisation employeur (16.46%)
 
-   // AMO (Assurance Maladie Obligatoire)
+  // AMO (Assurance Maladie Obligatoire)
   amo?: boolean; // legacy
   amo_affiliation?: boolean; // simplified
-   amo_number?: string;
-   amo_regime: 'CNSS' | 'CNOPS' | 'Autres';
-   amo_family_members?: number;        // Nombre d'ayants droit
+  amo_number?: string;
+  amo_regime: 'CNSS' | 'CNOPS' | 'Autres';
+  amo_family_members?: number; // Nombre d'ayants droit
 
-   // Retraite complémentaire
-  cimr?: boolean;                     // CIMR (legacy)
-  cmir_affiliation?: boolean;         // simplified
-   cimr_rate_employee?: number;
-   cimr_rate_employer?: number;
-  rcar?: boolean;                     // RCAR (legacy)
-  rcar_affiliation?: boolean;         // simplified
-   other_retirement?: string;
+  // Retraite complémentaire
+  cimr?: boolean; // CIMR (legacy)
+  cmir_affiliation?: boolean; // simplified
+  cimr_rate_employee?: number;
+  cimr_rate_employer?: number;
+  rcar?: boolean; // RCAR (legacy)
+  rcar_affiliation?: boolean; // simplified
+  other_retirement?: string;
 
-   // ANAPEC / Formation
-   contrat_anapec?: string | null;     // Numéro contrat ANAPEC
-   anapec_type?: 'Idmaj' | 'TAHIL' | 'Autre';
-   taxe_formation?: boolean;           // Taxe de formation professionnelle (1.6%)
+  // ANAPEC / Formation
+  contrat_anapec?: string | null; // Numéro contrat ANAPEC
+  anapec_type?: 'Idmaj' | 'TAHIL' | 'Autre';
+  taxe_formation?: boolean; // Taxe de formation professionnelle (1.6%)
 
-   // Fiscalité
-   tax_ir?: {
-     taux: number;                     // Taux effectif IR
-     exonere: boolean;                 // Exonéré d'IR
-     exoneration_reason?: string;      // Raison de l'exonération
-     deductions?: Array<{              // Déductions fiscales
-       type: string;
-       amount: number;
-     }>;
-   };
+  // Fiscalité
+  tax_ir?: {
+    taux: number; // Taux effectif IR
+    exonere: boolean; // Exonéré d'IR
+    exoneration_reason?: string; // Raison de l'exonération
+    deductions?: Array<{
+      // Déductions fiscales
+      type: string;
+      amount: number;
+    }>;
+  };
 
   // Simplified flags
   mutuelle_affiliation?: boolean;
@@ -424,24 +454,25 @@ export interface LegalInfo {
     rcar_numero?: string;
   };
 
-   // Convention collective applicable
+  // Convention collective applicable
   convention_date?: string;
 
   // Clauses contractuelles
   clauses?: {
-    confidentialite: boolean;         // Clause de confidentialité
-    non_concurrence: boolean;         // Clause de non-concurrence
+    confidentialite: boolean; // Clause de confidentialité
+    non_concurrence: boolean; // Clause de non-concurrence
     non_concurrence_duration?: number; // Durée en mois
     non_concurrence_compensation?: number; // Compensation financière
-    mobilite: boolean;                // Clause de mobilité
+    mobilite: boolean; // Clause de mobilité
     mobilite_geographic_scope?: string; // Périmètre géographique
-    exclusivite: boolean;             // Clause d'exclusivité
-    formation: boolean;               // Clause de formation
-    formation_engagement?: number;     // Engagement en années
-    intellectual_property: boolean;   // Propriété intellectuelle
-    discipline_interne: boolean;      // Règlement intérieur
-    deontologie: boolean;             // Code de déontologie
-    teletravail?: {                   // Accord de télétravail
+    exclusivite: boolean; // Clause d'exclusivité
+    formation: boolean; // Clause de formation
+    formation_engagement?: number; // Engagement en années
+    intellectual_property: boolean; // Propriété intellectuelle
+    discipline_interne: boolean; // Règlement intérieur
+    deontologie: boolean; // Code de déontologie
+    teletravail?: {
+      // Accord de télétravail
       jours_par_semaine: number;
       materiel_fourni: string[];
       frais_rembourses: string[];
@@ -463,7 +494,7 @@ export interface LegalInfo {
  * Documents associés au contrat
  */
 export interface ContractDocuments {
-  contrat_signe?: string;             // URL/ID du contrat signé
+  contrat_signe?: string; // URL/ID du contrat signé
   avenants?: Array<{
     id: string;
     numero: number;
@@ -541,56 +572,56 @@ export interface ContractHistory {
  * Conforme au Code du Travail et adaptée à tous les secteurs
  */
 export interface Contract {
-   // Identification
-   id: string | number;
-   reference: string;                  // Référence unique du contrat
-   internal_reference?: string;        // Référence interne entreprise
-   type: ContractType;
-   status: ContractStatus;
-   version?: number;
+  // Identification
+  id: string | number;
+  reference: string; // Référence unique du contrat
+  internal_reference?: string; // Référence interne entreprise
+  type: ContractType;
+  status: ContractStatus;
+  version?: number;
 
-   // Relations
-   employe_id: string | number;
-   employee_name?: string;             // Cache pour affichage
-   employee_matricule?: string;
-   company_id?: string | number;       // Pour multi-sociétés
-   company_name?: string;
+  // Relations
+  employe_id: string | number;
+  employee_name?: string; // Cache pour affichage
+  employee_matricule?: string;
+  company_id?: string | number; // Pour multi-sociétés
+  company_name?: string;
 
-   // Dates et durée
-   dates: ContractDates;
+  // Dates et durée
+  dates: ContractDates;
 
-   // Poste et classification
-   job: JobInfo;
+  // Poste et classification
+  job: JobInfo;
 
-   // Temps de travail
-   work_time?: WorkTime;               // legacy optional
-   schedule?: SimplifiedSchedule;      // simplified
+  // Temps de travail
+  work_time?: WorkTime; // legacy optional
+  schedule?: SimplifiedSchedule; // simplified
 
-   // Rémunération
-   salary: SalaryInfo;
+  // Rémunération
+  salary: SalaryInfo;
 
-   // Aspects légaux
-   legal: LegalInfo;
+  // Aspects légaux
+  legal: LegalInfo;
 
-   // Documents
-   documents?: ContractDocuments;
+  // Documents
+  documents?: ContractDocuments;
 
-   // Historique et traçabilité
-   historique: ContractHistory;
+  // Historique et traçabilité
+  historique: ContractHistory;
 
-   // Remarques et notes
-   notes?: string;
-   internal_notes?: string;            // Notes internes RH
+  // Remarques et notes
+  notes?: string;
+  internal_notes?: string; // Notes internes RH
 
-   // Champs personnalisés par secteur/entreprise
-   custom_fields?: Record<string, any>;
+  // Champs personnalisés par secteur/entreprise
+  custom_fields?: Record<string, any>;
 
-   // Métadonnées
-   tags?: string[];                    // Tags pour classification
-   secteur?: SecteurActivite;
-   archived?: boolean;
-   archived_date?: string;
-   archived_reason?: string;
+  // Métadonnées
+  tags?: string[]; // Tags pour classification
+  secteur?: SecteurActivite;
+  archived?: boolean;
+  archived_date?: string;
+  archived_reason?: string;
 }
 
 // ============================================
@@ -600,7 +631,8 @@ export interface Contract {
 /**
  * Input pour la création d'un contrat
  */
-export interface ContractCreateInput extends Omit<Contract, 'id' | 'version' | 'historique'> {
+export interface ContractCreateInput
+  extends Omit<Contract, 'id' | 'version' | 'historique'> {
   id?: string | number;
 }
 

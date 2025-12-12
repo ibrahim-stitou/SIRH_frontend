@@ -8,13 +8,13 @@ export default function CreativeLoader() {
   useEffect(() => {
     // Animation de rotation
     const rotationInterval = setInterval(() => {
-      setRotation(prev => (prev + 5) % 360);
+      setRotation((prev) => (prev + 5) % 360);
     }, 50);
 
     // Animation de pulsation
     const pulseInterval = setInterval(() => {
-      setScale(prev => prev === 1 ? 1.2 : 1);
-      setOpacity(prev => prev === 0.7 ? 1 : 0.7);
+      setScale((prev) => (prev === 1 ? 1.2 : 1));
+      setOpacity((prev) => (prev === 0.7 ? 1 : 0.7));
     }, 800);
 
     return () => {
@@ -24,22 +24,22 @@ export default function CreativeLoader() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-white">
+    <div className='flex h-screen flex-col items-center justify-center bg-white'>
       <div
-        className="relative"
+        className='relative'
         style={{
           transform: `rotate(${rotation}deg) scale(${scale})`,
           transition: 'transform 0.3s ease-in-out, opacity 0.3s ease-in-out',
           opacity: opacity
         }}
       >
-        <div className="w-16 h-16 flex justify-center">
-          <SmallLogo/>
+        <div className='flex h-16 w-16 justify-center'>
+          <SmallLogo />
         </div>
 
         {/* Cercles concentriques animés */}
-        <div className="absolute inset-0 rounded-full border-4 border-indigo-300 animate-ping opacity-30"></div>
-        <div className="absolute inset-0 rounded-full border-2 border-blue-400 animate-pulse"></div>
+        <div className='absolute inset-0 animate-ping rounded-full border-4 border-indigo-300 opacity-30'></div>
+        <div className='absolute inset-0 animate-pulse rounded-full border-2 border-blue-400'></div>
       </div>
     </div>
   );

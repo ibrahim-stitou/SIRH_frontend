@@ -31,7 +31,9 @@ interface CotisationsSocialesCardProps {
  * Composant pour la configuration des cotisations sociales
  * Note: Ce composant n'est pas utilisé dans la création de contrat mais est disponible pour d'autres usages
  */
-export function CotisationsSocialesCard({ form }: CotisationsSocialesCardProps) {
+export function CotisationsSocialesCard({
+  form
+}: CotisationsSocialesCardProps) {
   return (
     <Card>
       <CardHeader className='pb-3'>
@@ -47,9 +49,9 @@ export function CotisationsSocialesCard({ form }: CotisationsSocialesCardProps) 
         <Alert>
           <Calculator className='h-4 w-4' />
           <AlertDescription className='text-xs'>
-            Les taux peuvent être modifiés selon votre convention collective
-            ou vos accords spécifiques. Les valeurs par défaut correspondent
-            aux taux légaux marocains en vigueur.
+            Les taux peuvent être modifiés selon votre convention collective ou
+            vos accords spécifiques. Les valeurs par défaut correspondent aux
+            taux légaux marocains en vigueur.
           </AlertDescription>
         </Alert>
 
@@ -160,8 +162,7 @@ export function CotisationsSocialesCard({ form }: CotisationsSocialesCardProps) 
                     Affiliation AMO
                   </FormLabel>
                   <FormDescription className='text-xs'>
-                    Assurance Maladie Obligatoire - Couverture santé
-                    obligatoire
+                    Assurance Maladie Obligatoire - Couverture santé obligatoire
                   </FormDescription>
 
                   {field.value && (
@@ -249,8 +250,7 @@ export function CotisationsSocialesCard({ form }: CotisationsSocialesCardProps) 
                     Affiliation CMIR
                   </FormLabel>
                   <FormDescription className='text-xs'>
-                    Caisse Marocaine des Retraites - Régime complémentaire
-                    privé
+                    Caisse Marocaine des Retraites - Régime complémentaire privé
                   </FormDescription>
 
                   {field.value && (
@@ -396,4 +396,3 @@ export function CotisationsSocialesCard({ form }: CotisationsSocialesCardProps) 
     </Card>
   );
 }
-

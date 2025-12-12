@@ -7,14 +7,14 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
+  DialogTitle
 } from '@/components/ui/dialog';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -45,25 +45,31 @@ export function NewRequestModal({
   formData,
   setFormData,
   onSubmit,
-  onCancel,
+  onCancel
 }: NewRequestModalProps) {
   const { t } = useLanguage();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className='max-w-md'>
         <DialogHeader>
           <DialogTitle>{t('attestations.dialog.newRequest.title')}</DialogTitle>
-          <DialogDescription>{t('attestations.dialog.newRequest.description')}</DialogDescription>
+          <DialogDescription>
+            {t('attestations.dialog.newRequest.description')}
+          </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="employee">{t('attestations.fields.employeeId')}</Label>
+        <div className='space-y-4'>
+          <div className='space-y-2'>
+            <Label htmlFor='employee'>
+              {t('attestations.fields.employeeId')}
+            </Label>
             <Select
               value={formData.employeeId}
-              onValueChange={(value) => setFormData({ ...formData, employeeId: value })}
+              onValueChange={(value) =>
+                setFormData({ ...formData, employeeId: value })
+              }
             >
-              <SelectTrigger id="employee" className="w-full">
+              <SelectTrigger id='employee' className='w-full'>
                 <SelectValue placeholder={t('placeholders.select')} />
               </SelectTrigger>
               <SelectContent>
@@ -75,44 +81,65 @@ export function NewRequestModal({
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="type">{t('attestations.fields.typeAttestation')}</Label>
+          <div className='space-y-2'>
+            <Label htmlFor='type'>
+              {t('attestations.fields.typeAttestation')}
+            </Label>
             <Select
               value={formData.typeAttestation}
-              onValueChange={(value) => setFormData({ ...formData, typeAttestation: value as AttestationType })}
+              onValueChange={(value) =>
+                setFormData({
+                  ...formData,
+                  typeAttestation: value as AttestationType
+                })
+              }
             >
-              <SelectTrigger id="type" className="w-full">
+              <SelectTrigger id='type' className='w-full'>
                 <SelectValue placeholder={t('placeholders.select')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="travail">{t('attestations.types.travail')}</SelectItem>
-                <SelectItem value="salaire">{t('attestations.types.salaire')}</SelectItem>
-                <SelectItem value="travail_salaire">{t('attestations.types.travail_salaire')}</SelectItem>
-                <SelectItem value="stage">{t('attestations.types.stage')}</SelectItem>
+                <SelectItem value='travail'>
+                  {t('attestations.types.travail')}
+                </SelectItem>
+                <SelectItem value='salaire'>
+                  {t('attestations.types.salaire')}
+                </SelectItem>
+                <SelectItem value='travail_salaire'>
+                  {t('attestations.types.travail_salaire')}
+                </SelectItem>
+                <SelectItem value='stage'>
+                  {t('attestations.types.stage')}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="dateSouhaitee">{t('attestations.fields.dateSouhaitee')}</Label>
+          <div className='space-y-2'>
+            <Label htmlFor='dateSouhaitee'>
+              {t('attestations.fields.dateSouhaitee')}
+            </Label>
             <DatePickerField
-              id="dateSouhaitee"
+              id='dateSouhaitee'
               value={formData.dateSouhaitee}
-              onChange={(value) => setFormData({ ...formData, dateSouhaitee: value })}
+              onChange={(value) =>
+                setFormData({ ...formData, dateSouhaitee: value })
+              }
               placeholder={t('attestations.fields.dateSouhaitee')}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="notes">{t('attestations.fields.notes')}</Label>
+          <div className='space-y-2'>
+            <Label htmlFor='notes'>{t('attestations.fields.notes')}</Label>
             <Textarea
-              id="notes"
+              id='notes'
               value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, notes: e.target.value })
+              }
               placeholder={t('attestations.fields.notes')}
             />
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={onCancel}>
+          <Button variant='outline' onClick={onCancel}>
             {t('common.cancel')}
           </Button>
           <Button onClick={onSubmit}>{t('common.submit')}</Button>
@@ -121,4 +148,3 @@ export function NewRequestModal({
     </Dialog>
   );
 }
-

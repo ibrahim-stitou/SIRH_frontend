@@ -11,11 +11,13 @@ Gérer le cycle de vie complet des attestations d'employés, de la demande jusqu
 ## 🚀 Démarrage rapide
 
 ### 1. Installation (déjà fait)
+
 ```bash
 pnpm add jspdf jspdf-autotable
 ```
 
 ### 2. Lancer l'application
+
 ```bash
 # Terminal 1 - API Mock
 npm run mock-server
@@ -25,6 +27,7 @@ npm run dev
 ```
 
 ### 3. Accéder au module
+
 ```
 http://localhost:3003/admin/personnel/attestations
 ```
@@ -33,13 +36,13 @@ http://localhost:3003/admin/personnel/attestations
 
 ## 📚 Documentation
 
-| Document | Description | Lien |
-|----------|-------------|------|
-| 📖 **Guide complet** | Documentation technique exhaustive | [ATTESTATIONS_MODULE.md](./ATTESTATIONS_MODULE.md) |
-| ⚡ **Quick Start** | Guide de démarrage rapide | [ATTESTATIONS_QUICK_START.md](./ATTESTATIONS_QUICK_START.md) |
-| 🔄 **Workflow** | Diagrammes et flux de travail | [ATTESTATIONS_WORKFLOW.md](./ATTESTATIONS_WORKFLOW.md) |
-| 📝 **Résumé** | Vue d'ensemble de l'implémentation | [ATTESTATIONS_SUMMARY.md](./ATTESTATIONS_SUMMARY.md) |
-| ✅ **Validation** | Rapport de validation technique | [ATTESTATIONS_VALIDATION.md](./ATTESTATIONS_VALIDATION.md) |
+| Document             | Description                        | Lien                                                         |
+| -------------------- | ---------------------------------- | ------------------------------------------------------------ |
+| 📖 **Guide complet** | Documentation technique exhaustive | [ATTESTATIONS_MODULE.md](./ATTESTATIONS_MODULE.md)           |
+| ⚡ **Quick Start**   | Guide de démarrage rapide          | [ATTESTATIONS_QUICK_START.md](./ATTESTATIONS_QUICK_START.md) |
+| 🔄 **Workflow**      | Diagrammes et flux de travail      | [ATTESTATIONS_WORKFLOW.md](./ATTESTATIONS_WORKFLOW.md)       |
+| 📝 **Résumé**        | Vue d'ensemble de l'implémentation | [ATTESTATIONS_SUMMARY.md](./ATTESTATIONS_SUMMARY.md)         |
+| ✅ **Validation**    | Rapport de validation technique    | [ATTESTATIONS_VALIDATION.md](./ATTESTATIONS_VALIDATION.md)   |
 
 ---
 
@@ -77,16 +80,19 @@ docs/
 ## ✨ Fonctionnalités
 
 ### 🎫 Types d'attestations
+
 1. **Attestation de travail** - Certifie l'emploi et l'ancienneté
 2. **Attestation de salaire** - Inclut les informations salariales
 3. **Attestation de travail et salaire** - Document complet
 4. **Attestation de stage** - Pour les stagiaires (avec dates)
 
 ### 🔄 Workflows
+
 - **Avec demande** : Demande → Approbation → Génération
 - **Sans demande** : Génération directe (urgences)
 
 ### 📊 Interface
+
 - Statistiques en temps réel
 - Tables interactives
 - Dialogues modaux
@@ -94,6 +100,7 @@ docs/
 - Actions contextuelles
 
 ### 🌍 Multi-langues
+
 - Français (FR) ✓
 - Anglais (EN) ✓
 - Arabe (AR) ✓
@@ -103,6 +110,7 @@ docs/
 ## 🎨 Captures d'écran
 
 ### Page principale
+
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ ATTESTATIONS                    [+ Nouvelle] [Générer]  │
@@ -119,6 +127,7 @@ docs/
 ```
 
 ### PDF généré
+
 ```
 ┌─────────────────────────────────────────┐
 │ SIRH COMPANY                            │
@@ -152,20 +161,21 @@ docs/
 
 ## 🛠️ Technologies
 
-| Techno | Version | Usage |
-|--------|---------|-------|
-| React | 19.0.0 | UI Framework |
-| Next.js | 15.2.4 | App Framework |
-| TypeScript | 5.7.2 | Type Safety |
-| jsPDF | 3.0.4 | PDF Generation |
-| shadcn/ui | Latest | UI Components |
-| date-fns | 4.1.0 | Date Handling |
+| Techno     | Version | Usage          |
+| ---------- | ------- | -------------- |
+| React      | 19.0.0  | UI Framework   |
+| Next.js    | 15.2.4  | App Framework  |
+| TypeScript | 5.7.2   | Type Safety    |
+| jsPDF      | 3.0.4   | PDF Generation |
+| shadcn/ui  | Latest  | UI Components  |
+| date-fns   | 4.1.0   | Date Handling  |
 
 ---
 
 ## 📖 Guide d'utilisation
 
 ### Créer une demande
+
 1. Cliquer sur **"Nouvelle demande"**
 2. Sélectionner un **employé**
 3. Choisir le **type** d'attestation
@@ -173,16 +183,19 @@ docs/
 5. Cliquer sur **"Soumettre"**
 
 ### Approuver une demande
+
 1. Trouver la demande dans l'onglet **"Demandes"**
 2. Cliquer sur **"Approuver"**
 3. La demande passe au statut **"Approuvée"**
 
 ### Générer le PDF
+
 1. Pour une demande approuvée, cliquer sur **"Générer PDF"**
 2. Le PDF se télécharge automatiquement
 3. L'attestation apparaît dans l'onglet **"Attestations générées"**
 
 ### Génération directe
+
 1. Cliquer sur **"Générer une attestation"**
 2. Sélectionner l'employé et le type
 3. Cliquer sur **"Générer PDF"**
@@ -193,6 +206,7 @@ docs/
 ## 🔍 Données de test
 
 ### Employés disponibles
+
 - **Admin User** (id: 100) - System Administrator
 - **HR Manager** (id: 101) - HR Manager
 - **Alice Martin** (id: 102) - Frontend Developer
@@ -200,10 +214,12 @@ docs/
 - **Chloe Dupont** (id: 104) - HR Specialist
 
 ### Demandes pré-créées
+
 - 5 demandes avec différents statuts
 - Types variés pour tester tous les cas
 
 ### Attestations pré-générées
+
 - 3 attestations déjà générées
 - Numéros : ATT-2024-001, ATT-2024-002, ATT-2024-003
 
@@ -212,6 +228,7 @@ docs/
 ## 🐛 Troubleshooting
 
 ### Le serveur ne démarre pas
+
 ```bash
 # Vérifier que le port 3001 est libre
 netstat -ano | findstr :3001
@@ -224,12 +241,14 @@ npm run mock-server
 ```
 
 ### Les données ne s'affichent pas
+
 1. Vérifier que le serveur mock tourne
 2. Ouvrir la console navigateur (F12)
 3. Vérifier les requêtes API dans l'onglet Network
 4. Vérifier que `db.json` existe
 
 ### Le PDF ne se génère pas
+
 1. Vérifier la console pour les erreurs
 2. S'assurer que jsPDF est installé : `pnpm list jspdf`
 3. Vérifier que les données employé sont complètes
@@ -240,24 +259,29 @@ npm run mock-server
 ## 🎯 Personnalisation
 
 ### Modifier les informations de l'entreprise
+
 Dans `src/lib/pdf/attestation-generator.ts` :
+
 ```typescript
 const DEFAULT_COMPANY = {
   name: 'VOTRE ENTREPRISE',
   address: 'Votre adresse',
-  city: 'Votre ville',
+  city: 'Votre ville'
   // ...
 };
 ```
 
 ### Changer le format de numérotation
+
 Dans `src/app/admin/personnel/attestations/page_old.tsx` :
+
 ```typescript
 const numeroAttestation = `ATT-${year}-${String(nextNum).padStart(3, '0')}`;
 // Personnalisez ce format
 ```
 
 ### Ajouter un nouveau type d'attestation
+
 1. Ajouter le type dans `src/types/attestation.ts`
 2. Créer la méthode dans `attestation-generator.ts`
 3. Ajouter les traductions dans les 3 fichiers de langue
@@ -292,6 +316,7 @@ const numeroAttestation = `ATT-${year}-${String(nextNum).padStart(3, '0')}`;
 ## 🚀 Prochaines étapes
 
 ### Recommandations
+
 1. **Connecter au backend réel** - Remplacer les mocks
 2. **Ajouter tests automatisés** - Jest + Testing Library
 3. **Implémenter envoi email** - SMTP ou service tiers
@@ -304,6 +329,7 @@ const numeroAttestation = `ATT-${year}-${String(nextNum).padStart(3, '0')}`;
 ## 📞 Support
 
 Pour toute question ou assistance :
+
 1. Consultez la documentation dans `docs/`
 2. Vérifiez le code source avec les commentaires
 3. Testez avec les données mock fournies
@@ -330,4 +356,3 @@ Propriétaire - Tous droits réservés
 Le module Attestations est **complet et opérationnel**. Vous pouvez maintenant gérer toutes vos attestations d'employés de manière professionnelle et efficace !
 
 **Bon usage ! 🚀**
-

@@ -1,6 +1,26 @@
 [
-  {"id":3000,"employeeId":102,"date":"2025-01-15","checkIn":"08:59","checkOut":"17:08","status":"present"},
-  {"id":3001,"employeeId":104,"date":"2025-01-15","checkIn":"09:12","checkOut":"17:02","status":"present"},
-  {"id":3002,"employeeId":101,"date":"2025-01-15","checkIn":"08:45","checkOut":"17:30","status":"present"}
+  {
+    "id": 3000,
+    "employeeId": 102,
+    "date": "2025-01-15",
+    "checkIn": "08:59",
+    "checkOut": "17:08",
+    "status": "present"
+  },
+  {
+    "id": 3001,
+    "employeeId": 104,
+    "date": "2025-01-15",
+    "checkIn": "09:12",
+    "checkOut": "17:02",
+    "status": "present"
+  },
+  {
+    "id": 3002,
+    "employeeId": 101,
+    "date": "2025-01-15",
+    "checkIn": "08:45",
+    "checkOut": "17:30",
+    "status": "present"
+  }
 ]
-

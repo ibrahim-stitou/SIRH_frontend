@@ -7,12 +7,12 @@ export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const publicRoutes = ['/', '/api/auth', '/unauthorized', '/forgot-password'];
-  const isPublicRoute = publicRoutes.some(route =>
-    pathname === route || pathname.startsWith(`${route}/`)
+  const isPublicRoute = publicRoutes.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`)
   );
 
   if (isPublicRoute) {
-   if (pathname === '/' && session && !session.error) {
+    if (pathname === '/' && session && !session.error) {
       const userRole = session.user?.role?.code;
 
       if (userRole === 'ADMIN') {
@@ -23,9 +23,15 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (!session || session.error === 'TokenExpired' || session.error === 'RefreshAccessTokenError' || session.error === 'SessionExpired') {
-
-    const errorParam = session?.error ? `?error=${session.error.toLowerCase()}` : '';
+  if (
+    !session ||
+    session.error === 'TokenExpired' ||
+    session.error === 'RefreshAccessTokenError' ||
+    session.error === 'SessionExpired'
+  ) {
+    const errorParam = session?.error
+      ? `?error=${session.error.toLowerCase()}`
+      : '';
     return NextResponse.redirect(new URL(`/${errorParam}`, request.url));
   }
 
@@ -35,8 +41,8 @@ export default async function middleware(request: NextRequest) {
   }
 
   const commonRoutes = ['/dashboard', '/profile', '/settings'];
-  const isCommonRoute = commonRoutes.some(route =>
-    pathname === route || pathname.startsWith(`${route}/`)
+  const isCommonRoute = commonRoutes.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`)
   );
 
   return NextResponse.next();
@@ -44,6 +50,6 @@ export default async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|images|icons|fonts).*)',
-  ],
+    '/((?!api|_next/static|_next/image|favicon.ico|images|icons|fonts).*)'
+  ]
 };

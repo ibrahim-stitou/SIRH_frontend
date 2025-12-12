@@ -1,5 +1,4 @@
 [
-  {"id":"perfDash","enabled":true},
-  {"id":"betaLeavesFlow","enabled":false}
+  { "id": "perfDash", "enabled": true },
+  { "id": "betaLeavesFlow", "enabled": false }
 ]
-

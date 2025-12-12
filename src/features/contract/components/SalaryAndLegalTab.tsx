@@ -21,12 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import {
-  Banknote,
-  Plus,
-  Trash2,
-  Info
-} from 'lucide-react';
+import { Banknote, Plus, Trash2, Info } from 'lucide-react';
 import { SelectField } from '@/components/custom/SelectField';
 import type { SimplifiedContractInput } from '@/validations/contract-simplified.schema';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -98,7 +93,9 @@ export function SalaryAndLegalTab({
               name='salary.salary_brut'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-xs'>Salaire Brut (MAD) *</FormLabel>
+                  <FormLabel className='text-xs'>
+                    Salaire Brut (MAD) *
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type='number'
@@ -140,8 +137,6 @@ export function SalaryAndLegalTab({
             />
           </div>
 
-
-
           {/* Ligne 2: Méthode de paiement et Périodicité */}
           <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
             <SelectField
@@ -167,7 +162,7 @@ export function SalaryAndLegalTab({
                 { id: 'Mensuel', label: 'Mensuel' },
                 { id: 'Bimensuel', label: 'Bimensuel' },
                 { id: 'Hebdomadaire', label: 'Hebdomadaire' },
-                { id: 'Annuel', label: 'Annuel' },
+                { id: 'Annuel', label: 'Annuel' }
               ]}
               className='h-9'
             />
@@ -453,7 +448,8 @@ export function SalaryAndLegalTab({
                 <FormItem className='flex flex-row items-start space-y-0 space-x-3 rounded-md border p-3'>
                   <FormControl>
                     {/*@ts-ignore*/}
-                    <Checkbox checked={field.value}
+                    <Checkbox
+                      checked={field.value}
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
@@ -468,8 +464,6 @@ export function SalaryAndLegalTab({
           </div>
         </CardContent>
       </Card>
-
-
     </div>
   );
 }

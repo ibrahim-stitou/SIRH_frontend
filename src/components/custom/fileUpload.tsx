@@ -110,44 +110,47 @@ export function FileUploader({
       .join(', ');
   }, [accept]);
 
-  const uploadFile = React.useCallback(async (file: File): Promise<UploadedFile> => {
-    const fileId = `${file.name}-${Date.now()}`;
+  const uploadFile = React.useCallback(
+    async (file: File): Promise<UploadedFile> => {
+      const fileId = `${file.name}-${Date.now()}`;
 
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('collection', collection);
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('collection', collection);
 
-      const response = await apiClient.post(
-        apiRoutes.files.uploadTemp,
-        formData,
-        {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        }
-      );
+        const response = await apiClient.post(
+          apiRoutes.files.uploadTemp,
+          formData,
+          {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          }
+        );
 
-      return {
-        custom_properties: '',
-        id: response.data.id || fileId,
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        path: response.data.path,
-        url: response.data.url,
-        preview: file.type.startsWith('image/')
-          ? URL.createObjectURL(file)
-          : undefined,
-        file,
-        progress: 100,
-        collection_name: collection,
-        created_at: new Date().toISOString()
-      };
-    } catch (error) {
-      console.error('Upload failed:', error);
-      toast.error(`Failed to upload ${file.name}`);
-      throw error;
-    }
-  }, [collection]);
+        return {
+          custom_properties: '',
+          id: response.data.id || fileId,
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          path: response.data.path,
+          url: response.data.url,
+          preview: file.type.startsWith('image/')
+            ? URL.createObjectURL(file)
+            : undefined,
+          file,
+          progress: 100,
+          collection_name: collection,
+          created_at: new Date().toISOString()
+        };
+      } catch (error) {
+        console.error('Upload failed:', error);
+        toast.error(`Failed to upload ${file.name}`);
+        throw error;
+      }
+    },
+    [collection]
+  );
 
   const onDrop = React.useCallback(
     async (acceptedFiles: FileWithPath[], rejectedFiles: any[]) => {
@@ -378,41 +381,39 @@ export function FileUploader({
           isDisabled && 'pointer-events-none cursor-not-allowed opacity-60',
           !isDisabled && 'cursor-pointer',
           className || variantClass
-         )}
-       >
-         <input {...getInputProps()} />
-         {renderContent()}
+        )}
+      >
+        <input {...getInputProps()} />
+        {renderContent()}
 
-         {/* Upload progress overlay */}
-         {uploading && (
-           <div className='bg-background/80 absolute inset-0 flex flex-col items-center justify-center rounded-xl backdrop-blur-sm'>
-             <Loader2 className='text-primary mb-2 h-7 w-7 animate-spin' />
-             <p className='text-sm font-medium'>Uploading...</p>
-           </div>
-         )}
-       </div>
+        {/* Upload progress overlay */}
+        {uploading && (
+          <div className='bg-background/80 absolute inset-0 flex flex-col items-center justify-center rounded-xl backdrop-blur-sm'>
+            <Loader2 className='text-primary mb-2 h-7 w-7 animate-spin' />
+            <p className='text-sm font-medium'>Uploading...</p>
+          </div>
+        )}
+      </div>
 
-       {/* File counter if needed outside the box */}
-       {hasFiles && multiple && maxFiles > 1 && !uploading && (
-         <div className='text-muted-foreground mt-1.5 flex items-center justify-between text-xs'>
-           <span>
-             {files.length} of {maxFiles} files
-           </span>
-           {!isMaxed && (
-             <span className='text-muted-foreground text-xs'>
-               Drop more or click to upload
-             </span>
-           )}
-         </div>
-       )}
-      {!hasFiles && description && (
-        <div className='text-muted-foreground mt-2 text-xs'>
-          {description}
+      {/* File counter if needed outside the box */}
+      {hasFiles && multiple && maxFiles > 1 && !uploading && (
+        <div className='text-muted-foreground mt-1.5 flex items-center justify-between text-xs'>
+          <span>
+            {files.length} of {maxFiles} files
+          </span>
+          {!isMaxed && (
+            <span className='text-muted-foreground text-xs'>
+              Drop more or click to upload
+            </span>
+          )}
         </div>
       )}
-     </div>
-   );
- }
+      {!hasFiles && description && (
+        <div className='text-muted-foreground mt-2 text-xs'>{description}</div>
+      )}
+    </div>
+  );
+}
 
 // Image preview card component
 function FilePreviewCard({

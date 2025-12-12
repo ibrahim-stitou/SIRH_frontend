@@ -389,7 +389,7 @@ export default function EmployeeCreatePage() {
                       <FormItem>
                         <FormLabel>Adresse</FormLabel>
                         <FormControl>
-                          <Textarea {...field} rows={1}  />
+                          <Textarea {...field} rows={1} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -451,7 +451,10 @@ export default function EmployeeCreatePage() {
                     options={[...PROFESSIONAL_CATEGORY_OPTIONS]}
                     displayField='label'
                     placeholder={t('placeholders.select')}
-                    error={form.formState.errors.professionalCategory?.message as string}
+                    error={
+                      form.formState.errors.professionalCategory
+                        ?.message as string
+                    }
                   />
                 </div>
 

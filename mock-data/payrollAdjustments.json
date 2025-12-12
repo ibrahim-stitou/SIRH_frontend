@@ -1,5 +1,16 @@
 [
-  {"id":2100,"payslipId":2000,"type":"bonus","label":"Performance Q4","amount":200},
-  {"id":2101,"payslipId":2001,"type":"deduction","label":"Health Insurance","amount":-120}
+  {
+    "id": 2100,
+    "payslipId": 2000,
+    "type": "bonus",
+    "label": "Performance Q4",
+    "amount": 200
+  },
+  {
+    "id": 2101,
+    "payslipId": 2001,
+    "type": "deduction",
+    "label": "Health Insurance",
+    "amount": -120
+  }
 ]
-

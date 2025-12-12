@@ -19,7 +19,7 @@ export function UserNav() {
 
   const handleSecurityClick = () => {
     // @ts-ignore - Accès aux propriétés personnalisées du user
-    if (session?.user?.role?.code === "admin") {
+    if (session?.user?.role?.code === 'admin') {
       router.push('/admin/security');
     } else {
       router.push('/consultant/security');
@@ -31,13 +31,15 @@ export function UserNav() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant='ghost' className='relative h-8 w-8 rounded-full'>
-            <Avatar className='h-10 w-10 shadow-2xl cursor-pointer'>
+            <Avatar className='h-10 w-10 cursor-pointer shadow-2xl'>
               <AvatarImage
                 //@ts-ignore
                 src={session.user?.image ?? ''}
                 alt={session.user?.name ?? 'AD logistique'}
               />
-              <AvatarFallback>{session.user?.name?.[0]|| 'AD logistique'}</AvatarFallback>
+              <AvatarFallback>
+                {session.user?.name?.[0] || 'AD logistique'}
+              </AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
@@ -65,12 +67,12 @@ export function UserNav() {
         </DropdownMenuContent>
       </DropdownMenu>
     );
-  }else{
+  } else {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant='ghost' className='relative h-8 w-8 rounded-full'>
-            <Avatar className='h-10 w-10 shadow-2xl cursor-pointer'>
+            <Avatar className='h-10 w-10 cursor-pointer shadow-2xl'>
               <AvatarImage
                 //@ts-ignore
                 src=''

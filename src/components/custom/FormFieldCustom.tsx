@@ -14,15 +14,15 @@ type FormFieldCustomProps = {
 };
 
 export const FormFieldCustom: React.FC<FormFieldCustomProps> = ({
-                                                                  name,
-                                                                  label,
-                                                                  children,
-                                                                  required = false,
-                                                                  error,
-                                                                  description,
-                                                                  onFocus,
-                                                                  className
-                                                                }) => {
+  name,
+  label,
+  children,
+  required = false,
+  error,
+  description,
+  onFocus,
+  className
+}) => {
   const handleFocus = React.useCallback(() => {
     if (onFocus) onFocus();
   }, [onFocus]);
@@ -33,7 +33,7 @@ export const FormFieldCustom: React.FC<FormFieldCustomProps> = ({
         <div className='flex items-baseline justify-between'>
           <label
             htmlFor={name}
-            className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+            className='text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
           >
             {label}
             {required && <span className='text-destructive ml-1'>*</span>}
@@ -42,14 +42,12 @@ export const FormFieldCustom: React.FC<FormFieldCustomProps> = ({
       )}
 
       {description && (
-        <p className="text-xs text-muted-foreground mb-1">{description}</p>
+        <p className='text-muted-foreground mb-1 text-xs'>{description}</p>
       )}
 
-      <div className="w-full">{children}</div>
+      <div className='w-full'>{children}</div>
 
-      {error && (
-        <p className="text-xs text-destructive mt-1">{error}</p>
-      )}
+      {error && <p className='text-destructive mt-1 text-xs'>{error}</p>}
     </div>
   );
 };

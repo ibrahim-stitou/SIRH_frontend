@@ -25,6 +25,7 @@
 ## 🔀 Workflow 1 : Avec demande préalable
 
 ### Étape 1 : Création de la demande
+
 ```
 ┌──────────────────────────────────────────────────────┐
 │  Employé / RH                                        │
@@ -48,6 +49,7 @@
 ```
 
 ### Étape 2 : Approbation ou rejet
+
 ```
 ┌──────────────────────────────────────────────────────┐
 │  RH Manager                                          │
@@ -66,6 +68,7 @@
 ```
 
 ### Étape 3 : Génération du PDF
+
 ```
 ┌──────────────────────────────────────────────────────┐
 │  RH / Employé                                        │
@@ -171,6 +174,7 @@
 ## 🎯 Types d'attestations et leur contenu
 
 ### 1️⃣ Attestation de Travail
+
 ```
 ┌─────────────────────────────────────────┐
 │  ATTESTATION DE TRAVAIL                 │
@@ -185,6 +189,7 @@
 ```
 
 ### 2️⃣ Attestation de Salaire
+
 ```
 ┌─────────────────────────────────────────┐
 │  ATTESTATION DE SALAIRE                 │
@@ -199,6 +204,7 @@
 ```
 
 ### 3️⃣ Attestation Travail + Salaire
+
 ```
 ┌─────────────────────────────────────────┐
 │  ATTESTATION TRAVAIL ET SALAIRE         │
@@ -214,6 +220,7 @@
 ```
 
 ### 4️⃣ Attestation de Stage
+
 ```
 ┌─────────────────────────────────────────┐
 │  ATTESTATION DE STAGE                   │
@@ -381,6 +388,7 @@ Note: Les PDFs sont en français
 ## 🎯 Cas d'usage réels
 
 ### Cas 1 : Employé demande attestation pour banque
+
 ```
 1. Employé se connecte
 2. Va dans Attestations
@@ -392,6 +400,7 @@ Note: Les PDFs sont en français
 ```
 
 ### Cas 2 : RH génère attestation urgente
+
 ```
 1. Employé appelle RH pour besoin urgent
 2. RH se connecte au système
@@ -403,6 +412,7 @@ Note: Les PDFs sont en français
 ```
 
 ### Cas 3 : Stagiaire fin de stage
+
 ```
 1. Stagiaire demande attestation
 2. RH crée génération directe
@@ -417,7 +427,7 @@ Note: Les PDFs sont en français
 ## ✅ Checklist de fonctionnement
 
 - [x] Création de demandes
-- [x] Approbation de demandes  
+- [x] Approbation de demandes
 - [x] Rejet avec raison
 - [x] Génération directe
 - [x] Téléchargement PDF
@@ -430,4 +440,3 @@ Note: Les PDFs sont en français
 ---
 
 **Le workflow est complet et opérationnel ! 🎉**
-

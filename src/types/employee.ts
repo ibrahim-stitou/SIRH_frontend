@@ -11,7 +11,13 @@ export type Gender = 'M' | 'F' | 'Homme' | 'Femme';
 export type MaritalStatus = 'celibataire' | 'marie';
 export type Nationality = 'maroc' | 'Marocaine' | 'autre';
 export type ContractType = 'CDI' | 'CDD' | 'Stage' | 'Freelance' | 'Interim';
-export type EmployeeStatus = 'actif' | 'active' | 'inactif' | 'inactive' | 'suspendu' | 'demissionaire';
+export type EmployeeStatus =
+  | 'actif'
+  | 'active'
+  | 'inactif'
+  | 'inactive'
+  | 'suspendu'
+  | 'demissionaire';
 
 // ============================================
 // Interfaces de base
@@ -337,4 +343,3 @@ export interface EmployeeExportOptions {
   fields?: (keyof Employee)[];
   filters?: EmployeeFilter;
 }
-

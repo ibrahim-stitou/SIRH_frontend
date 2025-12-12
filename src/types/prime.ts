@@ -11,7 +11,13 @@ export interface PrimeType {
   is_subject_to_cnss: boolean; // Soumis aux cotisations CNSS
   default_amount?: number;
   is_active: boolean;
-  category?: 'transport' | 'performance' | 'anciennete' | 'responsabilite' | 'panier' | 'autre';
+  category?:
+    | 'transport'
+    | 'performance'
+    | 'anciennete'
+    | 'responsabilite'
+    | 'panier'
+    | 'autre';
   order?: number;
 }
 
@@ -32,4 +38,3 @@ export interface PrimeCalculation {
   taxable_amount: number; // Montant soumis à l'IR
   cnss_amount: number; // Montant soumis aux cotisations
 }
-

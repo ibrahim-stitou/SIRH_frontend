@@ -1,5 +1,4 @@
 [
-  {"id":1,"name":"HQ Paris","country":"FR"},
-  {"id":2,"name":"London Office","country":"GB"}
+  { "id": 1, "name": "HQ Paris", "country": "FR" },
+  { "id": 2, "name": "London Office", "country": "GB" }
 ]
-

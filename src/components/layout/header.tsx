@@ -1,9 +1,14 @@
-'use client'
+'use client';
 import React, { useState, useEffect } from 'react';
 import { SidebarTrigger } from '../ui/sidebar';
 import { Separator } from '../ui/separator';
 import { UserNav } from './user-nav';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '../ui/dropdown-menu';
 import { useLanguage } from '@/context/LanguageContext';
 import { Maximize, Minimize, Languages } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -12,7 +17,7 @@ import Image from 'next/image';
 
 export default function Header() {
   const { language, handleLanguageChange } = useLanguage();
-  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false);
   useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
@@ -26,7 +31,7 @@ export default function Header() {
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(err => {
+      document.documentElement.requestFullscreen().catch((err) => {
         console.error(`Error attempting to enable fullscreen: ${err.message}`);
       });
     } else {
@@ -38,7 +43,7 @@ export default function Header() {
 
   const flagUrls = {
     en: 'https://flagcdn.com/w320/gb.png',
-    fr: 'https://flagcdn.com/w320/fr.png',
+    fr: 'https://flagcdn.com/w320/fr.png'
     // ar: 'https://flagcdn.com/w320/sa.png',
   };
 
@@ -49,7 +54,7 @@ export default function Header() {
       transition={{ duration: 0.3 }}
       className={cn(
         'flex h-16 shrink-0 items-center justify-between gap-2',
-        'bg-white/80 dark:bg-gray-900/90 backdrop-blur-lg',
+        'bg-white/80 backdrop-blur-lg dark:bg-gray-900/90',
         'border-b border-gray-100 dark:border-gray-800',
         'transition-all duration-300 ease-in-out',
         'sticky top-0 z-50',
@@ -58,8 +63,11 @@ export default function Header() {
       )}
     >
       <div className='flex items-center gap-4'>
-        <SidebarTrigger className='-ml-1 cursor-pointer hover:scale-110 transition-transform duration-200' />
-        <Separator orientation='vertical' className='h-6 bg-gray-200 dark:bg-gray-700' />
+        <SidebarTrigger className='-ml-1 cursor-pointer transition-transform duration-200 hover:scale-110' />
+        <Separator
+          orientation='vertical'
+          className='h-6 bg-gray-200 dark:bg-gray-700'
+        />
         {/*<Breadcrumbs  />*/}
       </div>
       <div className='flex items-center gap-3'>
@@ -68,16 +76,15 @@ export default function Header() {
           whileTap={{ scale: 0.95 }}
           onClick={toggleFullscreen}
           className={cn(
-            "flex items-center justify-center w-9 h-9 rounded-full",
-            "bg-gray-100 dark:bg-gray-800",
-            "hover:bg-gray-200 dark:hover:bg-gray-700",
-            "transition-colors duration-200"
+            'flex h-9 w-9 items-center justify-center rounded-full',
+            'bg-gray-100 dark:bg-gray-800',
+            'hover:bg-gray-200 dark:hover:bg-gray-700',
+            'transition-colors duration-200'
           )}
-          aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+          aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
         >
           {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
         </motion.button>
-
 
         <UserNav />
 
@@ -89,7 +96,7 @@ export default function Header() {
               className={cn(
                 'flex items-center gap-2 px-3 py-2',
                 'text-sm font-medium',
-                'border border-gray-200 dark:border-gray-700 rounded-xl',
+                'rounded-xl border border-gray-200 dark:border-gray-700',
                 'bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700',
                 'shadow-sm hover:shadow',
                 'transition-all duration-200'
@@ -100,9 +107,12 @@ export default function Header() {
                 alt={language}
                 width={20}
                 height={20}
-                className='w-5 h-5 rounded-full object-cover ring-1 ring-gray-200 dark:ring-gray-700'
+                className='h-5 w-5 rounded-full object-cover ring-1 ring-gray-200 dark:ring-gray-700'
               />
-              <Languages size={16} className="text-gray-500 dark:text-gray-400" />
+              <Languages
+                size={16}
+                className='text-gray-500 dark:text-gray-400'
+              />
             </motion.button>
           </DropdownMenuTrigger>
 
@@ -110,7 +120,7 @@ export default function Header() {
             className={cn(
               'w-44 p-1',
               'bg-white dark:bg-gray-900',
-              'shadow-lg rounded-xl',
+              'rounded-xl shadow-lg',
               'border border-gray-100 dark:border-gray-800'
             )}
           >
@@ -131,16 +141,23 @@ export default function Header() {
 
             <DropdownMenuItem
               className={cn(
-                'flex items-center gap-2 px-3 py-2.5 my-0.5 rounded-lg',
+                'my-0.5 flex items-center gap-2 rounded-lg px-3 py-2.5',
                 'text-sm font-medium',
                 'cursor-pointer',
                 'hover:bg-gray-50 dark:hover:bg-gray-800',
                 'transition-colors duration-150',
-                language === 'fr' && 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                language === 'fr' &&
+                  'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
               )}
               onClick={() => handleLanguageChange('fr')}
             >
-              <Image src={flagUrls.fr} alt='Français' width={20} height={20} className='w-5 h-5 rounded-full object-cover' />
+              <Image
+                src={flagUrls.fr}
+                alt='Français'
+                width={20}
+                height={20}
+                className='h-5 w-5 rounded-full object-cover'
+              />
               <span>Français</span>
             </DropdownMenuItem>
             {/*<DropdownMenuItem*/}
@@ -161,5 +178,5 @@ export default function Header() {
         </DropdownMenu>
       </div>
     </motion.header>
-  )
+  );
 }

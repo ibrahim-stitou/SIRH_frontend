@@ -72,7 +72,8 @@ import {
   IconUsers,
   IconInfoCircle,
   IconUserX,
-  IconX, IconZoomCheck
+  IconX,
+  IconZoomCheck
 } from '@tabler/icons-react';
 
 export type Icon = React.ComponentType<IconProps>;
@@ -105,7 +106,7 @@ export const Icons = {
   companies: IconBuilding,
   consommation: IconAdjustmentsDollar,
   creditCard: IconCreditCardRefund,
-  link:IconLink,
+  link: IconLink,
   currencyDollar: IconCoin,
   dashboard: IconLayoutDashboard,
   tool: IconTool,
@@ -166,5 +167,5 @@ export const Icons = {
   user2: IconUserCircle,
   userPen: IconUserEdit,
   users: IconUsers,
-  zoom:IconZoomCheck
+  zoom: IconZoomCheck
 };

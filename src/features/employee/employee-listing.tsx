@@ -5,10 +5,18 @@ import { Eye, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip';
 import CustomAlertDialog from '@/components/custom/customAlert';
 import CustomTable from '@/components/custom/data-table/custom-table';
-import { CustomTableColumn, CustomTableFilterConfig, UseTableReturn } from '@/components/custom/data-table/types';
+import {
+  CustomTableColumn,
+  CustomTableFilterConfig,
+  UseTableReturn
+} from '@/components/custom/data-table/types';
 import { apiRoutes } from '@/config/apiRoutes';
 import apiClient from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
@@ -36,8 +44,12 @@ interface EmployeeRow {
 export function EmployeeListing() {
   const router = useRouter();
   const { t } = useLanguage();
-  const [tableInstance, setTableInstance] = useState<Partial<UseTableReturn<EmployeeRow>> | null>(null);
-  const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(null);
+  const [tableInstance, setTableInstance] = useState<Partial<
+    UseTableReturn<EmployeeRow>
+  > | null>(null);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(
+    null
+  );
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
   const handleDelete = (id: number) => {
@@ -48,10 +60,11 @@ export function EmployeeListing() {
   const handleConfirmDelete = async () => {
     if (selectedEmployeeId !== null) {
       try {
-        const response = await apiClient.delete(apiRoutes.admin.employees.delete(selectedEmployeeId));
+        const response = await apiClient.delete(
+          apiRoutes.admin.employees.delete(selectedEmployeeId)
+        );
         if (response.data) {
-          // @ts-ignore
-          toast.success(t('employees.messages.deleted', { id: selectedEmployeeId }));
+          toast.success(t('employees.messages.deleted'));
           if (tableInstance && tableInstance.refresh) {
             tableInstance.refresh();
           }
@@ -59,7 +72,8 @@ export function EmployeeListing() {
           toast.error(t('employees.messages.deleteError'));
         }
       } catch (error: any) {
-        const errorMessage = error.response?.data?.message || t('employees.messages.deleteError');
+        const errorMessage =
+          error.response?.data?.message || t('employees.messages.deleteError');
         toast.error(`${t('common.error')}: ${errorMessage}`);
       }
       setOpenDeleteModal(false);
@@ -68,7 +82,11 @@ export function EmployeeListing() {
 
   const columns: CustomTableColumn<EmployeeRow>[] = [
     { data: 'id', label: t('employees.columns.id'), sortable: true },
-    { data: 'matricule', label: t('employees.columns.matricule'), sortable: true },
+    {
+      data: 'matricule',
+      label: t('employees.columns.matricule'),
+      sortable: true
+    },
     {
       data: 'firstName',
       label: t('employees.columns.name'),
@@ -83,14 +101,22 @@ export function EmployeeListing() {
         const map: Record<string, string> = {
           cadres_assimiles: 'Cadres et assimilés',
           employes_assimiles: 'Employés et assimilés',
-          ouvriers_assimiles: 'Ouvriers et assimilés',
+          ouvriers_assimiles: 'Ouvriers et assimilés'
         };
         return map[row.professionalCategory] || '—';
       }
     },
     { data: 'email', label: t('employees.columns.email'), sortable: true },
-    { data: 'hireDate', label: t('employees.columns.hireDate'), sortable: true },
-    { data: 'contractType', label: t('employees.columns.contractType'), sortable: true },
+    {
+      data: 'hireDate',
+      label: t('employees.columns.hireDate'),
+      sortable: true
+    },
+    {
+      data: 'contractType',
+      label: t('employees.columns.contractType'),
+      sortable: true
+    },
     {
       data: 'status',
       label: t('employees.columns.status'),
@@ -109,15 +135,17 @@ export function EmployeeListing() {
       label: t('employees.columns.actions'),
       sortable: false,
       render: (_value, row) => (
-        <div className="flex items-center space-x-2">
+        <div className='flex items-center space-x-2'>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="outline"
-                className="h-8 w-8 p-1.5"
-                onClick={() => router.push(`/admin/personnel/employes/${row.id}/details`)}
+                variant='outline'
+                className='h-8 w-8 p-1.5'
+                onClick={() =>
+                  router.push(`/admin/personnel/employes/${row.id}/details`)
+                }
               >
-                <Eye className="h-4 w-4" />
+                <Eye className='h-4 w-4' />
               </Button>
             </TooltipTrigger>
             <TooltipContent>{t('common.view')}</TooltipContent>
@@ -125,15 +153,15 @@ export function EmployeeListing() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="destructive"
-                className="h-8 w-8 bg-red-100 p-1.5 text-red-600 hover:bg-red-200"
+                variant='destructive'
+                className='h-8 w-8 bg-red-100 p-1.5 text-red-600 hover:bg-red-200'
                 onClick={() => handleDelete(row.id)}
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className='h-4 w-4' />
               </Button>
             </TooltipTrigger>
             <TooltipContent
-              className="tooltip-content rounded-md bg-red-100 px-2 py-1 text-red-600 shadow-md"
+              className='tooltip-content rounded-md bg-red-100 px-2 py-1 text-red-600 shadow-md'
               sideOffset={5}
             >
               {t('common.delete')}
@@ -145,42 +173,58 @@ export function EmployeeListing() {
   ];
 
   const filters: CustomTableFilterConfig[] = [
-    { field: 'matricule', label: t('employees.filters.matricule'), type: 'text' },
+    {
+      field: 'matricule',
+      label: t('employees.filters.matricule'),
+      type: 'text'
+    },
     { field: 'firstName', label: t('employees.filters.name'), type: 'text' },
     { field: 'lastName', label: t('employees.filters.name'), type: 'text' },
-    { field: 'professionalCategory', label: 'Catégorie professionnelle', type: 'text' },
-    { field: 'contractType', label: t('employees.filters.contractType'), type: 'text' },
+    {
+      field: 'professionalCategory',
+      label: 'Catégorie professionnelle',
+      type: 'text'
+    },
+    {
+      field: 'contractType',
+      label: t('employees.filters.contractType'),
+      type: 'text'
+    },
     { field: 'status', label: t('employees.filters.status'), type: 'text' }
   ];
 
   return (
     <>
-    <div className="flex items-center justify-between">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">{t('employees.title')}</h1>
-        <p className="text-muted-foreground text-sm">{t('employees.subtitle')}</p>
+      <div className='flex items-center justify-between'>
+        <div>
+          <h1 className='text-2xl font-semibold tracking-tight'>
+            {t('employees.title')}
+          </h1>
+          <p className='text-muted-foreground text-sm'>
+            {t('employees.subtitle')}
+          </p>
+        </div>
+        <Button onClick={() => router.push('/admin/personnel/employes/create')}>
+          {t('employees.actions.create')}
+        </Button>
       </div>
-      <Button onClick={() => router.push('/admin/personnel/employes/create')}>
-        {t('employees.actions.create')}
-      </Button>
-    </div>
-    <div className="flex flex-1 flex-col space-y-4">
-      <CustomTable<EmployeeRow>
-        columns={columns}
-        url={apiRoutes.admin.employees.list}
-        filters={filters}
-        onInit={instance => setTableInstance(instance)}
-      />
-      <CustomAlertDialog
-        title={t('employees.dialog.delete.title')}
-        description={t('employees.dialog.delete.description')}
-        cancelText={t('common.cancel')}
-        confirmText={t('common.delete')}
-        onConfirm={handleConfirmDelete}
-        open={openDeleteModal}
-        setOpen={setOpenDeleteModal}
-      />
-    </div>
+      <div className='flex flex-1 flex-col space-y-4'>
+        <CustomTable<EmployeeRow>
+          columns={columns}
+          url={apiRoutes.admin.employees.list}
+          filters={filters}
+          onInit={(instance) => setTableInstance(instance)}
+        />
+        <CustomAlertDialog
+          title={t('employees.dialog.delete.title')}
+          description={t('employees.dialog.delete.description')}
+          cancelText={t('common.cancel')}
+          confirmText={t('common.delete')}
+          onConfirm={handleConfirmDelete}
+          open={openDeleteModal}
+          setOpen={setOpenDeleteModal}
+        />
+      </div>
     </>
   );
 }

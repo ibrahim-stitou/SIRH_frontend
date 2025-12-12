@@ -7,7 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { ArrowLeft, Edit, Check, FileText, Clock, AlertCircle } from 'lucide-react';
+import {
+  ArrowLeft,
+  Edit,
+  Check,
+  FileText,
+  Clock,
+  AlertCircle
+} from 'lucide-react';
 import { Contract, ContractStatus } from '@/types/contract';
 import { apiRoutes } from '@/config/apiRoutes';
 import GeneralInfoDisplay from '@/features/contract/components/details/GeneralInfoDisplay';
@@ -23,15 +30,15 @@ import ContractDetailsLoadingSkeleton from '@/app/admin/contrats-mouvements/cont
 const normalizeContractStatus = (data: any): Contract => {
   // Mapper les anciens champs vers les nouveaux
   const statusMap: Record<string, ContractStatus> = {
-    'actif': 'Actif',
-    'draft': 'Brouillon',
-    'pending': 'En_attente_signature',
-    'expired': 'Expire',
-    'termine': 'Resilie',
-    'terminated': 'Resilie',
-    'active': 'Actif',
-    'Actif': 'Actif',
-    'Brouillon': 'Brouillon',
+    actif: 'Actif',
+    draft: 'Brouillon',
+    pending: 'En_attente_signature',
+    expired: 'Expire',
+    termine: 'Resilie',
+    terminated: 'Resilie',
+    active: 'Actif',
+    Actif: 'Actif',
+    Brouillon: 'Brouillon'
   };
 
   // Déterminer le statut à partir de différents champs possibles
@@ -60,7 +67,7 @@ const normalizeContractStatus = (data: any): Contract => {
     dates: data.dates || {
       start_date: data.date_debut,
       end_date: data.date_fin,
-      signature_date: data.signature_date,
+      signature_date: data.signature_date
     },
     job: data.job || {
       title: data.poste || 'Non spécifié',
@@ -69,7 +76,7 @@ const normalizeContractStatus = (data: any): Contract => {
       work_location: 'Non spécifié',
       work_mode: 'Presentiel',
       mobility_clause: false,
-      missions: data.notes || '',
+      missions: data.notes || ''
     },
     work_time: data.work_time || {
       weekly_hours: 40,
@@ -77,7 +84,7 @@ const normalizeContractStatus = (data: any): Contract => {
       work_schedule: data.horaires || '9h-18h',
       work_schedule_type: 'Normal',
       rest_day: 'Dimanche',
-      annual_leave_days: 22,
+      annual_leave_days: 22
     },
     salary: data.salary || {
       base_salary: data.salaire_base || 0,
@@ -86,7 +93,7 @@ const normalizeContractStatus = (data: any): Contract => {
       salary_brut: data.salaire_base || 0,
       salary_net: data.salaire_base || 0,
       salary_net_imposable: data.salaire_base || 0,
-      payment_method: 'Virement',
+      payment_method: 'Virement'
     },
     legal: data.legal || {
       cnss_affiliation: true,
@@ -101,21 +108,21 @@ const normalizeContractStatus = (data: any): Contract => {
         formation: false,
         intellectual_property: false,
         discipline_interne: true,
-        deontologie: true,
-      },
+        deontologie: true
+      }
     },
     documents: data.documents,
     historique: data.historique || {
       created_at: data.created_at || new Date().toISOString(),
       created_by: 'system',
       updated_at: data.updated_at || new Date().toISOString(),
-      updated_by: 'system',
+      updated_by: 'system'
     },
     notes: data.notes,
     internal_notes: data.internal_notes,
     tags: data.tags,
     secteur: data.secteur,
-    archived: data.archived || false,
+    archived: data.archived || false
   } as Contract;
 };
 
@@ -132,7 +139,9 @@ export default function ContractDetailsPage() {
   const fetchContractDetails = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get(apiRoutes.admin.contratsEtMovements.contrats.show(contractId));
+      const response = await apiClient.get(
+        apiRoutes.admin.contratsEtMovements.contrats.show(contractId)
+      );
       const normalizedContract = normalizeContractStatus(response.data.data);
       setContract(normalizedContract);
     } catch (error) {
@@ -209,7 +218,10 @@ export default function ContractDetailsPage() {
   };
 
   const getStatusBadge = (status: ContractStatus | string) => {
-    const statusConfig: Record<string, { label: string; variant: any; icon: any }> = {
+    const statusConfig: Record<
+      string,
+      { label: string; variant: any; icon: any }
+    > = {
       Brouillon: {
         label: 'Brouillon',
         variant: 'secondary',
@@ -226,7 +238,7 @@ export default function ContractDetailsPage() {
         icon: Check
       },
       Periode_essai: {
-        label: 'Période d\'essai',
+        label: "Période d'essai",
         variant: 'default',
         icon: Clock
       },
@@ -285,7 +297,7 @@ export default function ContractDetailsPage() {
         label: 'Résilié',
         variant: 'destructive',
         icon: AlertCircle
-      },
+      }
     };
 
     const config = statusConfig[status] || {
@@ -297,8 +309,8 @@ export default function ContractDetailsPage() {
     const Icon = config.icon;
 
     return (
-      <Badge variant={config.variant as any} className="gap-1">
-        <Icon className="h-3 w-3" />
+      <Badge variant={config.variant as any} className='gap-1'>
+        <Icon className='h-3 w-3' />
         {config.label}
       </Badge>
     );
@@ -308,19 +320,21 @@ export default function ContractDetailsPage() {
   const canValidate = contract?.status === 'Brouillon' && !isEditing;
 
   if (loading) {
-    return (
-     <ContractDetailsLoadingSkeleton/>
-    );
+    return <ContractDetailsLoadingSkeleton />;
   }
 
   if (!contract) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <AlertCircle className="h-12 w-12 text-destructive mb-4" />
-        <h2 className="text-2xl font-bold mb-2">Contrat introuvable</h2>
-        <p className="text-muted-foreground mb-6">Le contrat demandé n&apos;existe pas.</p>
-        <Button onClick={() => router.push('/admin/contrats-mouvements/contrats')}>
-          <ArrowLeft className="mr-2 h-4 w-4" />
+      <div className='flex min-h-screen flex-col items-center justify-center'>
+        <AlertCircle className='text-destructive mb-4 h-12 w-12' />
+        <h2 className='mb-2 text-2xl font-bold'>Contrat introuvable</h2>
+        <p className='text-muted-foreground mb-6'>
+          Le contrat demandé n&apos;existe pas.
+        </p>
+        <Button
+          onClick={() => router.push('/admin/contrats-mouvements/contrats')}
+        >
+          <ArrowLeft className='mr-2 h-4 w-4' />
           Retour à la liste
         </Button>
       </div>
@@ -328,141 +342,173 @@ export default function ContractDetailsPage() {
   }
 
   return (
-    <PageContainer >
-    <div className=" mx-auto py-4 space-y-3 w-full">
-      {/* En-tête compact */}
-      <div className="flex items-center justify-between pb-2 border-b">
-        <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => router.push('/admin/contrats-mouvements/contrats')}
-            className="h-8 w-8"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">
-              {contract.employee_name || 'Détails du contrat'}
-            </h1>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>{contract.reference}</span>
-              <span>•</span>
-              <span>{contract.job?.title || 'Poste non spécifié'}</span>
-              <span>•</span>
-              <span>{contract.type}</span>
+    <PageContainer>
+      <div className='mx-auto w-full space-y-3 py-4'>
+        {/* En-tête compact */}
+        <div className='flex items-center justify-between border-b pb-2'>
+          <div className='flex items-center gap-3'>
+            <Button
+              variant='ghost'
+              size='icon'
+              onClick={() => router.push('/admin/contrats-mouvements/contrats')}
+              className='h-8 w-8'
+            >
+              <ArrowLeft className='h-4 w-4' />
+            </Button>
+            <div>
+              <h1 className='text-2xl font-bold tracking-tight'>
+                {contract.employee_name || 'Détails du contrat'}
+              </h1>
+              <div className='text-muted-foreground flex items-center gap-2 text-sm'>
+                <span>{contract.reference}</span>
+                <span>•</span>
+                <span>{contract.job?.title || 'Poste non spécifié'}</span>
+                <span>•</span>
+                <span>{contract.type}</span>
+              </div>
             </div>
+            {getStatusBadge(contract.status)}
           </div>
-          {getStatusBadge(contract.status)}
         </div>
-      </div>
 
-      {/* Onglets avec actions intégrées */}
-      <Tabs defaultValue="general" className="space-y-3">
-        <div className="flex items-center justify-between gap-4">
-          <TabsList className="h-9">
-            <TabsTrigger value="general" className="text-sm">Informations générales</TabsTrigger>
-            <TabsTrigger value="schedule" className="text-sm">Temps de travail</TabsTrigger>
-            <TabsTrigger value="salary" className="text-sm">Rémunération & Légal</TabsTrigger>
-            <TabsTrigger value="documents" className="text-sm">Documents</TabsTrigger>
-          </TabsList>
+        {/* Onglets avec actions intégrées */}
+        <Tabs defaultValue='general' className='space-y-3'>
+          <div className='flex items-center justify-between gap-4'>
+            <TabsList className='h-9'>
+              <TabsTrigger value='general' className='text-sm'>
+                Informations générales
+              </TabsTrigger>
+              <TabsTrigger value='schedule' className='text-sm'>
+                Temps de travail
+              </TabsTrigger>
+              <TabsTrigger value='salary' className='text-sm'>
+                Rémunération & Légal
+              </TabsTrigger>
+              <TabsTrigger value='documents' className='text-sm'>
+                Documents
+              </TabsTrigger>
+            </TabsList>
 
-          <div className="flex items-center gap-2">
-            {canValidate && (
-              <Button onClick={handleValidate} size="sm" className="gap-1.5 h-9">
-                <Check className="h-3.5 w-3.5" />
-                Valider
-              </Button>
-            )}
-            {canEdit && !isEditing && (
-              <Button onClick={handleEdit} variant="outline" size="sm" className="gap-1.5 h-9">
-                <Edit className="h-3.5 w-3.5" />
-                Modifier
-              </Button>
-            )}
-            {isEditing && (
-              <>
-                <Button onClick={handleCancel} variant="outline" size="sm" className="h-9">
-                  Annuler
-                </Button>
+            <div className='flex items-center gap-2'>
+              {canValidate && (
                 <Button
-                  onClick={() => handleSave(contract)}
-                  size="sm"
-                  disabled={isSaving}
-                  className="h-9"
+                  onClick={handleValidate}
+                  size='sm'
+                  className='h-9 gap-1.5'
                 >
-                  {isSaving ? 'Enregistrement...' : 'Enregistrer'}
+                  <Check className='h-3.5 w-3.5' />
+                  Valider
                 </Button>
-              </>
-            )}
-            <ContractActions
-              contract={contract}
-              onGenerate={() => toast.info('Génération du contrat en cours...')}
-              onDownload={() => toast.info('Téléchargement du contrat...')}
-              onSendSignature={() => toast.info('Envoi pour signature...')}
-              onArchive={() => toast.info('Archivage du contrat...')}
-              onDelete={handleDelete}
-              onRenew={() => toast.info('Renouvellement du contrat...')}
-            />
-          </div>
-        </div>
-
-        <TabsContent value="general" className="mt-0">
-          <GeneralInfoDisplay
-            contract={contract}
-            isEditing={isEditing && canEdit}
-            onUpdate={handleSave}
-          />
-        </TabsContent>
-
-        <TabsContent value="schedule" className="mt-0">
-          <WorkScheduleDisplay
-            contract={contract}
-            isEditing={isEditing && canEdit}
-            onUpdate={handleSave}
-          />
-        </TabsContent>
-
-        <TabsContent value="salary" className="mt-0">
-          <SalaryAndLegalDisplay
-            contract={contract}
-            isEditing={isEditing && canEdit}
-            onUpdate={handleSave}
-          />
-        </TabsContent>
-
-        <TabsContent value="documents" className="mt-0">
-          <ContractDocuments contract={contract} />
-        </TabsContent>
-      </Tabs>
-
-      {/* Historique */}
-      {contract.historique && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Historique</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="text-muted-foreground">Créé par:</span>
-                <p className="font-medium">{contract.historique.created_by_name || 'N/A'}</p>
-                <p className="text-xs text-muted-foreground">
-                  {new Date(contract.historique.created_at).toLocaleString('fr-FR')}
-                </p>
-              </div>
-              <div>
-                <span className="text-muted-foreground">Modifié par:</span>
-                <p className="font-medium">{contract.historique.updated_by_name || 'N/A'}</p>
-                <p className="text-xs text-muted-foreground">
-                  {new Date(contract.historique.updated_at).toLocaleString('fr-FR')}
-                </p>
-              </div>
+              )}
+              {canEdit && !isEditing && (
+                <Button
+                  onClick={handleEdit}
+                  variant='outline'
+                  size='sm'
+                  className='h-9 gap-1.5'
+                >
+                  <Edit className='h-3.5 w-3.5' />
+                  Modifier
+                </Button>
+              )}
+              {isEditing && (
+                <>
+                  <Button
+                    onClick={handleCancel}
+                    variant='outline'
+                    size='sm'
+                    className='h-9'
+                  >
+                    Annuler
+                  </Button>
+                  <Button
+                    onClick={() => handleSave(contract)}
+                    size='sm'
+                    disabled={isSaving}
+                    className='h-9'
+                  >
+                    {isSaving ? 'Enregistrement...' : 'Enregistrer'}
+                  </Button>
+                </>
+              )}
+              <ContractActions
+                contract={contract}
+                onGenerate={() =>
+                  toast.info('Génération du contrat en cours...')
+                }
+                onDownload={() => toast.info('Téléchargement du contrat...')}
+                onSendSignature={() => toast.info('Envoi pour signature...')}
+                onArchive={() => toast.info('Archivage du contrat...')}
+                onDelete={handleDelete}
+                onRenew={() => toast.info('Renouvellement du contrat...')}
+              />
             </div>
-          </CardContent>
-        </Card>
-      )}
-    </div>
+          </div>
+
+          <TabsContent value='general' className='mt-0'>
+            <GeneralInfoDisplay
+              contract={contract}
+              isEditing={isEditing && canEdit}
+              onUpdate={handleSave}
+            />
+          </TabsContent>
+
+          <TabsContent value='schedule' className='mt-0'>
+            <WorkScheduleDisplay
+              contract={contract}
+              isEditing={isEditing && canEdit}
+              onUpdate={handleSave}
+            />
+          </TabsContent>
+
+          <TabsContent value='salary' className='mt-0'>
+            <SalaryAndLegalDisplay
+              contract={contract}
+              isEditing={isEditing && canEdit}
+              onUpdate={handleSave}
+            />
+          </TabsContent>
+
+          <TabsContent value='documents' className='mt-0'>
+            <ContractDocuments contract={contract} />
+          </TabsContent>
+        </Tabs>
+
+        {/* Historique */}
+        {contract.historique && (
+          <Card>
+            <CardHeader>
+              <CardTitle className='text-lg'>Historique</CardTitle>
+            </CardHeader>
+            <CardContent className='space-y-3'>
+              <div className='grid grid-cols-2 gap-4 text-sm'>
+                <div>
+                  <span className='text-muted-foreground'>Créé par:</span>
+                  <p className='font-medium'>
+                    {contract.historique.created_by_name || 'N/A'}
+                  </p>
+                  <p className='text-muted-foreground text-xs'>
+                    {new Date(contract.historique.created_at).toLocaleString(
+                      'fr-FR'
+                    )}
+                  </p>
+                </div>
+                <div>
+                  <span className='text-muted-foreground'>Modifié par:</span>
+                  <p className='font-medium'>
+                    {contract.historique.updated_by_name || 'N/A'}
+                  </p>
+                  <p className='text-muted-foreground text-xs'>
+                    {new Date(contract.historique.updated_at).toLocaleString(
+                      'fr-FR'
+                    )}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </PageContainer>
   );
 }

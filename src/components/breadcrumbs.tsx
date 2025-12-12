@@ -22,7 +22,9 @@ export function Breadcrumbs() {
           <Fragment key={item.title}>
             {index !== items.length - 1 && (
               <BreadcrumbItem className='hidden md:block'>
-                <BreadcrumbLink href={isNaN(Number(item.title)) ? item.link : undefined}>
+                <BreadcrumbLink
+                  href={isNaN(Number(item.title)) ? item.link : undefined}
+                >
                   {item.title}
                 </BreadcrumbLink>
               </BreadcrumbItem>

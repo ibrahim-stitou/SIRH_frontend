@@ -263,7 +263,9 @@
       "university": "Université",
       "documentTitle": "Titre du document"
     },
-    "documents": { "help": "Ajoutez vos documents de base (CIN, photo, diplômes)." },
+    "documents": {
+      "help": "Ajoutez vos documents de base (CIN, photo, diplômes)."
+    },
     "enums": {
       "gender": { "M": "Homme", "F": "Femme" },
       "maritalStatus": {

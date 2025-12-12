@@ -91,13 +91,16 @@ export default function OverviewDashboard() {
         setPayslips(payRes.data.data || []);
         setEvaluations(evalRes.data.data || []);
       } catch (e: any) {
-        if (mounted) setError(e?.message || tSnapshot.current('dashboard.error'));
+        if (mounted)
+          setError(e?.message || tSnapshot.current('dashboard.error'));
       } finally {
         mounted && setLoading(false);
       }
     }
     load();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const activeEmployees = employees.filter((e) => e.status === 'active');
@@ -187,8 +190,8 @@ export default function OverviewDashboard() {
   if (error) return <div className='text-sm text-red-600'>{error}</div>;
 
   return (
-    <PageContainer scrollable={true} className='space-y-6 w-full'>
-      <div className='flex flex-col gap-6 w-full'>
+    <PageContainer scrollable={true} className='w-full space-y-6'>
+      <div className='flex w-full flex-col gap-6'>
         <div className='flex items-center justify-between'>
           <h1 className='text-primary text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl'>
             {t('dashboard.title')}
@@ -305,34 +308,28 @@ export default function OverviewDashboard() {
           <div className='grid gap-6'>
             <ListBox
               title={t('dashboard.sections.recentLeaves')}
-              items={leaves
-                .slice(0, 5)
-                .map((l) => ({
-                  id: l.id,
-                  primary: `#${l.id}`,
-                  secondary: l.status
-                }))}
+              items={leaves.slice(0, 5).map((l) => ({
+                id: l.id,
+                primary: `#${l.id}`,
+                secondary: l.status
+              }))}
             />
             <ListBox
               title={t('dashboard.sections.recentPayslips')}
-              items={publishedPayslips
-                .slice(0, 5)
-                .map((p) => ({
-                  id: p.id,
-                  primary: `${p.period} #${p.id}`,
-                  secondary: `€ ${p.net}`
-                }))}
+              items={publishedPayslips.slice(0, 5).map((p) => ({
+                id: p.id,
+                primary: `${p.period} #${p.id}`,
+                secondary: `€ ${p.net}`
+              }))}
               footer={`€ ${totalNetPayroll.toLocaleString()}`}
             />
             <ListBox
               title={t('dashboard.sections.evaluations')}
-              items={evaluations
-                .slice(0, 5)
-                .map((ev) => ({
-                  id: ev.id,
-                  primary: `E${ev.employeeId}`,
-                  secondary: ev.score.toString()
-                }))}
+              items={evaluations.slice(0, 5).map((ev) => ({
+                id: ev.id,
+                primary: `E${ev.employeeId}`,
+                secondary: ev.score.toString()
+              }))}
             />
           </div>
         </div>
@@ -353,36 +350,53 @@ function MetricCard({
   icon?: React.ReactNode;
 }) {
   return (
-    <div className='group relative overflow-hidden rounded-2xl border bg-gradient-to-br from-neutral-50 to-neutral-100 p-4 shadow-sm hover:shadow-lg transition-transform transform hover:-translate-y-1 dark:from-gray-900 dark:to-gray-800'>
+    <div className='group relative transform overflow-hidden rounded-2xl border bg-gradient-to-br from-neutral-50 to-neutral-100 p-4 shadow-sm transition-transform hover:-translate-y-1 hover:shadow-lg dark:from-gray-900 dark:to-gray-800'>
       <div className='flex items-start justify-between'>
         <div className='flex items-center gap-3'>
           <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20'>
             {icon ?? (
-              <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden>
-                <path d='M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5z' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round'/>
-                <path d='M20 21v-1a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v1' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round'/>
+              <svg
+                width='20'
+                height='20'
+                viewBox='0 0 24 24'
+                fill='none'
+                xmlns='http://www.w3.org/2000/svg'
+                aria-hidden
+              >
+                <path
+                  d='M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5z'
+                  stroke='currentColor'
+                  strokeWidth='1.5'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                />
+                <path
+                  d='M20 21v-1a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v1'
+                  stroke='currentColor'
+                  strokeWidth='1.5'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                />
               </svg>
             )}
           </div>
-        <div>
-          <div className='text-muted-foreground text-xs tracking-wide uppercase'>
-            {label}
+          <div>
+            <div className='text-muted-foreground text-xs tracking-wide uppercase'>
+              {label}
+            </div>
+            <div className='mt-1 text-2xl font-semibold'>{value}</div>
           </div>
-          <div className='mt-1 text-2xl font-semibold'>{value}</div>
-        </div>
         </div>
         {trend && trend.length === 2 && (
           <div
-            className={`text-sm font-medium flex items-center gap-2 ${trend[1] >= trend[0] ? 'text-green-600' : 'text-red-600'}`}
+            className={`flex items-center gap-2 text-sm font-medium ${trend[1] >= trend[0] ? 'text-green-600' : 'text-red-600'}`}
           >
-            <span className='text-xs'>
-              {trend[1] >= trend[0] ? '▲' : '▼'}
-            </span>
+            <span className='text-xs'>{trend[1] >= trend[0] ? '▲' : '▼'}</span>
             <span>{trend[1] - trend[0] || 0}</span>
           </div>
         )}
       </div>
-      <div className='absolute inset-0 pointer-events-none bg-gradient-to-tr from-indigo-500/10 via-transparent to-pink-500/0 opacity-0 transition-opacity group-hover:opacity-30' />
+      <div className='pointer-events-none absolute inset-0 bg-gradient-to-tr from-indigo-500/10 via-transparent to-pink-500/0 opacity-0 transition-opacity group-hover:opacity-30' />
     </div>
   );
 }

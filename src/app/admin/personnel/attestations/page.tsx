@@ -3,7 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import PageContainer from '@/components/layout/page-container';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { UseTableReturn } from '@/components/custom/data-table/types';
@@ -14,29 +20,28 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
+  DialogTitle
 } from '@/components/ui/dialog';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  FileText,
-  Plus,
-  CheckCircle2,
-  Clock,
-  FileCheck,
-} from 'lucide-react';
+import { FileText, Plus, CheckCircle2, Clock, FileCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import apiClient from '@/lib/api';
 import { format } from 'date-fns';
-import type { AttestationRequest, Attestation, AttestationType, AttestationRequestStatus } from '@/types/attestation';
+import type {
+  AttestationRequest,
+  Attestation,
+  AttestationType,
+  AttestationRequestStatus
+} from '@/types/attestation';
 import { downloadAttestationPDF } from '@/lib/pdf/attestation-generator';
 import { apiRoutes } from '@/config/apiRoutes';
 import DemandeAttestationListing from './demande-attestation-listing';
@@ -46,7 +51,7 @@ import {
   GenerateModal,
   RejectModal,
   ConfirmGenerateModal,
-  RequestDetailsModal,
+  RequestDetailsModal
 } from './components';
 
 export default function AttestationsPage() {
@@ -54,11 +59,20 @@ export default function AttestationsPage() {
   const [loading, setLoading] = useState(true);
   const [employees, setEmployees] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState('requests');
-  const [stats, setStats] = useState({ total: 0, pending: 0, approved: 0, generated: 0 });
+  const [stats, setStats] = useState({
+    total: 0,
+    pending: 0,
+    approved: 0,
+    generated: 0
+  });
 
   // Table instances
-  const [requestsTable, setRequestsTable] = useState<Partial<UseTableReturn<any>> | null>(null);
-  const [attestationsTable, setAttestationsTable] = useState<Partial<UseTableReturn<any>> | null>(null);
+  const [requestsTable, setRequestsTable] = useState<Partial<
+    UseTableReturn<any>
+  > | null>(null);
+  const [attestationsTable, setAttestationsTable] = useState<Partial<
+    UseTableReturn<any>
+  > | null>(null);
 
   // Dialog states
   const [newRequestDialog, setNewRequestDialog] = useState(false);
@@ -66,8 +80,9 @@ export default function AttestationsPage() {
   const [rejectDialog, setRejectDialog] = useState(false);
   const [confirmGenerateDialog, setConfirmGenerateDialog] = useState(false);
   const [detailsDialog, setDetailsDialog] = useState(false);
-  const [selectedRequest, setSelectedRequest] = useState<AttestationRequest | null>(null);
-  
+  const [selectedRequest, setSelectedRequest] =
+    useState<AttestationRequest | null>(null);
+
   // Form states
   const [formData, setFormData] = useState({
     employeeId: '',
@@ -76,16 +91,15 @@ export default function AttestationsPage() {
     notes: '',
     raisonRejet: '',
     stageStartDate: '',
-    stageEndDate: '',
+    stageEndDate: ''
   });
-
 
   const fetchInitialData = async () => {
     setLoading(true);
     try {
       const [empRes, reqRes] = await Promise.all([
         apiClient.get(apiRoutes.admin.employees.list),
-        apiClient.get(apiRoutes.admin.attestations.requests.list),
+        apiClient.get(apiRoutes.admin.attestations.requests.list)
       ]);
       setEmployees(empRes.data?.data || []);
 
@@ -95,7 +109,7 @@ export default function AttestationsPage() {
         total: requests.length,
         pending: requests.filter((r: any) => r.status === 'en_attente').length,
         approved: requests.filter((r: any) => r.status === 'approuve').length,
-        generated: requests.filter((r: any) => r.status === 'genere').length,
+        generated: requests.filter((r: any) => r.status === 'genere').length
       });
     } catch (error) {
       toast.error(t('attestations.messages.error'));
@@ -134,10 +148,13 @@ export default function AttestationsPage() {
         status: 'en_attente' as AttestationRequestStatus,
         notes: formData.notes,
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
 
-      await apiClient.post(apiRoutes.admin.attestations.requests.create, payload);
+      await apiClient.post(
+        apiRoutes.admin.attestations.requests.create,
+        payload
+      );
       toast.success(t('attestations.messages.requestCreated'));
       setNewRequestDialog(false);
       resetForm();
@@ -149,10 +166,13 @@ export default function AttestationsPage() {
 
   const handleApprove = async (request: AttestationRequest) => {
     try {
-      await apiClient.patch(apiRoutes.admin.attestations.requests.update(request.id), {
-        status: 'approuve',
-        updatedAt: new Date().toISOString(),
-      });
+      await apiClient.patch(
+        apiRoutes.admin.attestations.requests.update(request.id),
+        {
+          status: 'approuve',
+          updatedAt: new Date().toISOString()
+        }
+      );
       toast.success(t('attestations.messages.requestApproved'));
       refreshTables();
     } catch (error) {
@@ -167,11 +187,14 @@ export default function AttestationsPage() {
     }
 
     try {
-      await apiClient.patch(apiRoutes.admin.attestations.requests.update(selectedRequest.id), {
-        status: 'rejete',
-        raisonRejet: formData.raisonRejet,
-        updatedAt: new Date().toISOString(),
-      });
+      await apiClient.patch(
+        apiRoutes.admin.attestations.requests.update(selectedRequest.id),
+        {
+          status: 'rejete',
+          raisonRejet: formData.raisonRejet,
+          updatedAt: new Date().toISOString()
+        }
+      );
       toast.success(t('attestations.messages.requestRejected'));
       setRejectDialog(false);
       setSelectedRequest(null);
@@ -207,7 +230,7 @@ export default function AttestationsPage() {
   const handleGenerate = async (request?: AttestationRequest) => {
     const employeeId = request?.employeeId || parseInt(formData.employeeId);
     const type = request?.typeAttestation || formData.typeAttestation;
-    
+
     if (!employeeId || !type) {
       toast.error('Données insuffisantes');
       return;
@@ -222,7 +245,9 @@ export default function AttestationsPage() {
     try {
       // Generate attestation number
       const year = new Date().getFullYear();
-      const attestationsRes = await apiClient.get(apiRoutes.admin.attestations.generated.list);
+      const attestationsRes = await apiClient.get(
+        apiRoutes.admin.attestations.generated.list
+      );
       const existingAttestations = attestationsRes.data?.data || [];
       const nextNum = existingAttestations.length + 1;
       const numeroAttestation = `ATT-${year}-${String(nextNum).padStart(3, '0')}`;
@@ -238,24 +263,34 @@ export default function AttestationsPage() {
         documentPath: `/documents/attestations/${numeroAttestation}.pdf`,
         notes: formData.notes || 'Généré automatiquement',
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
 
-      await apiClient.post(apiRoutes.admin.attestations.generated.create, attestationPayload);
+      await apiClient.post(
+        apiRoutes.admin.attestations.generated.create,
+        attestationPayload
+      );
 
       // Update request status if exists
       if (request) {
-        await apiClient.patch(apiRoutes.admin.attestations.requests.update(request.id), {
-          status: 'genere',
-          updatedAt: new Date().toISOString(),
-        });
+        await apiClient.patch(
+          apiRoutes.admin.attestations.requests.update(request.id),
+          {
+            status: 'genere',
+            updatedAt: new Date().toISOString()
+          }
+        );
       }
 
       // Generate and download PDF
-      const additionalData = type === 'stage' ? {
-        stageStartDate: formData.stageStartDate || employee.hireDate,
-        stageEndDate: formData.stageEndDate || new Date().toISOString().split('T')[0],
-      } : undefined;
+      const additionalData =
+        type === 'stage'
+          ? {
+              stageStartDate: formData.stageStartDate || employee.hireDate,
+              stageEndDate:
+                formData.stageEndDate || new Date().toISOString().split('T')[0]
+            }
+          : undefined;
 
       downloadAttestationPDF(
         type as AttestationType,
@@ -283,10 +318,13 @@ export default function AttestationsPage() {
       return;
     }
 
-    const additionalData = attestation.typeAttestation === 'stage' ? {
-      stageStartDate: employee.hireDate,
-      stageEndDate: new Date().toISOString().split('T')[0],
-    } : undefined;
+    const additionalData =
+      attestation.typeAttestation === 'stage'
+        ? {
+            stageStartDate: employee.hireDate,
+            stageEndDate: new Date().toISOString().split('T')[0]
+          }
+        : undefined;
 
     downloadAttestationPDF(
       attestation.typeAttestation,
@@ -307,10 +345,9 @@ export default function AttestationsPage() {
       notes: '',
       raisonRejet: '',
       stageStartDate: '',
-      stageEndDate: '',
+      stageEndDate: ''
     });
   };
-
 
   if (loading) {
     return (
@@ -322,58 +359,64 @@ export default function AttestationsPage() {
 
   return (
     <PageContainer>
-      <div className="space-y-6 w-full">
+      <div className='w-full space-y-6'>
         {/* Header */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1">
-            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+        <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+          <div className='space-y-1'>
+            <h1 className='from-primary to-primary/60 bg-gradient-to-r bg-clip-text text-3xl font-bold tracking-tight text-transparent'>
               {t('attestations.title')}
             </h1>
-            <p className="text-sm text-muted-foreground">{t('attestations.subtitle')}</p>
+            <p className='text-muted-foreground text-sm'>
+              {t('attestations.subtitle')}
+            </p>
           </div>
-          <div className="flex gap-2">
+          <div className='flex gap-2'>
             <Button
               onClick={() => setNewRequestDialog(true)}
-              size="sm"
-              className="gap-2 shadow-sm hover:shadow-md transition-all"
+              size='sm'
+              className='gap-2 shadow-sm transition-all hover:shadow-md'
             >
-              <Plus className="h-4 w-4" />
+              <Plus className='h-4 w-4' />
               {t('attestations.newRequest')}
             </Button>
             <Button
               onClick={() => setGenerateDialog(true)}
-              size="sm"
-              variant="outline"
-              className="gap-2 shadow-sm hover:shadow-md transition-all"
+              size='sm'
+              variant='outline'
+              className='gap-2 shadow-sm transition-all hover:shadow-md'
             >
-              <FileText className="h-4 w-4" />
+              <FileText className='h-4 w-4' />
               {t('attestations.generateNew')}
             </Button>
           </div>
         </div>
         {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="bg-muted/50 p-1 h-auto">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className='space-y-4'
+        >
+          <TabsList className='bg-muted/50 h-auto p-1'>
             <TabsTrigger
-              value="requests"
-              className="data-[state=active]:bg-background data-[state=active]:shadow-sm px-4 py-2.5"
+              value='requests'
+              className='data-[state=active]:bg-background px-4 py-2.5 data-[state=active]:shadow-sm'
             >
-              <Clock className="h-4 w-4 mr-2" />
+              <Clock className='mr-2 h-4 w-4' />
               {t('attestations.tabs.requests')}
             </TabsTrigger>
             <TabsTrigger
-              value="generated"
-              className="data-[state=active]:bg-background data-[state=active]:shadow-sm px-4 py-2.5"
+              value='generated'
+              className='data-[state=active]:bg-background px-4 py-2.5 data-[state=active]:shadow-sm'
             >
-              <FileCheck className="h-4 w-4 mr-2" />
+              <FileCheck className='mr-2 h-4 w-4' />
               {t('attestations.tabs.generated')}
             </TabsTrigger>
           </TabsList>
 
           {/* Requests Tab */}
-          <TabsContent value="requests" className="mt-0 space-y-4">
-            <Card className="shadow-sm border-muted/40">
-              <CardContent className="flex flex-col min-h-[750px] pt-6">
+          <TabsContent value='requests' className='mt-0 space-y-4'>
+            <Card className='border-muted/40 shadow-sm'>
+              <CardContent className='flex min-h-[750px] flex-col pt-6'>
                 <DemandeAttestationListing
                   employees={employees}
                   onApprove={handleApprove}
@@ -387,9 +430,9 @@ export default function AttestationsPage() {
           </TabsContent>
 
           {/* Generated Tab */}
-          <TabsContent value="generated" className="mt-0 space-y-4">
-            <Card className="shadow-sm border-muted/40">
-              <CardContent className="flex flex-col min-h-[750px] pt-6">
+          <TabsContent value='generated' className='mt-0 space-y-4'>
+            <Card className='border-muted/40 shadow-sm'>
+              <CardContent className='flex min-h-[750px] flex-col pt-6'>
                 <AttestationListing
                   employees={employees}
                   onDownload={handleDownloadExisting}
@@ -432,7 +475,9 @@ export default function AttestationsPage() {
         open={rejectDialog}
         onOpenChange={setRejectDialog}
         raisonRejet={formData.raisonRejet}
-        setRaisonRejet={(value) => setFormData({ ...formData, raisonRejet: value })}
+        setRaisonRejet={(value) =>
+          setFormData({ ...formData, raisonRejet: value })
+        }
         onReject={handleReject}
         onCancel={() => {
           setRejectDialog(false);
@@ -460,7 +505,8 @@ export default function AttestationsPage() {
         employeeName={
           selectedRequest
             ? `${employees.find((e) => e.id === selectedRequest.employeeId)?.firstName || ''} ${
-                employees.find((e) => e.id === selectedRequest.employeeId)?.lastName || ''
+                employees.find((e) => e.id === selectedRequest.employeeId)
+                  ?.lastName || ''
               }`
             : undefined
         }
@@ -468,19 +514,27 @@ export default function AttestationsPage() {
 
       {/* Old Dialog - to be removed */}
       <Dialog open={false} onOpenChange={setNewRequestDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className='max-w-md'>
           <DialogHeader>
-            <DialogTitle>{t('attestations.dialog.newRequest.title')}</DialogTitle>
-            <DialogDescription>{t('attestations.dialog.newRequest.description')}</DialogDescription>
+            <DialogTitle>
+              {t('attestations.dialog.newRequest.title')}
+            </DialogTitle>
+            <DialogDescription>
+              {t('attestations.dialog.newRequest.description')}
+            </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="employee">{t('attestations.fields.employeeId')}</Label>
+          <div className='space-y-4'>
+            <div className='space-y-2'>
+              <Label htmlFor='employee'>
+                {t('attestations.fields.employeeId')}
+              </Label>
               <Select
                 value={formData.employeeId}
-                onValueChange={(value) => setFormData({ ...formData, employeeId: value })}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, employeeId: value })
+                }
               >
-                <SelectTrigger id="employee" className="w-full">
+                <SelectTrigger id='employee' className='w-full'>
                   <SelectValue placeholder={t('placeholders.select')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -492,47 +546,71 @@ export default function AttestationsPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="type">{t('attestations.fields.typeAttestation')}</Label>
+            <div className='space-y-2'>
+              <Label htmlFor='type'>
+                {t('attestations.fields.typeAttestation')}
+              </Label>
               <Select
                 value={formData.typeAttestation}
-                onValueChange={(value) => setFormData({ ...formData, typeAttestation: value as AttestationType })}
+                onValueChange={(value) =>
+                  setFormData({
+                    ...formData,
+                    typeAttestation: value as AttestationType
+                  })
+                }
               >
-                <SelectTrigger id="type" className="w-full">
+                <SelectTrigger id='type' className='w-full'>
                   <SelectValue placeholder={t('placeholders.select')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="travail">{t('attestations.types.travail')}</SelectItem>
-                  <SelectItem value="salaire">{t('attestations.types.salaire')}</SelectItem>
-                  <SelectItem value="travail_salaire">{t('attestations.types.travail_salaire')}</SelectItem>
-                  <SelectItem value="stage">{t('attestations.types.stage')}</SelectItem>
+                  <SelectItem value='travail'>
+                    {t('attestations.types.travail')}
+                  </SelectItem>
+                  <SelectItem value='salaire'>
+                    {t('attestations.types.salaire')}
+                  </SelectItem>
+                  <SelectItem value='travail_salaire'>
+                    {t('attestations.types.travail_salaire')}
+                  </SelectItem>
+                  <SelectItem value='stage'>
+                    {t('attestations.types.stage')}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="dateSouhaitee">{t('attestations.fields.dateSouhaitee')}</Label>
+            <div className='space-y-2'>
+              <Label htmlFor='dateSouhaitee'>
+                {t('attestations.fields.dateSouhaitee')}
+              </Label>
               <Input
-                id="dateSouhaitee"
-                type="date"
+                id='dateSouhaitee'
+                type='date'
                 value={formData.dateSouhaitee}
-                onChange={(e) => setFormData({ ...formData, dateSouhaitee: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, dateSouhaitee: e.target.value })
+                }
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="notes">{t('attestations.fields.notes')}</Label>
+            <div className='space-y-2'>
+              <Label htmlFor='notes'>{t('attestations.fields.notes')}</Label>
               <Textarea
-                id="notes"
+                id='notes'
                 value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
                 placeholder={t('attestations.fields.notes')}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setNewRequestDialog(false);
-              resetForm();
-            }}>
+            <Button
+              variant='outline'
+              onClick={() => {
+                setNewRequestDialog(false);
+                resetForm();
+              }}
+            >
               {t('common.cancel')}
             </Button>
             <Button onClick={handleNewRequest}>{t('common.submit')}</Button>
@@ -542,21 +620,27 @@ export default function AttestationsPage() {
 
       {/* Generate Dialog */}
       <Dialog open={generateDialog} onOpenChange={setGenerateDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className='max-w-md'>
           <DialogHeader>
-            <DialogTitle>{t('attestations.dialog.generateAttestation.title')}</DialogTitle>
+            <DialogTitle>
+              {t('attestations.dialog.generateAttestation.title')}
+            </DialogTitle>
             <DialogDescription>
               {t('attestations.dialog.generateAttestation.description')}
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="gen-employee">{t('attestations.fields.employeeId')}</Label>
+          <div className='space-y-4'>
+            <div className='space-y-2'>
+              <Label htmlFor='gen-employee'>
+                {t('attestations.fields.employeeId')}
+              </Label>
               <Select
                 value={formData.employeeId}
-                onValueChange={(value) => setFormData({ ...formData, employeeId: value })}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, employeeId: value })
+                }
               >
-                <SelectTrigger id="gen-employee" className="w-full">
+                <SelectTrigger id='gen-employee' className='w-full'>
                   <SelectValue placeholder={t('placeholders.select')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -568,95 +652,139 @@ export default function AttestationsPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="gen-type">{t('attestations.fields.typeAttestation')}</Label>
+            <div className='space-y-2'>
+              <Label htmlFor='gen-type'>
+                {t('attestations.fields.typeAttestation')}
+              </Label>
               <Select
                 value={formData.typeAttestation}
-                onValueChange={(value) => setFormData({ ...formData, typeAttestation: value as AttestationType })}
+                onValueChange={(value) =>
+                  setFormData({
+                    ...formData,
+                    typeAttestation: value as AttestationType
+                  })
+                }
               >
-                <SelectTrigger id="gen-type" className="w-full">
+                <SelectTrigger id='gen-type' className='w-full'>
                   <SelectValue placeholder={t('placeholders.select')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="travail">{t('attestations.types.travail')}</SelectItem>
-                  <SelectItem value="salaire">{t('attestations.types.salaire')}</SelectItem>
-                  <SelectItem value="travail_salaire">{t('attestations.types.travail_salaire')}</SelectItem>
-                  <SelectItem value="stage">{t('attestations.types.stage')}</SelectItem>
+                  <SelectItem value='travail'>
+                    {t('attestations.types.travail')}
+                  </SelectItem>
+                  <SelectItem value='salaire'>
+                    {t('attestations.types.salaire')}
+                  </SelectItem>
+                  <SelectItem value='travail_salaire'>
+                    {t('attestations.types.travail_salaire')}
+                  </SelectItem>
+                  <SelectItem value='stage'>
+                    {t('attestations.types.stage')}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
             {formData.typeAttestation === 'stage' && (
               <>
-                <div className="space-y-2">
-                  <Label htmlFor="stage-start">{t('attestations.fields.stageStartDate')}</Label>
+                <div className='space-y-2'>
+                  <Label htmlFor='stage-start'>
+                    {t('attestations.fields.stageStartDate')}
+                  </Label>
                   <Input
-                    id="stage-start"
-                    type="date"
+                    id='stage-start'
+                    type='date'
                     value={formData.stageStartDate}
-                    onChange={(e) => setFormData({ ...formData, stageStartDate: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        stageStartDate: e.target.value
+                      })
+                    }
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="stage-end">{t('attestations.fields.stageEndDate')}</Label>
+                <div className='space-y-2'>
+                  <Label htmlFor='stage-end'>
+                    {t('attestations.fields.stageEndDate')}
+                  </Label>
                   <Input
-                    id="stage-end"
-                    type="date"
+                    id='stage-end'
+                    type='date'
                     value={formData.stageEndDate}
-                    onChange={(e) => setFormData({ ...formData, stageEndDate: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, stageEndDate: e.target.value })
+                    }
                   />
                 </div>
               </>
             )}
-            <div className="space-y-2">
-              <Label htmlFor="gen-notes">{t('attestations.fields.notes')}</Label>
+            <div className='space-y-2'>
+              <Label htmlFor='gen-notes'>
+                {t('attestations.fields.notes')}
+              </Label>
               <Textarea
-                id="gen-notes"
+                id='gen-notes'
                 value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
                 placeholder={t('attestations.fields.notes')}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setGenerateDialog(false);
-              resetForm();
-            }}>
+            <Button
+              variant='outline'
+              onClick={() => {
+                setGenerateDialog(false);
+                resetForm();
+              }}
+            >
               {t('common.cancel')}
             </Button>
-            <Button onClick={() => handleGenerate()}>{t('attestations.actions.generate')}</Button>
+            <Button onClick={() => handleGenerate()}>
+              {t('attestations.actions.generate')}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Reject Dialog */}
       <Dialog open={rejectDialog} onOpenChange={setRejectDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className='max-w-md'>
           <DialogHeader>
             <DialogTitle>{t('attestations.dialog.reject.title')}</DialogTitle>
-            <DialogDescription>{t('attestations.dialog.reject.description')}</DialogDescription>
+            <DialogDescription>
+              {t('attestations.dialog.reject.description')}
+            </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="reject-reason">{t('attestations.fields.raisonRejet')}</Label>
+          <div className='space-y-4'>
+            <div className='space-y-2'>
+              <Label htmlFor='reject-reason'>
+                {t('attestations.fields.raisonRejet')}
+              </Label>
               <Textarea
-                id="reject-reason"
+                id='reject-reason'
                 value={formData.raisonRejet}
-                onChange={(e) => setFormData({ ...formData, raisonRejet: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, raisonRejet: e.target.value })
+                }
                 placeholder={t('attestations.fields.raisonRejet')}
                 required
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setRejectDialog(false);
-              setSelectedRequest(null);
-              resetForm();
-            }}>
+            <Button
+              variant='outline'
+              onClick={() => {
+                setRejectDialog(false);
+                setSelectedRequest(null);
+                resetForm();
+              }}
+            >
               {t('common.cancel')}
             </Button>
-            <Button variant="destructive" onClick={handleReject}>
+            <Button variant='destructive' onClick={handleReject}>
               {t('attestations.actions.reject')}
             </Button>
           </DialogFooter>
@@ -664,40 +792,67 @@ export default function AttestationsPage() {
       </Dialog>
 
       {/* Confirm Generate Dialog */}
-      <Dialog open={confirmGenerateDialog} onOpenChange={setConfirmGenerateDialog}>
-        <DialogContent className="max-w-md">
+      <Dialog
+        open={confirmGenerateDialog}
+        onOpenChange={setConfirmGenerateDialog}
+      >
+        <DialogContent className='max-w-md'>
           <DialogHeader>
-            <DialogTitle>{t('attestations.dialog.confirmGenerate.title')}</DialogTitle>
-            <DialogDescription>{t('attestations.dialog.confirmGenerate.description')}</DialogDescription>
+            <DialogTitle>
+              {t('attestations.dialog.confirmGenerate.title')}
+            </DialogTitle>
+            <DialogDescription>
+              {t('attestations.dialog.confirmGenerate.description')}
+            </DialogDescription>
           </DialogHeader>
           {selectedRequest && (
-            <div className="space-y-3 rounded-lg border p-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">{t('attestations.columns.employee')}:</span>
-                <span className="text-sm">
-                  {employees.find((e) => e.id === selectedRequest.employeeId)?.firstName}{' '}
-                  {employees.find((e) => e.id === selectedRequest.employeeId)?.lastName}
+            <div className='space-y-3 rounded-lg border p-4'>
+              <div className='flex items-center justify-between'>
+                <span className='text-sm font-medium'>
+                  {t('attestations.columns.employee')}:
+                </span>
+                <span className='text-sm'>
+                  {
+                    employees.find((e) => e.id === selectedRequest.employeeId)
+                      ?.firstName
+                  }{' '}
+                  {
+                    employees.find((e) => e.id === selectedRequest.employeeId)
+                      ?.lastName
+                  }
                 </span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">{t('attestations.columns.type')}:</span>
-                <span className="text-sm">{t(`attestations.types.${selectedRequest.typeAttestation}`)}</span>
+              <div className='flex items-center justify-between'>
+                <span className='text-sm font-medium'>
+                  {t('attestations.columns.type')}:
+                </span>
+                <span className='text-sm'>
+                  {t(`attestations.types.${selectedRequest.typeAttestation}`)}
+                </span>
               </div>
               {selectedRequest.dateSouhaitee && (
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">{t('attestations.columns.dateSouhaitee')}:</span>
-                  <span className="text-sm">
-                    {format(new Date(selectedRequest.dateSouhaitee), 'dd/MM/yyyy')}
+                <div className='flex items-center justify-between'>
+                  <span className='text-sm font-medium'>
+                    {t('attestations.columns.dateSouhaitee')}:
+                  </span>
+                  <span className='text-sm'>
+                    {format(
+                      new Date(selectedRequest.dateSouhaitee),
+                      'dd/MM/yyyy'
+                    )}
                   </span>
                 </div>
               )}
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setConfirmGenerateDialog(false);
-              setSelectedRequest(null);
-            }}>
+            <Button
+              variant='outline'
+              onClick={() => {
+                setConfirmGenerateDialog(false);
+                setSelectedRequest(null);
+              }}
+            >
               {t('common.cancel')}
             </Button>
             <Button onClick={handleConfirmGenerate}>
@@ -709,4 +864,3 @@ export default function AttestationsPage() {
     </PageContainer>
   );
 }
-

@@ -1,7 +1,17 @@
 // src/components/common/SearchableSelect.tsx
 import React, { useState, useEffect, useRef } from 'react';
-import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Command,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -23,15 +33,15 @@ interface ItemType {
 }
 
 const SearchableSelect = ({
-                            route,
-                            nameField,
-                            valueField = 'id',
-                            placeholder = 'Select an item...',
-                            value,
-                            onChange,
-                            className,
-                            disabled = false
-                          }: SearchableSelectProps) => {
+  route,
+  nameField,
+  valueField = 'id',
+  placeholder = 'Select an item...',
+  value,
+  onChange,
+  className,
+  disabled = false
+}: SearchableSelectProps) => {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<ItemType[]>([]);
   const [filteredItems, setFilteredItems] = useState<ItemType[]>([]);
@@ -66,17 +76,17 @@ const SearchableSelect = ({
     if (search.trim() === '') {
       setFilteredItems(items);
     } else {
-      const filtered = items.filter(item =>
+      const filtered = items.filter((item) =>
         item[nameField].toLowerCase().includes(search.toLowerCase())
       );
       setFilteredItems(filtered);
     }
   }, [search, items, nameField]);
 
-  const selectedItem = items.find(item => item[valueField] === value);
+  const selectedItem = items.find((item) => item[valueField] === value);
 
   const handleSelect = (selectedValue: number) => {
-    const item = items.find(item => item[valueField] === selectedValue);
+    const item = items.find((item) => item[valueField] === selectedValue);
     if (value === selectedValue) {
       onChange(null);
     } else {
@@ -89,19 +99,17 @@ const SearchableSelect = ({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
-          role="combobox"
+          variant='outline'
+          role='combobox'
           aria-expanded={open}
-          className={cn("w-full justify-between", className)}
+          className={cn('w-full justify-between', className)}
           disabled={disabled}
         >
-          {selectedItem
-            ? selectedItem[nameField]
-            : placeholder}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          {selectedItem ? selectedItem[nameField] : placeholder}
+          <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0" align="start">
+      <PopoverContent className='w-full p-0' align='start'>
         <Command>
           <CommandInput
             placeholder={`Search ${placeholder.toLowerCase()}...`}
@@ -110,11 +118,13 @@ const SearchableSelect = ({
           />
           <CommandList>
             {isLoading ? (
-              <div className="py-6 text-center text-sm">Loading...</div>
+              <div className='py-6 text-center text-sm'>Loading...</div>
             ) : error ? (
-              <div className="py-6 text-center text-sm text-red-500">{error}</div>
+              <div className='py-6 text-center text-sm text-red-500'>
+                {error}
+              </div>
             ) : filteredItems.length === 0 ? (
-              <div className="py-6 text-center text-sm">No items found</div>
+              <div className='py-6 text-center text-sm'>No items found</div>
             ) : (
               <CommandGroup>
                 {filteredItems.map((item) => (
@@ -125,8 +135,8 @@ const SearchableSelect = ({
                   >
                     <Check
                       className={cn(
-                        "mr-2 h-4 w-4",
-                        value === item[valueField] ? "opacity-100" : "opacity-0"
+                        'mr-2 h-4 w-4',
+                        value === item[valueField] ? 'opacity-100' : 'opacity-0'
                       )}
                     />
                     {item[nameField]}

@@ -5,7 +5,15 @@ export interface CustomTableFilterConfig {
   field: string;
   label: string;
   defaultValue?: any;
-  type?: 'text' | 'number' | 'date' | 'select' | 'checkbox'  |  'datatable-select' | 'datatable-multiselect' | 'custom';
+  type?:
+    | 'text'
+    | 'number'
+    | 'date'
+    | 'select'
+    | 'checkbox'
+    | 'datatable-select'
+    | 'datatable-multiselect'
+    | 'custom';
   options?: { label: string; value: any }[];
   group?: 'primary' | 'secondary' | 'date' | 'advanced';
   order?: number;
@@ -77,17 +85,19 @@ export interface CustomTableProps<T> {
   initialState?: Partial<CustomTableTableState<T>>;
   title?: string;
   titleExtra?: React.ReactNode;
-  onInit?: (tableInstance: Partial<UseTableReturn<T>> & {
-    setSelectedRows: <T>(rows: T[]) => void;
-    onSort: <T>(column: keyof T) => void;
-    setData: <T>(data: T[]) => void;
-    setVisibleColumns: <T>(columns: (keyof T)[]) => void;
-    setFilters: (filters: Record<string, any>) => void;
-    setCurrentPage: (page: number) => void;
-    refresh: () => void;
-    setRowsPerPage: (rowsPerPage: number) => void;
-    onSelect: <T>(event: React.ChangeEvent<HTMLInputElement>, row: T) => void
-  }) => void;
+  onInit?: (
+    tableInstance: Partial<UseTableReturn<T>> & {
+      setSelectedRows: <T>(rows: T[]) => void;
+      onSort: <T>(column: keyof T) => void;
+      setData: <T>(data: T[]) => void;
+      setVisibleColumns: <T>(columns: (keyof T)[]) => void;
+      setFilters: (filters: Record<string, any>) => void;
+      setCurrentPage: (page: number) => void;
+      refresh: () => void;
+      setRowsPerPage: (rowsPerPage: number) => void;
+      onSelect: <T>(event: React.ChangeEvent<HTMLInputElement>, row: T) => void;
+    }
+  ) => void;
   onReset?: () => void;
   onSubmit?: (values: any) => void;
   filters?: CustomTableFilterConfig[];
@@ -95,7 +105,6 @@ export interface CustomTableProps<T> {
   sortDir?: 'asc' | 'desc';
   clickCard?: (rowData: T) => React.ReactNode;
 }
-
 
 export interface MobilePaginationProps {
   currentPage: number;
@@ -158,7 +167,10 @@ export type UseCustomTableReturnType<T extends Record<string, any>> = {
   bulkActions: CustomTableBulkAction<T>[];
   setCurrentPage: (page: number) => void;
   setRowsPerPage: (rowsPerPage: number) => void;
-  onCheckboxChange: (event: React.ChangeEvent<HTMLInputElement>, row: T) => void;
+  onCheckboxChange: (
+    event: React.ChangeEvent<HTMLInputElement>,
+    row: T
+  ) => void;
   onSelectAllRows: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onSort: (column: keyof T) => void;
   onFilter: (filterData: FieldValues) => void;

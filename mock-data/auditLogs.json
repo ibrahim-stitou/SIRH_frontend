@@ -1,5 +1,15 @@
 [
-  {"id":6000,"actorUserId":1,"action":"LOGIN","at":"2025-01-15T08:12:00Z"},
-  {"id":6001,"actorUserId":2,"action":"LEAVE_APPROVE","entityId":900,"at":"2025-01-15T09:00:11Z"}
+  {
+    "id": 6000,
+    "actorUserId": 1,
+    "action": "LOGIN",
+    "at": "2025-01-15T08:12:00Z"
+  },
+  {
+    "id": 6001,
+    "actorUserId": 2,
+    "action": "LEAVE_APPROVE",
+    "entityId": 900,
+    "at": "2025-01-15T09:00:11Z"
+  }
 ]
-

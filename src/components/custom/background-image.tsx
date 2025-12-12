@@ -11,20 +11,20 @@ interface BackgroundImageProps extends Omit<ImageProps, 'src' | 'alt'> {
 }
 
 const BackgroundImage: FC<BackgroundImageProps> = ({
-                                                     imagePath='/images/testimonial-bg.jpg',
-                                                     altText = 'Background Image',
-                                                     overlayClassName = 'opacity-75 mix-blend-overlay object-cover',
-                                                     ...props
-                                                   }) => {
+  imagePath = '/images/testimonial-bg.jpg',
+  altText = 'Background Image',
+  overlayClassName = 'opacity-75 mix-blend-overlay object-cover',
+  ...props
+}) => {
   return (
-    <div className="relative h-full w-full">
+    <div className='relative h-full w-full'>
       <Image
         src={imagePath}
         alt={altText}
         fill
         priority
         className={overlayClassName}
-        sizes="(max-width: 768px) 100vw, 50vw"
+        sizes='(max-width: 768px) 100vw, 50vw'
         {...props}
       />
     </div>

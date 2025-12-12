@@ -19,20 +19,21 @@ const META_THEME_COLORS = {
 
 export const metadata: Metadata = {
   title: process.env.NEXT_PUBLIC_APP_NAME || 'Application de gestion de flotte',
-  description: 'Application de gestion de flotte de véhicules, carburant, chauffeurs, etc.',
+  description:
+    'Application de gestion de flotte de véhicules, carburant, chauffeurs, etc.'
 };
 
 export const viewport: Viewport = {
   themeColor: META_THEME_COLORS.light
 };
 
-const SUPPORTED_LANGS = ['en', 'fr','ar'] as const;
+const SUPPORTED_LANGS = ['en', 'fr', 'ar'] as const;
 const DEFAULT_LANG = 'fr';
 
 export default async function RootLayout({
-                                           children,
-                                           params: { lang }
-                                         }: {
+  children,
+  params: { lang }
+}: {
   children: React.ReactNode;
   params: { lang: string };
 }) {
@@ -49,9 +50,15 @@ export default async function RootLayout({
       : DEFAULT_LANG;
 
   return (
-    <html lang={validatedLang} suppressHydrationWarning dir={validatedLang === 'ar' ? 'rtl' : 'ltr'}>
+    <html
+      lang={validatedLang}
+      suppressHydrationWarning
+      dir={validatedLang === 'ar' ? 'rtl' : 'ltr'}
+    >
       <head>
-        <title>{typeof metadata.title === 'string' ? metadata.title : ''}</title>
+        <title>
+          {typeof metadata.title === 'string' ? metadata.title : ''}
+        </title>
         <script
           dangerouslySetInnerHTML={{
             __html: (() => {
@@ -60,7 +67,12 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className={cn('bg-background overflow-hidden overscroll-none font-sans antialiased theme-sirh', fontVariables)}>
+      <body
+        className={cn(
+          'bg-background theme-sirh overflow-hidden overscroll-none font-sans antialiased',
+          fontVariables
+        )}
+      >
         <NextTopLoader showSpinner={true} />
         <NuqsAdapter>
           <LanguageProvider>

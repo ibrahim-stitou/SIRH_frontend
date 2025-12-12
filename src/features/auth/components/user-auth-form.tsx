@@ -54,7 +54,9 @@ export default function UserAuthForm() {
         if (result?.error) {
           toast.error('Invalid credentials');
         } else {
-          const session = await fetch('/api/auth/session').then((res) => res.json());
+          const session = await fetch('/api/auth/session').then((res) =>
+            res.json()
+          );
 
           if (session?.user?.role?.code === 'ADMIN') {
             toast.success('Signed In Successfully!');
@@ -102,33 +104,39 @@ export default function UserAuthForm() {
             name='password'
             render={({ field }) => (
               <FormItem>
-                <div className="flex items-center justify-between">
+                <div className='flex items-center justify-between'>
                   <FormLabel>Password</FormLabel>
                 </div>
                 <FormControl>
-                  <div className="relative">
+                  <div className='relative'>
                     <Input
                       type={showPassword ? 'text' : 'password'}
                       placeholder='Enter your password...'
                       disabled={loading}
-                      className="pr-10"
+                      className='pr-10'
                       {...field}
                     />
                     <button
-                      type="button"
+                      type='button'
                       onClick={() => setShowPassword((s) => !s)}
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center text-gray-500 hover:text-gray-700"
+                      aria-label={
+                        showPassword ? 'Hide password' : 'Show password'
+                      }
+                      className='absolute top-1/2 right-2 flex -translate-y-1/2 items-center justify-center text-gray-500 hover:text-gray-700'
                       disabled={loading}
                     >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showPassword ? (
+                        <EyeOff className='h-4 w-4' />
+                      ) : (
+                        <Eye className='h-4 w-4' />
+                      )}
                     </button>
                   </div>
                 </FormControl>
-                <div className="flex items-center justify-end">
+                <div className='flex items-center justify-end'>
                   <Link
-                    href="/auth/forgot-password"
-                    className="text-xs text-primary hover:underline d-flex justify-end"
+                    href='/auth/forgot-password'
+                    className='text-primary d-flex justify-end text-xs hover:underline'
                   >
                     Forgot password?
                   </Link>

@@ -6,10 +6,10 @@ export const identitySchema = z.object({
   cin: z.string().min(5),
   birthDate: z.string().min(4),
   birthPlace: z.string().min(2),
-  gender: z.enum(['M','F']),
+  gender: z.enum(['M', 'F']),
   nationality: z.string().min(2),
-  maritalStatus: z.enum(['celibataire','marie','divorce','veuf']).optional(),
-  numberOfChildren: z.coerce.number().optional(),
+  maritalStatus: z.enum(['celibataire', 'marie', 'divorce', 'veuf']).optional(),
+  numberOfChildren: z.coerce.number().optional()
 });
 
 export const contactSchema = z.object({
@@ -21,35 +21,35 @@ export const contactSchema = z.object({
   email: z.string().email(),
   emergencyContactName: z.string().optional(),
   emergencyContactPhone: z.string().optional(),
-  emergencyContactRelationship: z.string().optional(),
+  emergencyContactRelationship: z.string().optional()
 });
 
 export const jobSchema = z.object({
   departmentId: z.string().min(1),
   position: z.string().min(2),
-  hireDate: z.string().min(4),
+  hireDate: z.string().min(4)
 });
 
 export const contractSchema = z.object({
-  contractType: z.enum(['CDI','CDD','Stage','Intérim','Apprentissage']),
+  contractType: z.enum(['CDI', 'CDD', 'Stage', 'Intérim', 'Apprentissage']),
   contractStartDate: z.string().min(4),
-  contractEndDate: z.string().optional(),
+  contractEndDate: z.string().optional()
 });
 
 export const worktimeSchema = z.object({
   weeklyHours: z.coerce.number().min(1),
-  workingDays: z.coerce.number().min(1),
+  workingDays: z.coerce.number().min(1)
 });
 
 export const salarySchema = z.object({
   baseSalary: z.coerce.number().min(0),
   currency: z.string().min(1),
-  salaryFrequency: z.enum(['mensuel','horaire']),
+  salaryFrequency: z.enum(['mensuel', 'horaire'])
 });
 
 export const socialSchema = z.object({
   cnssNumber: z.string().optional(),
-  mutualNumber: z.string().optional(),
+  mutualNumber: z.string().optional()
 });
 
 export type IdentityValues = z.infer<typeof identitySchema>;

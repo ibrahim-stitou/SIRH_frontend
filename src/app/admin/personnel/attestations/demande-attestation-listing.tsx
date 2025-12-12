@@ -4,10 +4,17 @@ import React, { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip';
 import CustomAlertDialog from '@/components/custom/customAlert';
 import CustomTable from '@/components/custom/data-table/custom-table';
-import { CustomTableFilterConfig, UseTableReturn } from '@/components/custom/data-table/types';
+import {
+  CustomTableFilterConfig,
+  UseTableReturn
+} from '@/components/custom/data-table/types';
 import { apiRoutes } from '@/config/apiRoutes';
 import apiClient from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
@@ -29,11 +36,15 @@ export function DemandeAttestationListing({
   onReject,
   onGenerate,
   onViewDetails,
-  onInit,
+  onInit
 }: DemandeAttestationListingProps) {
   const { t } = useLanguage();
-  const [tableInstance, setTableInstance] = useState<Partial<UseTableReturn<any>> | null>(null);
-  const [selectedRequestId, setSelectedRequestId] = useState<number | null>(null);
+  const [tableInstance, setTableInstance] = useState<Partial<
+    UseTableReturn<any>
+  > | null>(null);
+  const [selectedRequestId, setSelectedRequestId] = useState<number | null>(
+    null
+  );
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
   const handleDelete = (id: number) => {
@@ -44,7 +55,9 @@ export function DemandeAttestationListing({
   const handleConfirmDelete = async () => {
     if (selectedRequestId !== null) {
       try {
-        const response = await apiClient.delete(apiRoutes.admin.attestations.requests.delete(selectedRequestId));
+        const response = await apiClient.delete(
+          apiRoutes.admin.attestations.requests.delete(selectedRequestId)
+        );
         if (response.data) {
           toast.success(t('attestations.messages.deleteSuccess'));
           if (tableInstance && tableInstance.refresh) {
@@ -54,7 +67,8 @@ export function DemandeAttestationListing({
           toast.error(t('attestations.messages.error'));
         }
       } catch (error: any) {
-        const errorMessage = error.response?.data?.message || t('attestations.messages.error');
+        const errorMessage =
+          error.response?.data?.message || t('attestations.messages.error');
         toast.error(`${t('common.error')}: ${errorMessage}`);
       }
       setOpenDeleteModal(false);
@@ -64,35 +78,47 @@ export function DemandeAttestationListing({
 
   // Wrapper pour les actions avec suppression
   const getColumnsWithDelete = () => {
-    const baseColumns = getRequestsColumns(t, employees, onApprove, onReject, onGenerate, onViewDetails);
+    const baseColumns = getRequestsColumns(
+      t,
+      employees,
+      onApprove,
+      onReject,
+      onGenerate,
+      onViewDetails
+    );
 
     // Modifier la colonne actions pour ajouter le bouton supprimer
-    const actionsColumnIndex = baseColumns.findIndex(col => col.data === 'actions');
+    const actionsColumnIndex = baseColumns.findIndex(
+      (col) => col.data === 'actions'
+    );
     if (actionsColumnIndex !== -1) {
       const originalRender = baseColumns[actionsColumnIndex].render;
       baseColumns[actionsColumnIndex].render = (value, row, index) => {
-        const originalActions = originalRender ? originalRender(value, row, index) : null;
+        const originalActions = originalRender
+          ? originalRender(value, row, index)
+          : null;
 
         // Ajouter le bouton supprimer seulement pour les demandes non validées (en_attente ou rejete)
-        const canDelete = row.status === 'en_attente' || row.status === 'rejete';
+        const canDelete =
+          row.status === 'en_attente' || row.status === 'rejete';
 
         return (
-          <div className="flex items-center gap-2">
+          <div className='flex items-center gap-2'>
             {originalActions}
             {canDelete && (
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    variant="destructive"
-                    size="sm"
-                    className="h-8 w-8 p-1.5"
+                    variant='destructive'
+                    size='sm'
+                    className='h-8 w-8 p-1.5'
                     onClick={() => handleDelete(row.id)}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className='h-4 w-4' />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent
-                  className="tooltip-content rounded-md bg-red-100 px-2 py-1 text-red-600 shadow-md"
+                  className='tooltip-content rounded-md bg-red-100 px-2 py-1 text-red-600 shadow-md'
                   sideOffset={5}
                 >
                   {t('common.delete')}
@@ -116,7 +142,7 @@ export function DemandeAttestationListing({
         { label: t('attestations.status.en_attente'), value: 'en_attente' },
         { label: t('attestations.status.approuve'), value: 'approuve' },
         { label: t('attestations.status.rejete'), value: 'rejete' },
-        { label: t('attestations.status.genere'), value: 'genere' },
+        { label: t('attestations.status.genere'), value: 'genere' }
       ]
     },
     {
@@ -126,19 +152,22 @@ export function DemandeAttestationListing({
       options: [
         { label: t('attestations.types.travail'), value: 'travail' },
         { label: t('attestations.types.salaire'), value: 'salaire' },
-        { label: t('attestations.types.travail_salaire'), value: 'travail_salaire' },
-        { label: t('attestations.types.stage'), value: 'stage' },
+        {
+          label: t('attestations.types.travail_salaire'),
+          value: 'travail_salaire'
+        },
+        { label: t('attestations.types.stage'), value: 'stage' }
       ]
     },
     {
       field: 'employeeId',
       label: t('attestations.columns.employee'),
       type: 'select',
-      options: employees.map(emp => ({
+      options: employees.map((emp) => ({
         label: `${emp.firstName} ${emp.lastName}`,
         value: String(emp.id)
       }))
-    },
+    }
   ];
 
   const handleInit = (instance: Partial<UseTableReturn<any>>) => {
@@ -150,7 +179,7 @@ export function DemandeAttestationListing({
 
   return (
     <>
-      <div className="flex flex-1 flex-col space-y-4">
+      <div className='flex flex-1 flex-col space-y-4'>
         <CustomTable
           columns={getColumnsWithDelete()}
           url={apiRoutes.admin.attestations.requests.list}
@@ -172,4 +201,3 @@ export function DemandeAttestationListing({
 }
 
 export default DemandeAttestationListing;
-

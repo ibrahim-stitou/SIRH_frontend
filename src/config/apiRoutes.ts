@@ -1,6 +1,7 @@
-const API_BASE = process.env.NEXT_PUBLIC_USE_MOCK === 'true'
-  ? process.env.JSON_SERVER_URL || 'http://localhost:3001'
-  : process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:8003/api/v1';
+const API_BASE =
+  process.env.NEXT_PUBLIC_USE_MOCK === 'true'
+    ? process.env.JSON_SERVER_URL || 'http://localhost:3001'
+    : process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:8003/api/v1';
 
 export const apiRoutes = {
   auth: {
@@ -11,21 +12,21 @@ export const apiRoutes = {
     refreshToken: `${API_BASE}/refresh`,
     me: `${API_BASE}/me`,
     forgotPassword: `${API_BASE}/forgot-password`,
-    resetPassword: `${API_BASE}/reset-password`,
+    resetPassword: `${API_BASE}/reset-password`
   },
 
   files: {
     uploadTemp: `${API_BASE}/files/upload-temp`,
-    cleanupTemp: `${API_BASE}/files/cleanup-temp`,
+    cleanupTemp: `${API_BASE}/files/cleanup-temp`
   },
 
   common: {
     profile: {
       get: `${API_BASE}/user`,
       update: `${API_BASE}/profile`,
-      changePassword: `${API_BASE}/password`,
+      changePassword: `${API_BASE}/password`
     },
-    debug: `${API_BASE}/debug-user`,
+    debug: `${API_BASE}/debug-user`
   },
 
   admin: {
@@ -33,49 +34,53 @@ export const apiRoutes = {
       list: `${API_BASE}/users`,
       delete: (id: number | string) => `${API_BASE}/users/${id}`,
       details: (id: number | string) => `${API_BASE}/users/${id}`,
-      update: (id: number | string) => `${API_BASE}/users/${id}`,
+      update: (id: number | string) => `${API_BASE}/users/${id}`
     },
     employees: {
       list: `${API_BASE}/hrEmployees`,
       simpleList: `${API_BASE}/hrEmployees/simple-list`,
       delete: (id: number | string) => `${API_BASE}/hrEmployees/${id}`,
       details: (id: number | string) => `${API_BASE}/hrEmployees/${id}`,
-      update: (id: number | string) => `${API_BASE}/hrEmployees/${id}`,
+      update: (id: number | string) => `${API_BASE}/hrEmployees/${id}`
     },
     departments: {
       list: `${API_BASE}/departments`,
       show: (id: number | string) => `${API_BASE}/departments/${id}`,
-      simpleList: `${API_BASE}/departments/simple-list`,
+      simpleList: `${API_BASE}/departments/simple-list`
     },
     media: {
       list: `${API_BASE}/userMedia`,
-      details: (id: number | string) => `${API_BASE}/userMedia/${id}`,
+      details: (id: number | string) => `${API_BASE}/userMedia/${id}`
     },
     attestations: {
       requests: {
         list: `${API_BASE}/attestationRequests`,
         create: `${API_BASE}/attestationRequests`,
-        update: (id: number | string) => `${API_BASE}/attestationRequests/${id}`,
-        delete: (id: number | string) => `${API_BASE}/attestationRequests/${id}`,
-        show: (id: number | string) => `${API_BASE}/attestationRequests/${id}`,
+        update: (id: number | string) =>
+          `${API_BASE}/attestationRequests/${id}`,
+        delete: (id: number | string) =>
+          `${API_BASE}/attestationRequests/${id}`,
+        show: (id: number | string) => `${API_BASE}/attestationRequests/${id}`
       },
       generated: {
         list: `${API_BASE}/attestations`,
         create: `${API_BASE}/attestations`,
         update: (id: number | string) => `${API_BASE}/attestations/${id}`,
         delete: (id: number | string) => `${API_BASE}/attestations/${id}`,
-        show: (id: number | string) => `${API_BASE}/attestations/${id}`,
-      },
+        show: (id: number | string) => `${API_BASE}/attestations/${id}`
+      }
     },
     contratsEtMovements: {
-      contrats:{
+      contrats: {
         list: `${API_BASE}/contracts`,
         create: `${API_BASE}/contracts`,
         update: (id: number | string) => `${API_BASE}/contracts/${id}`,
         delete: (id: number | string) => `${API_BASE}/contracts/${id}`,
         show: (id: number | string) => `${API_BASE}/contracts/${id}`,
-        generate: (id: number | string) => `${API_BASE}/contracts/${id}/generate`,
-        validate: (id: number | string) => `${API_BASE}/contracts/${id}/validate`,
+        generate: (id: number | string) =>
+          `${API_BASE}/contracts/${id}/generate`,
+        validate: (id: number | string) =>
+          `${API_BASE}/contracts/${id}/validate`
       }
     }
   }

@@ -4,7 +4,13 @@ import { useState, useEffect } from 'react';
 import { Control, Controller, useWatch } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { FormFieldCustom } from '@/components/custom/FormFieldCustom';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 
 interface PriceFieldProps {
   name: string;
@@ -19,16 +25,16 @@ interface PriceFieldProps {
 }
 
 export const PriceField = ({
-                             name,
-                             label,
-                             control,
-                             required = false,
-                             error,
-                             onFocus,
-                             placeholder = "0.00",
-                             disabled = false,
-                             defaultCurrency = 'MAD'
-                           }: PriceFieldProps) => {
+  name,
+  label,
+  control,
+  required = false,
+  error,
+  onFocus,
+  placeholder = '0.00',
+  disabled = false,
+  defaultCurrency = 'MAD'
+}: PriceFieldProps) => {
   const currencyFieldName = `${name}_currency`;
 
   // Watch the value to ensure the currency field is properly registered
@@ -47,7 +53,7 @@ export const PriceField = ({
   }, [control, currencyFieldName, currency, defaultCurrency]);
 
   return (
-    <div className="space-y-4">
+    <div className='space-y-4'>
       <Controller
         name={name}
         control={control}
@@ -59,12 +65,12 @@ export const PriceField = ({
             error={error}
             onFocus={onFocus}
           >
-            <div className="flex">
+            <div className='flex'>
               <Input
-                type="number"
-                inputMode="decimal"
+                type='number'
+                inputMode='decimal'
                 placeholder={placeholder}
-                className="rounded-r-none"
+                className='rounded-r-none'
                 {...field}
                 value={field.value || ''}
                 disabled={disabled}
@@ -79,12 +85,12 @@ export const PriceField = ({
                     onValueChange={currencyField.onChange}
                     disabled={disabled}
                   >
-                    <SelectTrigger className="w-24 rounded-l-none border-l-0">
-                      <SelectValue placeholder="MAD" />
+                    <SelectTrigger className='w-24 rounded-l-none border-l-0'>
+                      <SelectValue placeholder='MAD' />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="MAD">MAD</SelectItem>
-                      <SelectItem value="EUR">EUR</SelectItem>
+                      <SelectItem value='MAD'>MAD</SelectItem>
+                      <SelectItem value='EUR'>EUR</SelectItem>
                     </SelectContent>
                   </Select>
                 )}

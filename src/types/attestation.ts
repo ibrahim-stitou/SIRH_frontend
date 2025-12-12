@@ -1,5 +1,14 @@
-export type AttestationType = 'travail' | 'salaire' | 'stage' | 'travail_salaire' | 'autre';
-export type AttestationRequestStatus = 'en_attente' | 'approuve' | 'rejete' | 'genere';
+export type AttestationType =
+  | 'travail'
+  | 'salaire'
+  | 'stage'
+  | 'travail_salaire'
+  | 'autre';
+export type AttestationRequestStatus =
+  | 'en_attente'
+  | 'approuve'
+  | 'rejete'
+  | 'genere';
 
 export interface AttestationRequest {
   id: number;
@@ -54,4 +63,3 @@ export interface AttestationWithEmployee extends Attestation {
     nationality?: string;
   };
 }
-

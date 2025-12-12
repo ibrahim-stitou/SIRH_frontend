@@ -7,7 +7,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
+  DialogTitle
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -29,22 +29,26 @@ export function RejectModal({
   raisonRejet,
   setRaisonRejet,
   onReject,
-  onCancel,
+  onCancel
 }: RejectModalProps) {
   const { t } = useLanguage();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className='max-w-md'>
         <DialogHeader>
           <DialogTitle>{t('attestations.dialog.reject.title')}</DialogTitle>
-          <DialogDescription>{t('attestations.dialog.reject.description')}</DialogDescription>
+          <DialogDescription>
+            {t('attestations.dialog.reject.description')}
+          </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="reject-reason">{t('attestations.fields.raisonRejet')}</Label>
+        <div className='space-y-4'>
+          <div className='space-y-2'>
+            <Label htmlFor='reject-reason'>
+              {t('attestations.fields.raisonRejet')}
+            </Label>
             <Textarea
-              id="reject-reason"
+              id='reject-reason'
               value={raisonRejet}
               onChange={(e) => setRaisonRejet(e.target.value)}
               placeholder={t('attestations.fields.raisonRejet')}
@@ -54,10 +58,10 @@ export function RejectModal({
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={onCancel}>
+          <Button variant='outline' onClick={onCancel}>
             {t('common.cancel')}
           </Button>
-          <Button variant="destructive" onClick={onReject}>
+          <Button variant='destructive' onClick={onReject}>
             {t('attestations.actions.reject')}
           </Button>
         </DialogFooter>
@@ -65,4 +69,3 @@ export function RejectModal({
     </Dialog>
   );
 }
-

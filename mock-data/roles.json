@@ -11,7 +11,12 @@
     "name": "HR Manager",
     "code": "HR_MANAGER",
     "description": "Human Resources Manager",
-    "permissions": ["employees.read","employees.write","leaves.read","leaves.approve"]
+    "permissions": [
+      "employees.read",
+      "employees.write",
+      "leaves.read",
+      "leaves.approve"
+    ]
   },
   {
     "id": 3,
@@ -21,4 +26,3 @@
     "permissions": ["self.read"]
   }
 ]
-

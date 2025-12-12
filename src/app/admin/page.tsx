@@ -7,6 +7,6 @@ export default async function Dashboard() {
   // if (!session?.user) {
   //   return redirect('/');
   // } else {
-    redirect('/admin/overview');
+  redirect('/admin/overview');
   // }
 }

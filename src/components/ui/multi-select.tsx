@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import * as React from 'react';
 import * as Popover from '@radix-ui/react-popover';
@@ -21,12 +21,12 @@ interface MultiSelectProps {
 }
 
 export function MultiSelect({
-                              options,
-                              selected,
-                              onChange,
-                              placeholder = 'Select...',
-                              className,
-                            }: MultiSelectProps) {
+  options,
+  selected,
+  onChange,
+  placeholder = 'Select...',
+  className
+}: MultiSelectProps) {
   const toggleOption = (value: string) => {
     onChange(
       selected.includes(value)
@@ -44,7 +44,7 @@ export function MultiSelect({
     <Popover.Root>
       <Popover.Trigger
         className={cn(
-          'border-input text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex w-fit items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 h-9',
+          'border-input text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex h-9 w-fit items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50',
           className
         )}
       >
@@ -54,19 +54,19 @@ export function MultiSelect({
 
       <Popover.Portal>
         <Popover.Content
-          className='z-50 mt-2 w-56 rounded-md border bg-popover p-2 shadow-md'
+          className='bg-popover z-50 mt-2 w-56 rounded-md border p-2 shadow-md'
           sideOffset={4}
         >
           <div className='max-h-60 overflow-y-auto'>
             {options.map((option) => (
               <label
                 key={option.value}
-                className='flex items-center gap-2 px-2 py-1.5 text-sm cursor-pointer rounded-md hover:bg-accent'
+                className='hover:bg-accent flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm'
               >
                 <Checkbox.Root
                   checked={selected.includes(option.value)}
                   onCheckedChange={() => toggleOption(option.value)}
-                  className='flex h-4 w-4 shrink-0 items-center justify-center rounded border border-muted bg-background'
+                  className='border-muted bg-background flex h-4 w-4 shrink-0 items-center justify-center rounded border'
                 >
                   <Checkbox.Indicator>
                     <CheckIcon className='h-3 w-3' />

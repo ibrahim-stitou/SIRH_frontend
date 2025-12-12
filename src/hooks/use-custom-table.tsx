@@ -1,8 +1,8 @@
-import type React from "react";
-import type {AxiosResponse} from "axios";
-import type {FieldValues} from "react-hook-form";
+import type React from 'react';
+import type { AxiosResponse } from 'axios';
+import type { FieldValues } from 'react-hook-form';
 
-import {useMemo, useState, useEffect, useCallback} from "react";
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import apiClient from '@/lib/api';
 import {
   CustomTableBulkAction,
@@ -30,26 +30,32 @@ export const useCustomTable = <T extends Record<string, any>>(
     selectedRows: [],
     visibleColumns: columns.map((column) => column.data),
     filters: {},
-    ...initialState,
+    ...initialState
   });
 
   const fetchData = useCallback(async () => {
     try {
-      setState((prev) => ({...prev, loading: true, error: null}));
+      setState((prev) => ({ ...prev, loading: true, error: null }));
       const config = {
         params: {
           ...state.filters,
           start: state.currentPage * state.rowsPerPage,
           length: state.rowsPerPage,
           sortBy: state.sortBy,
-          sortDir: state.sortDir,
-        },
+          sortDir: state.sortDir
+        }
       };
       const response: AxiosResponse<any> = await apiClient.get(url, config);
       // Support both CustomTableResponse and wrapped {status,message,data}
       const payload = response.data;
-      const dataArray = payload.data?.data ? payload.data.data : payload.data || [];
-      const rows: T[] = Array.isArray(payload.data) ? payload.data : Array.isArray(dataArray) ? dataArray : [];
+      const dataArray = payload.data?.data
+        ? payload.data.data
+        : payload.data || [];
+      const rows: T[] = Array.isArray(payload.data)
+        ? payload.data
+        : Array.isArray(dataArray)
+          ? dataArray
+          : [];
       const recordsTotal = payload.recordsTotal ?? rows.length;
       const recordsFiltered = payload.recordsFiltered ?? rows.length;
       setState((prev) => ({
@@ -58,51 +64,79 @@ export const useCustomTable = <T extends Record<string, any>>(
         pages: Math.ceil(recordsFiltered / state.rowsPerPage),
         recordCount: recordsTotal,
         loading: false,
-        selectedRows: prev.selectedRows.filter(selected =>
+        selectedRows: prev.selectedRows.filter((selected) =>
           rows.some((newRow: any) => newRow.id === selected.id)
-        ),
+        )
       }));
     } catch (error: any) {
-      setState((prev) => ({...prev, error: error.message, loading: false}));
+      setState((prev) => ({ ...prev, error: error.message, loading: false }));
     }
-  }, [url, state.filters, state.currentPage, state.rowsPerPage, state.sortBy, state.sortDir]);
+  }, [
+    url,
+    state.filters,
+    state.currentPage,
+    state.rowsPerPage,
+    state.sortBy,
+    state.sortDir
+  ]);
 
   useEffect(() => {
     fetchData().then(() => null);
   }, [fetchData]);
 
-  const onCheckboxChange = useCallback((event: React.ChangeEvent<HTMLInputElement> | {target: {checked: boolean}}, row: T) => {
-    const checked = event.target.checked;
-    setState((prev) => {
-      if (checked) {
-        // Make sure we don't add duplicates
-        const isAlreadySelected = prev.selectedRows.some(selectedRow => selectedRow.id === row.id);
-        return {
-          ...prev,
-          selectedRows: isAlreadySelected ? prev.selectedRows : [...prev.selectedRows, row]
-        };
-      } else {
-        return {
-          ...prev,
-          selectedRows: prev.selectedRows.filter((selectedRow) => selectedRow.id !== row.id)
-        };
-      }
-    });
-  }, []);
+  const onCheckboxChange = useCallback(
+    (
+      event:
+        | React.ChangeEvent<HTMLInputElement>
+        | { target: { checked: boolean } },
+      row: T
+    ) => {
+      const checked = event.target.checked;
+      setState((prev) => {
+        if (checked) {
+          // Make sure we don't add duplicates
+          const isAlreadySelected = prev.selectedRows.some(
+            (selectedRow) => selectedRow.id === row.id
+          );
+          return {
+            ...prev,
+            selectedRows: isAlreadySelected
+              ? prev.selectedRows
+              : [...prev.selectedRows, row]
+          };
+        } else {
+          return {
+            ...prev,
+            selectedRows: prev.selectedRows.filter(
+              (selectedRow) => selectedRow.id !== row.id
+            )
+          };
+        }
+      });
+    },
+    []
+  );
 
-  const onSelectAllRows = useCallback((event: React.ChangeEvent<HTMLInputElement> | {target: {checked: boolean}}) => {
-    const checked = event.target.checked;
-    setState((prev) => ({
-      ...prev,
-      selectedRows: checked ? [...prev.data] : [],
-    }));
-  }, []);
+  const onSelectAllRows = useCallback(
+    (
+      event:
+        | React.ChangeEvent<HTMLInputElement>
+        | { target: { checked: boolean } }
+    ) => {
+      const checked = event.target.checked;
+      setState((prev) => ({
+        ...prev,
+        selectedRows: checked ? [...prev.data] : []
+      }));
+    },
+    []
+  );
 
   const onSort = useCallback((column: keyof T) => {
     setState((prev) => ({
       ...prev,
       sortBy: column,
-      sortDir: prev.sortBy === column && prev.sortDir === 'asc' ? 'desc' : 'asc',
+      sortDir: prev.sortBy === column && prev.sortDir === 'asc' ? 'desc' : 'asc'
     }));
   }, []);
 
@@ -113,46 +147,60 @@ export const useCustomTable = <T extends Record<string, any>>(
         if (Array.isArray(value)) {
           return value.length > 0;
         }
-        return value !== "" && value !== null && value !== undefined;
+        return value !== '' && value !== null && value !== undefined;
       })
     );
-    setState((prev) => ({...prev, filters: filteredData, currentPage: 0}));
+    setState((prev) => ({ ...prev, filters: filteredData, currentPage: 0 }));
   }, []);
 
   const setFilters = useCallback((filters: FieldValues) => {
     setState((prev) => ({
       ...prev,
       filters,
-      currentPage: 0, // Reset to the first page when filters change
+      currentPage: 0 // Reset to the first page when filters change
     }));
   }, []);
 
   const setVisibleColumns = useCallback((columns: (keyof T)[]) => {
-    setState((prev) => ({...prev, visibleColumns: columns}));
+    setState((prev) => ({ ...prev, visibleColumns: columns }));
   }, []);
 
   // Add function to reset selected rows
   const resetSelectedRows = useCallback(() => {
-    setState((prev) => ({...prev, selectedRows: []}));
+    setState((prev) => ({ ...prev, selectedRows: [] }));
   }, []);
 
-  const tableActions = useMemo(() => ({
-    setCurrentPage: (page: number) => setState((prev) => ({...prev, currentPage: page})),
-    setRowsPerPage: (rowsPerPage: number) => setState((prev) => ({...prev, rowsPerPage, currentPage: 0})),
-    onCheckboxChange,
-    onSelectAllRows,
-    onSort,
-    onFilter,
-    setVisibleColumns,
-    refresh: fetchData,
-    setFilters,
-    resetSelectedRows,
-  }), [onCheckboxChange, onSelectAllRows, onSort, onFilter, setVisibleColumns, fetchData, setFilters, resetSelectedRows]);
+  const tableActions = useMemo(
+    () => ({
+      setCurrentPage: (page: number) =>
+        setState((prev) => ({ ...prev, currentPage: page })),
+      setRowsPerPage: (rowsPerPage: number) =>
+        setState((prev) => ({ ...prev, rowsPerPage, currentPage: 0 })),
+      onCheckboxChange,
+      onSelectAllRows,
+      onSort,
+      onFilter,
+      setVisibleColumns,
+      refresh: fetchData,
+      setFilters,
+      resetSelectedRows
+    }),
+    [
+      onCheckboxChange,
+      onSelectAllRows,
+      onSort,
+      onFilter,
+      setVisibleColumns,
+      fetchData,
+      setFilters,
+      resetSelectedRows
+    ]
+  );
 
   return {
     ...state,
     columns,
     bulkActions,
-    ...tableActions,
+    ...tableActions
   };
 };

@@ -39,15 +39,18 @@ export function AttestationListing({
       options: [
         { label: t('attestations.types.travail'), value: 'travail' },
         { label: t('attestations.types.salaire'), value: 'salaire' },
-        { label: t('attestations.types.travail_salaire'), value: 'travail_salaire' },
-        { label: t('attestations.types.stage'), value: 'stage' },
+        {
+          label: t('attestations.types.travail_salaire'),
+          value: 'travail_salaire'
+        },
+        { label: t('attestations.types.stage'), value: 'stage' }
       ]
     },
     {
       field: 'employeeId',
       label: t('attestations.columns.employee'),
       type: 'select',
-      options: employees.map(emp => ({
+      options: employees.map((emp) => ({
         label: `${emp.firstName} ${emp.lastName}`,
         value: String(emp.id)
       }))

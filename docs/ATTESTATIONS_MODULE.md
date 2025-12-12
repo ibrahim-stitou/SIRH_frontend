@@ -64,6 +64,7 @@ Il est possible de générer une attestation directement sans passer par une dem
 ### 1. Types TypeScript
 
 **`src/types/attestation.ts`**
+
 - Définit tous les types TypeScript pour les attestations
 - Interfaces pour les requêtes et documents
 - Types d'énumération pour statuts et types
@@ -71,6 +72,7 @@ Il est possible de générer une attestation directement sans passer par une dem
 ### 2. Générateur PDF
 
 **`src/lib/pdf/attestation-generator.ts`**
+
 - Classe `AttestationPDFGenerator` pour générer les PDFs
 - Méthodes spécifiques pour chaque type d'attestation
 - Gestion du formatage des dates et calcul d'ancienneté
@@ -79,6 +81,7 @@ Il est possible de générer une attestation directement sans passer par une dem
 ### 3. Interface utilisateur
 
 **`src/app/admin/personnel/attestations/page_old.tsx`**
+
 - Page principale du module
 - Gestion des demandes et attestations générées
 - Dialogues pour création, approbation, rejet
@@ -88,14 +91,17 @@ Il est possible de générer une attestation directement sans passer par une dem
 ### 4. Mock Data
 
 **`mock-data/attestationRequests.json`**
+
 - Données de test pour les demandes
 
 **`mock-data/attestations.json`**
+
 - Données de test pour les documents générés
 
 ### 5. Traductions
 
 Ajout des traductions dans :
+
 - `public/locales/fr.json` (Français)
 - `public/locales/en.json` (Anglais)
 - `public/locales/ar.json` (Arabe)
@@ -161,6 +167,7 @@ Dans `src/lib/pdf/attestation-generator.ts`, chaque type d'attestation a sa prop
 - `generateAttestationStage()`
 
 Vous pouvez personnaliser :
+
 - Le contenu du texte
 - Le formatage
 - Les informations de l'entreprise
@@ -178,7 +185,7 @@ const DEFAULT_COMPANY = {
   phone: '+212 5 22 XX XX XX',
   email: 'contact@sirh-company.ma',
   ice: 'ICE000123456789',
-  rc: 'RC 12345',
+  rc: 'RC 12345'
 };
 ```
 
@@ -216,6 +223,7 @@ Modifiez ces valeurs dans le fichier PDF generator.
 ## Support multi-langues
 
 Le module supporte trois langues :
+
 - 🇫🇷 Français (fr)
 - 🇬🇧 Anglais (en)
 - 🇸🇦 Arabe (ar)
@@ -277,4 +285,3 @@ Module développé pour SIRH Frontend - Système Intégré de Ressources Humaine
 ## Licence
 
 Propriétaire - Tous droits réservés
-

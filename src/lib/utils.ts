@@ -28,7 +28,10 @@ export function formatBytes(
 /**
  * Format a date string or Date object to a localized string format
  */
-export function formatDate(date: string | Date | null | undefined, options?: Intl.DateTimeFormatOptions): string {
+export function formatDate(
+  date: string | Date | null | undefined,
+  options?: Intl.DateTimeFormatOptions
+): string {
   if (!date) return '';
 
   const dateObj = typeof date === 'string' ? new Date(date) : date;

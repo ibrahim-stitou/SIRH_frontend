@@ -5,6 +5,7 @@
 ### 1. Installation
 
 Les dépendances nécessaires sont déjà installées :
+
 ```bash
 # Déjà exécuté
 pnpm add jspdf jspdf-autotable
@@ -23,6 +24,7 @@ npm run dev
 ### 3. Accéder au module
 
 Ouvrez votre navigateur et naviguez vers :
+
 ```
 http://localhost:3003/admin/personnel/attestations
 ```
@@ -30,30 +32,38 @@ http://localhost:3003/admin/personnel/attestations
 ## 📋 Checklist des fichiers créés
 
 ✅ **Types TypeScript**
+
 - `src/types/attestation.ts` - Définitions de types
 
 ✅ **Générateur PDF**
+
 - `src/lib/pdf/attestation-generator.ts` - Logique de génération PDF
 
 ✅ **Interface utilisateur**
+
 - `src/app/admin/personnel/attestations/page_old.tsx` - Page principale
 
 ✅ **Mock Data**
+
 - `mock-data/attestationRequests.json` - Demandes de test
 - `mock-data/attestations.json` - Attestations de test
 
 ✅ **Base de données mock**
+
 - `db.js` - Mis à jour avec les nouvelles collections
 
 ✅ **Traductions**
+
 - `public/locales/fr.json` - Français ✓
 - `public/locales/en.json` - Anglais ✓
 - `public/locales/ar.json` - Arabe ✓
 
 ✅ **Navigation**
+
 - Déjà présente dans `src/constants/data.ts`
 
 ✅ **Documentation**
+
 - `docs/ATTESTATIONS_MODULE.md` - Documentation complète
 - `docs/ATTESTATIONS_QUICK_START.md` - Guide rapide
 
@@ -112,6 +122,7 @@ http://localhost:3003/admin/personnel/attestations
 ## 📊 Données de test disponibles
 
 ### Employés (employees)
+
 - Admin User (id: 100) - System Administrator
 - HR Manager (id: 101) - HR Manager
 - Alice Martin (id: 102) - Frontend Developer
@@ -119,28 +130,33 @@ http://localhost:3003/admin/personnel/attestations
 - Chloe Dupont (id: 104) - HR Specialist
 
 ### Demandes pré-créées (attestationRequests)
+
 - 5 demandes avec différents statuts
 - Types variés : travail, salaire, stage, travail_salaire
 
 ### Attestations pré-générées (attestations)
+
 - 3 attestations déjà générées
 - Numéros : ATT-2024-001, ATT-2024-002, ATT-2024-003
 
 ## 🎨 Fonctionnalités UI
 
 ### Statistiques en temps réel
+
 - **Demandes totales** : Nombre total de demandes
 - **En attente** : Demandes nécessitant une action
 - **Approuvées** : Demandes validées
 - **Générées** : Attestations créées
 
 ### Badges de statut
+
 - 🟡 **En attente** : Jaune avec icône horloge
 - 🟢 **Approuvée** : Vert avec icône check
 - 🔴 **Rejetée** : Rouge avec icône X
 - 🔵 **Générée** : Bleu avec icône document
 
 ### Tables interactives
+
 - Tri et pagination automatiques
 - Actions contextuelles selon le statut
 - Affichage des dates formatées
@@ -149,6 +165,7 @@ http://localhost:3003/admin/personnel/attestations
 ## 🔍 Contenu des PDFs générés
 
 ### Attestation de travail
+
 - En-tête avec informations de l'entreprise
 - Titre centré et formaté
 - Identité complète de l'employé (nom, CIN, date de naissance)
@@ -159,13 +176,16 @@ http://localhost:3003/admin/personnel/attestations
 - Pied de page avec numéro et date
 
 ### Attestation de salaire
+
 - Même structure que l'attestation de travail
 - **+ Information salariale** : Salaire mensuel brut formaté
 
 ### Attestation de travail et salaire
+
 - Combine les deux informations complètes
 
 ### Attestation de stage
+
 - Adaptation pour les stagiaires
 - Dates de début et fin du stage
 - Appréciation du travail effectué
@@ -173,6 +193,7 @@ http://localhost:3003/admin/personnel/attestations
 ## 🌍 Support multi-langues
 
 Le module s'adapte automatiquement à la langue sélectionnée :
+
 - Interface traduite en FR/EN/AR
 - Changement de langue en temps réel
 - Toutes les clés traduites
@@ -180,6 +201,7 @@ Le module s'adapte automatiquement à la langue sélectionnée :
 ## 🐛 Debugging
 
 ### Vérifier que le serveur mock fonctionne
+
 ```bash
 curl http://localhost:3001/attestationRequests
 curl http://localhost:3001/attestations
@@ -187,21 +209,27 @@ curl http://localhost:3001/employees
 ```
 
 ### Console du navigateur
+
 Ouvrir les DevTools (F12) pour voir :
+
 - Les requêtes API
 - Les erreurs éventuelles
 - Les logs de génération PDF
 
 ### Données persistées
+
 Les données sont stockées dans `db.json` (généré automatiquement par json-server)
 
 ## 💡 Astuces
 
 ### Raccourcis clavier
+
 - Dans la navigation, utilisez `a` + `t` pour accéder rapidement au module
 
 ### Personnalisation des PDFs
+
 Modifiez `DEFAULT_COMPANY` dans `attestation-generator.ts` :
+
 ```typescript
 const DEFAULT_COMPANY = {
   name: 'VOTRE ENTREPRISE',
@@ -210,12 +238,14 @@ const DEFAULT_COMPANY = {
   phone: 'Votre téléphone',
   email: 'votre@email.com',
   ice: 'Votre ICE',
-  rc: 'Votre RC',
+  rc: 'Votre RC'
 };
 ```
 
 ### Numérotation personnalisée
+
 Dans `page_old.tsx`, ligne ~200 :
+
 ```typescript
 const numeroAttestation = `ATT-${year}-${String(nextNum).padStart(3, '0')}`;
 // Exemple : ATT-2024-001
@@ -228,6 +258,7 @@ const numeroAttestation = `CERT-${company}-${year}-${nextNum}`;
 ## 📞 Support
 
 Si vous rencontrez des problèmes :
+
 1. Consultez `docs/ATTESTATIONS_MODULE.md` pour la documentation complète
 2. Vérifiez que toutes les dépendances sont installées
 3. Assurez-vous que le serveur mock est démarré
@@ -236,6 +267,7 @@ Si vous rencontrez des problèmes :
 ## ✅ Prochaines étapes
 
 Fonctionnalités recommandées à ajouter :
+
 1. 📧 Envoi par email automatique
 2. 🔐 Signatures électroniques
 3. 🎨 Templates personnalisables
@@ -248,4 +280,3 @@ Fonctionnalités recommandées à ajouter :
 ## 🎉 Félicitations !
 
 Votre module d'attestations est maintenant complètement fonctionnel et prêt à l'emploi !
-

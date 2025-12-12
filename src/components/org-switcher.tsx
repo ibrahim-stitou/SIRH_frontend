@@ -78,7 +78,7 @@
 //                 className="cursor-pointer"
 //               >
 //                 {tenant.name}
-//               </DropdownMenuItem>  
+//               </DropdownMenuItem>
 //             ))}
 //           </DropdownMenuContent>
 //         </DropdownMenu>

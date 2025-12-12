@@ -1,11 +1,58 @@
 [
-  {"id":1,"title":"Certificat AWS","fileName":"aws_certif.png","mimeType":"image/png","size":34567},
-  {"id":2,"title":"Baccalauréat","fileName":"bac.png","mimeType":"image/png","size":28765},
-  {"id":3,"title":"Carte Nationale (CIN)","fileName":"cin.png","mimeType":"image/png","size":22345},
-  {"id":4,"title":"Permis de conduire","fileName":"driver_licence.png","mimeType":"image/png","size":19876},
-  {"id":5,"title":"Diplôme Licence","fileName":"licence.png","mimeType":"image/png","size":25432},
-  {"id":6,"title":"Modèle Contrat CDI","fileName":"modele-cdi-itm-FR.pdf","mimeType":"application/pdf","size":804321},
-  {"id":7,"title":"Passeport","fileName":"passport.png","mimeType":"image/png","size":31234},
-  {"id":8,"title":"Photo de profil","fileName":"profile.png","mimeType":"image/png","size":12345}
+  {
+    "id": 1,
+    "title": "Certificat AWS",
+    "fileName": "aws_certif.png",
+    "mimeType": "image/png",
+    "size": 34567
+  },
+  {
+    "id": 2,
+    "title": "Baccalauréat",
+    "fileName": "bac.png",
+    "mimeType": "image/png",
+    "size": 28765
+  },
+  {
+    "id": 3,
+    "title": "Carte Nationale (CIN)",
+    "fileName": "cin.png",
+    "mimeType": "image/png",
+    "size": 22345
+  },
+  {
+    "id": 4,
+    "title": "Permis de conduire",
+    "fileName": "driver_licence.png",
+    "mimeType": "image/png",
+    "size": 19876
+  },
+  {
+    "id": 5,
+    "title": "Diplôme Licence",
+    "fileName": "licence.png",
+    "mimeType": "image/png",
+    "size": 25432
+  },
+  {
+    "id": 6,
+    "title": "Modèle Contrat CDI",
+    "fileName": "modele-cdi-itm-FR.pdf",
+    "mimeType": "application/pdf",
+    "size": 804321
+  },
+  {
+    "id": 7,
+    "title": "Passeport",
+    "fileName": "passport.png",
+    "mimeType": "image/png",
+    "size": 31234
+  },
+  {
+    "id": 8,
+    "title": "Photo de profil",
+    "fileName": "profile.png",
+    "mimeType": "image/png",
+    "size": 12345
+  }
 ]
-

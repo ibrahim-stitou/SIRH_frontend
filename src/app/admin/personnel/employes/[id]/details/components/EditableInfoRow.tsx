@@ -4,7 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { DatePickerField } from '@/components/custom/DatePickerField';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 import { Check, X, Edit } from 'lucide-react';
 
 interface EditableInfoRowProps {
@@ -37,38 +43,38 @@ const EditableInfoRow: React.FC<EditableInfoRowProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-3 gap-4 items-start py-2">
-      <div className="text-sm text-muted-foreground col-span-1">{label}</div>
-      <div className="col-span-2">
+    <div className='grid grid-cols-3 items-start gap-4 py-2'>
+      <div className='text-muted-foreground col-span-1 text-sm'>{label}</div>
+      <div className='col-span-2'>
         {!editing ? (
-          <div className="flex items-center justify-between">
-            <div className="text-sm">{value ?? '—'}</div>
+          <div className='flex items-center justify-between'>
+            <div className='text-sm'>{value ?? '—'}</div>
             {!disabled && (
               <Button
-                variant="ghost"
-                size="sm"
+                variant='ghost'
+                size='sm'
                 onClick={() => setEditing(true)}
-                className="h-8 px-2"
+                className='h-8 px-2'
               >
-                <Edit className="h-4 w-4" />
+                <Edit className='h-4 w-4' />
               </Button>
             )}
           </div>
         ) : (
-          <div className="flex items-center gap-2">
+          <div className='flex items-center gap-2'>
             {type === 'text' && (
               <Input
                 value={temp ?? ''}
                 onChange={(e) => setTemp(e.target.value)}
-                className="max-w-md"
+                className='max-w-md'
               />
             )}
             {type === 'number' && (
               <Input
-                type="number"
+                type='number'
                 value={temp ?? 0}
                 onChange={(e) => setTemp(Number(e.target.value))}
-                className="max-w-md"
+                className='max-w-md'
               />
             )}
             {type === 'date' && (
@@ -81,16 +87,16 @@ const EditableInfoRow: React.FC<EditableInfoRowProps> = ({
               <Textarea
                 value={temp ?? ''}
                 onChange={(e) => setTemp(e.target.value)}
-                className="min-h-[80px]"
+                className='min-h-[80px]'
               />
             )}
             {type === 'select' && (
               <Select value={temp} onValueChange={setTemp}>
-                <SelectTrigger className="w-56">
+                <SelectTrigger className='w-56'>
                   <SelectValue placeholder={value ?? '—'} />
                 </SelectTrigger>
                 <SelectContent>
-                  {(options || []).map(opt => (
+                  {(options || []).map((opt) => (
                     <SelectItem key={opt.id} value={opt.id}>
                       {opt.label}
                     </SelectItem>
@@ -98,19 +104,19 @@ const EditableInfoRow: React.FC<EditableInfoRowProps> = ({
                 </SelectContent>
               </Select>
             )}
-            <Button size="sm" onClick={save} className="gap-1">
-              <Check className="h-4 w-4" />
+            <Button size='sm' onClick={save} className='gap-1'>
+              <Check className='h-4 w-4' />
             </Button>
             <Button
-              size="sm"
-              variant="outline"
+              size='sm'
+              variant='outline'
               onClick={() => {
                 setEditing(false);
                 setTemp(value);
               }}
-              className="gap-1"
+              className='gap-1'
             >
-              <X className="h-4 w-4" />
+              <X className='h-4 w-4' />
             </Button>
           </div>
         )}
@@ -120,4 +126,3 @@ const EditableInfoRow: React.FC<EditableInfoRowProps> = ({
 };
 
 export default EditableInfoRow;
-

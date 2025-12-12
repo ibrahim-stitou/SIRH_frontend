@@ -19,10 +19,10 @@ interface DataTableProps<TData> extends React.ComponentProps<'div'> {
 }
 
 export function DataTable<TData>({
-                                   table,
-                                   actionBar,
-                                   children
-                                 }: DataTableProps<TData>) {
+  table,
+  actionBar,
+  children
+}: DataTableProps<TData>) {
   return (
     <div className='flex flex-1 flex-col space-y-4'>
       {children}
@@ -44,9 +44,9 @@ export function DataTable<TData>({
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                       </TableHead>
                     ))}
                   </TableRow>

@@ -4,13 +4,11 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { Check } from 'lucide-react';
 import { UseFormReturn } from 'react-hook-form';
-import {
-  CustomTableFilterConfig,
-} from '@/components/custom/data-table/types';
+import { CustomTableFilterConfig } from '@/components/custom/data-table/types';
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger,
+  PopoverTrigger
 } from '@/components/ui/popover';
 import {
   Command,
@@ -19,7 +17,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
+  CommandSeparator
 } from '@/components/ui/command';
 import { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
@@ -31,12 +29,17 @@ interface DataTableSelectFilterProps {
   filter: CustomTableFilterConfig;
   form: UseFormReturn<any>;
 }
-export function CustomDataTableSelect({ filter, form }: DataTableSelectFilterProps) {
+export function CustomDataTableSelect({
+  filter,
+  form
+}: DataTableSelectFilterProps) {
   const { field, label, type, options } = filter;
   const { setValue, getValues } = form;
   const isMultiSelect = type === 'datatable-multiselect';
   const [open, setOpen] = useState(false);
-  const [selectedValues, setSelectedValues] = useState<Set<string | number>>(new Set());
+  const [selectedValues, setSelectedValues] = useState<Set<string | number>>(
+    new Set()
+  );
   const { t } = useLanguage();
 
   useEffect(() => {
@@ -159,7 +162,9 @@ export function CustomDataTableSelect({ filter, form }: DataTableSelectFilterPro
                     <div
                       className={cn(
                         'border-primary flex size-4 items-center justify-center rounded-sm border',
-                        isSelected ? 'bg-primary text-primary-foreground' : 'opacity-50 [&_svg]:invisible'
+                        isSelected
+                          ? 'bg-primary text-primary-foreground'
+                          : 'opacity-50 [&_svg]:invisible'
                       )}
                     >
                       <Check className='h-4 w-4' />

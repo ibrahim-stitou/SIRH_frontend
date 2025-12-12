@@ -9,14 +9,39 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel
+} from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList
+} from '@/components/ui/command';
 import { CustomDataTableSelect } from '@/components/custom/data-table/custom-datatable-select';
 import { X, ArrowDownUp, Check } from 'lucide-react';
 import { CalendarIcon, Settings2 } from 'lucide-react';
-import { CustomTableFilterConfig, UseCustomTableReturnType } from '@/components/custom/data-table/types';
+import {
+  CustomTableFilterConfig,
+  UseCustomTableReturnType
+} from '@/components/custom/data-table/types';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -29,17 +54,18 @@ interface CustomTableToolbarProps<TData extends Record<string, any>>
 }
 
 export function CustomTableToolbar<TData extends Record<string, any>>({
-                                                                        table,
-                                                                        filters = [],
-                                                                        className,
-                                                                        ...props
-                                                                      }: CustomTableToolbarProps<TData>) {
-
+  table,
+  filters = [],
+  className,
+  ...props
+}: CustomTableToolbarProps<TData>) {
   const { t } = useLanguage();
 
   const defaultValues = useMemo(() => {
     return filters.reduce<Record<string, any>>((acc, filter) => {
-      acc[filter.field] = filter.defaultValue ?? (filter.type === 'datatable-multiselect' ? [] : '');
+      acc[filter.field] =
+        filter.defaultValue ??
+        (filter.type === 'datatable-multiselect' ? [] : '');
       return acc;
     }, {});
   }, [filters]);
@@ -52,7 +78,10 @@ export function CustomTableToolbar<TData extends Record<string, any>>({
           schema[filter.field] = z.string().nullable().optional();
           break;
         case 'number':
-          schema[filter.field] = z.union([z.number(), z.string()]).nullable().optional();
+          schema[filter.field] = z
+            .union([z.number(), z.string()])
+            .nullable()
+            .optional();
           break;
         case 'date':
           schema[filter.field] = z.string().nullable().optional();
@@ -77,7 +106,7 @@ export function CustomTableToolbar<TData extends Record<string, any>>({
   const methods = useForm<z.infer<typeof filterSchema>>({
     resolver: zodResolver(filterSchema),
     defaultValues,
-    mode: 'onSubmit',
+    mode: 'onSubmit'
   });
 
   const { handleSubmit, reset, control } = methods;
@@ -92,14 +121,12 @@ export function CustomTableToolbar<TData extends Record<string, any>>({
   };
 
   const isFiltered = useMemo(() => {
-    return Object.values(table.filters || {}).some(
-      (v) => {
-        if (Array.isArray(v)) {
-          return v.length > 0;
-        }
-        return v !== '' && v !== null && v !== undefined;
+    return Object.values(table.filters || {}).some((v) => {
+      if (Array.isArray(v)) {
+        return v.length > 0;
       }
-    );
+      return v !== '' && v !== null && v !== undefined;
+    });
   }, [table.filters]);
 
   const renderFilter = (filter: CustomTableFilterConfig) => {
@@ -132,30 +159,34 @@ export function CustomTableToolbar<TData extends Record<string, any>>({
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
-                    variant="outline"
+                    variant='outline'
                     className={cn(
-                      "justify-start text-left font-normal",
-                      !field.value && "text-muted-foreground"
+                      'justify-start text-left font-normal',
+                      !field.value && 'text-muted-foreground'
                     )}
                   >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {field.value ? format(new Date(field.value), "PPP", { locale: fr }) : <span>{filter.label}</span>}
+                    <CalendarIcon className='mr-2 h-4 w-4' />
+                    {field.value ? (
+                      format(new Date(field.value), 'PPP', { locale: fr })
+                    ) : (
+                      <span>{filter.label}</span>
+                    )}
                     {field.value && (
                       <span
-                        className="ml-auto flex items-center"
+                        className='ml-auto flex items-center'
                         onClick={(e) => {
                           e.stopPropagation();
                           field.onChange(null);
                         }}
                       >
-                        <X className="h-4 w-4 text-muted-foreground hover:text-red-500 cursor-pointer" />
+                        <X className='text-muted-foreground h-4 w-4 cursor-pointer hover:text-red-500' />
                       </span>
                     )}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className='w-auto p-0' align='start'>
                   <Calendar
-                    mode="single"
+                    mode='single'
                     selected={field.value ? new Date(field.value) : undefined}
                     onSelect={(date) => {
                       if (date instanceof Date && !isNaN(date.getTime())) {
@@ -180,26 +211,29 @@ export function CustomTableToolbar<TData extends Record<string, any>>({
             render={({ field }) => (
               <Select
                 onValueChange={(value) => {
-                  const finalValue = value === "null" ? null : value;
+                  const finalValue = value === 'null' ? null : value;
                   field.onChange(finalValue);
                   // Call the custom onChange handler if provided
                   if (filter.onChange) {
                     filter.onChange(finalValue);
                   }
                 }}
-                value={field.value || "null"}
-                defaultValue={field.value || "null"}
+                value={field.value || 'null'}
+                defaultValue={field.value || 'null'}
                 disabled={filter.disabled}
               >
                 <SelectTrigger>
                   <SelectValue placeholder={filter.placeholder || filter.label}>
                     {field.value
-                      ? filter.options?.find((option) => String(option.value) === String(field.value))?.label
-                      : (filter.placeholder || filter.label)}
+                      ? filter.options?.find(
+                          (option) =>
+                            String(option.value) === String(field.value)
+                        )?.label
+                      : filter.placeholder || filter.label}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="null">{t('table.all')}</SelectItem>
+                  <SelectItem value='null'>{t('table.all')}</SelectItem>
                   {filter.options?.map((option) => (
                     <SelectItem key={option.value} value={String(option.value)}>
                       {option.label}
@@ -246,7 +280,10 @@ export function CustomTableToolbar<TData extends Record<string, any>>({
       <div
         role='toolbar'
         aria-orientation='horizontal'
-        className={cn('flex w-full items-start justify-between gap-2 p-1', className)}
+        className={cn(
+          'flex w-full items-start justify-between gap-2 p-1',
+          className
+        )}
         {...props}
       >
         <div className='flex flex-wrap items-center gap-2'>
@@ -270,7 +307,11 @@ export function CustomTableToolbar<TData extends Record<string, any>>({
           )}
 
           {filters.length > 0 && (
-            <Button aria-label='Apply filters' size='sm' onClick={handleApplyFilters}>
+            <Button
+              aria-label='Apply filters'
+              size='sm'
+              onClick={handleApplyFilters}
+            >
               {t('dataTable.apply') || 'Appliquer'}
             </Button>
           )}
@@ -292,7 +333,11 @@ export function CustomTableToolbar<TData extends Record<string, any>>({
             </PopoverTrigger>
             <PopoverContent align='end' className='w-44 p-0'>
               <Command>
-                <CommandInput placeholder={t('dataTable.search.placeholder') || 'Rechercher...'} />
+                <CommandInput
+                  placeholder={
+                    t('dataTable.search.placeholder') || 'Rechercher...'
+                  }
+                />
                 <CommandList>
                   <CommandEmpty>{t('table.none')}</CommandEmpty>
                   <CommandGroup>
@@ -301,7 +346,9 @@ export function CustomTableToolbar<TData extends Record<string, any>>({
                         key={String(column.data)}
                         onSelect={() => {
                           const { data } = column;
-                          const isVisible = table.visibleColumns.includes(data as keyof TData);
+                          const isVisible = table.visibleColumns.includes(
+                            data as keyof TData
+                          );
                           const newCols = isVisible
                             ? table.visibleColumns.filter((c) => c !== data)
                             : [...table.visibleColumns, data as keyof TData];
@@ -311,7 +358,9 @@ export function CustomTableToolbar<TData extends Record<string, any>>({
                         <Check
                           className={cn(
                             'mr-2 h-4 w-4',
-                            table.visibleColumns.includes(column.data as keyof TData)
+                            table.visibleColumns.includes(
+                              column.data as keyof TData
+                            )
                               ? 'opacity-100'
                               : 'opacity-0'
                           )}

@@ -22,6 +22,6 @@ export const useAuth = () => {
     error,
     isAuthenticated: status === 'authenticated',
     isAdmin,
-    session,
+    session
   };
 };

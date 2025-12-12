@@ -96,6 +96,7 @@ Le fichier `tailwind.config.js` est déjà configuré pour utiliser les couleurs
 ## 🧪 Tests
 
 Ce projet utilise :
+
 - **Jest** pour les tests unitaires
 - **Testing Library** pour les tests de composants
 - **Cypress** pour les tests end-to-end
@@ -109,4 +110,3 @@ L'application peut être déployée sur diverses plateformes comme Vercel, Netli
 - Suivre les principes de Clean Code
 - Utiliser des noms descriptifs pour les variables et fonctions
 - Commenter le code complexe
-

@@ -2,7 +2,11 @@
 
 import { CustomTableColumn } from '@/components/custom/data-table/types';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip';
 import { Download } from 'lucide-react';
 import { format } from 'date-fns';
 import type { Attestation } from '@/types/attestation';
@@ -16,7 +20,6 @@ export const getAttestationsColumns = (
   employees: any[],
   onDownload: (attestation: Attestation) => void
 ): CustomTableColumn<AttestationRow>[] => {
-
   const getEmployeeName = (employeeId: number) => {
     const emp = employees.find((e) => e.id === employeeId);
     return emp ? `${emp.firstName} ${emp.lastName}` : '-';
@@ -28,7 +31,7 @@ export const getAttestationsColumns = (
       label: t('attestations.columns.numero'),
       sortable: true,
       render: (value) => (
-        <span className="font-mono font-semibold">{value}</span>
+        <span className='font-mono font-semibold'>{value}</span>
       )
     },
     {
@@ -70,24 +73,25 @@ export const getAttestationsColumns = (
       label: t('attestations.columns.actions'),
       sortable: false,
       render: (_value, row) => (
-        <div className="flex items-center gap-2">
+        <div className='flex items-center gap-2'>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                size="sm"
-                variant="outline"
+                size='sm'
+                variant='outline'
                 onClick={() => onDownload(row)}
-                className="h-8 gap-1"
+                className='h-8 gap-1'
               >
-                <Download className="h-3 w-3" />
+                <Download className='h-3 w-3' />
                 {t('attestations.actions.download')}
               </Button>
             </TooltipTrigger>
-            <TooltipContent>{t('attestations.actions.download')}</TooltipContent>
+            <TooltipContent>
+              {t('attestations.actions.download')}
+            </TooltipContent>
           </Tooltip>
         </div>
       )
     }
   ];
 };
-

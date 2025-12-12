@@ -20,13 +20,13 @@ import CustomTablePagination from '@/components/custom/data-table/custom-table-p
 import { useLanguage } from '@/context/LanguageContext';
 
 const CustomTable = <T extends Record<string, any>>({
-                                                      url,
-                                                      columns,
-                                                      filters,
-                                                      bulkActions = [],
-                                                      onInit,
-                                                      clickCard,
-                                                    }: CustomTableProps<T>) => {
+  url,
+  columns,
+  filters,
+  bulkActions = [],
+  onInit,
+  clickCard
+}: CustomTableProps<T>) => {
   const table = useCustomTable(url, columns, bulkActions);
   const { t } = useLanguage();
   const [showBulkActions, setShowBulkActions] = useState(false);
@@ -53,9 +53,14 @@ const CustomTable = <T extends Record<string, any>>({
   // Add click outside handler to close the card
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (showClickCard && cardRef.current && !cardRef.current.contains(event.target as Node)) {
+      if (
+        showClickCard &&
+        cardRef.current &&
+        !cardRef.current.contains(event.target as Node)
+      ) {
         // Check if the click is on a table row (which has its own click handler)
-        const isClickOnTableRow = (event.target as Element)?.closest('tr') !== null;
+        const isClickOnTableRow =
+          (event.target as Element)?.closest('tr') !== null;
 
         if (!isClickOnTableRow) {
           setIsAnimatingOut(true);
@@ -85,12 +90,13 @@ const CustomTable = <T extends Record<string, any>>({
     setShowBulkActions(table.selectedRows.length > 0);
   }, [table.selectedRows]);
 
-
-  const areAllRowsSelected = table.data.length > 0 &&
-    table.data.every(row =>
-      table.selectedRows.some(selectedRow => selectedRow.id === row.id)
+  const areAllRowsSelected =
+    table.data.length > 0 &&
+    table.data.every((row) =>
+      table.selectedRows.some((selectedRow) => selectedRow.id === row.id)
     );
-  const areSomeRowsSelected = table.selectedRows.length > 0 && !areAllRowsSelected;
+  const areSomeRowsSelected =
+    table.selectedRows.length > 0 && !areAllRowsSelected;
 
   return (
     <div className='flex flex-1 flex-col space-y-4'>
@@ -166,13 +172,12 @@ const CustomTable = <T extends Record<string, any>>({
                                   target: { checked: true }
                                 } as any);
                               } else {
-                                table.selectedRows =
-                                  table.selectedRows.filter(
-                                    (selectedRow) =>
-                                      !table.data.some(
-                                        (row) => row.id === selectedRow.id
-                                      )
-                                  );
+                                table.selectedRows = table.selectedRows.filter(
+                                  (selectedRow) =>
+                                    !table.data.some(
+                                      (row) => row.id === selectedRow.id
+                                    )
+                                );
                                 table.onSelectAllRows({
                                   target: { checked: false }
                                 } as any);
@@ -237,7 +242,9 @@ const CustomTable = <T extends Record<string, any>>({
                           onClick={(e) => {
                             if (clickCard) {
                               // Find the clicked cell
-                              const clickedCell = (e.target as Element).closest('td');
+                              const clickedCell = (e.target as Element).closest(
+                                'td'
+                              );
 
                               // If we can't find the cell, or if it's the checkbox cell, proceed normally
                               if (!clickedCell) {
@@ -245,10 +252,15 @@ const CustomTable = <T extends Record<string, any>>({
                               }
 
                               // Find the index of the clicked cell within its row
-                              const cellIndex = Array.from(clickedCell.parentElement?.children || []).indexOf(clickedCell);
+                              const cellIndex = Array.from(
+                                clickedCell.parentElement?.children || []
+                              ).indexOf(clickedCell);
 
                               // Adjust for the checkbox column if present
-                              const columnIndex = bulkActions && bulkActions.length > 0 ? cellIndex - 1 : cellIndex;
+                              const columnIndex =
+                                bulkActions && bulkActions.length > 0
+                                  ? cellIndex - 1
+                                  : cellIndex;
 
                               // Get the corresponding column
                               const clickedColumn = table.columns[columnIndex];
@@ -391,10 +403,8 @@ const CustomTable = <T extends Record<string, any>>({
       {clickCard && showClickCard && clickedRow && (
         <div
           ref={cardRef}
-          className={`absolute z-50 rounded-lg border bg-white p-4 shadow-lg duration-300 ease-out transform-gpu ${
-            isAnimatingOut 
-              ? 'fade-out-0' 
-              : 'animate-in fade-in-0 zoom-in-95'
+          className={`absolute z-50 transform-gpu rounded-lg border bg-white p-4 shadow-lg duration-300 ease-out ${
+            isAnimatingOut ? 'fade-out-0' : 'animate-in fade-in-0 zoom-in-95'
           }`}
           style={{
             top: `${clickPosition.y}px`,
