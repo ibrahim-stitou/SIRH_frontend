@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Clock, Calendar as CalendarIcon, Coffee, Pencil, Check, X } from 'lucide-react';
+import { Clock, Pencil, Check, X } from 'lucide-react';
 import { Contract } from '@/types/contract';
 
 interface WorkScheduleDisplayProps {
@@ -20,12 +20,15 @@ export default function WorkScheduleDisplay({ contract, isEditing, onUpdate }: W
   const [activeFields, setActiveFields] = useState<Record<string, boolean>>({});
   const isDraft = contract.status === 'Brouillon';
 
+  const schedule = (contract as any).schedule ?? (contract as any).work_time ?? {};
+
   const handleChange = (field: string, value: any) => {
     const keys = field.split('.');
-    const newData = { ...editedData };
+    const newData = { ...editedData } as any;
     let current: any = newData;
 
     for (let i = 0; i < keys.length - 1; i++) {
+      current[keys[i]] = current[keys[i]] ?? {};
       current = current[keys[i]];
     }
     current[keys[keys.length - 1]] = value;
@@ -282,81 +285,32 @@ export default function WorkScheduleDisplay({ contract, isEditing, onUpdate }: W
           </h3>
           <div className="space-y-3">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {renderField('Heures Hebdomadaires', contract.work_time.weekly_hours, 'work_time.weekly_hours', 'number')}
-              {renderField('Heures Journalières', contract.work_time.daily_hours, 'work_time.daily_hours', 'number')}
-              {renderField('Heures Annuelles', contract.work_time.annual_hours, 'work_time.annual_hours', 'number')}
+              {renderField('Type d\'Horaire', schedule.schedule_type, 'schedule.schedule_type', 'select', [
+                { value: 'Administratif', label: 'Horaire Administratif' },
+                { value: 'Continu', label: 'Horaire Continu' },
+              ])}
+              {renderField('Travail en Shift', schedule.shift_work ?? 'Non', 'schedule.shift_work', 'select', [
+                { value: 'Non', label: 'Non' },
+                { value: 'Oui', label: 'Oui' },
+              ])}
+              {renderField('Jours de Congés Annuels', schedule.annual_leave_days, 'schedule.annual_leave_days', 'number')}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {renderField('Heures par jour', schedule.hours_per_day, 'schedule.hours_per_day', 'number')}
+              {renderField('Jours par semaine', schedule.days_per_week, 'schedule.days_per_week', 'number')}
+              {renderField('Heures par semaine', schedule.hours_per_week, 'schedule.hours_per_week', 'number')}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {renderField('Début de journée', schedule.start_time, 'schedule.start_time', 'text')}
+              {renderField('Fin de journée', schedule.end_time, 'schedule.end_time', 'text')}
+              {renderField('Pause (minutes)', schedule.break_duration, 'schedule.break_duration', 'number')}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {renderField('Horaire de Travail', contract.work_time.work_schedule, 'work_time.work_schedule', 'text')}
-              {renderField(
-                'Type d\'Horaire',
-                contract.work_time.work_schedule_type,
-                'work_time.work_schedule_type',
-                'select',
-                [
-                  { value: 'Normal', label: 'Normal' },
-                  { value: 'Equipe', label: 'En équipe' },
-                  { value: 'Continu', label: 'Continu' },
-                  { value: 'Variable', label: 'Variable' },
-                  { value: 'Modulation', label: 'Modulation' },
-                ]
-              )}
+              {renderField('Autres congés', schedule.other_leaves, 'schedule.other_leaves', 'text')}
             </div>
-          </div>
-        </div>
-
-        <div className="border-t pt-4">
-          <h3 className="text-sm font-bold mb-3 text-indigo-700 dark:text-indigo-400 flex items-center gap-2">
-            <Coffee className="h-4 w-4" />
-            Organisation du Travail
-          </h3>
-          <div className="space-y-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {renderField('Jour de Repos', contract.work_time.rest_day, 'work_time.rest_day', 'text')}
-              {renderField('Équipe', contract.work_time.shift || 'Aucune', 'work_time.shift', 'text')}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {renderField('Rotation d\'équipes', contract.work_time.rotation, 'work_time.rotation', 'checkbox')}
-              {renderField('Travail de nuit', contract.work_time.night_work, 'work_time.night_work', 'checkbox')}
-              {renderField('Travail le week-end', contract.work_time.weekend_work, 'work_time.weekend_work', 'checkbox')}
-              {renderField('Astreintes', contract.work_time.on_call, 'work_time.on_call', 'checkbox')}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {renderField('Heures supplémentaires autorisées', contract.work_time.overtime_authorized, 'work_time.overtime_authorized', 'checkbox')}
-              {renderField('Repos compensateur', contract.work_time.compensatory_rest, 'work_time.compensatory_rest', 'checkbox')}
-            </div>
-          </div>
-        </div>
-
-        <div className="border-t pt-4">
-          <h3 className="text-sm font-bold mb-3 text-teal-700 dark:text-teal-400 flex items-center gap-2">
-            <CalendarIcon className="h-4 w-4" />
-            Congés et Absences
-          </h3>
-          <div className="space-y-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {renderField('Jours de Congés Annuels', contract.work_time.annual_leave_days, 'work_time.annual_leave_days', 'number')}
-              {renderField('Bonus Ancienneté', contract.work_time.seniority_leave_bonus, 'work_time.seniority_leave_bonus', 'number')}
-            </div>
-
-            {contract.work_time.special_leaves && (
-              <div className="pt-3 mt-3 border-t border-dashed">
-                <h4 className="text-xs font-bold mb-3 text-teal-600 dark:text-teal-400 flex items-center gap-1.5">
-                  <div className="h-1.5 w-1.5 rounded-full bg-teal-500"></div>
-                  Congés Spéciaux
-                </h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {renderField('Mariage', contract.work_time.special_leaves.marriage, 'work_time.special_leaves.marriage', 'number')}
-                  {renderField('Naissance', contract.work_time.special_leaves.birth, 'work_time.special_leaves.birth', 'number')}
-                  {renderField('Décès', contract.work_time.special_leaves.death_relative, 'work_time.special_leaves.death_relative', 'number')}
-                  {renderField('Circoncision', contract.work_time.special_leaves.circumcision, 'work_time.special_leaves.circumcision', 'number')}
-                  {renderField('Hajj', contract.work_time.special_leaves.hajj, 'work_time.special_leaves.hajj', 'number')}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </CardContent>

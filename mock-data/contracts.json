@@ -186,50 +186,52 @@
     "dates": {
       "signature_date": "2024-07-01",
       "start_date": "2024-07-15",
-      "effective_start_date": "2024-07-15",
-      "end_date": "2025-01-15"
+      "end_date": "2025-01-15",
+      "trial_period": {
+        "enabled": false
+      }
     },
     "job": {
-      "title": "Stagiaire Marketing Digital",
-      "department": "Marketing",
-      "category": "Employe",
+      "metier": "Marketing",
+      "emploie": "Marketing Digital",
+      "poste": "Stagiaire Marketing Digital",
       "work_location": "Casablanca",
       "work_mode": "Hybride",
-      "mobility_clause": false,
-      "missions": "Gestion des réseaux sociaux et création de contenu"
+      "classification": "Employe",
+      "responsibilities": "Gestion des réseaux sociaux et création de contenu"
     },
-    "work_time": {
-      "weekly_hours": 35,
-      "daily_hours": 7,
-      "work_schedule": "9h00 - 17h00",
-      "work_schedule_type": "Normal",
-      "rest_day": "Dimanche",
+    "schedule": {
+      "schedule_type": "Administratif",
+      "shift_work": "Non",
+      "hours_per_day": 7,
+      "days_per_week": 5,
+      "hours_per_week": 35,
+      "start_time": "09:00",
+      "end_time": "17:00",
       "annual_leave_days": 12
     },
     "salary": {
-      "base_salary": 3000,
-      "currency": "MAD",
-      "payment_frequency": "Mensuel",
       "salary_brut": 3000,
       "salary_net": 3000,
-      "salary_net_imposable": 0,
-      "payment_method": "Virement"
+      "currency": "MAD",
+      "payment_method": "Virement",
+      "periodicity": "Mensuel",
+      "primes": { "items": [] },
+      "avantages": {
+        "voiture": false,
+        "logement": false,
+        "telephone": true,
+        "assurance_sante": false,
+        "tickets_restaurant": false
+      },
+      "indemnites": ""
     },
     "legal": {
       "cnss_affiliation": false,
-      "cnss_regime": "General",
-      "amo": false,
-      "amo_regime": "CNSS",
-      "clauses": {
-        "confidentialite": true,
-        "non_concurrence": false,
-        "mobilite": false,
-        "exclusivite": false,
-        "formation": true,
-        "intellectual_property": true,
-        "discipline_interne": true,
-        "deontologie": true
-      }
+      "amo_affiliation": false,
+      "ir_applicable": false,
+      "clause_confidentialite": true,
+      "clause_non_concurrence": false
     },
     "historique": {
       "created_at": "2024-06-20T11:00:00Z",
@@ -255,512 +257,63 @@
     "dates": {
       "signature_date": "2024-11-01",
       "start_date": "2024-11-15",
-      "effective_start_date": "2024-11-15",
       "end_date": null,
       "trial_period": {
+        "enabled": true,
         "duration_months": 3,
-        "start_date": "2024-11-15",
         "end_date": "2025-02-15",
-        "renewable": true,
-        "status": "En_cours"
+        "renewable": true
       }
     },
     "job": {
-      "title": "Responsable RH",
-      "department": "Ressources Humaines",
-      "category": "Cadre",
+      "metier": "Ressources Humaines",
+      "emploie": "Responsable RH",
+      "poste": "Responsable RH",
       "work_location": "Rabat",
       "work_mode": "Presentiel",
-      "mobility_clause": true,
-      "missions": "Gestion du recrutement et développement RH"
+      "classification": "Cadre",
+      "responsibilities": "Gestion du recrutement et développement RH"
     },
-    "work_time": {
-      "weekly_hours": 40,
-      "daily_hours": 8,
-      "work_schedule": "8h30 - 17h30",
-      "work_schedule_type": "Normal",
-      "rest_day": "Dimanche",
+    "schedule": {
+      "schedule_type": "Administratif",
+      "shift_work": "Non",
+      "hours_per_day": 8,
+      "days_per_week": 5,
+      "hours_per_week": 40,
+      "start_time": "08:30",
+      "end_time": "17:30",
       "annual_leave_days": 22
     },
     "salary": {
-      "base_salary": 15000,
-      "currency": "MAD",
-      "payment_frequency": "Mensuel",
       "salary_brut": 15000,
       "salary_net": 12000,
-      "salary_net_imposable": 12500,
-      "payment_method": "Virement"
-    },
-    "legal": {
-      "cnss_affiliation": true,
-      "cnss_regime": "General",
-      "amo": true,
-      "amo_regime": "CNSS",
-      "clauses": {
-        "confidentialite": true,
-        "non_concurrence": true,
-        "mobilite": true,
-        "exclusivite": true,
-        "formation": true,
-        "intellectual_property": false,
-        "discipline_interne": true,
-        "deontologie": true
-      }
-    },
-    "historique": {
-      "created_at": "2024-10-20T14:00:00Z",
-      "created_by": "USR-HR-001",
-      "created_by_name": "Amal Tazi",
-      "updated_at": "2024-11-01T14:00:00Z",
-      "updated_by": "USR-HR-001",
-      "updated_by_name": "Amal Tazi"
-    }
-  },
-  {
-    "id": "CTR-2024-005",
-    "reference": "CTR-2024-005",
-    "internal_reference": "INT-IT-2024-005",
-    "type": "CDI",
-    "status": "Actif",
-    "version": 1,
-    "employe_id": "EMP005",
-    "employee_name": "Salma Benkirane",
-    "employee_matricule": "MAT-2024-005",
-    "company_id": "COMP001",
-    "company_name": "TechCorp Maroc SARL",
-    "dates": {
-      "signature_date": "2023-09-01",
-      "start_date": "2023-10-01",
-      "effective_start_date": "2023-10-01",
-      "end_date": null,
-      "trial_period": {
-        "duration_months": 3,
-        "start_date": "2023-10-01",
-        "end_date": "2024-01-01",
-        "renewable": false,
-        "status": "Validee"
-      }
-    },
-    "job": {
-      "title": "Chef de Projet IT",
-      "department": "IT",
-      "category": "Cadre",
-      "work_location": "Casablanca",
-      "work_mode": "Hybride",
-      "mobility_clause": true,
-      "missions": "Gestion de projets informatiques et coordination d'équipes"
-    },
-    "work_time": {
-      "weekly_hours": 40,
-      "daily_hours": 8,
-      "work_schedule": "9h00 - 18h00",
-      "work_schedule_type": "Variable",
-      "rest_day": "Dimanche",
-      "annual_leave_days": 24
-    },
-    "salary": {
-      "base_salary": 22000,
       "currency": "MAD",
-      "payment_frequency": "Mensuel",
-      "salary_brut": 22000,
-      "salary_net": 17000,
-      "salary_net_imposable": 17500,
-      "payment_method": "Virement"
+      "payment_method": "Virement",
+      "periodicity": "Mensuel",
+      "primes": { "items": [] },
+      "avantages": {
+        "voiture": false,
+        "logement": false,
+        "telephone": true,
+        "assurance_sante": true,
+        "tickets_restaurant": false
+      },
+      "indemnites": ""
     },
     "legal": {
       "cnss_affiliation": true,
-      "cnss_regime": "General",
-      "amo": true,
-      "amo_regime": "CNSS",
-      "clauses": {
-        "confidentialite": true,
-        "non_concurrence": true,
-        "mobilite": true,
-        "exclusivite": true,
-        "formation": true,
-        "intellectual_property": true,
-        "discipline_interne": true,
-        "deontologie": true
-      }
+      "amo_affiliation": true,
+      "ir_applicable": true,
+      "clause_confidentialite": true,
+      "clause_non_concurrence": true
     },
     "historique": {
-      "created_at": "2023-08-15T10:00:00Z",
+      "created_at": "2024-10-25T10:00:00Z",
       "created_by": "USR-HR-001",
       "created_by_name": "Amal Tazi",
-      "updated_at": "2024-01-05T10:00:00Z",
-      "updated_by": "USR-HR-001",
-      "updated_by_name": "Amal Tazi"
-    }
-  },
-  {
-    "id": "CTR-2024-006",
-    "reference": "CTR-2024-006",
-    "internal_reference": "INT-COM-2024-006",
-    "type": "CDD",
-    "status": "Brouillon",
-    "version": 1,
-    "employe_id": "EMP006",
-    "employee_name": "Omar Cherkaoui",
-    "employee_matricule": "MAT-2024-006",
-    "company_id": "COMP001",
-    "company_name": "TechCorp Maroc SARL",
-    "dates": {
-      "signature_date": null,
-      "start_date": "2025-01-15",
-      "effective_start_date": null,
-      "end_date": "2025-07-15",
-      "trial_period": {
-        "duration_months": 1,
-        "start_date": "2025-01-15",
-        "end_date": "2025-02-15",
-        "renewable": false,
-        "status": "En_cours"
-      }
-    },
-    "job": {
-      "title": "Commercial",
-      "department": "Commercial",
-      "category": "Employe",
-      "work_location": "Marrakech",
-      "work_mode": "Itinerant",
-      "mobility_clause": true,
-      "missions": "Prospection et vente de solutions IT"
-    },
-    "work_time": {
-      "weekly_hours": 44,
-      "daily_hours": 8.8,
-      "work_schedule": "9h00 - 18h00",
-      "work_schedule_type": "Variable",
-      "rest_day": "Dimanche",
-      "annual_leave_days": 18
-    },
-    "salary": {
-      "base_salary": 8000,
-      "currency": "MAD",
-      "payment_frequency": "Mensuel",
-      "salary_brut": 8000,
-      "salary_net": 6500,
-      "salary_net_imposable": 6800,
-      "payment_method": "Virement"
-    },
-    "legal": {
-      "cnss_affiliation": true,
-      "cnss_regime": "General",
-      "amo": true,
-      "amo_regime": "CNSS",
-      "clauses": {
-        "confidentialite": true,
-        "non_concurrence": true,
-        "mobilite": true,
-        "exclusivite": true,
-        "formation": false,
-        "intellectual_property": false,
-        "discipline_interne": true,
-        "deontologie": true
-      }
-    },
-    "historique": {
-      "created_at": "2024-12-01T15:00:00Z",
-      "created_by": "USR-HR-001",
-      "created_by_name": "Amal Tazi",
-      "updated_at": "2024-12-01T15:00:00Z",
-      "updated_by": "USR-HR-001",
-      "updated_by_name": "Amal Tazi"
-    }
-  },
-  {
-    "id": "CTR-2024-007",
-    "reference": "CTR-2024-007",
-    "internal_reference": "INT-IT-2024-007",
-    "type": "ANAPEC",
-    "status": "Actif",
-    "version": 1,
-    "employe_id": "EMP007",
-    "employee_name": "Leila Rachidi",
-    "employee_matricule": "MAT-2024-007",
-    "company_id": "COMP001",
-    "company_name": "TechCorp Maroc SARL",
-    "dates": {
-      "signature_date": "2024-06-01",
-      "start_date": "2024-06-15",
-      "effective_start_date": "2024-06-15",
-      "end_date": "2025-06-14"
-    },
-    "job": {
-      "title": "Développeur Junior",
-      "department": "IT",
-      "category": "Employe",
-      "work_location": "Casablanca",
-      "work_mode": "Presentiel",
-      "mobility_clause": false,
-      "missions": "Développement web sous supervision"
-    },
-    "work_time": {
-      "weekly_hours": 40,
-      "daily_hours": 8,
-      "work_schedule": "9h00 - 18h00",
-      "work_schedule_type": "Normal",
-      "rest_day": "Dimanche",
-      "annual_leave_days": 18
-    },
-    "salary": {
-      "base_salary": 4500,
-      "currency": "MAD",
-      "payment_frequency": "Mensuel",
-      "salary_brut": 4500,
-      "salary_net": 4200,
-      "salary_net_imposable": 4200,
-      "payment_method": "Virement"
-    },
-    "legal": {
-      "cnss_affiliation": true,
-      "cnss_regime": "General",
-      "amo": true,
-      "amo_regime": "CNSS",
-      "contrat_anapec": "ANAPEC-2024-456",
-      "anapec_type": "Idmaj",
-      "clauses": {
-        "confidentialite": true,
-        "non_concurrence": false,
-        "mobilite": false,
-        "exclusivite": true,
-        "formation": true,
-        "intellectual_property": true,
-        "discipline_interne": true,
-        "deontologie": true
-      }
-    },
-    "historique": {
-      "created_at": "2024-05-20T09:00:00Z",
-      "created_by": "USR-HR-001",
-      "created_by_name": "Amal Tazi",
-      "updated_at": "2024-06-01T09:00:00Z",
-      "updated_by": "USR-HR-001",
-      "updated_by_name": "Amal Tazi"
-    }
-  },
-  {
-    "id": "CTR-2023-008",
-    "reference": "CTR-2023-008",
-    "internal_reference": "INT-LOG-2023-008",
-    "type": "CDI",
-    "status": "Resilie",
-    "version": 1,
-    "employe_id": "EMP008",
-    "employee_name": "Hassan Tazi",
-    "employee_matricule": "MAT-2023-008",
-    "company_id": "COMP001",
-    "company_name": "TechCorp Maroc SARL",
-    "dates": {
-      "signature_date": "2023-01-10",
-      "start_date": "2023-02-01",
-      "effective_start_date": "2023-02-01",
-      "end_date": null,
-      "termination_date": "2024-09-30",
-      "termination_reason": "Demission",
-      "trial_period": {
-        "duration_months": 3,
-        "start_date": "2023-02-01",
-        "end_date": "2023-05-01",
-        "renewable": false,
-        "status": "Validee"
-      }
-    },
-    "job": {
-      "title": "Responsable Logistique",
-      "department": "Logistique",
-      "category": "Agent_maitrise",
-      "work_location": "Tanger",
-      "work_mode": "Presentiel",
-      "mobility_clause": false,
-      "missions": "Gestion des stocks et approvisionnements"
-    },
-    "work_time": {
-      "weekly_hours": 44,
-      "daily_hours": 8.8,
-      "work_schedule": "8h00 - 17h00",
-      "work_schedule_type": "Normal",
-      "rest_day": "Dimanche",
-      "annual_leave_days": 20
-    },
-    "salary": {
-      "base_salary": 10000,
-      "currency": "MAD",
-      "payment_frequency": "Mensuel",
-      "salary_brut": 10000,
-      "salary_net": 8200,
-      "salary_net_imposable": 8500,
-      "payment_method": "Virement"
-    },
-    "legal": {
-      "cnss_affiliation": true,
-      "cnss_regime": "General",
-      "amo": true,
-      "amo_regime": "CNSS",
-      "clauses": {
-        "confidentialite": true,
-        "non_concurrence": false,
-        "mobilite": false,
-        "exclusivite": true,
-        "formation": false,
-        "intellectual_property": false,
-        "discipline_interne": true,
-        "deontologie": true
-      }
-    },
-    "historique": {
-      "created_at": "2023-01-05T10:00:00Z",
-      "created_by": "USR-HR-001",
-      "created_by_name": "Amal Tazi",
-      "updated_at": "2024-09-30T10:00:00Z",
-      "updated_by": "USR-HR-001",
-      "updated_by_name": "Amal Tazi"
-    }
-  },
-  {
-    "id": "CTR-2024-009",
-    "reference": "CTR-2024-009",
-    "internal_reference": "INT-SUPP-2024-009",
-    "type": "CDD",
-    "status": "En_attente_signature",
-    "version": 1,
-    "employe_id": "EMP009",
-    "employee_name": "Nadia Elhassani",
-    "employee_matricule": "MAT-2024-009",
-    "company_id": "COMP001",
-    "company_name": "TechCorp Maroc SARL",
-    "dates": {
-      "signature_date": null,
-      "start_date": "2025-01-02",
-      "effective_start_date": null,
-      "end_date": "2025-12-31"
-    },
-    "job": {
-      "title": "Support Technique",
-      "department": "Support",
-      "category": "Technicien",
-      "work_location": "Casablanca",
-      "work_mode": "Presentiel",
-      "mobility_clause": false,
-      "missions": "Support technique niveau 1 et 2"
-    },
-    "work_time": {
-      "weekly_hours": 40,
-      "daily_hours": 8,
-      "work_schedule": "9h00 - 18h00",
-      "work_schedule_type": "Equipe",
-      "rest_day": "Dimanche",
-      "annual_leave_days": 18
-    },
-    "salary": {
-      "base_salary": 6000,
-      "currency": "MAD",
-      "payment_frequency": "Mensuel",
-      "salary_brut": 6000,
-      "salary_net": 5000,
-      "salary_net_imposable": 5200,
-      "payment_method": "Virement"
-    },
-    "legal": {
-      "cnss_affiliation": true,
-      "cnss_regime": "General",
-      "amo": true,
-      "amo_regime": "CNSS",
-      "clauses": {
-        "confidentialite": true,
-        "non_concurrence": false,
-        "mobilite": false,
-        "exclusivite": true,
-        "formation": false,
-        "intellectual_property": false,
-        "discipline_interne": true,
-        "deontologie": true
-      }
-    },
-    "historique": {
-      "created_at": "2024-12-10T11:00:00Z",
-      "created_by": "USR-HR-001",
-      "created_by_name": "Amal Tazi",
-      "updated_at": "2024-12-10T11:00:00Z",
-      "updated_by": "USR-HR-001",
-      "updated_by_name": "Amal Tazi"
-    }
-  },
-  {
-    "id": "CTR-2024-010",
-    "reference": "CTR-2024-010",
-    "internal_reference": "INT-QA-2024-010",
-    "type": "CDI",
-    "status": "Actif",
-    "version": 1,
-    "employe_id": "EMP010",
-    "employee_name": "Mehdi Bennani",
-    "employee_matricule": "MAT-2024-010",
-    "company_id": "COMP001",
-    "company_name": "TechCorp Maroc SARL",
-    "dates": {
-      "signature_date": "2024-08-01",
-      "start_date": "2024-09-01",
-      "effective_start_date": "2024-09-01",
-      "end_date": null,
-      "trial_period": {
-        "duration_months": 3,
-        "start_date": "2024-09-01",
-        "end_date": "2024-12-01",
-        "renewable": false,
-        "status": "Validee"
-      }
-    },
-    "job": {
-      "title": "Ingénieur QA",
-      "department": "IT",
-      "category": "Cadre",
-      "work_location": "Casablanca",
-      "work_mode": "Hybride",
-      "mobility_clause": true,
-      "missions": "Tests et assurance qualité logicielle"
-    },
-    "work_time": {
-      "weekly_hours": 40,
-      "daily_hours": 8,
-      "work_schedule": "9h00 - 18h00",
-      "work_schedule_type": "Normal",
-      "rest_day": "Dimanche",
-      "annual_leave_days": 22
-    },
-    "salary": {
-      "base_salary": 16000,
-      "currency": "MAD",
-      "payment_frequency": "Mensuel",
-      "salary_brut": 16000,
-      "salary_net": 12800,
-      "salary_net_imposable": 13200,
-      "payment_method": "Virement"
-    },
-    "legal": {
-      "cnss_affiliation": true,
-      "cnss_regime": "General",
-      "amo": true,
-      "amo_regime": "CNSS",
-      "clauses": {
-        "confidentialite": true,
-        "non_concurrence": true,
-        "mobilite": true,
-        "exclusivite": true,
-        "formation": true,
-        "intellectual_property": true,
-        "discipline_interne": true,
-        "deontologie": true
-      }
-    },
-    "historique": {
-      "created_at": "2024-07-20T10:00:00Z",
-      "created_by": "USR-HR-001",
-      "created_by_name": "Amal Tazi",
-      "updated_at": "2024-12-01T10:00:00Z",
+      "updated_at": "2024-11-01T10:00:00Z",
       "updated_by": "USR-HR-001",
       "updated_by_name": "Amal Tazi"
     }
   }
 ]
-

@@ -43,19 +43,12 @@ export function SalaryAndLegalTab({
   form,
   paymentMethodOptions
 }: SalaryAndLegalTabProps) {
-  // Get available prime types
   const primeTypes = usePrimeTypes();
-
-  // Watch salary values for prime display
   const salaryValues = form.watch('salary');
-
-  // Field array for dynamic primes
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: 'salary.primes.items' as any
   });
-
-  // Watch prime items to auto-apply properties when type changes
   useEffect(() => {
     if (!salaryValues) return;
     const primeItems = (salaryValues?.primes as any)?.items || [];

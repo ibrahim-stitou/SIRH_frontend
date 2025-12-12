@@ -70,7 +70,6 @@ interface EmployeeRow {
   postalCode?: string;
   country?: string;
   departmentId?: string;
-  position?: string;
   hireDate?: string;
   notes?: string;
   education?: { level: string; diploma?: string; year?: string; institution?: string }[];
@@ -406,9 +405,6 @@ export default function EmployeeDetailsPage() {
                       <h1 className='from-foreground to-foreground/70 bg-gradient-to-r bg-clip-text text-3xl font-bold tracking-tight'>
                         {fullName}
                       </h1>
-                      <p className='text-muted-foreground mt-1 text-lg'>
-                        {emp?.position || '—'}
-                      </p>
                     </div>
                     {emp?.status && (
                       <Badge

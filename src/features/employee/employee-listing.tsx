@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Eye, Edit, Trash2 } from 'lucide-react';
+import { Eye, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -23,8 +23,7 @@ interface EmployeeRow {
   lastNameAr?: string;
   email: string;
   departmentId: string;
-  position: string;
-  positionAr?: string;
+  professionalCategory: string;
   hireDate: string;
   contractType: string;
   status: string; // 'actif' | 'suspendu' | 'parti'
@@ -77,10 +76,17 @@ export function EmployeeListing() {
       render: (_value, row) => `${row.firstName} ${row.lastName}`
     },
     {
-      data: 'position',
-      label: t('employees.columns.position'),
+      data: 'professionalCategory',
+      label: 'Catégorie professionnelle',
       sortable: true,
-      render: (_value, row) => row.position || '—'
+      render: (_value, row) => {
+        const map: Record<string, string> = {
+          cadres_assimiles: 'Cadres et assimilés',
+          employes_assimiles: 'Employés et assimilés',
+          ouvriers_assimiles: 'Ouvriers et assimilés',
+        };
+        return map[row.professionalCategory] || '—';
+      }
     },
     { data: 'email', label: t('employees.columns.email'), sortable: true },
     { data: 'hireDate', label: t('employees.columns.hireDate'), sortable: true },
@@ -142,7 +148,7 @@ export function EmployeeListing() {
     { field: 'matricule', label: t('employees.filters.matricule'), type: 'text' },
     { field: 'firstName', label: t('employees.filters.name'), type: 'text' },
     { field: 'lastName', label: t('employees.filters.name'), type: 'text' },
-    { field: 'position', label: t('employees.filters.position'), type: 'text' },
+    { field: 'professionalCategory', label: 'Catégorie professionnelle', type: 'text' },
     { field: 'contractType', label: t('employees.filters.contractType'), type: 'text' },
     { field: 'status', label: t('employees.filters.status'), type: 'text' }
   ];

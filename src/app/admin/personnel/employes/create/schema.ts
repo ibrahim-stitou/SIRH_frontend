@@ -6,6 +6,15 @@
 import * as z from 'zod';
 
 /**
+ * Options de catégories professionnelles
+ */
+export const PROFESSIONAL_CATEGORY_OPTIONS = [
+  { label: "Cadres et assimilés", id: "cadres_assimiles" },
+  { label: "Employés et assimilés", id: "employes_assimiles" },
+  { label: "Ouvriers et assimilés", id: "ouvriers_assimiles" },
+] as const;
+
+/**
  * Schéma de validation pour la création d'un employé
  */
 export const employeeSchema = z.object({
@@ -59,9 +68,18 @@ export const employeeSchema = z.object({
   departmentId: z
     .number({ invalid_type_error: 'Département requis' })
     .min(1, 'Département requis'),
-  position: z.string().min(1, 'Poste requis'),
-  positionAr: z.string().optional(),
   hireDate: z.string().optional(),
+  professionalCategory: z.enum(
+    PROFESSIONAL_CATEGORY_OPTIONS.map((o) => o.id) as [
+      "cadres_assimiles",
+      "employes_assimiles",
+      "ouvriers_assimiles"
+    ],
+    {
+      required_error: "La catégorie professionnelle est requise",
+      invalid_type_error: "Catégorie professionnelle invalide",
+    }
+  ),
 });
 
 /**
@@ -100,8 +118,6 @@ export const employeeDefaultValues: Partial<EmployeeFormValues> = {
   emergencyContactPhone: '',
   emergencyContactRelationship: '',
   departmentId: undefined,
-  position: '',
-  positionAr: '',
   hireDate: new Date().toISOString().split('T')[0],
+  professionalCategory: PROFESSIONAL_CATEGORY_OPTIONS[0].id,
 };
-

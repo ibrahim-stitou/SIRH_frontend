@@ -33,8 +33,6 @@
       "name": "Operations",
       "nameAr": "العمليات"
     },
-    "position": "HR Manager",
-    "positionAr": "مدير الموارد البشرية",
     "hireDate": "2022-01-10",
     "education": [
       {
@@ -134,7 +132,8 @@
     "experiences": [
       { "title": "Développeur Frontend", "company": "TechCorp", "startDate": "2016-03-01", "endDate": "2018-08-31", "description": "Développement d'interfaces React" },
       { "title": "Chef de projet", "company": "InnovateX", "startDate": "2018-09-01", "endDate": "2021-12-31", "description": "Gestion de projets digitaux" }
-    ]
+    ],
+    "professionalCategory": "cadres_assimiles"
   },
   {
     "id": 1001,
@@ -170,8 +169,6 @@
       "name": "Engineering",
       "nameAr": "الهندسة"
     },
-    "position": "Frontend Developer",
-    "positionAr": "مطور الواجهة الأمامية",
     "hireDate": "2023-04-10",
     "education": [
       {
@@ -235,7 +232,8 @@
     "tags": [
       "engineering",
       "frontend"
-    ]
+    ],
+    "professionalCategory": "employes_assimiles"
   },
   {
     "id": 1002,
@@ -271,8 +269,6 @@
         "name": "Engineering",
         "nameAr": "الهندسة"
     },
-    "position": "Engineering Manager",
-    "positionAr": "مدير الهندسة",
     "hireDate": "2021-02-01",
     "education": [
       {
@@ -345,7 +341,8 @@
     "experiences": [
       { "title": "Ingénieur DevOps", "company": "Cloudify", "startDate": "2014-01-01", "endDate": "2017-06-30", "description": "CI/CD, infrastructure as code" },
       { "title": "Engineering Manager", "company": "MegaSoft", "startDate": "2017-07-01", "endDate": "2020-12-31", "description": "Management d'équipe et architecture" }
-    ]
+    ],
+    "professionalCategory": "cadres_assimiles"
   },
   {
     "id": 1003,
@@ -381,8 +378,6 @@
       "name": "Ressources Humaines",
       "nameAr": "الموارد البشرية"
     },
-    "position": "HR Specialist",
-    "positionAr": "أخصائي الموارد البشرية",
     "hireDate": "2022-09-15",
     "education": [
       {
@@ -442,6 +437,7 @@
     "notes": "Spécialiste RH contrat CDD",
     "tags": [
       "hr"
-    ]
+    ],
+    "professionalCategory": "employes_assimiles"
   }
 ]

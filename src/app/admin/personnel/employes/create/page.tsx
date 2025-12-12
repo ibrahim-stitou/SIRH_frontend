@@ -29,6 +29,7 @@ import PageContainer from '@/components/layout/page-container';
 import { useLanguage } from '@/context/LanguageContext';
 import { DatePickerField } from '@/components/custom/DatePickerField';
 import { SelectField } from '@/components/custom/SelectField';
+import { PROFESSIONAL_CATEGORY_OPTIONS } from './schema';
 import apiClient from '@/lib/api';
 import { apiRoutes } from '@/config/apiRoutes';
 import {
@@ -51,7 +52,10 @@ export default function EmployeeCreatePage() {
 
   const form = useForm<EmployeeFormValues>({
     resolver: zodResolver(employeeSchema),
-    defaultValues: employeeDefaultValues,
+    defaultValues: {
+      ...employeeDefaultValues,
+      professionalCategory: PROFESSIONAL_CATEGORY_OPTIONS[0].id
+    },
     mode: 'onBlur'
   });
 
@@ -106,9 +110,8 @@ export default function EmployeeCreatePage() {
             }
           : undefined,
         departmentId: data.departmentId,
-        position: data.position,
-        positionAr: data.positionAr,
         hireDate: data.hireDate,
+        professionalCategory: data.professionalCategory,
         status: 'actif',
         isActive: true,
         createdAt: new Date().toISOString(),
@@ -420,8 +423,6 @@ export default function EmployeeCreatePage() {
                       </FormItem>
                     )}
                   />
-
-                  {/* Détails de poste */}
                   <SelectField
                     name='departmentId'
                     label='Département *'
@@ -442,19 +443,15 @@ export default function EmployeeCreatePage() {
                         | undefined
                     }
                   />
-
-                  <FormField
+                  {/* ...existing professional fields... */}
+                  <SelectField
+                    name='professionalCategory'
+                    label='Catégorie professionnelle *'
                     control={form.control}
-                    name='position'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Poste *</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    options={[...PROFESSIONAL_CATEGORY_OPTIONS]}
+                    displayField='label'
+                    placeholder={t('placeholders.select')}
+                    error={form.formState.errors.professionalCategory?.message as string}
                   />
                 </div>
 

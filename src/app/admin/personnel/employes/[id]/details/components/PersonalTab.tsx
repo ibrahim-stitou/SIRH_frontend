@@ -7,6 +7,7 @@ import { AnimatedTabContent } from '../components';
 import EditableInfoRow from './EditableInfoRow';
 import { toast } from 'sonner';
 import { DocumentUploadSection, DocumentItem } from './DocumentUploadSection';
+import { PROFESSIONAL_CATEGORY_OPTIONS } from '../../../create/schema';
 
 interface PersonalTabProps {
   active: boolean;
@@ -119,6 +120,13 @@ export const PersonalTab: React.FC<PersonalTabProps> = ({
               type="number"
               onSave={(v) => onUpdate('numberOfChildren', v)}
             />
+            <EditableInfoRow
+              label={"Catégorie professionnelle"}
+              value={employee?.professionalCategory}
+              type="select"
+              options={PROFESSIONAL_CATEGORY_OPTIONS.map(o => ({ id: o.id, label: o.label }))}
+              onSave={(v) => onUpdate('professionalCategory', v)}
+            />
           </div>
         </Card>
 
@@ -218,4 +226,3 @@ export const PersonalTab: React.FC<PersonalTabProps> = ({
     </AnimatedTabContent>
   );
 };
-

@@ -8,8 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DatePickerField } from '@/components/custom/DatePickerField';
-import { Calendar as CalendarIcon, FileText, User, Briefcase, Pencil, Check, X } from 'lucide-react';
-import { Contract, ContractType, ProfessionalCategory, WorkMode } from '@/types/contract';
+import { Calendar as CalendarIcon, FileText, Briefcase, Pencil, Check, X } from 'lucide-react';
+import { Contract, ContractType, WorkMode } from '@/types/contract';
 import { formatDateLong } from '@/lib/date-utils';
 
 interface GeneralInfoDisplayProps {
@@ -35,17 +35,6 @@ const contractTypeLabels: Record<ContractType, string> = {
   Consultance: 'Contrat de consultance',
 };
 
-const categoryLabels: Record<ProfessionalCategory, string> = {
-  Cadre_superieur: 'Cadre supérieur',
-  Cadre: 'Cadre',
-  Agent_maitrise: 'Agent de maîtrise',
-  Technicien: 'Technicien',
-  Employe: 'Employé',
-  Ouvrier_qualifie: 'Ouvrier qualifié',
-  Ouvrier: 'Ouvrier',
-  Manoeuvre: 'Manœuvre',
-};
-
 const workModeLabels: Record<WorkMode, string> = {
   Presentiel: 'Présentiel',
   Hybride: 'Hybride',
@@ -62,10 +51,11 @@ export default function GeneralInfoDisplay({ contract, isEditing, onUpdate }: Ge
 
   const handleChange = (field: string, value: any) => {
     const keys = field.split('.');
-    const newData = { ...editedData };
+    const newData = { ...editedData } as any;
     let current: any = newData;
 
     for (let i = 0; i < keys.length - 1; i++) {
+      current[keys[i]] = current[keys[i]] ?? {};
       current = current[keys[i]];
     }
     current[keys[keys.length - 1]] = value;
@@ -81,7 +71,14 @@ export default function GeneralInfoDisplay({ contract, isEditing, onUpdate }: Ge
     for (let i = 0; i < keys.length - 1; i++) {
       editedCursor = editedCursor[keys[i]];
     }
-    onUpdate?.(keys.length === 1 ? { [field]: editedCursor[lastKey] } : keys.slice(0, -1).reduceRight((acc, key, idx, arr) => ({ [arr[0]]: arr.length === 1 ? { [lastKey]: editedCursor[lastKey] } : acc }), { [lastKey]: editedCursor[lastKey] }));
+    onUpdate?.(
+      keys.length === 1
+        ? { [field]: editedCursor[lastKey] }
+        : keys.slice(0, -1).reduceRight(
+            (acc, key, idx, arr) => ({ [arr[0]]: arr.length === 1 ? { [lastKey]: editedCursor[lastKey] } : acc }),
+            { [lastKey]: editedCursor[lastKey] }
+          )
+    );
   };
 
   const cancelField = (field: string) => {
@@ -91,8 +88,9 @@ export default function GeneralInfoDisplay({ contract, isEditing, onUpdate }: Ge
     let originalCursor: any = contract;
 
     for (let i = 0; i < keys.length - 1; i++) {
+      editedCursor[keys[i]] = editedCursor[keys[i]] ?? {};
       editedCursor = editedCursor[keys[i]];
-      originalCursor = originalCursor[keys[i]];
+      originalCursor = (originalCursor as any)?.[keys[i]] ?? {};
     }
     editedCursor[keys[keys.length - 1]] = originalCursor[keys[keys.length - 1]];
 
@@ -353,28 +351,16 @@ export default function GeneralInfoDisplay({ contract, isEditing, onUpdate }: Ge
             Informations de Base
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {renderField('Référence', contract.reference, 'reference', 'text')}
-            {renderField('Référence Interne', contract.internal_reference, 'internal_reference', 'text')}
+            {renderField('Référence', (contract as any).reference, 'reference', 'text')}
+            {/* Employé: afficher le nom si présent, sinon l'ID sélectionné */}
+            {renderField("Employé", (contract as any).employee_name ?? (contract as any).employe_id, 'employe_id', 'text')}
             {renderField(
               'Type de Contrat',
-              isEditing ? contract.type : contractTypeLabels[contract.type],
+              isEditing ? (contract as any).type : contractTypeLabels[(contract as any).type as ContractType],
               'type',
               'select',
               Object.entries(contractTypeLabels).map(([value, label]) => ({ value, label }))
             )}
-          </div>
-        </div>
-
-        {/* Informations Employé */}
-        <div className="border-t pt-4">
-          <h3 className="text-sm font-bold mb-3 text-green-700 dark:text-green-400 flex items-center gap-2">
-            <User className="h-4 w-4" />
-            Informations Employé
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {renderField('Nom de l\'Employé', contract.employee_name)}
-            {renderField('Matricule', contract.employee_matricule)}
-            {renderField('Entreprise', contract.company_name)}
           </div>
         </div>
 
@@ -385,62 +371,54 @@ export default function GeneralInfoDisplay({ contract, isEditing, onUpdate }: Ge
             Dates du Contrat
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-            {renderField('Date de Signature', contract.dates.signature_date, 'dates.signature_date', 'date')}
-            {renderField('Date de Début', contract.dates.start_date, 'dates.start_date', 'date')}
-            {renderField('Date de Fin', contract.dates.end_date || 'Indéterminée', 'dates.end_date', 'date')}
+            {renderField('Date de Signature', (contract as any).dates?.signature_date, 'dates.signature_date', 'date')}
+            {renderField('Date de Début', (contract as any).dates?.start_date, 'dates.start_date', 'date')}
+            {renderField('Date de Fin', (contract as any).dates?.end_date || 'Indéterminée', 'dates.end_date', 'date')}
           </div>
 
-          {contract.dates.trial_period && (
+          {/* Nouvelle structure de période d'essai (activable) */}
+          {((contract as any).dates?.trial_period?.enabled) && (
             <div className="pt-3 mt-3 border-t border-dashed">
               <h4 className="text-xs font-bold mb-3 text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
                 <div className="h-1.5 w-1.5 rounded-full bg-amber-500"></div>
                 Période d&apos;Essai
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                {renderField('Début Période d\'Essai', contract.dates.trial_period.start_date, 'dates.trial_period.start_date', 'date')}
-                {renderField('Fin Période d\'Essai', contract.dates.trial_period.end_date, 'dates.trial_period.end_date', 'date')}
-                {renderField('Statut', contract.dates.trial_period.status)}
+                {renderField('Durée (mois)', (contract as any).dates?.trial_period?.duration_months, 'dates.trial_period.duration_months', 'text')}
+                {renderField('Durée (jours)', (contract as any).dates?.trial_period?.duration_days, 'dates.trial_period.duration_days', 'text')}
+                {renderField('Date de Fin', (contract as any).dates?.trial_period?.end_date, 'dates.trial_period.end_date', 'date')}
               </div>
+              {renderField('Conditions', (contract as any).dates?.trial_period?.conditions, 'dates.trial_period.conditions', 'textarea')}
             </div>
           )}
         </div>
 
-        {/* Informations du Poste */}
+        {/* Informations du Poste selon nouveau schéma */}
         <div className="border-t pt-4">
           <h3 className="text-sm font-bold mb-3 text-purple-700 dark:text-purple-400 flex items-center gap-2">
             <Briefcase className="h-4 w-4" />
             Informations du Poste
           </h3>
           <div className="space-y-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {renderField('Intitulé du Poste', contract.job.title, 'job.title', 'text')}
-              {renderField('Département', contract.job.department, 'job.department', 'text')}
-              {renderField(
-                'Catégorie Professionnelle',
-                isEditing ? contract.job.category : categoryLabels[contract.job.category],
-                'job.category',
-                'select',
-                Object.entries(categoryLabels).map(([value, label]) => ({ value, label }))
-              )}
-              {renderField(
-                'Mode de Travail',
-                isEditing ? contract.job.work_mode : workModeLabels[contract.job.work_mode],
-                'job.work_mode',
-                'select',
-                Object.entries(workModeLabels).map(([value, label]) => ({ value, label }))
-              )}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {renderField('Métier', (contract as any).job?.metier ?? (contract as any).job?.title, 'job.metier', 'text')}
+              {renderField('Emploi', (contract as any).job?.emploie ?? (contract as any).job?.department, 'job.emploie', 'text')}
+              {renderField('Poste', (contract as any).job?.poste ?? (contract as any).job?.title, 'job.poste', 'text')}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {renderField('Mode de Travail', isEditing ? (contract as any).job?.work_mode : workModeLabels[((contract as any).job?.work_mode) as WorkMode], 'job.work_mode', 'select', Object.entries(workModeLabels).map(([value, label]) => ({ value, label })))}
+              {renderField('Classification', (contract as any).job?.classification ?? (contract as any).job?.category, 'job.classification', 'text')}
+              {renderField('Lieu de Travail', (contract as any).job?.work_location, 'job.work_location', 'text')}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {renderField('Lieu de Travail', contract.job.work_location, 'job.work_location', 'text')}
-              {renderField('Responsable', contract.job.manager_name, 'job.manager_name', 'text')}
+              {renderField('Responsabilités', (contract as any).job?.responsibilities ?? (contract as any).job?.missions, 'job.responsibilities', 'textarea')}
+              {renderField('Description', (contract as any).description, 'description', 'textarea')}
             </div>
-
-            {renderField('Missions', contract.job.missions, 'job.missions', 'textarea')}
           </div>
         </div>
       </CardContent>
     </Card>
   );
 }
-

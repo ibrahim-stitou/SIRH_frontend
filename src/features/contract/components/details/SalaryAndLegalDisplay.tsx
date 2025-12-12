@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -21,6 +21,8 @@ export default function SalaryAndLegalDisplay({ contract, isEditing, onUpdate }:
   const [editedData, setEditedData] = useState(contract);
   const [activeFields, setActiveFields] = useState<Record<string, boolean>>({});
   const isDraft = contract.status === 'Brouillon';
+
+  const salary = (contract as any).salary ?? {};
 
   const handleChange = (field: string, value: any) => {
     const keys = field.split('.');
@@ -284,131 +286,69 @@ export default function SalaryAndLegalDisplay({ contract, isEditing, onUpdate }:
           </h3>
           <div className="space-y-3">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {renderField('Salaire de Base', contract.salary.base_salary, 'salary.base_salary', 'currency')}
-              {renderField('Salaire Brut', contract.salary.salary_brut, 'salary.salary_brut', 'currency')}
-              {renderField('Salaire Net', contract.salary.salary_net, 'salary.salary_net', 'currency')}
+              {renderField('Salaire Brut', salary.salary_brut, 'salary.salary_brut', 'currency')}
+              {renderField('Salaire Net', salary.salary_net, 'salary.salary_net', 'currency')}
+              {renderField('Périodicité', salary.periodicity, 'salary.periodicity', 'text')}
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {renderField('Fréquence de Paiement', contract.salary.payment_frequency)}
-              {renderField('Méthode de Paiement', contract.salary.payment_method)}
-              {renderField('Jour de Paie', contract.salary.payment_day, 'salary.payment_day', 'number')}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {renderField('Méthode de Paiement', salary.payment_method, 'salary.payment_method', 'text')}
+              {renderField('Devise', salary.currency, 'salary.currency', 'text')}
             </div>
+          </div>
+        </div>
 
-            {(contract.salary.hourly_rate || contract.salary.daily_rate) && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {contract.salary.hourly_rate && renderField('Taux Horaire', contract.salary.hourly_rate, 'salary.hourly_rate', 'currency')}
-                {contract.salary.daily_rate && renderField('Taux Journalier', contract.salary.daily_rate, 'salary.daily_rate', 'currency')}
+        {/* Primes dynamiques */}
+        <div className="border-t pt-4">
+          <h3 className="text-sm font-bold mb-3 text-orange-700 dark:text-orange-400 flex items-center gap-2">
+            <Award className="h-4 w-4" />
+            Primes
+          </h3>
+          <div className="space-y-3">
+            {Array.isArray(salary.primes?.items) && salary.primes.items.length > 0 ? (
+              <div className="space-y-3">
+                {(salary.primes.items as any[]).map((item, index) => (
+                  <div key={index} className="border rounded-md p-3">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      {renderField('Type de Prime', item.label, `salary.primes.items.${index}.label`, 'text')}
+                      {renderField('Montant', item.amount, `salary.primes.items.${index}.amount`, 'currency')}
+                      {renderField('Imposable IR', item.is_taxable, `salary.primes.items.${index}.is_taxable`, 'checkbox')}
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                      {renderField('Soumise CNSS/AMO', item.is_subject_to_cnss, `salary.primes.items.${index}.is_subject_to_cnss`, 'checkbox')}
+                      {renderField('Notes', item.notes, `salary.primes.items.${index}.notes`, 'text')}
+                    </div>
+                  </div>
+                ))}
               </div>
-            )}
-
-            {contract.salary.bank_name && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {renderField('Banque', contract.salary.bank_name, 'salary.bank_name', 'text')}
-                {renderField('RIB', contract.salary.rib, 'salary.rib', 'text')}
-              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">Aucune prime.</p>
             )}
           </div>
         </div>
 
-        {/* Primes et Indemnités */}
-        {(contract.salary.primes || contract.salary.indemnites) && (
-          <div className="border-t pt-4">
-            <h3 className="text-sm font-bold mb-3 text-orange-700 dark:text-orange-400 flex items-center gap-2">
-              <Award className="h-4 w-4" />
-              Primes et Indemnités
-            </h3>
-            <div className="space-y-3">
-              {contract.salary.primes && Object.keys(contract.salary.primes).length > 0 && (
-                <div>
-                  <h4 className="text-xs font-bold mb-3 text-orange-600 dark:text-orange-400 flex items-center gap-1.5">
-                    <div className="h-1.5 w-1.5 rounded-full bg-orange-500"></div>
-                    Primes
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {contract.salary.primes.prime_anciennete && renderField('Prime d\'Ancienneté', contract.salary.primes.prime_anciennete, 'salary.primes.prime_anciennete', 'currency')}
-                  {contract.salary.primes.prime_transport && renderField('Prime de Transport', contract.salary.primes.prime_transport, 'salary.primes.prime_transport', 'currency')}
-                  {contract.salary.primes.prime_panier && renderField('Prime de Panier', contract.salary.primes.prime_panier, 'salary.primes.prime_panier', 'currency')}
-                  {contract.salary.primes.prime_rendement && renderField('Prime de Rendement', contract.salary.primes.prime_rendement, 'salary.primes.prime_rendement', 'currency')}
-                  {contract.salary.primes.prime_risque && renderField('Prime de Risque', contract.salary.primes.prime_risque, 'salary.primes.prime_risque', 'currency')}
-                  {contract.salary.primes.prime_nuit && renderField('Prime de Nuit', contract.salary.primes.prime_nuit, 'salary.primes.prime_nuit', 'currency')}
-                  {contract.salary.primes.prime_astreinte && renderField('Prime d\'Astreinte', contract.salary.primes.prime_astreinte, 'salary.primes.prime_astreinte', 'currency')}
-                    {contract.salary.primes.prime_objectif && renderField('Prime sur Objectifs', contract.salary.primes.prime_objectif, 'salary.primes.prime_objectif', 'currency')}
-                  </div>
-
-                  {(contract.salary.primes.treizieme_mois || contract.salary.primes.quatorzieme_mois) && (
-                    <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {contract.salary.primes.treizieme_mois && renderField('13ème Mois', contract.salary.primes.treizieme_mois, 'salary.primes.treizieme_mois', 'checkbox')}
-                      {contract.salary.primes.quatorzieme_mois && renderField('14ème Mois', contract.salary.primes.quatorzieme_mois, 'salary.primes.quatorzieme_mois', 'checkbox')}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {contract.salary.indemnites && Object.keys(contract.salary.indemnites).length > 0 && (
-                <div className="pt-3 mt-3 border-t border-dashed">
-                  <h4 className="text-xs font-bold mb-3 text-orange-600 dark:text-orange-400 flex items-center gap-1.5">
-                    <div className="h-1.5 w-1.5 rounded-full bg-orange-500"></div>
-                    Indemnités
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {contract.salary.indemnites.indemnite_logement && renderField('Indemnité de Logement', contract.salary.indemnites.indemnite_logement, 'salary.indemnites.indemnite_logement', 'currency')}
-                  {contract.salary.indemnites.indemnite_deplacement && renderField('Indemnité de Déplacement', contract.salary.indemnites.indemnite_deplacement, 'salary.indemnites.indemnite_deplacement', 'currency')}
-                  {contract.salary.indemnites.indemnite_representation && renderField('Indemnité de Représentation', contract.salary.indemnites.indemnite_representation, 'salary.indemnites.indemnite_representation', 'currency')}
-                  {contract.salary.indemnites.indemnite_km && renderField('Indemnité Kilométrique', contract.salary.indemnites.indemnite_km, 'salary.indemnites.indemnite_km', 'currency')}
-                  {contract.salary.indemnites.frais_telephone && renderField('Forfait Téléphone', contract.salary.indemnites.frais_telephone, 'salary.indemnites.frais_telephone', 'currency')}
-                    {contract.salary.indemnites.frais_internet && renderField('Forfait Internet', contract.salary.indemnites.frais_internet, 'salary.indemnites.frais_internet', 'currency')}
-                  </div>
-                </div>
-              )}
+        {/* Avantages & Indemnités */}
+        <div className="border-t pt-4">
+          <h3 className="text-sm font-bold mb-3 text-sky-700 dark:text-sky-400 flex items-center gap-2">
+            <Gift className="h-4 w-4" />
+            Avantages & Indemnités
+          </h3>
+          <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {renderField('Voiture de Fonction', salary.avantages?.voiture, 'salary.avantages.voiture', 'checkbox')}
+              {renderField('Logement de Fonction', salary.avantages?.logement, 'salary.avantages.logement', 'checkbox')}
+              {renderField('Téléphone Professionnel', salary.avantages?.telephone, 'salary.avantages.telephone', 'checkbox')}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {renderField('Assurance Santé', salary.avantages?.assurance_sante, 'salary.avantages.assurance_sante', 'checkbox')}
+              {renderField('Tickets Restaurant', salary.avantages?.tickets_restaurant, 'salary.avantages.tickets_restaurant', 'checkbox')}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-3">
+              {renderField('Indemnités Diverses', salary.indemnites, 'salary.indemnites', 'text')}
             </div>
           </div>
-        )}
+        </div>
 
-        {/* Avantages en Nature */}
-        {contract.salary.avantages_nature && Object.values(contract.salary.avantages_nature).some(v => v === true) && (
-          <div className="border-t pt-4">
-            <h3 className="text-sm font-bold mb-3 text-pink-700 dark:text-pink-400 flex items-center gap-2">
-              <Gift className="h-4 w-4" />
-              Avantages en Nature
-            </h3>
-            <div className="space-y-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {contract.salary.avantages_nature.voiture_fonction && (
-                <div className="space-y-2">
-                  {renderField('Voiture de Fonction', contract.salary.avantages_nature.voiture_fonction, 'salary.avantages_nature.voiture_fonction', 'checkbox')}
-                  {contract.salary.avantages_nature.voiture_details && (
-                    <p className="text-xs text-muted-foreground ml-6">{contract.salary.avantages_nature.voiture_details}</p>
-                  )}
-                </div>
-              )}
-              {contract.salary.avantages_nature.telephone && (
-                <div className="space-y-2">
-                  {renderField('Téléphone Professionnel', contract.salary.avantages_nature.telephone, 'salary.avantages_nature.telephone', 'checkbox')}
-                  {contract.salary.avantages_nature.telephone_model && (
-                    <p className="text-xs text-muted-foreground ml-6">{contract.salary.avantages_nature.telephone_model}</p>
-                  )}
-                </div>
-              )}
-              {contract.salary.avantages_nature.laptop && (
-                <div className="space-y-2">
-                  {renderField('Ordinateur Portable', contract.salary.avantages_nature.laptop, 'salary.avantages_nature.laptop', 'checkbox')}
-                  {contract.salary.avantages_nature.laptop_model && (
-                    <p className="text-xs text-muted-foreground ml-6">{contract.salary.avantages_nature.laptop_model}</p>
-                  )}
-                </div>
-              )}
-              {contract.salary.avantages_nature.tickets_restaurant && renderField('Tickets Restaurant', contract.salary.avantages_nature.tickets_restaurant, 'salary.avantages_nature.tickets_restaurant', 'checkbox')}
-              {contract.salary.avantages_nature.logement && renderField('Logement de Fonction', contract.salary.avantages_nature.logement, 'salary.avantages_nature.logement', 'checkbox')}
-              {contract.salary.avantages_nature.assurance_groupe && renderField('Assurance Groupe', contract.salary.avantages_nature.assurance_groupe, 'salary.avantages_nature.assurance_groupe', 'checkbox')}
-                {contract.salary.avantages_nature.mutuelle_famille && renderField('Mutuelle Famille', contract.salary.avantages_nature.mutuelle_famille, 'salary.avantages_nature.mutuelle_famille', 'checkbox')}
-                {contract.salary.avantages_nature.transport_collectif && renderField('Transport Collectif', contract.salary.avantages_nature.transport_collectif, 'salary.avantages_nature.transport_collectif', 'checkbox')}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Informations Légales */}
+        {/* Bloc légal conservé tel quel */}
         <div className="border-t pt-4">
           <h3 className="text-sm font-bold mb-3 text-slate-700 dark:text-slate-400 flex items-center gap-2">
             <Shield className="h-4 w-4" />
