@@ -119,18 +119,6 @@ export function EmployeeListing() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="outline"
-                className="h-8 w-8 p-1.5"
-                onClick={() => router.push(`/admin/personnel/employes/${row.id}/edit`)}
-              >
-                <Edit className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{t('common.edit')}</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
                 variant="destructive"
                 className="h-8 w-8 bg-red-100 p-1.5 text-red-600 hover:bg-red-200"
                 onClick={() => handleDelete(row.id)}
