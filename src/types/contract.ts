@@ -112,12 +112,17 @@ export type SecteurActivite =
  * Période d'essai selon Code du Travail
  */
 export interface TrialPeriod {
-  duration_months: number;        // 3 mois cadres, 1.5 mois employés, 15j ouvriers
-  duration_days?: number;         // Pour les ouvriers (15 jours)
-  renewable: boolean;             // Renouvelable 1 fois
-  start_date: string;
-  end_date: string;
-  status: 'En_cours' | 'Validee' | 'Rompue';
+  // Simplified fields (forms):
+  enabled?: boolean;
+  duration_months?: number;
+  duration_days?: number;
+  end_date?: string | null;
+  renewable?: boolean;
+  max_renewals?: number;
+  conditions?: string;
+  // Legacy/detailed fields (optional)
+  start_date?: string;
+  status?: 'En_cours' | 'Validee' | 'Rompue';
   evaluation_date?: string;
   remarks?: string;
 }
@@ -126,92 +131,112 @@ export interface TrialPeriod {
  * Dates importantes du contrat
  */
 export interface ContractDates {
+  // Simplified
   signature_date?: string;
   start_date: string;
-  effective_start_date?: string;  // Date d'effet réelle
-  end_date?: string | null;       // Pour CDD
-  expected_end_date?: string;     // Date de fin prévue
+  end_date?: string | null;
+  trial_period?: TrialPeriod; // now simplified-compatible
+  // Legacy/detailed (optional)
+  effective_start_date?: string;
+  expected_end_date?: string;
   renewal_date?: string;
   last_renewal_date?: string;
   termination_date?: string;
   termination_reason?: ResiliationReason;
-  termination_notice_date?: string; // Date de notification
-  notice_period_days?: number;    // Durée du préavis (8j-3mois)
-  last_day_worked?: string;       // Dernier jour travaillé
-  trial_period?: TrialPeriod;
+  termination_notice_date?: string;
+  notice_period_days?: number;
+  last_day_worked?: string;
 }
 
 /**
  * Informations du poste et classification
  */
 export interface JobInfo {
-  title: string;                      // Intitulé du poste
-  title_ar?: string;                  // Intitulé en arabe
-  department: string;                 // Département/Service
+  // Simplified fields used by forms
+  metier?: string;
+  emploie?: string;
+  poste?: string;
+  work_mode?: WorkMode | string;
+  classification?: string;
+  work_location?: string;
+  level?: string;
+  responsibilities?: string;
+
+  // Legacy/detailed fields (optional)
+  title?: string;
+  title_ar?: string;
+  department?: string;
   department_id?: number | string;
-  manager_id?: string | number;       // Responsable hiérarchique
+  manager_id?: string | number;
   manager_name?: string;
-
-  // Classification professionnelle
-  category: ProfessionalCategory;     // Catégorie professionnelle
-  echelle?: EchelleLevel;            // Niveau d'échelle
-  coefficient?: number;               // Coefficient selon Convention Collective
-  grade?: string;                     // Grade
-
-  // Localisation
-  work_location: string;              // Lieu de travail principal
+  category?: ProfessionalCategory;
+  echelle?: EchelleLevel;
+  coefficient?: number;
+  grade?: string;
   work_location_ar?: string;
-  additional_locations?: string[];    // Autres lieux possibles
-
-  work_mode: WorkMode;                // Mode de travail
-  mobility_clause: boolean;           // Clause de mobilité
-
-  // Missions et responsabilités
-  missions: string;                   // Description des missions
+  additional_locations?: string[];
+  mobility_clause?: boolean;
+  missions?: string;
   missions_ar?: string;
-  responsibilities?: string[];        // Responsabilités principales
-  objectives?: string;                // Objectifs annuels
+  responsibilities_list?: string[]; // preserve array variant if used elsewhere
+  objectives?: string;
 }
 
 /**
  * Temps de travail selon le Code du Travail
  */
 export interface WorkTime {
-  // Durées légales
-  weekly_hours: number;               // Max 44h (loi), possibilité 40-48h
-  daily_hours: number;                // Max 10h par jour
-  annual_hours?: number;              // Pour modulation
+   // Durées légales
+  weekly_hours?: number;
+  daily_hours?: number;
+   annual_hours?: number;              // Pour modulation
 
-  // Horaires
-  work_schedule: string;              // Horaire normal (ex: 9h-18h)
-  work_schedule_type: 'Normal' | 'Equipe' | 'Continu' | 'Variable' | 'Modulation';
-  schedule_details?: string;
+   // Horaires
+  work_schedule?: string;              // Horaire normal (ex: 9h-18h)
+  work_schedule_type?: 'Normal' | 'Equipe' | 'Continu' | 'Variable' | 'Modulation';
+   schedule_details?: string;
 
-  // Repos
-  rest_day: string;                   // Jour de repos hebdomadaire
-  additional_rest_days?: string[];    // Repos additionnels
+   // Repos
+  rest_day?: string;                   // Jour de repos hebdomadaire
+   additional_rest_days?: string[];    // Repos additionnels
 
-  // Organisation
-  shift?: string | null;              // Équipe (matin/soir/nuit)
-  rotation?: boolean;                 // Rotation d'équipes
-  night_work?: boolean;               // Travail de nuit (21h-6h)
-  weekend_work?: boolean;             // Travail week-end
+   // Organisation
+   shift?: string | null;              // Équipe (matin/soir/nuit)
+   rotation?: boolean;                 // Rotation d'équipes
+   night_work?: boolean;               // Travail de nuit (21h-6h)
+   weekend_work?: boolean;             // Travail week-end
 
-  // Astreintes et heures sup
-  on_call?: boolean;                  // Astreintes
-  overtime_authorized?: boolean;      // Heures supplémentaires autorisées
-  compensatory_rest?: boolean;        // Repos compensateur
+   // Astreintes et heures sup
+   on_call?: boolean;                  // Astreintes
+   overtime_authorized?: boolean;      // Heures supplémentaires autorisées
+   compensatory_rest?: boolean;        // Repos compensateur
 
-  // Congés selon Code du Travail
-  annual_leave_days: number;          // Min 1.5j par mois (18j/an après 6 mois)
-  seniority_leave_bonus?: number;     // Jours bonus ancienneté
-  special_leaves?: {                  // Congés spéciaux
-    marriage: number;                 // 4 jours
-    birth: number;                    // 3 jours
-    death_relative: number;           // 3 jours
-    circumcision: number;             // 2 jours
-    hajj: number;                     // 30 jours (1 fois)
-  };
+   // Congés selon Code du Travail
+  annual_leave_days?: number;          // Min 1.5j par mois (18j/an après 6 mois)
+   seniority_leave_bonus?: number;     // Jours bonus ancienneté
+   special_leaves?: {                  // Congés spéciaux
+     marriage: number;                 // 4 jours
+     birth: number;                    // 3 jours
+     death_relative: number;           // 3 jours
+     circumcision: number;             // 2 jours
+     hajj: number;                     // 30 jours (1 fois)
+   };
+ }
+
+// Simplified schedule used by forms and mock data
+export interface SimplifiedSchedule {
+  schedule_type: 'Administratif' | 'Continu';
+  shift_work?: 'Non' | 'Oui';
+  hours_per_day?: number;
+  days_per_week?: number;
+  hours_per_week?: number;
+  start_time?: string;
+  end_time?: string;
+  break_duration?: number;
+  working_days?: string;
+  annual_leave_days?: number;
+  sick_leave_days?: number;
+  other_leaves?: string;
 }
 
 /**
@@ -295,85 +320,111 @@ export interface AvantagesNature {
  */
 export interface SalaryInfo {
   // Salaire de base
-  base_salary: number;                // Salaire de base brut
-  currency: string;                   // MAD par défaut
-  payment_frequency: 'Mensuel' | 'Horaire' | 'Journalier';
+  base_salary?: number;                // Salaire de base brut
+  currency?: string;                   // MAD par défaut
+  payment_frequency?: 'Mensuel' | 'Horaire' | 'Journalier';
 
   // Calculs
-  salary_brut: number;                // Salaire brut total
-  salary_net: number;                 // Salaire net avant IR
-  salary_net_imposable: number;       // Salaire net imposable
-  salary_net_a_payer?: number;        // Salaire net à payer
+  salary_brut?: number;                // Salaire brut total
+  salary_net?: number;                 // Salaire net avant IR
+  salary_net_imposable?: number;       // Salaire net imposable
+   salary_net_a_payer?: number;        // Salaire net à payer
 
-  hourly_rate?: number | null;        // Taux horaire
-  daily_rate?: number | null;         // Taux journalier
+   hourly_rate?: number | null;        // Taux horaire
+   daily_rate?: number | null;         // Taux journalier
 
-  // Composantes
-  primes?: Primes;
-  indemnites?: Indemnites;
-  avantages_nature?: AvantagesNature;
+   // Composantes
+   primes?: Primes & { items?: Array<{
+    prime_type_id: string | number;
+    prime_type_code?: string;
+    label: string;
+    amount: number;
+    is_taxable?: boolean;
+    is_subject_to_cnss?: boolean;
+    notes?: string;
+  }>; };
+   indemnites?: Indemnites;
+   avantages_nature?: AvantagesNature;
 
-  // Modalités de paiement
-  payment_method: 'Virement' | 'Cheque' | 'Especes';
-  bank_name?: string;
-  rib?: string;                       // RIB bancaire
-  payment_day?: number;               // Jour de paie (ex: 5 du mois)
-
-  // Augmentations et révisions
-  last_increase_date?: string;
-  last_increase_percentage?: number;
-  next_review_date?: string;
-
-  // Historique
-  salary_history?: Array<{
-    date: string;
-    base_salary: number;
-    reason: string;
-  }>;
+  // Simplified additions
+  payment_method?: string;
+  periodicity?: string; // 'Mensuel' etc.
+  avantages?: {
+    voiture?: boolean;
+    logement?: boolean;
+    telephone?: boolean;
+    assurance_sante?: boolean;
+    tickets_restaurant?: boolean;
+  };
 }
 
 /**
  * Informations légales et protection sociale
  */
 export interface LegalInfo {
-  // CNSS (Caisse Nationale de Sécurité Sociale)
-  cnss_affiliation: boolean;
-  cnss_number?: string;               // Numéro d'affiliation CNSS
-  cnss_regime: 'General' | 'Agricole' | 'Artisanal' | 'Pecheurs';
-  cnss_rate_employee?: number;        // Taux cotisation salarié (4.48%)
-  cnss_rate_employer?: number;        // Taux cotisation employeur (16.46%)
+   // CNSS (Caisse Nationale de Sécurité Sociale)
+   cnss_affiliation: boolean;
+   cnss_number?: string;               // Numéro d'affiliation CNSS
+   cnss_regime: 'General' | 'Agricole' | 'Artisanal' | 'Pecheurs';
+   cnss_rate_employee?: number;        // Taux cotisation salarié (4.48%)
+   cnss_rate_employer?: number;        // Taux cotisation employeur (16.46%)
 
-  // AMO (Assurance Maladie Obligatoire)
-  amo: boolean;
-  amo_number?: string;
-  amo_regime: 'CNSS' | 'CNOPS' | 'Autres';
-  amo_family_members?: number;        // Nombre d'ayants droit
+   // AMO (Assurance Maladie Obligatoire)
+  amo?: boolean; // legacy
+  amo_affiliation?: boolean; // simplified
+   amo_number?: string;
+   amo_regime: 'CNSS' | 'CNOPS' | 'Autres';
+   amo_family_members?: number;        // Nombre d'ayants droit
 
-  // Retraite complémentaire
-  cimr?: boolean;                     // CIMR
-  cimr_rate_employee?: number;
-  cimr_rate_employer?: number;
-  rcar?: boolean;                     // RCAR (secteur public)
-  other_retirement?: string;
+   // Retraite complémentaire
+  cimr?: boolean;                     // CIMR (legacy)
+  cmir_affiliation?: boolean;         // simplified
+   cimr_rate_employee?: number;
+   cimr_rate_employer?: number;
+  rcar?: boolean;                     // RCAR (legacy)
+  rcar_affiliation?: boolean;         // simplified
+   other_retirement?: string;
 
-  // ANAPEC / Formation
-  contrat_anapec?: string | null;     // Numéro contrat ANAPEC
-  anapec_type?: 'Idmaj' | 'TAHIL' | 'Autre';
-  taxe_formation?: boolean;           // Taxe de formation professionnelle (1.6%)
+   // ANAPEC / Formation
+   contrat_anapec?: string | null;     // Numéro contrat ANAPEC
+   anapec_type?: 'Idmaj' | 'TAHIL' | 'Autre';
+   taxe_formation?: boolean;           // Taxe de formation professionnelle (1.6%)
 
-  // Fiscalité
-  tax_ir?: {
-    taux: number;                     // Taux effectif IR
-    exonere: boolean;                 // Exonéré d'IR
-    exoneration_reason?: string;      // Raison de l'exonération
-    deductions?: Array<{              // Déductions fiscales
-      type: string;
-      amount: number;
-    }>;
+   // Fiscalité
+   tax_ir?: {
+     taux: number;                     // Taux effectif IR
+     exonere: boolean;                 // Exonéré d'IR
+     exoneration_reason?: string;      // Raison de l'exonération
+     deductions?: Array<{              // Déductions fiscales
+       type: string;
+       amount: number;
+     }>;
+   };
+
+  // Simplified flags
+  mutuelle_affiliation?: boolean;
+  assurance_groupe?: boolean;
+  ir_applicable?: boolean;
+  convention_collective?: string;
+  clause_confidentialite?: boolean;
+  clause_non_concurrence?: boolean;
+  clause_mobilite?: boolean;
+  duree_preavis_jours?: number;
+  indemnite_depart?: number;
+  conditions_speciales?: string;
+  notes_legales?: string;
+  cotisations?: {
+    cnss_employe_pct?: number;
+    cnss_employeur_pct?: number;
+    amo_employe_pct?: number;
+    amo_employeur_pct?: number;
+    cmir_taux_pct?: number;
+    cmir_numero?: string;
+    rcar_taux_pct?: number;
+    rcar_numero?: string;
   };
 
-  // Convention collective applicable
-  convention_collective?: string;     // Ex: "Commerce", "Banque", etc.
+   // Convention collective applicable
   convention_date?: string;
 
   // Clauses contractuelles
@@ -490,55 +541,56 @@ export interface ContractHistory {
  * Conforme au Code du Travail et adaptée à tous les secteurs
  */
 export interface Contract {
-  // Identification
-  id: string | number;
-  reference: string;                  // Référence unique du contrat
-  internal_reference?: string;        // Référence interne entreprise
-  type: ContractType;
-  status: ContractStatus;
-  version: number;
+   // Identification
+   id: string | number;
+   reference: string;                  // Référence unique du contrat
+   internal_reference?: string;        // Référence interne entreprise
+   type: ContractType;
+   status: ContractStatus;
+   version?: number;
 
-  // Relations
-  employe_id: string | number;
-  employee_name?: string;             // Cache pour affichage
-  employee_matricule?: string;
-  company_id?: string | number;       // Pour multi-sociétés
-  company_name?: string;
+   // Relations
+   employe_id: string | number;
+   employee_name?: string;             // Cache pour affichage
+   employee_matricule?: string;
+   company_id?: string | number;       // Pour multi-sociétés
+   company_name?: string;
 
-  // Dates et durée
-  dates: ContractDates;
+   // Dates et durée
+   dates: ContractDates;
 
-  // Poste et classification
-  job: JobInfo;
+   // Poste et classification
+   job: JobInfo;
 
-  // Temps de travail
-  work_time: WorkTime;
+   // Temps de travail
+   work_time?: WorkTime;               // legacy optional
+   schedule?: SimplifiedSchedule;      // simplified
 
-  // Rémunération
-  salary: SalaryInfo;
+   // Rémunération
+   salary: SalaryInfo;
 
-  // Aspects légaux
-  legal: LegalInfo;
+   // Aspects légaux
+   legal: LegalInfo;
 
-  // Documents
-  documents?: ContractDocuments;
+   // Documents
+   documents?: ContractDocuments;
 
-  // Historique et traçabilité
-  historique: ContractHistory;
+   // Historique et traçabilité
+   historique: ContractHistory;
 
-  // Remarques et notes
-  notes?: string;
-  internal_notes?: string;            // Notes internes RH
+   // Remarques et notes
+   notes?: string;
+   internal_notes?: string;            // Notes internes RH
 
-  // Champs personnalisés par secteur/entreprise
-  custom_fields?: Record<string, any>;
+   // Champs personnalisés par secteur/entreprise
+   custom_fields?: Record<string, any>;
 
-  // Métadonnées
-  tags?: string[];                    // Tags pour classification
-  secteur?: SecteurActivite;
-  archived?: boolean;
-  archived_date?: string;
-  archived_reason?: string;
+   // Métadonnées
+   tags?: string[];                    // Tags pour classification
+   secteur?: SecteurActivite;
+   archived?: boolean;
+   archived_date?: string;
+   archived_reason?: string;
 }
 
 // ============================================
@@ -572,4 +624,3 @@ export interface ContractsResponse {
   page?: number;
   pageSize?: number;
 }
-
