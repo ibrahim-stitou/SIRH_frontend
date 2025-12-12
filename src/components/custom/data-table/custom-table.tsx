@@ -36,13 +36,19 @@ const CustomTable = <T extends Record<string, any>>({
   const [clickPosition, setClickPosition] = useState({ x: 0, y: 0 });
   const tableRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const initRef = useRef(false);
 
   useEffect(() => {
-    if (onInit) {
-      //@ts-ignore
+    if (onInit && !initRef.current) {
+      // Call onInit only once to avoid re-render loops
+      // Consumers can use table.refresh etc. afterward
+      // If you need to re-initialize on url/columns change, consider resetting initRef accordingly.
+      // For now, keep it once-per-mount to prevent infinite updates.
+      // @ts-ignore
       onInit(table);
+      initRef.current = true;
     }
-  }, []);
+  }, [onInit, table]);
 
   // Add click outside handler to close the card
   useEffect(() => {
@@ -160,14 +166,13 @@ const CustomTable = <T extends Record<string, any>>({
                                   target: { checked: true }
                                 } as any);
                               } else {
-                                const filteredSelectedRows =
+                                table.selectedRows =
                                   table.selectedRows.filter(
                                     (selectedRow) =>
                                       !table.data.some(
                                         (row) => row.id === selectedRow.id
                                       )
                                   );
-                                table.selectedRows = filteredSelectedRows;
                                 table.onSelectAllRows({
                                   target: { checked: false }
                                 } as any);

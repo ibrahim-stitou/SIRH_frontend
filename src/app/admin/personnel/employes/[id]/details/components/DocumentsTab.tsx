@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { FileText, Plus, Edit, Trash2, Eye } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { AnimatedTabContent } from '../components';
+import Image from 'next/image';
 
 interface Document {
   id: string;
@@ -81,10 +82,12 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({
                 >
                   <div className="aspect-video w-full rounded-md overflow-hidden bg-muted mb-3 relative">
                     {d.fileName?.match(/\.(png|jpg|jpeg|gif)$/i) ? (
-                      <img
+                      <Image
                         src={`/images/user/${d.fileName}`}
                         alt={d.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-muted-foreground">
@@ -155,4 +158,3 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({
     </AnimatedTabContent>
   );
 };
-

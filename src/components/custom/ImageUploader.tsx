@@ -1,9 +1,10 @@
 // components/ImageUploader.tsx
 import React from 'react';
-import { ImageIcon, FileText } from 'lucide-react';
+import { ImageIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FormFieldCustom } from './FormFieldCustom';
+import Image from 'next/image';
 
 type ImageUploaderProps = {
   preview: string | null;
@@ -13,6 +14,7 @@ type ImageUploaderProps = {
   error?: string | null;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const ImageUploader: React.FC<ImageUploaderProps> = ({
                                                               preview,
                                                               onChange,
@@ -42,10 +44,12 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
           <div className="md:col-span-3">
             {preview ? (
               <div className="relative h-48 w-full overflow-hidden rounded-md border bg-gray-50">
-                <img
+                <Image
                   src={preview}
                   alt="Vehicle preview"
-                  className="h-full w-full object-contain"
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                 />
                 <Button
                   type="button"

@@ -2,16 +2,16 @@
 import React, { useState, useEffect } from 'react';
 import { SidebarTrigger } from '../ui/sidebar';
 import { Separator } from '../ui/separator';
-import { Breadcrumbs } from '../breadcrumbs';
 import { UserNav } from './user-nav';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import { useLanguage } from '@/context/LanguageContext';
 import { Maximize, Minimize, Languages } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 export default function Header() {
-  const { t, language, handleLanguageChange } = useLanguage();
+  const { language, handleLanguageChange } = useLanguage();
   const [isFullscreen, setIsFullscreen] = useState(false)
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -95,9 +95,11 @@ export default function Header() {
                 'transition-all duration-200'
               )}
             >
-              <img
+              <Image
                 src={flagUrls[language as keyof typeof flagUrls]}
                 alt={language}
+                width={20}
+                height={20}
                 className='w-5 h-5 rounded-full object-cover ring-1 ring-gray-200 dark:ring-gray-700'
               />
               <Languages size={16} className="text-gray-500 dark:text-gray-400" />
@@ -138,7 +140,7 @@ export default function Header() {
               )}
               onClick={() => handleLanguageChange('fr')}
             >
-              <img src={flagUrls.fr} alt='Français' className='w-5 h-5 rounded-full object-cover' />
+              <Image src={flagUrls.fr} alt='Français' width={20} height={20} className='w-5 h-5 rounded-full object-cover' />
               <span>Français</span>
             </DropdownMenuItem>
             {/*<DropdownMenuItem*/}

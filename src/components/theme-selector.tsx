@@ -8,7 +8,6 @@ import {
   SelectGroup,
   SelectItem,
   SelectLabel,
-  SelectSeparator,
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
@@ -61,7 +60,7 @@ export function ThemeSelector() {
   const { activeTheme, setActiveTheme } = useThemeConfig();
   useEffect(() => {
     setActiveTheme('sirh');
-  }, [activeTheme]);
+  }, [setActiveTheme]);
   return (
     <div className='flex items-center gap-2'>
       <Label htmlFor='theme-selector' className='sr-only'>

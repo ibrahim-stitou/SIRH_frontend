@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import apiClient from "@/lib/api";
 import { apiRoutes } from "@/config/apiRoutes";
+import Image from 'next/image';
 
 interface SingleFileUploadProps {
   onFileChange: (file: UploadedFile | null) => void;
@@ -54,7 +55,7 @@ export function SingleFileUpload({
     setFile(value || null);
   }, [value]);
 
-  const uploadFile = async (fileToUpload: File) => {
+  const uploadFile = React.useCallback(async (fileToUpload: File) => {
     try {
       setIsUploading(true);
       const formData = new FormData();
@@ -84,7 +85,7 @@ export function SingleFileUpload({
     } finally {
       setIsUploading(false);
     }
-  };
+  }, [collection]);
 
   const onDrop = React.useCallback(
     async (acceptedFiles: FileWithPath[]) => {
@@ -108,7 +109,7 @@ export function SingleFileUpload({
       } catch (error) {
       }
     },
-    [maxSize, onFileChange, collection]
+    [maxSize, onFileChange, uploadFile]
   );
 
   const removeFile = async () => {
@@ -198,9 +199,11 @@ export function SingleFileUpload({
                     title={file.name}
                   />
                 ) : (
-                  <img
+                  <Image
                     src={file.url}
                     alt={file.name}
+                    width={1200}
+                    height={800}
                     className={`w-full ${previewHeight} object-contain`}
                   />
                 )
@@ -212,9 +215,11 @@ export function SingleFileUpload({
                     title={file.name}
                   />
                 ) : (
-                  <img
+                  <Image
                     src={URL.createObjectURL(file.file)}
                     alt={file.name}
+                    width={1200}
+                    height={800}
                     className={`w-full ${previewHeight} object-contain`}
                   />
                 )

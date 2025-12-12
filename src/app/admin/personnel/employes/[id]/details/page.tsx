@@ -46,6 +46,7 @@ import { SkillsTab } from '@/app/admin/personnel/employes/[id]/details/component
 import { DocumentsTab } from '@/app/admin/personnel/employes/[id]/details/components/DocumentsTab';
 import { PersonalTab } from '@/app/admin/personnel/employes/[id]/details/components/PersonalTab';
 import { ExperiencesTab } from './components/ExperiencesTab';
+import Image from 'next/image';
 
 interface EmployeeRow {
   id: number;
@@ -148,17 +149,6 @@ export default function EmployeeDetailsPage() {
 
   // Use uploaded avatar if available, fallback to default static image
   const currentAvatarSrc = avatarUrl || '/images/user/profile.png';
-
-  const combinedDocs = [
-    ...(emp?.documents || []),
-    ...media.filter(m => m.fileName).map(m => ({
-      id: `m-${m.id}`,
-      title: m.title,
-      fileName: m.fileName,
-      mimeType: m.mimeType,
-      size: m.size
-    }))
-  ];
 
   const handleOpen = (item: any) => {
     setPreviewItem(item);
@@ -693,11 +683,15 @@ export default function EmployeeDetailsPage() {
           </DialogHeader>
           <div className='max-h-[70vh] overflow-auto'>
             {previewItem?.fileName?.match(/\.(png|jpg|jpeg|gif)$/i) && (
-              <img
-                src={`/images/user/${previewItem.fileName}`}
-                alt={previewItem.title}
-                className='h-auto w-full rounded-lg'
-              />
+              <div className='relative w-full h-auto min-h-[200px]'>
+                <Image
+                  src={`/images/user/${previewItem.fileName}`}
+                  alt={previewItem.title}
+                  width={1200}
+                  height={800}
+                  className='h-auto w-full rounded-lg object-contain'
+                />
+              </div>
             )}
             {previewItem?.fileName?.endsWith('.pdf') && (
               <iframe

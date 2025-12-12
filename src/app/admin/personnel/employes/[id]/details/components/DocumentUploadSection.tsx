@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FileText, Plus, Edit, Trash2, Eye, Upload } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 export interface DocumentItem {
   id?: string;
@@ -96,10 +97,12 @@ export const DocumentUploadSection: React.FC<DocumentUploadSectionProps> = ({
                 >
                   <div className="aspect-video w-full rounded-md overflow-hidden bg-muted mb-3 relative">
                     {doc.fileName?.match(/\.(png|jpg|jpeg|gif)$/i) ? (
-                      <img
+                      <Image
                         src={`/images/user/${doc.fileName}`}
                         alt={doc.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform"
+                        sizes="(max-width: 768px) 100vw, 50vw"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
@@ -175,4 +178,3 @@ export const DocumentUploadSection: React.FC<DocumentUploadSectionProps> = ({
     </Card>
   );
 };
-

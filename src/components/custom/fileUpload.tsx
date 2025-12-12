@@ -11,13 +11,10 @@ import {
   FileImage,
   FileArchive,
   FileCode,
-  Eye,
-  Check,
   Loader2
 } from 'lucide-react';
 
 import { cn, formatBytes } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import apiClient from '@/lib/api';
 import { apiRoutes } from '@/config/apiRoutes';
@@ -60,6 +57,7 @@ export interface UploadedFile {
   uuid?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function FileUploader({
   value,
   onChange,
@@ -77,24 +75,21 @@ export function FileUploader({
   disabled = false,
   className,
   multiple = true,
-  showPreview = true,
-  variant = 'default',
+  showPreview: _showPreview = true,
+  variant: _variant = 'default',
   description,
   collection = 'default'
 }: FileUploaderProps) {
   const [files, setFiles] = React.useState<UploadedFile[]>(value || []);
   const [uploading, setUploading] = React.useState<boolean>(false);
   const [dragActive, setDragActive] = React.useState(false);
-  const [uploadProgress, setUploadProgress] = React.useState<
-    Record<string, number>
-  >({});
 
   // Sync with external value prop
   React.useEffect(() => {
     if (value && JSON.stringify(value) !== JSON.stringify(files)) {
       setFiles(value);
     }
-  }, [value]);
+  }, [value, files]);
 
   // Calculate accepted file types for display
   const acceptedFileTypes = React.useMemo(() => {
@@ -115,13 +110,10 @@ export function FileUploader({
       .join(', ');
   }, [accept]);
 
-  const uploadFile = async (file: File): Promise<UploadedFile> => {
+  const uploadFile = React.useCallback(async (file: File): Promise<UploadedFile> => {
     const fileId = `${file.name}-${Date.now()}`;
 
     try {
-      // Set initial progress
-      setUploadProgress((prev) => ({ ...prev, [fileId]: 0 }));
-
       const formData = new FormData();
       formData.append('file', file);
       formData.append('collection', collection);
@@ -131,22 +123,8 @@ export function FileUploader({
         formData,
         {
           headers: { 'Content-Type': 'multipart/form-data' },
-          onUploadProgress: (progressEvent: {
-            loaded: number;
-            total?: number;
-          }) => {
-            if (progressEvent.total) {
-              const progress = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
-              );
-              setUploadProgress((prev) => ({ ...prev, [fileId]: progress }));
-            }
-          }
         }
       );
-
-      // Set final progress
-      setUploadProgress((prev) => ({ ...prev, [fileId]: 100 }));
 
       return {
         custom_properties: '',
@@ -169,7 +147,7 @@ export function FileUploader({
       toast.error(`Failed to upload ${file.name}`);
       throw error;
     }
-  };
+  }, [collection]);
 
   const onDrop = React.useCallback(
     async (acceptedFiles: FileWithPath[], rejectedFiles: any[]) => {
@@ -229,7 +207,7 @@ export function FileUploader({
       maxFiles,
       onChange,
       maxSize,
-      collection
+      uploadFile
     ]
   );
 
@@ -291,6 +269,7 @@ export function FileUploader({
   const isMaxed = multiple ? files.length >= maxFiles : files.length >= 1;
   const isDisabled = disabled || uploading;
   const hasFiles = files.length > 0;
+  const variantClass = _variant === 'compact' ? 'h-32' : 'h-40';
   const renderContent = () => {
     if (!hasFiles) {
       return (
@@ -398,37 +377,42 @@ export function FileUploader({
             : 'border-muted-foreground/20 hover:border-muted-foreground/40',
           isDisabled && 'pointer-events-none cursor-not-allowed opacity-60',
           !isDisabled && 'cursor-pointer',
-          className || 'h-40'
-        )}
-      >
-        <input {...getInputProps()} />
-        {renderContent()}
+          className || variantClass
+         )}
+       >
+         <input {...getInputProps()} />
+         {renderContent()}
 
-        {/* Upload progress overlay */}
-        {uploading && (
-          <div className='bg-background/80 absolute inset-0 flex flex-col items-center justify-center rounded-xl backdrop-blur-sm'>
-            <Loader2 className='text-primary mb-2 h-7 w-7 animate-spin' />
-            <p className='text-sm font-medium'>Uploading...</p>
-          </div>
-        )}
-      </div>
+         {/* Upload progress overlay */}
+         {uploading && (
+           <div className='bg-background/80 absolute inset-0 flex flex-col items-center justify-center rounded-xl backdrop-blur-sm'>
+             <Loader2 className='text-primary mb-2 h-7 w-7 animate-spin' />
+             <p className='text-sm font-medium'>Uploading...</p>
+           </div>
+         )}
+       </div>
 
-      {/* File counter if needed outside the box */}
-      {hasFiles && multiple && maxFiles > 1 && !uploading && (
-        <div className='text-muted-foreground mt-1.5 flex items-center justify-between text-xs'>
-          <span>
-            {files.length} of {maxFiles} files
-          </span>
-          {!isMaxed && (
-            <span className='text-muted-foreground text-xs'>
-              Drop more or click to upload
-            </span>
-          )}
+       {/* File counter if needed outside the box */}
+       {hasFiles && multiple && maxFiles > 1 && !uploading && (
+         <div className='text-muted-foreground mt-1.5 flex items-center justify-between text-xs'>
+           <span>
+             {files.length} of {maxFiles} files
+           </span>
+           {!isMaxed && (
+             <span className='text-muted-foreground text-xs'>
+               Drop more or click to upload
+             </span>
+           )}
+         </div>
+       )}
+      {!hasFiles && description && (
+        <div className='text-muted-foreground mt-2 text-xs'>
+          {description}
         </div>
       )}
-    </div>
-  );
-}
+     </div>
+   );
+ }
 
 // Image preview card component
 function FilePreviewCard({
