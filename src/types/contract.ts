@@ -606,6 +606,13 @@ export interface Contract {
   // Documents
   documents?: ContractDocuments;
 
+  // Signed document uploaded
+  signed_document?: {
+    url: string;
+    name: string;
+    uploaded_at: string;
+  };
+
   // Historique et traçabilité
   historique: ContractHistory;
 

@@ -80,7 +80,19 @@ export const apiRoutes = {
         generate: (id: number | string) =>
           `${API_BASE}/contracts/${id}/generate`,
         validate: (id: number | string) =>
-          `${API_BASE}/contracts/${id}/validate`
+          `${API_BASE}/contracts/${id}/validate`,
+        uploadSigned: (id: number | string) =>
+          `${API_BASE}/contracts/${id}/upload-signed`,
+        cancel: (id: number | string) => `${API_BASE}/contracts/${id}/cancel`
+      },
+      avenants: {
+        list: `${API_BASE}/avenants`,
+        create: `${API_BASE}/avenants`,
+        update: (id: number | string) => `${API_BASE}/avenants/${id}`,
+        delete: (id: number | string) => `${API_BASE}/avenants/${id}`,
+        show: (id: number | string) => `${API_BASE}/avenants/${id}`,
+        byContract: (contractId: number | string) =>
+          `${API_BASE}/contracts/${contractId}/avenants`
       }
     }
   }

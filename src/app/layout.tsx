@@ -31,11 +31,9 @@ const SUPPORTED_LANGS = ['en', 'fr', 'ar'] as const;
 const DEFAULT_LANG = 'fr';
 
 export default async function RootLayout({
-  children,
-  params: { lang }
+  children
 }: {
   children: React.ReactNode;
-  params: { lang: string };
 }) {
   const session = await auth();
   const activeThemeValue = 'sirh';
@@ -43,11 +41,9 @@ export default async function RootLayout({
   const headersList = await headers();
   const acceptLanguage = headersList.get('accept-language');
   const browserLang = acceptLanguage?.split(',')[0]?.split('-')[0];
-  const validatedLang = SUPPORTED_LANGS.includes(lang as any)
-    ? lang
-    : SUPPORTED_LANGS.includes(browserLang as any)
-      ? browserLang
-      : DEFAULT_LANG;
+  const validatedLang = SUPPORTED_LANGS.includes(browserLang as any)
+    ? browserLang
+    : DEFAULT_LANG;
 
   return (
     <html

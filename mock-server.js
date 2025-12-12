@@ -467,6 +467,73 @@ server.delete('/contracts/:id', (req, res) => {
   return res.json({ status: 'success', message: `Contrat #${id} supprimé` });
 });
 
+// Upload signed contract file (mock)
+server.post('/contracts/:id/upload-signed', (req, res) => {
+  const id = req.params.id;
+  const contract = db
+    .get('contracts')
+    .find((c) => c.id == id || c.id === id)
+    .value();
+
+  if (!contract) {
+    return res
+      .status(404)
+      .json({ status: 'error', message: 'Contrat introuvable' });
+  }
+
+  const { fileUrl, fileName } = req.body || {};
+  const signedDoc = {
+    url: fileUrl || `/uploads/contracts/${id}/signed.pdf`,
+    name: fileName || `contrat-signe-${id}.pdf`,
+    uploaded_at: new Date().toISOString()
+  };
+
+  db.get('contracts')
+    .find((c) => c.id == id || c.id === id)
+    .assign({ signed_document: signedDoc, status: 'Actif', statut: 'Actif' })
+    .write();
+
+  return res.json({
+    status: 'success',
+    message: 'Contrat signé téléversé avec succès',
+    data: db.get('contracts').find((c) => c.id == id || c.id === id).value()
+  });
+});
+
+// Cancel contract (mock)
+server.post('/contracts/:id/cancel', (req, res) => {
+  const id = req.params.id;
+  const contract = db
+    .get('contracts')
+    .find((c) => c.id == id || c.id === id)
+    .value();
+
+  if (!contract) {
+    return res
+      .status(404)
+      .json({ status: 'error', message: 'Contrat introuvable' });
+  }
+
+  const reason = req.body?.reason || 'Annulation via mock';
+  const updates = {
+    status: 'Annulé',
+    statut: 'Annulé',
+    cancelled_at: new Date().toISOString(),
+    cancellation_reason: reason
+  };
+
+  db.get('contracts')
+    .find((c) => c.id == id || c.id === id)
+    .assign(updates)
+    .write();
+
+  return res.json({
+    status: 'success',
+    message: 'Contrat annulé avec succès',
+    data: db.get('contracts').find((c) => c.id == id || c.id === id).value()
+  });
+});
+
 // Explicit userMedia route (safety if not initialized yet)
 server.get('/userMedia', (req, res) => {
   const rows = db.get('userMedia').value() || [];
@@ -562,6 +629,94 @@ collections.forEach((col) => {
       message: 'Suppression réussie',
       data: removed
     });
+  });
+});
+
+// Avenants endpoints
+server.get('/avenants', (req, res) => {
+  res.json(db.avenants || []);
+});
+server.get('/contracts/:id/avenants', (req, res) => {
+  const id = req.params.id;
+  const list = (db.avenants || []).filter((a) => String(a.contract_id) === String(id));
+  res.json(list);
+});
+server.get('/avenants/:id', (req, res) => {
+  const id = req.params.id;
+  const found = (db.avenants || []).find((a) => String(a.id) === String(id));
+  if (!found) return res.status(404).json({ message: 'Avenant not found' });
+  res.json(found);
+});
+server.post('/avenants', (req, res) => {
+  const body = req.body || {};
+  const newItem = { id: body.id || `AVN-${Date.now()}`, ...body };
+  db.avenants = db.avenants || [];
+  db.avenants.push(newItem);
+  res.status(201).json(newItem);
+});
+server.put('/avenants/:id', (req, res) => {
+  const id = req.params.id;
+  const idx = (db.avenants || []).findIndex((a) => String(a.id) === String(id));
+  if (idx === -1) return res.status(404).json({ message: 'Avenant not found' });
+  db.avenants[idx] = { ...db.avenants[idx], ...req.body };
+  res.json(db.avenants[idx]);
+});
+server.delete('/avenants/:id', (req, res) => {
+  const id = req.params.id;
+  const before = db.avenants || [];
+  db.avenants = before.filter((a) => String(a.id) !== String(id));
+  res.json({ success: true });
+});
+
+// Generate avenant PDF
+server.post('/avenants/:id/generate-pdf', (req, res) => {
+  const id = req.params.id;
+  const avenant = (db.avenants || []).find((a) => String(a.id) === String(id));
+
+  if (!avenant) {
+    return res.status(404).json({ message: 'Avenant not found' });
+  }
+
+  // Mock PDF generation - return success with document URL
+  const documentUrl = `/uploads/avenants/${id}/generated.pdf`;
+
+  // Update avenant with document URL
+  const idx = (db.avenants || []).findIndex((a) => String(a.id) === String(id));
+  if (idx !== -1) {
+    db.avenants[idx].document_url = documentUrl;
+  }
+
+  res.json({
+    success: true,
+    document_url: documentUrl,
+    message: 'PDF generated successfully'
+  });
+});
+
+// Upload signed avenant document
+server.post('/avenants/:id/upload-signed', (req, res) => {
+  const id = req.params.id;
+  const { fileUrl, fileName } = req.body;
+
+  const avenant = (db.avenants || []).find((a) => String(a.id) === String(id));
+
+  if (!avenant) {
+    return res.status(404).json({ message: 'Avenant not found' });
+  }
+
+  // Update avenant with signed document
+  const idx = (db.avenants || []).findIndex((a) => String(a.id) === String(id));
+  if (idx !== -1) {
+    db.avenants[idx].signed_document = {
+      url: fileUrl,
+      name: fileName,
+      uploaded_at: new Date().toISOString()
+    };
+  }
+
+  res.json({
+    success: true,
+    signed_document: db.avenants[idx].signed_document
   });
 });
 

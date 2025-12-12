@@ -101,6 +101,7 @@ export const Icons = {
   license: IconLicense,
   check: IconCheck,
   chevronLeft: IconChevronLeft,
+  fileEdit: IconFileText,
   chevronRight: IconChevronRight,
   close: IconX,
   companies: IconBuilding,

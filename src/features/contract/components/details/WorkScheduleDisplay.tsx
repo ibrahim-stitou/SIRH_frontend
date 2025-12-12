@@ -32,6 +32,7 @@ export default function WorkScheduleDisplay({
 
   const schedule =
     (contract as any).schedule ?? (contract as any).work_time ?? {};
+  const trial = (contract as any).dates?.trial_period ?? {};
 
   const handleChange = (field: string, value: any) => {
     const keys = field.split('.');
@@ -374,47 +375,7 @@ export default function WorkScheduleDisplay({
               )}
             </div>
 
-            <div className='grid grid-cols-1 gap-3 md:grid-cols-3'>
-              {renderField(
-                'Heures par jour',
-                schedule.hours_per_day,
-                'schedule.hours_per_day',
-                'number'
-              )}
-              {renderField(
-                'Jours par semaine',
-                schedule.days_per_week,
-                'schedule.days_per_week',
-                'number'
-              )}
-              {renderField(
-                'Heures par semaine',
-                schedule.hours_per_week,
-                'schedule.hours_per_week',
-                'number'
-              )}
-            </div>
-
-            <div className='grid grid-cols-1 gap-3 md:grid-cols-3'>
-              {renderField(
-                'Début de journée',
-                schedule.start_time,
-                'schedule.start_time',
-                'text'
-              )}
-              {renderField(
-                'Fin de journée',
-                schedule.end_time,
-                'schedule.end_time',
-                'text'
-              )}
-              {renderField(
-                'Pause (minutes)',
-                schedule.break_duration,
-                'schedule.break_duration',
-                'number'
-              )}
-            </div>
+            {/* Removed fields not present in creation tab: hours_per_day, days_per_week, hours_per_week, start_time, end_time, break_duration */}
 
             <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
               {renderField(
@@ -424,6 +385,73 @@ export default function WorkScheduleDisplay({
                 'text'
               )}
             </div>
+          </div>
+        </div>
+
+        {/* Période d'Essai */}
+        <div>
+          <h3 className='mb-3 flex items-center gap-2 text-sm font-bold text-cyan-700 dark:text-cyan-400'>
+            <Clock className='h-4 w-4' />
+            Période d&apos;Essai
+          </h3>
+          <div className='space-y-3'>
+            {/* Activation */}
+            {renderField(
+              "Activer la période d'essai",
+              !!trial.enabled,
+              'dates.trial_period.enabled',
+              'checkbox'
+            )}
+
+            {/* Only show additional fields if enabled */}
+            {trial.enabled && (
+              <div className='space-y-3'>
+                <div className='grid grid-cols-1 gap-3 md:grid-cols-3'>
+                  {renderField(
+                    'Durée (mois)',
+                    trial.duration_months,
+                    'dates.trial_period.duration_months',
+                    'number'
+                  )}
+                  {renderField(
+                    'Durée (jours)',
+                    trial.duration_days,
+                    'dates.trial_period.duration_days',
+                    'number'
+                  )}
+                  {renderField(
+                    'Date de Fin',
+                    trial.end_date,
+                    'dates.trial_period.end_date',
+                    'text'
+                  )}
+                </div>
+
+                <div className='grid grid-cols-1 gap-3 md:grid-cols-3'>
+                  {renderField(
+                    'Renouvelable',
+                    !!trial.renewable,
+                    'dates.trial_period.renewable',
+                    'checkbox'
+                  )}
+                  {renderField(
+                    'Nb Max Renouvellements',
+                    trial.max_renewals,
+                    'dates.trial_period.max_renewals',
+                    'number'
+                  )}
+                </div>
+
+                <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
+                  {renderField(
+                    'Conditions',
+                    trial.conditions,
+                    'dates.trial_period.conditions',
+                    'text'
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </CardContent>

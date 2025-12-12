@@ -342,7 +342,7 @@ export default function ContractDetailsPage() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer scrollable={true}>
       <div className='mx-auto w-full space-y-3 py-4'>
         {/* En-tête compact */}
         <div className='flex items-center justify-between border-b pb-2'>

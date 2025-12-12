@@ -46,6 +46,13 @@ export const useNavItems = (): NavItem[] => {
           icon: 'fileText',
           shortcut: ['r', 'e'],
           description: 'US-PRO-001'
+        },
+        {
+          title: t('sidebar.avenants'),
+          url: '/admin/contrats-mouvements/avenants',
+          icon: 'file',
+          shortcut: ['a', 'v'],
+          description: 'US-PRO-002'
         }
       ]
     }

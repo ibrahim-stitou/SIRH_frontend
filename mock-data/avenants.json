@@ -1,0 +1,103 @@
+[
+  {
+    "id": "AVN-2024-001",
+    "contract_id": "CTR-2024-001",
+    "contract_reference": "CTR-2024-001",
+    "employee_name": "Ahmed Bennani",
+    "numero": 1,
+    "date": "2024-06-01",
+    "objet": "Augmentation annuelle de salaire",
+    "motif": "Suite à l'évaluation annuelle positive et en reconnaissance des performances de l'employé",
+    "description": "Augmentation du salaire brut de 18000 MAD à 19000 MAD",
+    "status": "Valide",
+    "type_modification": "salary",
+    "changes": {
+      "salary": {
+        "avant": {
+          "salary_brut": 18000,
+          "salary_net": 14500,
+          "currency": "MAD",
+          "payment_method": "Virement"
+        },
+        "apres": {
+          "salary_brut": 19000,
+          "salary_net": 15200,
+          "currency": "MAD",
+          "payment_method": "Virement"
+        }
+      }
+    },
+    "document_url": "/uploads/avenants/AVN-2024-001/generated.pdf",
+    "signed_document": {
+      "url": "/uploads/avenants/AVN-2024-001/signed.pdf",
+      "name": "Avenant_1_CTR-2024-001_Signe.pdf",
+      "uploaded_at": "2024-06-05T14:30:00Z"
+    },
+    "created_at": "2024-06-01T11:00:00Z",
+    "created_by": "USR-HR-001"
+  },
+  {
+    "id": "AVN-2024-002",
+    "contract_id": "CTR-2024-002",
+    "contract_reference": "CTR-2024-002",
+    "employee_name": "Fatima El Amrani",
+    "numero": 1,
+    "date": "2024-08-15",
+    "objet": "Changement d'horaires de travail",
+    "motif": "Réorganisation du service - passage à l'horaire continu pour optimiser la productivité",
+    "description": "Modification des horaires de travail: passage d'horaire administratif à horaire continu",
+    "status": "Brouillon",
+    "type_modification": "schedule",
+    "changes": {
+      "schedule": {
+        "avant": {
+          "schedule_type": "Administratif",
+          "hours_per_week": 40,
+          "shift_work": "Non",
+          "annual_leave_days": 22
+        },
+        "apres": {
+          "schedule_type": "Continu",
+          "hours_per_week": 40,
+          "shift_work": "Non",
+          "annual_leave_days": 22
+        }
+      }
+    },
+    "created_at": "2024-08-15T10:00:00Z",
+    "created_by": "USR-HR-001"
+  },
+  {
+    "id": "AVN-2024-003",
+    "contract_id": "CTR-2024-001",
+    "contract_reference": "CTR-2024-001",
+    "employee_name": "Ahmed Bennani",
+    "numero": 2,
+    "date": "2024-10-01",
+    "objet": "Promotion au poste de Senior Developer",
+    "motif": "Reconnaissance des compétences techniques et de leadership démontrées",
+    "description": "Promotion avec changement de poste et de classification",
+    "status": "Valide",
+    "type_modification": "job",
+    "changes": {
+      "job": {
+        "avant": {
+          "poste": "Développeur Full Stack",
+          "department": "IT",
+          "classification": "Niveau 4 - Échelon 2",
+          "work_mode": "Hybride"
+        },
+        "apres": {
+          "poste": "Développeur Full Stack Senior",
+          "department": "IT",
+          "classification": "Niveau 5 - Échelon 1",
+          "work_mode": "Hybride"
+        }
+      }
+    },
+    "document_url": "/uploads/avenants/AVN-2024-003/generated.pdf",
+    "created_at": "2024-09-25T09:00:00Z",
+    "created_by": "USR-HR-001"
+  }
+]
+

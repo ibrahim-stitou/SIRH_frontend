@@ -16,7 +16,9 @@ import {
   Archive,
   Trash2,
   Send,
-  RefreshCw
+  RefreshCw,
+  Printer,
+  Plus
 } from 'lucide-react';
 import { Contract } from '@/types/contract';
 import {
@@ -34,20 +36,24 @@ interface ContractActionsProps {
   contract: Contract;
   onGenerate?: () => void;
   onDownload?: () => void;
+  onPrint?: () => void;
   onSendSignature?: () => void;
   onArchive?: () => void;
   onDelete?: () => void;
   onRenew?: () => void;
+  onCreateAvenant?: () => void;
 }
 
 export default function ContractActions({
   contract,
   onGenerate,
   onDownload,
+  onPrint,
   onSendSignature,
   onArchive,
   onDelete,
-  onRenew
+  onRenew,
+  onCreateAvenant
 }: ContractActionsProps) {
   const canGenerate = contract.status !== 'Brouillon';
   const canSendSignature =
@@ -62,7 +68,52 @@ export default function ContractActions({
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 
   return (
-    <>
+    <div className='flex items-center gap-2'>
+      {/* Primary Actions - Always visible */}
+      {canGenerate && onGenerate && (
+        <Button
+          onClick={onGenerate}
+          variant='outline'
+          size='sm'
+          className='h-9 gap-1.5'
+        >
+          <FileText className='h-3.5 w-3.5' /> Générer
+        </Button>
+      )}
+
+      {onDownload && (
+        <Button
+          onClick={onDownload}
+          variant='outline'
+          size='sm'
+          className='h-9 gap-1.5'
+        >
+          <Download className='h-3.5 w-3.5' /> Télécharger
+        </Button>
+      )}
+
+      {onPrint && (
+        <Button
+          onClick={onPrint}
+          variant='outline'
+          size='sm'
+          className='h-9 gap-1.5'
+        >
+          <Printer className='h-3.5 w-3.5' /> Imprimer
+        </Button>
+      )}
+
+      {contract.status !== 'Brouillon' && onCreateAvenant && (
+        <Button
+          onClick={onCreateAvenant}
+          size='sm'
+          className='h-9 gap-1.5'
+        >
+          <Plus className='h-3.5 w-3.5' /> Créer avenant
+        </Button>
+      )}
+
+      {/* Secondary Actions - In dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant='outline' size='sm' className='h-9'>
@@ -70,19 +121,6 @@ export default function ContractActions({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-56' sideOffset={5}>
-          {canGenerate && onGenerate && (
-            <DropdownMenuItem onClick={onGenerate}>
-              <FileText className='mr-2 h-4 w-4' />
-              Générer le contrat
-            </DropdownMenuItem>
-          )}
-
-          {onDownload && (
-            <DropdownMenuItem onClick={onDownload}>
-              <Download className='mr-2 h-4 w-4' />
-              Télécharger
-            </DropdownMenuItem>
-          )}
 
           {canSendSignature && onSendSignature && (
             <DropdownMenuItem onClick={onSendSignature}>
@@ -147,6 +185,6 @@ export default function ContractActions({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </div>
   );
 }

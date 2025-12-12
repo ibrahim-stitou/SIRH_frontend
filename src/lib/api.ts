@@ -1,6 +1,4 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { getSession } from 'next-auth/react';
-import { auth } from '@/lib/auth';
 
 const apiClient = axios.create({
   baseURL:
@@ -16,9 +14,12 @@ const apiClient = axios.create({
 const getAuthToken = async (isServerSide: boolean): Promise<string | null> => {
   try {
     if (isServerSide) {
+      // Dynamically import server-only auth to avoid client-side bundling issues
+      const { auth } = await import('@/lib/auth');
       const session = await auth();
       return session?.accessToken || null;
     } else {
+      const { getSession } = await import('next-auth/react');
       const session = await getSession();
       return session?.accessToken || null;
     }
@@ -77,6 +78,7 @@ async function refreshToken(): Promise<{
     }
     isRefreshingToken = true;
     refreshPromise = (async () => {
+      const { getSession } = await import('next-auth/react');
       const session = await getSession();
       if (!session?.refreshToken) {
         console.error('No refresh token available');
