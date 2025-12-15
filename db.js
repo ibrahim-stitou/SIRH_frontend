@@ -21,5 +21,6 @@ module.exports = {
   userMedia: require('./mock-data/userMedia.json'),
   attestationRequests: require('./mock-data/attestationRequests.json'),
   attestations: require('./mock-data/attestations.json'),
-  avenants: require('./mock-data/avenants.json')
+  avenants: require('./mock-data/avenants.json'),
+  mutuelles: require('./mock-data/mutuelles.json')
 };

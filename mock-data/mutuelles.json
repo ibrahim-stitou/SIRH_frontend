@@ -1,0 +1,55 @@
+[
+  {
+    "id": 1,
+    "code": "CNSS",
+    "name": "CNSS",
+    "description": "Caisse Nationale de Sécurité Sociale",
+    "defaultRates": { "employeePct": 4.48, "employerPct": 8.98 }
+  },
+  {
+    "id": 2,
+    "code": "AMO",
+    "name": "AMO",
+    "description": "Assurance Maladie Obligatoire",
+    "defaultRates": { "employeePct": 2.26, "employerPct": 2.26 }
+  },
+  {
+    "id": 3,
+    "code": "CIMR",
+    "name": "CIMR",
+    "description": "Caisse Interprofessionnelle Marocaine de Retraite",
+    "defaultRates": { "employeePct": 6.0, "employerPct": 6.0 }
+  },
+  {
+    "id": 4,
+    "code": "RCAR",
+    "name": "RCAR",
+    "description": "Régime Collectif d'Allocation de Retraite",
+    "defaultRates": { "employeePct": 20.0, "employerPct": 0.0 }
+  },
+  {
+    "id": 10,
+    "code": "MUT-GEN",
+    "name": "Mutuelle Générale",
+    "description": "Mutuelle santé générale",
+    "defaultRates": { "employeePct": 2.0, "employerPct": 3.0 },
+    "coverage": [
+      { "label": "Consultations", "limit": 5000 },
+      { "label": "Hospitalisation", "limit": 20000 },
+      { "label": "Pharmacie", "limit": 4000 }
+    ]
+  },
+  {
+    "id": 11,
+    "code": "MUT-PREM",
+    "name": "Mutuelle Premium",
+    "description": "Couverture étendue",
+    "defaultRates": { "employeePct": 3.0, "employerPct": 4.5 },
+    "coverage": [
+      { "label": "Consultations", "limit": 8000 },
+      { "label": "Hospitalisation", "limit": 40000 },
+      { "label": "Pharmacie", "limit": 7000 }
+    ]
+  }
+]
+

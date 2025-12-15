@@ -142,7 +142,44 @@
         "description": "Gestion de projets digitaux"
       }
     ],
-    "professionalCategory": "cadres_assimiles"
+    "professionalCategory": "cadres_assimiles",
+    "socialContributions": [
+      {
+        "type": "CNSS",
+        "code": "CNSS",
+        "affiliationNumber": "1000123456",
+        "employeeRatePct": 4.48,
+        "employerRatePct": 8.98,
+        "startDate": "2022-01-10",
+        "notes": "Taux standard"
+      },
+      {
+        "type": "AMO",
+        "code": "AMO",
+        "affiliationNumber": "AMO-1000123456",
+        "employeeRatePct": 2.26,
+        "employerRatePct": 2.26,
+        "startDate": "2022-01-10"
+      },
+      {
+        "type": "CIMR",
+        "code": "CIMR",
+        "affiliationNumber": "CIMR-123456",
+        "employeeRatePct": 6.00,
+        "employerRatePct": 6.00,
+        "startDate": "2023-01-01",
+        "notes": "Régime complémentaire"
+      },
+      {
+        "type": "Mutuelle",
+        "code": "MUT-GEN",
+        "affiliationNumber": "MUT-98765",
+        "employeeRatePct": 2.00,
+        "employerRatePct": 3.00,
+        "startDate": "2023-02-01",
+        "providerName": "Mutuelle Générale"
+      }
+    ]
   },
   {
     "id": 1001,
@@ -239,7 +276,25 @@
     "createdBy": "system",
     "notes": "Employée front-end",
     "tags": ["engineering", "frontend"],
-    "professionalCategory": "employes_assimiles"
+    "professionalCategory": "employes_assimiles",
+    "socialContributions": [
+      {
+        "type": "CNSS",
+        "code": "CNSS",
+        "affiliationNumber": "1001654321",
+        "employeeRatePct": 4.48,
+        "employerRatePct": 8.98,
+        "startDate": "2023-04-10"
+      },
+      {
+        "type": "AMO",
+        "code": "AMO",
+        "affiliationNumber": "AMO-1001654321",
+        "employeeRatePct": 2.26,
+        "employerRatePct": 2.26,
+        "startDate": "2023-04-10"
+      }
+    ]
   },
   {
     "id": 1002,
@@ -357,7 +412,34 @@
         "description": "Management d'équipe et architecture"
       }
     ],
-    "professionalCategory": "cadres_assimiles"
+    "professionalCategory": "cadres_assimiles",
+    "socialContributions": [
+      {
+        "type": "CNSS",
+        "code": "CNSS",
+        "affiliationNumber": "1002789012",
+        "employeeRatePct": 4.48,
+        "employerRatePct": 8.98,
+        "startDate": "2021-02-01"
+      },
+      {
+        "type": "AMO",
+        "code": "AMO",
+        "affiliationNumber": "AMO-1002789012",
+        "employeeRatePct": 2.26,
+        "employerRatePct": 2.26,
+        "startDate": "2021-02-01"
+      },
+      {
+        "type": "Mutuelle",
+        "code": "MUT-PREM",
+        "affiliationNumber": "MUT-22222",
+        "employeeRatePct": 3.00,
+        "employerRatePct": 4.50,
+        "startDate": "2022-06-01",
+        "providerName": "Mutuelle Premium"
+      }
+    ]
   },
   {
     "id": 1003,
@@ -451,6 +533,24 @@
     "createdBy": "system",
     "notes": "Spécialiste RH contrat CDD",
     "tags": ["hr"],
-    "professionalCategory": "employes_assimiles"
+    "professionalCategory": "employes_assimiles",
+    "socialContributions": [
+      {
+        "type": "CNSS",
+        "code": "CNSS",
+        "affiliationNumber": "1003456789",
+        "employeeRatePct": 4.48,
+        "employerRatePct": 8.98,
+        "startDate": "2022-09-15"
+      },
+      {
+        "type": "AMO",
+        "code": "AMO",
+        "affiliationNumber": "AMO-1003456789",
+        "employeeRatePct": 2.26,
+        "employerRatePct": 2.26,
+        "startDate": "2022-09-15"
+      }
+    ]
   }
 ]

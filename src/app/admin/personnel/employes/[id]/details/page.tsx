@@ -57,6 +57,7 @@ import { SkillsTab } from '@/app/admin/personnel/employes/[id]/details/component
 import { DocumentsTab } from '@/app/admin/personnel/employes/[id]/details/components/DocumentsTab';
 import { PersonalTab } from '@/app/admin/personnel/employes/[id]/details/components/PersonalTab';
 import { ExperiencesTab } from './components/ExperiencesTab';
+import { SocialContributionsTab } from '@/app/admin/personnel/employes/[id]/details/components/SocialContributionsTab';
 import Image from 'next/image';
 
 interface EmployeeRow {
@@ -146,7 +147,8 @@ export default function EmployeeDetailsPage() {
       | 'certifications'
       | 'documents'
       | 'peopleInCharge'
-      | 'experiences';
+      | 'experiences'
+      | 'socialContributions';
     index?: number;
   } | null>(null);
   const [tempItem, setTempItem] = useState<any>(null);
@@ -156,6 +158,27 @@ export default function EmployeeDetailsPage() {
   const relForm = useForm<{ relationship: string }>({
     defaultValues: { relationship: '' }
   });
+  const [currentContributionType, setCurrentContributionType] = useState<string>('CNSS');
+  const [mutuellesList, setMutuellesList] = useState<any[]>([]);
+  const typeForm = useForm<{ type: string }>({ defaultValues: { type: 'CNSS' } });
+  const selectedType = typeForm.watch('type');
+
+  useEffect(() => {
+    if (openEditItem?.section !== 'socialContributions') return;
+    if (!selectedType) return;
+    // update tempItem type/code
+    setTempItem((p: any) => ({ ...p, type: selectedType, code: selectedType }));
+    // autofill defaults
+    const found = (mutuellesList || []).find((m: any) => m.code === selectedType);
+    const def = found?.defaultRates;
+    if (def) {
+      setTempItem((p: any) => ({
+        ...p,
+        employeeRatePct: def.employeePct,
+        employerRatePct: def.employerPct
+      }));
+    }
+  }, [selectedType, openEditItem?.section, mutuellesList]);
 
   useEffect(() => {
     if (!id) return;
@@ -197,6 +220,26 @@ export default function EmployeeDetailsPage() {
       }
     })();
   }, [id, router]);
+
+  useEffect(() => {
+    // Load mutuelles/social schemes for selection and defaults
+    (async () => {
+      try {
+        const res = await apiClient.get(`${process.env.NEXT_PUBLIC_USE_MOCK === 'true' ? (process.env.JSON_SERVER_URL || 'http://localhost:3001') : (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:8003/api/v1')}/mutuelles`);
+        const payload: any = res.data && typeof res.data === 'object' && 'data' in res.data ? res.data.data : res.data;
+        setMutuellesList(Array.isArray(payload) ? payload : []);
+      } catch (e) {
+        // silent fail, will fallback to static defaults
+        setMutuellesList([
+          { code: 'CNSS', name: 'CNSS', defaultRates: { employeePct: 4.48, employerPct: 8.98 } },
+          { code: 'AMO', name: 'AMO', defaultRates: { employeePct: 2.26, employerPct: 2.26 } },
+          { code: 'CIMR', name: 'CIMR', defaultRates: { employeePct: 6.0, employerPct: 6.0 } },
+          { code: 'RCAR', name: 'RCAR', defaultRates: { employeePct: 20.0, employerPct: 0.0 } },
+          { code: 'Mutuelle', name: 'Mutuelle', defaultRates: { employeePct: 2.0, employerPct: 3.0 } }
+        ]);
+      }
+    })();
+  }, []);
 
   const fullName = emp ? `${emp.firstName} ${emp.lastName}` : '';
   const initials = emp ? `${emp.firstName?.[0]}${emp.lastName?.[0]}` : '';
@@ -298,7 +341,8 @@ export default function EmployeeDetailsPage() {
       | 'certifications'
       | 'documents'
       | 'peopleInCharge'
-      | 'experiences',
+      | 'experiences'
+      | 'socialContributions',
     index?: number,
     docType?: 'cin' | 'certificate' | 'diploma' | 'experience' | 'other'
   ) => {
@@ -349,6 +393,23 @@ export default function EmployeeDetailsPage() {
           ? (emp?.peopleInCharge?.[index] ?? {})
           : { name: '', phone: '', relationship: '', cin: '', birthDate: '' };
       if (base.CIN && !base.cin) base.cin = base.CIN;
+    }
+    if (section === 'socialContributions') {
+      const initialType = index != null ? (emp as any)?.socialContributions?.[index]?.type : currentContributionType;
+      typeForm.reset({ type: initialType || 'CNSS' });
+      base =
+        index != null
+          ? (emp as any)?.socialContributions?.[index] ?? {}
+          : {
+              type: initialType || 'CNSS',
+              code: initialType || 'CNSS',
+              affiliationNumber: '',
+              employeeRatePct: undefined,
+              employerRatePct: undefined,
+              startDate: '',
+              endDate: '',
+              providerName: ''
+            };
     }
     setTempItem(base);
     setDocFiles([]);
@@ -455,6 +516,22 @@ export default function EmployeeDetailsPage() {
       itemForSave = item;
     }
 
+    // Validate socialContributions
+    if (section === 'socialContributions') {
+      const item = { ...tempItem };
+      if (!item.type) {
+        toast.error('Type requis (CNSS, AMO, CIMR, Mutuelle, RCAR)');
+        return;
+      }
+      // Default code equals type if missing
+      item.code = item.code || item.type;
+      // Normalize number fields
+      const toNum = (v: any) => (v === '' || v == null ? undefined : Number(v));
+      item.employeeRatePct = toNum(item.employeeRatePct);
+      item.employerRatePct = toNum(item.employerRatePct);
+      itemForSave = item;
+    }
+
     if (index != null) {
       newList[index] = itemForSave;
     } else {
@@ -473,7 +550,8 @@ export default function EmployeeDetailsPage() {
       | 'certifications'
       | 'documents'
       | 'peopleInCharge'
-      | 'experiences',
+      | 'experiences'
+      | 'socialContributions',
     index: number
   ) => {
     const list = ((emp as any)?.[section] || []).slice();
@@ -609,78 +687,62 @@ export default function EmployeeDetailsPage() {
 
         {/* Tabs Section */}
         <Tabs value={active} onValueChange={setActive} className='space-y-4'>
-          <TabsList className='bg-muted/50 grid h-auto w-full grid-cols-3 p-1 lg:grid-cols-8'>
+          <TabsList className='bg-muted/50 flex h-auto w-full flex-wrap items-center gap-2 p-2'>
             <TabsTrigger
               value='personal'
-              className='data-[state=active]:bg-background gap-2'
+              className='data-[state=active]:bg-background gap-2 px-3 py-2'
             >
               <UserRound className='h-4 w-4' />
-              <span className='hidden sm:inline'>
-                {t('employeeDetails.tabs.personal')}
-              </span>
+              <span className='text-sm'>{t('employeeDetails.tabs.personal')}</span>
             </TabsTrigger>
             <TabsTrigger
               value='peopleInCharge'
-              className='data-[state=active]:bg-background gap-2'
+              className='data-[state=active]:bg-background gap-2 px-3 py-2'
             >
               <Users className='h-4 w-4' />
-              <span className='hidden sm:inline'>
-                {t('employeeDetails.tabs.peopleInCharge')}
-              </span>
+              <span className='text-sm'>{t('employeeDetails.tabs.peopleInCharge')}</span>
             </TabsTrigger>
             <TabsTrigger
               value='skills'
-              className='data-[state=active]:bg-background gap-2'
+              className='data-[state=active]:bg-background gap-2 px-3 py-2'
             >
               <GraduationCap className='h-4 w-4' />
-              <span className='hidden sm:inline'>
-                {t('employeeDetails.tabs.skills')}
-              </span>
+              <span className='text-sm'>{t('employeeDetails.tabs.skills')}</span>
             </TabsTrigger>
             <TabsTrigger
               value='documents'
-              className='data-[state=active]:bg-background gap-2'
+              className='data-[state=active]:bg-background gap-2 px-3 py-2'
             >
               <FileText className='h-4 w-4' />
-              <span className='hidden sm:inline'>
-                {t('employeeDetails.tabs.documents')}
-              </span>
+              <span className='text-sm'>{t('employeeDetails.tabs.documents')}</span>
             </TabsTrigger>
             <TabsTrigger
               value='social'
-              className='data-[state=active]:bg-background gap-2'
+              className='data-[state=active]:bg-background gap-2 px-3 py-2'
             >
               <Heart className='h-4 w-4' />
-              <span className='hidden sm:inline'>
-                {t('employeeDetails.tabs.social')}
-              </span>
+              <span className='text-sm'>{t('employeeDetails.tabs.social')}</span>
             </TabsTrigger>
             <TabsTrigger
               value='contracts'
-              className='data-[state=active]:bg-background gap-2'
+              className='data-[state=active]:bg-background gap-2 px-3 py-2'
             >
               <NotebookText className='h-4 w-4' />
-              <span className='hidden sm:inline'>
-                {t('employeeDetails.tabs.contracts')}
-              </span>
+              <span className='text-sm'>{t('employeeDetails.tabs.contracts')}</span>
             </TabsTrigger>
             <TabsTrigger
               value='leaves'
-              className='data-[state=active]:bg-background gap-2'
+              className='data-[state=active]:bg-background gap-2 px-3 py-2'
             >
               <Calendar className='h-4 w-4' />
-              <span className='hidden sm:inline'>
-                {t('employeeDetails.tabs.leaves')}
-              </span>
+              <span className='text-sm'>{t('employeeDetails.tabs.leaves')}</span>
             </TabsTrigger>
             <TabsTrigger
               value='experiences'
-              className='data-[state=active]:bg-background gap-2'
+              className='data-[state=active]:bg-background gap-2 px-3 py-2'
             >
               <NotebookText className='h-4 w-4' />
-              <span className='hidden sm:inline'>
-                {t('employeeDetails.tabs.experiences')}
-              </span>
+              <span className='text-sm'>{t('employeeDetails.tabs.experiences')}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -756,16 +818,17 @@ export default function EmployeeDetailsPage() {
           {/* Social Tab */}
           <TabsContent value='social'>
             <AnimatedTabContent active={active === 'social'}>
-              <Card className='border-2 border-dashed p-8 text-center'>
-                <Heart className='text-muted-foreground/50 mx-auto mb-4 h-12 w-12' />
-                <h3 className='mb-2 text-lg font-semibold'>
-                  Section en développement
-                </h3>
-                <p className='text-muted-foreground text-sm'>
-                  Informations assurances, Mutuelle et autres données sociales à
-                  venir
-                </p>
-              </Card>
+              <SocialContributionsTab
+                active={active === 'social'}
+                items={(emp as any)?.socialContributions || []}
+                onAdd={() => openItemDialog('socialContributions')}
+                onEdit={(index) => openItemDialog('socialContributions', index)}
+                onDelete={async (index) => {
+                  const list = ((emp as any)?.socialContributions || []).slice();
+                  list.splice(index, 1);
+                  await patchEmployee({ socialContributions: list } as any, t('common.deleted'));
+                }}
+              />
             </AnimatedTabContent>
           </TabsContent>
 
@@ -942,9 +1005,97 @@ export default function EmployeeDetailsPage() {
                 (openEditItem.index != null
                   ? 'Modifier expérience'
                   : 'Ajouter expérience')}
+              {openEditItem?.section === 'socialContributions' &&
+                (openEditItem.index != null
+                  ? 'Modifier cotisation sociale'
+                  : 'Ajouter cotisation sociale')}
             </DialogTitle>
           </DialogHeader>
           <div className='space-y-4'>
+            {/* Social Contributions form */}
+            {openEditItem?.section === 'socialContributions' && (
+              <>
+                <div>
+                  <Label className='mb-1'>Type</Label>
+                  <SelectField
+                    name='type'
+                    control={typeForm.control}
+                    placeholder='Sélectionner'
+                    options={(mutuellesList || []).map((m: any) => ({ label: m.name || m.code, value: m.code }))}
+                  />
+                </div>
+                <div>
+                  <Label className='mb-1'>Code</Label>
+                  <Input
+                    value={tempItem?.code || ''}
+                    onChange={(e) => setTempItem((p: any) => ({ ...p, code: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <Label className='mb-1'>Numéro d&apos;affiliation</Label>
+                  <Input
+                    value={tempItem?.affiliationNumber || ''}
+                    onChange={(e) =>
+                      setTempItem((p: any) => ({ ...p, affiliationNumber: e.target.value }))
+                    }
+                  />
+                </div>
+                <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
+                  <div>
+                    <Label className='mb-1'>Taux Employé (%)</Label>
+                    <Input
+                      type='number'
+                      step='0.01'
+                      value={tempItem?.employeeRatePct ?? ''}
+                      onChange={(e) =>
+                        setTempItem((p: any) => ({ ...p, employeeRatePct: e.target.value }))
+                      }
+                      placeholder='ex: 4.48'
+                    />
+                  </div>
+                  <div>
+                    <Label className='mb-1'>Taux Employeur (%)</Label>
+                    <Input
+                      type='number'
+                      step='0.01'
+                      value={tempItem?.employerRatePct ?? ''}
+                      onChange={(e) =>
+                        setTempItem((p: any) => ({ ...p, employerRatePct: e.target.value }))
+                      }
+                      placeholder='ex: 8.98'
+                    />
+                  </div>
+                </div>
+                <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
+                  <div>
+                    <Label className='mb-1'>Début</Label>
+                    <DatePickerField
+                      value={tempItem?.startDate || ''}
+                      onChange={(d) => setTempItem((p: any) => ({ ...p, startDate: d || '' }))}
+                    />
+                  </div>
+                  <div>
+                    <Label className='mb-1'>Fin</Label>
+                    <DatePickerField
+                      value={tempItem?.endDate || ''}
+                      onChange={(d) => setTempItem((p: any) => ({ ...p, endDate: d || '' }))}
+                    />
+                  </div>
+                </div>
+                { (tempItem?.type === 'Mutuelle' || tempItem?.code === 'Mutuelle' || (mutuellesList || []).some((m:any) => m.code === tempItem?.code && (m.code || '').startsWith('MUT'))) && (
+                  <div>
+                    <Label className='mb-1'>Fournisseur (Mutuelle)</Label>
+                    <Input
+                      value={tempItem?.providerName || ''}
+                      onChange={(e) => setTempItem((p: any) => ({ ...p, providerName: e.target.value }))}
+                      placeholder='Ex: Mutuelle Générale'
+                    />
+                  </div>
+                )}
+                {/* Notes field removed per request */}
+              </>
+            )}
+
             {openEditItem?.section === 'education' && (
               <>
                 <div>
@@ -1176,7 +1327,7 @@ export default function EmployeeDetailsPage() {
                     <div>
                       <Label className='mb-1'>Type de document</Label>
                       <select
-                        className='border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50'
+                        className='border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none'
                         value={tempItem?.documentType || 'other'}
                         onChange={(e) => {
                           const value = e.target.value;
