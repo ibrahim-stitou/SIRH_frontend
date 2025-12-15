@@ -55,6 +55,12 @@ export const useNavItems = (): NavItem[] => {
           description: 'US-PRO-002'
         }
       ]
+    },
+    {
+      title: t('sidebar.siegeEtGroupe'),
+      url: '/admin/sieges-groupes',
+      icon: 'companies',
+      description: 'US-PRO-003'
     }
   ];
 };

@@ -17,7 +17,8 @@
     "employeeFolder": "Employee Folder",
     "employes": "Employees",
     "orgChart": "Org Chart",
-    "certificates": "Certificates"
+    "certificates": "Certificates",
+    "siegeEtGroupe": "Headquarters & Groups"
   },
   "header": {
     "language": "Langue"
@@ -430,5 +431,23 @@
       "generateInfo": "You can generate a certificate directly without going through a request",
       "stageInfo": "For internship certificates, indicate start and end dates"
     }
+  },
+  "headquarters": {
+    "title": "Headquarters",
+    "add": "Add headquarters",
+    "details": "Headquarters details",
+    "name": "Name",
+    "code": "Code",
+    "city": "City",
+    "country": "Country",
+    "groups": "Headquarters groups",
+    "groupsCount": "Groups",
+    "updatedAt": "Last updated"
+  },
+  "groups": {
+    "title": "Groups",
+    "name": "Name",
+    "code": "Code",
+    "updatedAt": "Last updated"
   }
 }

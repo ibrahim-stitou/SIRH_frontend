@@ -1,0 +1,29 @@
+[
+  {
+    "id": "hq-001",
+    "name": "Siège Central",
+    "code": "HQ-CENTRAL",
+    "address": "123 Avenue Mohamed V",
+    "city": "Rabat",
+    "country": "Maroc",
+    "phone": "+212 530-000000",
+    "email": "central@example.com",
+    "groupsCount": 2,
+    "createdAt": "2024-01-10T10:00:00.000Z",
+    "updatedAt": "2025-01-10T10:00:00.000Z"
+  },
+  {
+    "id": "hq-002",
+    "name": "Siège Régional Casablanca",
+    "code": "HQ-CASA",
+    "address": "456 Boulevard Zerktouni",
+    "city": "Casablanca",
+    "country": "Maroc",
+    "phone": "+212 520-000000",
+    "email": "casa@example.com",
+    "groupsCount": 1,
+    "createdAt": "2024-02-15T12:30:00.000Z",
+    "updatedAt": "2025-02-15T12:30:00.000Z"
+  }
+]
+

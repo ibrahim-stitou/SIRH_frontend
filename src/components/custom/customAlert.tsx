@@ -8,6 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle
 } from '@/components/ui/alert-dialog';
+import { buttonVariants } from '@/components/ui/button';
 
 interface Props {
   title: string;
@@ -52,7 +53,7 @@ const CustomAlertDialog = ({
           >
             {cancelText}
           </AlertDialogCancel>
-          <AlertDialogAction onClick={handleConfirm}>
+          <AlertDialogAction className={buttonVariants({ variant: 'destructive' })} onClick={handleConfirm}>
             {confirmText}
           </AlertDialogAction>
         </AlertDialogFooter>

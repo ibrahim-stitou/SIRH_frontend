@@ -20,7 +20,8 @@
     "certificates": "Attestations",
     "avenants": "Avenants",
     "contratEtMovements": "Contrats & Mouv",
-    "contrat": "Contrats"
+    "contrat": "Contrats",
+    "siegeEtGroupe": "Siège et groupe"
   },
   "header": {
     "language": "Langue"
@@ -28,6 +29,7 @@
   "common": {
     "next": "Suivant",
     "optional": "Optionnel",
+    "groups": "Groupes",
     "months": {
       "1": "Janvier",
       "2": "Février",
@@ -55,6 +57,14 @@
     "errors": {
       "fetchFailed": "Une erreur s'est produite lors de la récupération des données"
     },
+    "country": "Pays",
+    "city": "Ville",
+    "address": "Adresse",
+    "phone": "Téléphone",
+    "email": "Email",
+    "name": "Nom",
+    "code": "Code",
+    "create": "Créer",
     "add": "Ajouter",
     "dateFormat": "{{jour}} {{mois}} {{année}}",
     "dateTimeFormat": "{{jour}} {{mois}} {{année}} à {{heures}}:{{minutes}}",
@@ -210,6 +220,7 @@
     "rowsPerPage": "Lignes par page",
     "page": "Page",
     "of": "sur",
+    "noData": "Aucune donnée disponible",
     "selected": "sélectionné(s)",
     "totalRows": "lignes au total",
     "clear": "Effacer",
@@ -718,5 +729,42 @@
       "new": "Nouveau",
       "comingSoon": "À venir"
     }
+  },
+  "headquarters": {
+    "title": "Sièges",
+    "add": "Ajouter un siège",
+    "details": "Détails du siège",
+    "name": "Nom",
+    "code": "Code",
+    "city": "Ville",
+    "country": "Pays",
+    "groups": "Groupes du siège",
+    "groupsCount": "Groupes",
+    "updatedAt": "Dernière mise à jour",
+    "create": {
+        "title": "Créer un siège",
+        "fields": {
+            "name": "Nom du siège",
+            "code": "Code du siège",
+            "address": "Adresse",
+            "city": "Ville",
+            "country": "Pays",
+            "phone": "Téléphone",
+            "email": "Email"
+        },
+      "subtitle": "Renseignez les informations du siège"
+    },
+    "dialog": {
+      "delete": {
+        "title": "Supprimer le siège",
+        "description": "Cette action est irréversible. Êtes-vous sûr de vouloir supprimer ce siège ?"
+      }
+    }
+  },
+  "groups": {
+    "title": "Groupes",
+    "name": "Nom",
+    "code": "Code",
+    "updatedAt": "Dernière mise à jour"
   }
 }

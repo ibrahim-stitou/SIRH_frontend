@@ -94,6 +94,19 @@ export const apiRoutes = {
         byContract: (contractId: number | string) =>
           `${API_BASE}/contracts/${contractId}/avenants`
       }
+    },
+    headquarters: {
+      // CRUD on raw headquarters collection
+      list: `${API_BASE}/headquarters`,
+      create: `${API_BASE}/headquarters`,
+      show: (id: number | string) => `${API_BASE}/headquarters/${id}`,
+      update: (id: number | string) => `${API_BASE}/headquarters/${id}`,
+      delete: (id: number | string) => `${API_BASE}/headquarters/${id}`
+    },
+    sieges: {
+      // Enriched list with groups via custom route
+      list: `${API_BASE}/sieges`,
+      show: (id: number | string) => `${API_BASE}/sieges/${id}`
     }
   }
 };

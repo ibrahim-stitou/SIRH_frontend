@@ -559,6 +559,8 @@ export default function EmployeeDetailsPage() {
     await patchEmployee({ [section]: list } as any, t('common.deleted'));
   };
 
+  const [confirmDelete, setConfirmDelete] = useState<{ section: 'socialContributions'; index: number } | null>(null);
+
   if (loading) {
     return (
       <PageContainer>
@@ -823,11 +825,7 @@ export default function EmployeeDetailsPage() {
                 items={(emp as any)?.socialContributions || []}
                 onAdd={() => openItemDialog('socialContributions')}
                 onEdit={(index) => openItemDialog('socialContributions', index)}
-                onDelete={async (index) => {
-                  const list = ((emp as any)?.socialContributions || []).slice();
-                  list.splice(index, 1);
-                  await patchEmployee({ socialContributions: list } as any, t('common.deleted'));
-                }}
+                onDelete={(index) => setConfirmDelete({ section: 'socialContributions', index })}
               />
             </AnimatedTabContent>
           </TabsContent>
@@ -1583,6 +1581,33 @@ export default function EmployeeDetailsPage() {
             <Button onClick={saveItemDialog} className='gap-2'>
               <Check className='h-4 w-4' />
               {t('common.save')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirm Delete Dialog */}
+      <Dialog open={!!confirmDelete} onOpenChange={(o) => !o && setConfirmDelete(null)}>
+        <DialogContent className='max-w-sm'>
+          <DialogHeader>
+            <DialogTitle>Confirmer la suppression</DialogTitle>
+          </DialogHeader>
+          <div className='text-sm'>
+            Êtes-vous sûr de vouloir supprimer cette ligne d&apos;assurance/mutuelle ? Cette action est irréversible.
+          </div>
+          <DialogFooter>
+            <Button variant='outline' onClick={() => setConfirmDelete(null)}>Annuler</Button>
+            <Button
+              variant='destructive'
+              onClick={async () => {
+                if (!confirmDelete) return;
+                const list = ((emp as any)?.[confirmDelete.section] || []).slice();
+                list.splice(confirmDelete.index, 1);
+                await patchEmployee({ [confirmDelete.section]: list } as any, t('common.deleted'));
+                setConfirmDelete(null);
+              }}
+            >
+              Supprimer
             </Button>
           </DialogFooter>
         </DialogContent>

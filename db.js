@@ -22,5 +22,8 @@ module.exports = {
   attestationRequests: require('./mock-data/attestationRequests.json'),
   attestations: require('./mock-data/attestations.json'),
   avenants: require('./mock-data/avenants.json'),
-  mutuelles: require('./mock-data/mutuelles.json')
+  mutuelles: require('./mock-data/mutuelles.json'),
+  groupMembers: require('./mock-data/groupMembers.json'),
+  headquarters: require('./mock-data/headquarters.json'),
+  groups: require('./mock-data/groups.json')
 };
