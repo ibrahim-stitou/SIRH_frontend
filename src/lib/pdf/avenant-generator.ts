@@ -33,12 +33,19 @@ interface Contract {
   };
 }
 
-export async function generateAvenantPDF(contract: Contract, avenant: Avenant): Promise<Blob> {
+export async function generateAvenantPDF(
+  contract: Contract,
+  avenant: Avenant
+): Promise<Blob> {
   const doc = new jsPDF();
   let yPos = 20;
 
   // Helper functions
-  const addText = (text: string, size: number = 12, style: 'normal' | 'bold' = 'normal') => {
+  const addText = (
+    text: string,
+    size: number = 12,
+    style: 'normal' | 'bold' = 'normal'
+  ) => {
     doc.setFontSize(size);
     doc.setFont('helvetica', style);
     doc.text(text, 20, yPos);
@@ -74,7 +81,9 @@ export async function generateAvenantPDF(contract: Contract, avenant: Avenant): 
   doc.text(`Avenant N°${avenant.numero}`, 105, 25, { align: 'center' });
 
   doc.setFontSize(12);
-  doc.text(`Référence Contrat: ${contract.reference}`, 105, 33, { align: 'center' });
+  doc.text(`Référence Contrat: ${contract.reference}`, 105, 33, {
+    align: 'center'
+  });
 
   doc.setTextColor(0, 0, 0);
   yPos = 50;
@@ -90,24 +99,36 @@ export async function generateAvenantPDF(contract: Contract, avenant: Avenant): 
   yPos += 6;
   doc.text(`Type de contrat: ${contract.type}`, 25, yPos);
   yPos += 6;
-  doc.text(`Date de début: ${new Date(contract.dates.start_date).toLocaleDateString('fr-FR')}`, 25, yPos);
+  doc.text(
+    `Date de début: ${new Date(contract.dates.start_date).toLocaleDateString('fr-FR')}`,
+    25,
+    yPos
+  );
   yPos += 10;
 
   checkPageBreak();
 
   // Informations de l'avenant
   addLine();
-  addText('INFORMATIONS DE L\'AVENANT', 14, 'bold');
+  addText("INFORMATIONS DE L'AVENANT", 14, 'bold');
   addSpace(3);
 
   doc.setFontSize(11);
-  doc.text(`Date d'effet: ${new Date(avenant.date).toLocaleDateString('fr-FR')}`, 25, yPos);
+  doc.text(
+    `Date d'effet: ${new Date(avenant.date).toLocaleDateString('fr-FR')}`,
+    25,
+    yPos
+  );
   yPos += 6;
   doc.text(`Objet: ${avenant.objet}`, 25, yPos);
   yPos += 6;
   doc.text(`Statut: ${avenant.status}`, 25, yPos);
   yPos += 6;
-  doc.text(`Créé le: ${new Date(avenant.created_at).toLocaleDateString('fr-FR')}`, 25, yPos);
+  doc.text(
+    `Créé le: ${new Date(avenant.created_at).toLocaleDateString('fr-FR')}`,
+    25,
+    yPos
+  );
   yPos += 10;
 
   checkPageBreak();
@@ -154,11 +175,19 @@ export async function generateAvenantPDF(contract: Contract, avenant: Avenant): 
         doc.setTextColor(0, 0, 0);
 
         if (avenant.changes.salary.avant.salary_brut) {
-          doc.text(`  - Salaire brut: ${avenant.changes.salary.avant.salary_brut} MAD`, 35, yPos);
+          doc.text(
+            `  - Salaire brut: ${avenant.changes.salary.avant.salary_brut} MAD`,
+            35,
+            yPos
+          );
           yPos += 5;
         }
         if (avenant.changes.salary.avant.salary_net) {
-          doc.text(`  - Salaire net: ${avenant.changes.salary.avant.salary_net} MAD`, 35, yPos);
+          doc.text(
+            `  - Salaire net: ${avenant.changes.salary.avant.salary_net} MAD`,
+            35,
+            yPos
+          );
           yPos += 5;
         }
         yPos += 3;
@@ -172,11 +201,19 @@ export async function generateAvenantPDF(contract: Contract, avenant: Avenant): 
         doc.setTextColor(0, 0, 0);
 
         if (avenant.changes.salary.apres.salary_brut) {
-          doc.text(`  - Salaire brut: ${avenant.changes.salary.apres.salary_brut} MAD`, 35, yPos);
+          doc.text(
+            `  - Salaire brut: ${avenant.changes.salary.apres.salary_brut} MAD`,
+            35,
+            yPos
+          );
           yPos += 5;
         }
         if (avenant.changes.salary.apres.salary_net) {
-          doc.text(`  - Salaire net: ${avenant.changes.salary.apres.salary_net} MAD`, 35, yPos);
+          doc.text(
+            `  - Salaire net: ${avenant.changes.salary.apres.salary_net} MAD`,
+            35,
+            yPos
+          );
           yPos += 5;
         }
       }
@@ -203,11 +240,19 @@ export async function generateAvenantPDF(contract: Contract, avenant: Avenant): 
         doc.setTextColor(0, 0, 0);
 
         if (avenant.changes.schedule.avant.schedule_type) {
-          doc.text(`  - Type: ${avenant.changes.schedule.avant.schedule_type}`, 35, yPos);
+          doc.text(
+            `  - Type: ${avenant.changes.schedule.avant.schedule_type}`,
+            35,
+            yPos
+          );
           yPos += 5;
         }
         if (avenant.changes.schedule.avant.hours_per_week) {
-          doc.text(`  - Heures/semaine: ${avenant.changes.schedule.avant.hours_per_week}h`, 35, yPos);
+          doc.text(
+            `  - Heures/semaine: ${avenant.changes.schedule.avant.hours_per_week}h`,
+            35,
+            yPos
+          );
           yPos += 5;
         }
         yPos += 3;
@@ -221,11 +266,19 @@ export async function generateAvenantPDF(contract: Contract, avenant: Avenant): 
         doc.setTextColor(0, 0, 0);
 
         if (avenant.changes.schedule.apres.schedule_type) {
-          doc.text(`  - Type: ${avenant.changes.schedule.apres.schedule_type}`, 35, yPos);
+          doc.text(
+            `  - Type: ${avenant.changes.schedule.apres.schedule_type}`,
+            35,
+            yPos
+          );
           yPos += 5;
         }
         if (avenant.changes.schedule.apres.hours_per_week) {
-          doc.text(`  - Heures/semaine: ${avenant.changes.schedule.apres.hours_per_week}h`, 35, yPos);
+          doc.text(
+            `  - Heures/semaine: ${avenant.changes.schedule.apres.hours_per_week}h`,
+            35,
+            yPos
+          );
           yPos += 5;
         }
       }
@@ -256,7 +309,11 @@ export async function generateAvenantPDF(contract: Contract, avenant: Avenant): 
           yPos += 5;
         }
         if (avenant.changes.job.avant.department) {
-          doc.text(`  - Département: ${avenant.changes.job.avant.department}`, 35, yPos);
+          doc.text(
+            `  - Département: ${avenant.changes.job.avant.department}`,
+            35,
+            yPos
+          );
           yPos += 5;
         }
         yPos += 3;
@@ -274,7 +331,11 @@ export async function generateAvenantPDF(contract: Contract, avenant: Avenant): 
           yPos += 5;
         }
         if (avenant.changes.job.apres.department) {
-          doc.text(`  - Département: ${avenant.changes.job.apres.department}`, 35, yPos);
+          doc.text(
+            `  - Département: ${avenant.changes.job.apres.department}`,
+            35,
+            yPos
+          );
           yPos += 5;
         }
       }
@@ -295,14 +356,14 @@ export async function generateAvenantPDF(contract: Contract, avenant: Avenant): 
   doc.setFontSize(11);
 
   // Signature Employeur
-  doc.text('L\'Employeur', 30, yPos);
+  doc.text("L'Employeur", 30, yPos);
   yPos += 30;
   doc.line(30, yPos, 90, yPos);
   doc.text('Date et signature', 30, yPos + 5);
 
   // Signature Employé
   yPos -= 30;
-  doc.text('L\'Employé', 120, yPos);
+  doc.text("L'Employé", 120, yPos);
   yPos += 30;
   doc.line(120, yPos, 180, yPos);
   doc.text('Date et signature', 120, yPos + 5);
@@ -312,7 +373,9 @@ export async function generateAvenantPDF(contract: Contract, avenant: Avenant): 
   // Mentions légales
   doc.setFontSize(9);
   doc.setTextColor(100, 100, 100);
-  doc.text('Fait à __________________, le __________________', 105, yPos, { align: 'center' });
+  doc.text('Fait à __________________, le __________________', 105, yPos, {
+    align: 'center'
+  });
   yPos += 5;
   doc.text('En deux exemplaires originaux', 105, yPos, { align: 'center' });
 
@@ -320,4 +383,3 @@ export async function generateAvenantPDF(contract: Contract, avenant: Avenant): 
   const pdfBlob = doc.output('blob');
   return pdfBlob;
 }
-

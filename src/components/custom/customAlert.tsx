@@ -53,7 +53,10 @@ const CustomAlertDialog = ({
           >
             {cancelText}
           </AlertDialogCancel>
-          <AlertDialogAction className={buttonVariants({ variant: 'destructive' })} onClick={handleConfirm}>
+          <AlertDialogAction
+            className={buttonVariants({ variant: 'destructive' })}
+            onClick={handleConfirm}
+          >
             {confirmText}
           </AlertDialogAction>
         </AlertDialogFooter>

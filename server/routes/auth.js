@@ -18,7 +18,13 @@ module.exports = function registerAuthRoutes(server, db) {
     const refresh_token = createToken();
 
     db.get('sessions')
-      .push({ id: Date.now(), access_token, refresh_token, userId: user.id, expiresAt: Date.now() + 30 * 60 * 1000 })
+      .push({
+        id: Date.now(),
+        access_token,
+        refresh_token,
+        userId: user.id,
+        expiresAt: Date.now() + 30 * 60 * 1000
+      })
       .write();
 
     return res.json({
@@ -27,8 +33,18 @@ module.exports = function registerAuthRoutes(server, db) {
       data: {
         access_token,
         refresh_token,
-        user: { id: user.id, name: user.name, email: user.email, roles: user.roles },
-        role: { id: 1, name: 'Admin', code: 'ADMIN', description: 'Administrator' },
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          roles: user.roles
+        },
+        role: {
+          id: 1,
+          name: 'Admin',
+          code: 'ADMIN',
+          description: 'Administrator'
+        },
         full_name: user.full_name
       }
     });
@@ -36,20 +52,30 @@ module.exports = function registerAuthRoutes(server, db) {
 
   server.post('/refresh', (req, res) => {
     const { refresh_token } = req.body || {};
-    if (!refresh_token) return res.status(400).json({ message: 'refresh_token required' });
+    if (!refresh_token)
+      return res.status(400).json({ message: 'refresh_token required' });
 
     const session = db.get('sessions').find({ refresh_token }).value();
-    if (!session) return res.status(401).json({ message: 'Invalid refresh token' });
+    if (!session)
+      return res.status(401).json({ message: 'Invalid refresh token' });
 
     const access_token = createToken();
     const new_refresh = createToken();
 
     db.get('sessions')
       .find({ refresh_token })
-      .assign({ access_token, refresh_token: new_refresh, updatedAt: Date.now() })
+      .assign({
+        access_token,
+        refresh_token: new_refresh,
+        updatedAt: Date.now()
+      })
       .write();
 
-    return res.json({ status: 'success', message: 'Jeton rafraîchi', data: { access_token, refresh_token: new_refresh } });
+    return res.json({
+      status: 'success',
+      message: 'Jeton rafraîchi',
+      data: { access_token, refresh_token: new_refresh }
+    });
   });
 
   server.get('/me', (req, res) => {
@@ -66,7 +92,16 @@ module.exports = function registerAuthRoutes(server, db) {
     return res.json({
       status: 'success',
       message: 'Profil récupéré',
-      data: { user: { id: user.id, name: user.name, email: user.email, full_name: user.full_name, roles: user.roles }, role: user.roles[0] }
+      data: {
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          full_name: user.full_name,
+          roles: user.roles
+        },
+        role: user.roles[0]
+      }
     });
   });
-}
+};

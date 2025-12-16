@@ -1,5 +1,39 @@
 [
   {
+    "id": "AVN-1765819006807",
+    "contract_id": "CTR-2024-001",
+    "numero": 1,
+    "date": "2025-12-15",
+    "objet": "Incididunt vel volup",
+    "motif": "Beatae cillum quas d",
+    "description": "Incididunt vel volup\n\nMotif: Beatae cillum quas d\n\nJustification: Excepturi qui id ess",
+    "status": "Brouillon",
+    "type_modification": "schedule",
+    "changes": {
+      "schedule": {
+        "avant": {
+          "schedule_type": "Administratif",
+          "shift_work": "Non",
+          "annual_leave_days": 22,
+          "other_leaves": "Congés exceptionnels selon convention collective"
+        },
+        "apres": {
+          "schedule_type": "Administratif",
+          "shift_work": "Non",
+          "annual_leave_days": 22,
+          "other_leaves": "Congés exceptionnels selon convention collective"
+        }
+      }
+    },
+    "validations": {
+      "manager": false,
+      "rh": false
+    },
+    "notes": "Quisquam ut molestia",
+    "created_at": "2025-12-15T17:16:46.807Z",
+    "created_by": "current-user"
+  },
+  {
     "id": "AVN-2024-001",
     "contract_id": "CTR-2024-001",
     "contract_reference": "CTR-2024-001",
@@ -33,38 +67,9 @@
       "name": "Avenant_1_CTR-2024-001_Signe.pdf",
       "uploaded_at": "2024-06-05T14:30:00Z"
     },
+    "validations": { "manager": true, "rh": true },
+    "notes": "Validé et signé",
     "created_at": "2024-06-01T11:00:00Z",
-    "created_by": "USR-HR-001"
-  },
-  {
-    "id": "AVN-2024-002",
-    "contract_id": "CTR-2024-002",
-    "contract_reference": "CTR-2024-002",
-    "employee_name": "Fatima El Amrani",
-    "numero": 1,
-    "date": "2024-08-15",
-    "objet": "Changement d'horaires de travail",
-    "motif": "Réorganisation du service - passage à l'horaire continu pour optimiser la productivité",
-    "description": "Modification des horaires de travail: passage d'horaire administratif à horaire continu",
-    "status": "Brouillon",
-    "type_modification": "schedule",
-    "changes": {
-      "schedule": {
-        "avant": {
-          "schedule_type": "Administratif",
-          "hours_per_week": 40,
-          "shift_work": "Non",
-          "annual_leave_days": 22
-        },
-        "apres": {
-          "schedule_type": "Continu",
-          "hours_per_week": 40,
-          "shift_work": "Non",
-          "annual_leave_days": 22
-        }
-      }
-    },
-    "created_at": "2024-08-15T10:00:00Z",
     "created_by": "USR-HR-001"
   },
   {
@@ -96,8 +101,9 @@
       }
     },
     "document_url": "/uploads/avenants/AVN-2024-003/generated.pdf",
+    "validations": { "manager": true, "rh": true },
+    "notes": "Promu",
     "created_at": "2024-09-25T09:00:00Z",
     "created_by": "USR-HR-001"
   }
 ]
-

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
@@ -25,7 +25,13 @@ interface Props {
   onDelete: (index: number) => void;
 }
 
-export function SocialContributionsTab({ active, items, onAdd, onEdit, onDelete }: Props) {
+export function SocialContributionsTab({
+  active,
+  items,
+  onAdd,
+  onEdit,
+  onDelete
+}: Props) {
   const list = useMemo(() => items || [], [items]);
 
   return (
@@ -39,7 +45,9 @@ export function SocialContributionsTab({ active, items, onAdd, onEdit, onDelete 
         </div>
 
         {list.length === 0 ? (
-          <div className='text-muted-foreground text-sm'>Aucune cotisation sociale. Ajoutez CNSS, AMO, CIMR, Mutuelle...</div>
+          <div className='text-muted-foreground text-sm'>
+            Aucune cotisation sociale. Ajoutez CNSS, AMO, CIMR, Mutuelle...
+          </div>
         ) : (
           <>
             {/* Card list for small screens */}
@@ -49,40 +57,58 @@ export function SocialContributionsTab({ active, items, onAdd, onEdit, onDelete 
                   <div className='flex items-center justify-between'>
                     <div>
                       <p className='text-sm font-semibold'>{it.type}</p>
-                      <p className='text-muted-foreground text-xs'>Code: {it.code || '—'}</p>
+                      <p className='text-muted-foreground text-xs'>
+                        Code: {it.code || '—'}
+                      </p>
                     </div>
                     <div className='flex gap-1'>
-                      <Button variant='ghost' size='sm' onClick={() => onEdit(idx)}>
+                      <Button
+                        variant='ghost'
+                        size='sm'
+                        onClick={() => onEdit(idx)}
+                      >
                         <Edit className='h-4 w-4' />
                       </Button>
-                      <Button variant='ghost' size='sm' onClick={() => onDelete(idx)}>
+                      <Button
+                        variant='ghost'
+                        size='sm'
+                        onClick={() => onDelete(idx)}
+                      >
                         <Trash2 className='text-destructive h-4 w-4' />
                       </Button>
                     </div>
                   </div>
                   <div className='mt-2 grid grid-cols-2 gap-2'>
                     <div>
-                      <p className='text-xs text-muted-foreground'>Affiliation</p>
+                      <p className='text-muted-foreground text-xs'>
+                        Affiliation
+                      </p>
                       <p className='text-sm'>{it.affiliationNumber || '—'}</p>
                     </div>
                     <div>
-                      <p className='text-xs text-muted-foreground'>Fournisseur</p>
-                      <p className='text-sm'>{it.providerName || (it.type === 'Mutuelle' ? '—' : '')}</p>
+                      <p className='text-muted-foreground text-xs'>
+                        Fournisseur
+                      </p>
+                      <p className='text-sm'>
+                        {it.providerName || (it.type === 'Mutuelle' ? '—' : '')}
+                      </p>
                     </div>
                     <div>
-                      <p className='text-xs text-muted-foreground'>Employé %</p>
+                      <p className='text-muted-foreground text-xs'>Employé %</p>
                       <p className='text-sm'>{it.employeeRatePct ?? '—'}</p>
                     </div>
                     <div>
-                      <p className='text-xs text-muted-foreground'>Employeur %</p>
+                      <p className='text-muted-foreground text-xs'>
+                        Employeur %
+                      </p>
                       <p className='text-sm'>{it.employerRatePct ?? '—'}</p>
                     </div>
                     <div>
-                      <p className='text-xs text-muted-foreground'>Début</p>
+                      <p className='text-muted-foreground text-xs'>Début</p>
                       <p className='text-sm'>{it.startDate || '—'}</p>
                     </div>
                     <div>
-                      <p className='text-xs text-muted-foreground'>Fin</p>
+                      <p className='text-muted-foreground text-xs'>Fin</p>
                       <p className='text-sm'>{it.endDate || '—'}</p>
                     </div>
                   </div>
@@ -117,13 +143,24 @@ export function SocialContributionsTab({ active, items, onAdd, onEdit, onDelete 
                         <td className='p-2'>{it.employerRatePct ?? '—'}</td>
                         <td className='p-2'>{it.startDate || '—'}</td>
                         <td className='p-2'>{it.endDate || '—'}</td>
-                        <td className='p-2'>{it.providerName || (it.type === 'Mutuelle' ? '—' : '')}</td>
+                        <td className='p-2'>
+                          {it.providerName ||
+                            (it.type === 'Mutuelle' ? '—' : '')}
+                        </td>
                         <td className='p-2'>
                           <div className='flex gap-1'>
-                            <Button variant='ghost' size='sm' onClick={() => onEdit(idx)}>
+                            <Button
+                              variant='ghost'
+                              size='sm'
+                              onClick={() => onEdit(idx)}
+                            >
                               <Edit className='h-4 w-4' />
                             </Button>
-                            <Button variant='ghost' size='sm' onClick={() => onDelete(idx)}>
+                            <Button
+                              variant='ghost'
+                              size='sm'
+                              onClick={() => onDelete(idx)}
+                            >
                               <Trash2 className='text-destructive h-4 w-4' />
                             </Button>
                           </div>

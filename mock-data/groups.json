@@ -3,6 +3,8 @@
     "id": "grp-001",
     "headquartersId": "hq-001",
     "name": "Groupe Finance",
+    "managerId": "mgr-001",
+    "managerName": "Sophie Martin",
     "code": "FIN",
     "description": "Gestion financière",
     "createdAt": "2024-03-01T09:00:00.000Z",
@@ -13,6 +15,8 @@
     "headquartersId": "hq-001",
     "name": "Groupe RH",
     "code": "HR",
+    "managerId": "mgr-002",
+    "managerName": "David Lopez",
     "description": "Ressources humaines",
     "createdAt": "2024-03-05T11:00:00.000Z",
     "updatedAt": "2025-03-05T11:00:00.000Z"
@@ -21,10 +25,11 @@
     "id": "grp-003",
     "headquartersId": "hq-002",
     "name": "Groupe IT",
+    "managerId": "mgr-003",
+    "managerName": "Amina Hassan",
     "code": "IT",
     "description": "Technologies de l'information",
     "createdAt": "2024-04-10T15:00:00.000Z",
     "updatedAt": "2025-04-10T15:00:00.000Z"
   }
 ]
-

@@ -14,4 +14,3 @@ export default function CreateAvenantRedirectPage() {
 
   return null;
 }
-

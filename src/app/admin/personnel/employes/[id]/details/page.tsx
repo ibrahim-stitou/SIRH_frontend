@@ -158,9 +158,12 @@ export default function EmployeeDetailsPage() {
   const relForm = useForm<{ relationship: string }>({
     defaultValues: { relationship: '' }
   });
-  const [currentContributionType, setCurrentContributionType] = useState<string>('CNSS');
+  const [currentContributionType, setCurrentContributionType] =
+    useState<string>('CNSS');
   const [mutuellesList, setMutuellesList] = useState<any[]>([]);
-  const typeForm = useForm<{ type: string }>({ defaultValues: { type: 'CNSS' } });
+  const typeForm = useForm<{ type: string }>({
+    defaultValues: { type: 'CNSS' }
+  });
   const selectedType = typeForm.watch('type');
 
   useEffect(() => {
@@ -169,7 +172,9 @@ export default function EmployeeDetailsPage() {
     // update tempItem type/code
     setTempItem((p: any) => ({ ...p, type: selectedType, code: selectedType }));
     // autofill defaults
-    const found = (mutuellesList || []).find((m: any) => m.code === selectedType);
+    const found = (mutuellesList || []).find(
+      (m: any) => m.code === selectedType
+    );
     const def = found?.defaultRates;
     if (def) {
       setTempItem((p: any) => ({
@@ -225,17 +230,42 @@ export default function EmployeeDetailsPage() {
     // Load mutuelles/social schemes for selection and defaults
     (async () => {
       try {
-        const res = await apiClient.get(`${process.env.NEXT_PUBLIC_USE_MOCK === 'true' ? (process.env.JSON_SERVER_URL || 'http://localhost:3001') : (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:8003/api/v1')}/mutuelles`);
-        const payload: any = res.data && typeof res.data === 'object' && 'data' in res.data ? res.data.data : res.data;
+        const res = await apiClient.get(
+          `${process.env.NEXT_PUBLIC_USE_MOCK === 'true' ? process.env.JSON_SERVER_URL || 'http://localhost:3001' : process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:8003/api/v1'}/mutuelles`
+        );
+        const payload: any =
+          res.data && typeof res.data === 'object' && 'data' in res.data
+            ? res.data.data
+            : res.data;
         setMutuellesList(Array.isArray(payload) ? payload : []);
       } catch (e) {
         // silent fail, will fallback to static defaults
         setMutuellesList([
-          { code: 'CNSS', name: 'CNSS', defaultRates: { employeePct: 4.48, employerPct: 8.98 } },
-          { code: 'AMO', name: 'AMO', defaultRates: { employeePct: 2.26, employerPct: 2.26 } },
-          { code: 'CIMR', name: 'CIMR', defaultRates: { employeePct: 6.0, employerPct: 6.0 } },
-          { code: 'RCAR', name: 'RCAR', defaultRates: { employeePct: 20.0, employerPct: 0.0 } },
-          { code: 'Mutuelle', name: 'Mutuelle', defaultRates: { employeePct: 2.0, employerPct: 3.0 } }
+          {
+            code: 'CNSS',
+            name: 'CNSS',
+            defaultRates: { employeePct: 4.48, employerPct: 8.98 }
+          },
+          {
+            code: 'AMO',
+            name: 'AMO',
+            defaultRates: { employeePct: 2.26, employerPct: 2.26 }
+          },
+          {
+            code: 'CIMR',
+            name: 'CIMR',
+            defaultRates: { employeePct: 6.0, employerPct: 6.0 }
+          },
+          {
+            code: 'RCAR',
+            name: 'RCAR',
+            defaultRates: { employeePct: 20.0, employerPct: 0.0 }
+          },
+          {
+            code: 'Mutuelle',
+            name: 'Mutuelle',
+            defaultRates: { employeePct: 2.0, employerPct: 3.0 }
+          }
         ]);
       }
     })();
@@ -395,11 +425,14 @@ export default function EmployeeDetailsPage() {
       if (base.CIN && !base.cin) base.cin = base.CIN;
     }
     if (section === 'socialContributions') {
-      const initialType = index != null ? (emp as any)?.socialContributions?.[index]?.type : currentContributionType;
+      const initialType =
+        index != null
+          ? (emp as any)?.socialContributions?.[index]?.type
+          : currentContributionType;
       typeForm.reset({ type: initialType || 'CNSS' });
       base =
         index != null
-          ? (emp as any)?.socialContributions?.[index] ?? {}
+          ? ((emp as any)?.socialContributions?.[index] ?? {})
           : {
               type: initialType || 'CNSS',
               code: initialType || 'CNSS',
@@ -559,7 +592,10 @@ export default function EmployeeDetailsPage() {
     await patchEmployee({ [section]: list } as any, t('common.deleted'));
   };
 
-  const [confirmDelete, setConfirmDelete] = useState<{ section: 'socialContributions'; index: number } | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<{
+    section: 'socialContributions';
+    index: number;
+  } | null>(null);
 
   if (loading) {
     return (
@@ -695,56 +731,72 @@ export default function EmployeeDetailsPage() {
               className='data-[state=active]:bg-background gap-2 px-3 py-2'
             >
               <UserRound className='h-4 w-4' />
-              <span className='text-sm'>{t('employeeDetails.tabs.personal')}</span>
+              <span className='text-sm'>
+                {t('employeeDetails.tabs.personal')}
+              </span>
             </TabsTrigger>
             <TabsTrigger
               value='peopleInCharge'
               className='data-[state=active]:bg-background gap-2 px-3 py-2'
             >
               <Users className='h-4 w-4' />
-              <span className='text-sm'>{t('employeeDetails.tabs.peopleInCharge')}</span>
+              <span className='text-sm'>
+                {t('employeeDetails.tabs.peopleInCharge')}
+              </span>
             </TabsTrigger>
             <TabsTrigger
               value='skills'
               className='data-[state=active]:bg-background gap-2 px-3 py-2'
             >
               <GraduationCap className='h-4 w-4' />
-              <span className='text-sm'>{t('employeeDetails.tabs.skills')}</span>
+              <span className='text-sm'>
+                {t('employeeDetails.tabs.skills')}
+              </span>
             </TabsTrigger>
             <TabsTrigger
               value='documents'
               className='data-[state=active]:bg-background gap-2 px-3 py-2'
             >
               <FileText className='h-4 w-4' />
-              <span className='text-sm'>{t('employeeDetails.tabs.documents')}</span>
+              <span className='text-sm'>
+                {t('employeeDetails.tabs.documents')}
+              </span>
             </TabsTrigger>
             <TabsTrigger
               value='social'
               className='data-[state=active]:bg-background gap-2 px-3 py-2'
             >
               <Heart className='h-4 w-4' />
-              <span className='text-sm'>{t('employeeDetails.tabs.social')}</span>
+              <span className='text-sm'>
+                {t('employeeDetails.tabs.social')}
+              </span>
             </TabsTrigger>
             <TabsTrigger
               value='contracts'
               className='data-[state=active]:bg-background gap-2 px-3 py-2'
             >
               <NotebookText className='h-4 w-4' />
-              <span className='text-sm'>{t('employeeDetails.tabs.contracts')}</span>
+              <span className='text-sm'>
+                {t('employeeDetails.tabs.contracts')}
+              </span>
             </TabsTrigger>
             <TabsTrigger
               value='leaves'
               className='data-[state=active]:bg-background gap-2 px-3 py-2'
             >
               <Calendar className='h-4 w-4' />
-              <span className='text-sm'>{t('employeeDetails.tabs.leaves')}</span>
+              <span className='text-sm'>
+                {t('employeeDetails.tabs.leaves')}
+              </span>
             </TabsTrigger>
             <TabsTrigger
               value='experiences'
               className='data-[state=active]:bg-background gap-2 px-3 py-2'
             >
               <NotebookText className='h-4 w-4' />
-              <span className='text-sm'>{t('employeeDetails.tabs.experiences')}</span>
+              <span className='text-sm'>
+                {t('employeeDetails.tabs.experiences')}
+              </span>
             </TabsTrigger>
           </TabsList>
 
@@ -825,7 +877,9 @@ export default function EmployeeDetailsPage() {
                 items={(emp as any)?.socialContributions || []}
                 onAdd={() => openItemDialog('socialContributions')}
                 onEdit={(index) => openItemDialog('socialContributions', index)}
-                onDelete={(index) => setConfirmDelete({ section: 'socialContributions', index })}
+                onDelete={(index) =>
+                  setConfirmDelete({ section: 'socialContributions', index })
+                }
               />
             </AnimatedTabContent>
           </TabsContent>
@@ -1019,14 +1073,19 @@ export default function EmployeeDetailsPage() {
                     name='type'
                     control={typeForm.control}
                     placeholder='Sélectionner'
-                    options={(mutuellesList || []).map((m: any) => ({ label: m.name || m.code, value: m.code }))}
+                    options={(mutuellesList || []).map((m: any) => ({
+                      label: m.name || m.code,
+                      value: m.code
+                    }))}
                   />
                 </div>
                 <div>
                   <Label className='mb-1'>Code</Label>
                   <Input
                     value={tempItem?.code || ''}
-                    onChange={(e) => setTempItem((p: any) => ({ ...p, code: e.target.value }))}
+                    onChange={(e) =>
+                      setTempItem((p: any) => ({ ...p, code: e.target.value }))
+                    }
                   />
                 </div>
                 <div>
@@ -1034,7 +1093,10 @@ export default function EmployeeDetailsPage() {
                   <Input
                     value={tempItem?.affiliationNumber || ''}
                     onChange={(e) =>
-                      setTempItem((p: any) => ({ ...p, affiliationNumber: e.target.value }))
+                      setTempItem((p: any) => ({
+                        ...p,
+                        affiliationNumber: e.target.value
+                      }))
                     }
                   />
                 </div>
@@ -1046,7 +1108,10 @@ export default function EmployeeDetailsPage() {
                       step='0.01'
                       value={tempItem?.employeeRatePct ?? ''}
                       onChange={(e) =>
-                        setTempItem((p: any) => ({ ...p, employeeRatePct: e.target.value }))
+                        setTempItem((p: any) => ({
+                          ...p,
+                          employeeRatePct: e.target.value
+                        }))
                       }
                       placeholder='ex: 4.48'
                     />
@@ -1058,7 +1123,10 @@ export default function EmployeeDetailsPage() {
                       step='0.01'
                       value={tempItem?.employerRatePct ?? ''}
                       onChange={(e) =>
-                        setTempItem((p: any) => ({ ...p, employerRatePct: e.target.value }))
+                        setTempItem((p: any) => ({
+                          ...p,
+                          employerRatePct: e.target.value
+                        }))
                       }
                       placeholder='ex: 8.98'
                     />
@@ -1069,23 +1137,38 @@ export default function EmployeeDetailsPage() {
                     <Label className='mb-1'>Début</Label>
                     <DatePickerField
                       value={tempItem?.startDate || ''}
-                      onChange={(d) => setTempItem((p: any) => ({ ...p, startDate: d || '' }))}
+                      onChange={(d) =>
+                        setTempItem((p: any) => ({ ...p, startDate: d || '' }))
+                      }
                     />
                   </div>
                   <div>
                     <Label className='mb-1'>Fin</Label>
                     <DatePickerField
                       value={tempItem?.endDate || ''}
-                      onChange={(d) => setTempItem((p: any) => ({ ...p, endDate: d || '' }))}
+                      onChange={(d) =>
+                        setTempItem((p: any) => ({ ...p, endDate: d || '' }))
+                      }
                     />
                   </div>
                 </div>
-                { (tempItem?.type === 'Mutuelle' || tempItem?.code === 'Mutuelle' || (mutuellesList || []).some((m:any) => m.code === tempItem?.code && (m.code || '').startsWith('MUT'))) && (
+                {(tempItem?.type === 'Mutuelle' ||
+                  tempItem?.code === 'Mutuelle' ||
+                  (mutuellesList || []).some(
+                    (m: any) =>
+                      m.code === tempItem?.code &&
+                      (m.code || '').startsWith('MUT')
+                  )) && (
                   <div>
                     <Label className='mb-1'>Fournisseur (Mutuelle)</Label>
                     <Input
                       value={tempItem?.providerName || ''}
-                      onChange={(e) => setTempItem((p: any) => ({ ...p, providerName: e.target.value }))}
+                      onChange={(e) =>
+                        setTempItem((p: any) => ({
+                          ...p,
+                          providerName: e.target.value
+                        }))
+                      }
                       placeholder='Ex: Mutuelle Générale'
                     />
                   </div>
@@ -1587,23 +1670,34 @@ export default function EmployeeDetailsPage() {
       </Dialog>
 
       {/* Confirm Delete Dialog */}
-      <Dialog open={!!confirmDelete} onOpenChange={(o) => !o && setConfirmDelete(null)}>
+      <Dialog
+        open={!!confirmDelete}
+        onOpenChange={(o) => !o && setConfirmDelete(null)}
+      >
         <DialogContent className='max-w-sm'>
           <DialogHeader>
             <DialogTitle>Confirmer la suppression</DialogTitle>
           </DialogHeader>
           <div className='text-sm'>
-            Êtes-vous sûr de vouloir supprimer cette ligne d&apos;assurance/mutuelle ? Cette action est irréversible.
+            Êtes-vous sûr de vouloir supprimer cette ligne
+            d&apos;assurance/mutuelle ? Cette action est irréversible.
           </div>
           <DialogFooter>
-            <Button variant='outline' onClick={() => setConfirmDelete(null)}>Annuler</Button>
+            <Button variant='outline' onClick={() => setConfirmDelete(null)}>
+              Annuler
+            </Button>
             <Button
               variant='destructive'
               onClick={async () => {
                 if (!confirmDelete) return;
-                const list = ((emp as any)?.[confirmDelete.section] || []).slice();
+                const list = (
+                  (emp as any)?.[confirmDelete.section] || []
+                ).slice();
                 list.splice(confirmDelete.index, 1);
-                await patchEmployee({ [confirmDelete.section]: list } as any, t('common.deleted'));
+                await patchEmployee(
+                  { [confirmDelete.section]: list } as any,
+                  t('common.deleted')
+                );
                 setConfirmDelete(null);
               }}
             >

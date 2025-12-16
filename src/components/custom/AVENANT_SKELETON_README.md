@@ -9,6 +9,7 @@ Ce fichier contient les composants de skeleton pour les pages liées aux avenant
 Skeleton pour la page de détails d'un avenant (`/contrats/[id]/avenants/[avenantId]`).
 
 **Utilisation:**
+
 ```tsx
 import { AvenantDetailsSkeleton } from '@/components/custom/AvenantSkeleton';
 
@@ -22,6 +23,7 @@ if (loading) {
 ```
 
 **Affiche:**
+
 - Header avec titre et badges
 - Informations générales de l'avenant
 - Modifications (avant/après)
@@ -34,6 +36,7 @@ if (loading) {
 Skeleton pour les pages de création et d'édition d'avenant.
 
 **Utilisation:**
+
 ```tsx
 import { AvenantFormSkeleton } from '@/components/custom/AvenantSkeleton';
 
@@ -47,6 +50,7 @@ if (loading) {
 ```
 
 **Affiche:**
+
 - Header avec titre et actions
 - Sidebar avec informations du contrat (25%)
 - Formulaire principal (75%)
@@ -59,13 +63,15 @@ if (loading) {
 Skeleton générique pour une card.
 
 **Utilisation:**
+
 ```tsx
 import { CardSkeleton } from '@/components/custom/AvenantSkeleton';
 
-<CardSkeleton rows={5} />
+<CardSkeleton rows={5} />;
 ```
 
 **Props:**
+
 - `rows` (optional): Nombre de lignes à afficher (défaut: 3)
 
 ---
@@ -75,13 +81,14 @@ import { CardSkeleton } from '@/components/custom/AvenantSkeleton';
 Skeleton pour un champ de formulaire.
 
 **Utilisation:**
+
 ```tsx
 import { FormFieldSkeleton } from '@/components/custom/AvenantSkeleton';
 
-<div className="grid grid-cols-2 gap-4">
+<div className='grid grid-cols-2 gap-4'>
   <FormFieldSkeleton />
   <FormFieldSkeleton />
-</div>
+</div>;
 ```
 
 ---
@@ -91,13 +98,15 @@ import { FormFieldSkeleton } from '@/components/custom/AvenantSkeleton';
 Skeleton pour une liste de documents.
 
 **Utilisation:**
+
 ```tsx
 import { DocumentListSkeleton } from '@/components/custom/AvenantSkeleton';
 
-<DocumentListSkeleton count={5} />
+<DocumentListSkeleton count={5} />;
 ```
 
 **Props:**
+
 - `count` (optional): Nombre de documents à afficher (défaut: 3)
 
 ---
@@ -129,9 +138,7 @@ export default function EditAvenantPage() {
   }
 
   return (
-    <PageContainer scrollable={true}>
-      {/* Votre contenu ici */}
-    </PageContainer>
+    <PageContainer scrollable={true}>{/* Votre contenu ici */}</PageContainer>
   );
 }
 ```
@@ -141,6 +148,7 @@ export default function EditAvenantPage() {
 ## Personnalisation
 
 Les skeletons utilisent les classes Tailwind CSS suivantes:
+
 - `bg-muted`: Couleur de fond
 - `animate-pulse`: Animation de pulsation
 - `rounded`: Bordures arrondies
@@ -155,4 +163,3 @@ Vous pouvez facilement personnaliser l'apparence en modifiant ces classes dans l
 - Ils utilisent les mêmes composants UI (Card, CardHeader, CardContent)
 - L'animation `animate-pulse` est fournie par Tailwind CSS
 - Les skeletons sont responsive et s'adaptent aux différentes tailles d'écran
-

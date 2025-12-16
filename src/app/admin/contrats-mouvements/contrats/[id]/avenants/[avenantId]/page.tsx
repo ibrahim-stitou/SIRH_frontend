@@ -3,7 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -44,7 +50,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle,
+  DialogTitle
 } from '@/components/ui/dialog';
 
 interface Avenant {
@@ -104,14 +110,17 @@ export default function AvenantDetailsPage() {
           );
 
           if (contractResponse.data) {
-            const contractData = contractResponse.data.data || contractResponse.data;
+            const contractData =
+              contractResponse.data.data || contractResponse.data;
             setContract(contractData);
           }
         }
       } catch (error) {
         console.error('Error loading avenant:', error);
-        toast.error('Erreur lors du chargement de l\'avenant');
-        router.push(`/admin/contrats-mouvements/contrats/${contractId}/details?tab=documents`);
+        toast.error("Erreur lors du chargement de l'avenant");
+        router.push(
+          `/admin/contrats-mouvements/contrats/${contractId}/details?tab=documents`
+        );
       } finally {
         setLoading(false);
       }
@@ -129,10 +138,12 @@ export default function AvenantDetailsPage() {
         apiRoutes.admin.contratsEtMovements.avenants.delete(avenantId)
       );
       toast.success('Avenant supprimé avec succès');
-      router.push(`/admin/contrats-mouvements/contrats/${contractId}/details?tab=documents`);
+      router.push(
+        `/admin/contrats-mouvements/contrats/${contractId}/details?tab=documents`
+      );
     } catch (error) {
       console.error('Error deleting avenant:', error);
-      toast.error('Erreur lors de la suppression de l\'avenant');
+      toast.error("Erreur lors de la suppression de l'avenant");
     } finally {
       setDeleting(false);
       setShowDeleteDialog(false);
@@ -155,7 +166,7 @@ export default function AvenantDetailsPage() {
       }
     } catch (error) {
       console.error('Error validating avenant:', error);
-      toast.error('Erreur lors de la validation de l\'avenant');
+      toast.error("Erreur lors de la validation de l'avenant");
     } finally {
       setValidating(false);
     }
@@ -184,7 +195,7 @@ export default function AvenantDetailsPage() {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
-      toast.success('PDF de l\'avenant généré avec succès');
+      toast.success("PDF de l'avenant généré avec succès");
     } catch (error) {
       console.error('Error generating PDF:', error);
       toast.error('Erreur lors de la génération du PDF');
@@ -229,7 +240,7 @@ export default function AvenantDetailsPage() {
       }
     } catch (error) {
       console.error('Error uploading signed document:', error);
-      toast.error('Erreur lors de l\'upload du document signé');
+      toast.error("Erreur lors de l'upload du document signé");
     } finally {
       setUploading(false);
     }
@@ -283,19 +294,29 @@ export default function AvenantDetailsPage() {
               {/* Avant */}
               <Card className='border-l-4 border-l-red-500'>
                 <CardHeader className='pb-3'>
-                  <CardTitle className='text-sm text-red-600 dark:text-red-400'>Avant</CardTitle>
+                  <CardTitle className='text-sm text-red-600 dark:text-red-400'>
+                    Avant
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className='space-y-2 text-sm'>
                   {changes.salary.avant?.salary_brut && (
                     <div>
-                      <span className='text-muted-foreground text-xs'>Salaire Brut:</span>
-                      <p className='font-mono font-semibold'>{changes.salary.avant.salary_brut} MAD</p>
+                      <span className='text-muted-foreground text-xs'>
+                        Salaire Brut:
+                      </span>
+                      <p className='font-mono font-semibold'>
+                        {changes.salary.avant.salary_brut} MAD
+                      </p>
                     </div>
                   )}
                   {changes.salary.avant?.salary_net && (
                     <div>
-                      <span className='text-muted-foreground text-xs'>Salaire Net:</span>
-                      <p className='font-mono font-semibold'>{changes.salary.avant.salary_net} MAD</p>
+                      <span className='text-muted-foreground text-xs'>
+                        Salaire Net:
+                      </span>
+                      <p className='font-mono font-semibold'>
+                        {changes.salary.avant.salary_net} MAD
+                      </p>
                     </div>
                   )}
                 </CardContent>
@@ -304,19 +325,29 @@ export default function AvenantDetailsPage() {
               {/* Après */}
               <Card className='border-l-4 border-l-green-500'>
                 <CardHeader className='pb-3'>
-                  <CardTitle className='text-sm text-green-600 dark:text-green-400'>Après</CardTitle>
+                  <CardTitle className='text-sm text-green-600 dark:text-green-400'>
+                    Après
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className='space-y-2 text-sm'>
                   {changes.salary.apres?.salary_brut && (
                     <div>
-                      <span className='text-muted-foreground text-xs'>Salaire Brut:</span>
-                      <p className='font-mono font-semibold'>{changes.salary.apres.salary_brut} MAD</p>
+                      <span className='text-muted-foreground text-xs'>
+                        Salaire Brut:
+                      </span>
+                      <p className='font-mono font-semibold'>
+                        {changes.salary.apres.salary_brut} MAD
+                      </p>
                     </div>
                   )}
                   {changes.salary.apres?.salary_net && (
                     <div>
-                      <span className='text-muted-foreground text-xs'>Salaire Net:</span>
-                      <p className='font-mono font-semibold'>{changes.salary.apres.salary_net} MAD</p>
+                      <span className='text-muted-foreground text-xs'>
+                        Salaire Net:
+                      </span>
+                      <p className='font-mono font-semibold'>
+                        {changes.salary.apres.salary_net} MAD
+                      </p>
                     </div>
                   )}
                 </CardContent>
@@ -333,19 +364,29 @@ export default function AvenantDetailsPage() {
             <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
               <Card className='border-l-4 border-l-red-500'>
                 <CardHeader className='pb-3'>
-                  <CardTitle className='text-sm text-red-600 dark:text-red-400'>Avant</CardTitle>
+                  <CardTitle className='text-sm text-red-600 dark:text-red-400'>
+                    Avant
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className='space-y-2 text-sm'>
                   {changes.schedule.avant?.schedule_type && (
                     <div>
-                      <span className='text-muted-foreground text-xs'>Type:</span>
-                      <p className='font-medium'>{changes.schedule.avant.schedule_type}</p>
+                      <span className='text-muted-foreground text-xs'>
+                        Type:
+                      </span>
+                      <p className='font-medium'>
+                        {changes.schedule.avant.schedule_type}
+                      </p>
                     </div>
                   )}
                   {changes.schedule.avant?.hours_per_week && (
                     <div>
-                      <span className='text-muted-foreground text-xs'>Heures/semaine:</span>
-                      <p className='font-medium'>{changes.schedule.avant.hours_per_week}h</p>
+                      <span className='text-muted-foreground text-xs'>
+                        Heures/semaine:
+                      </span>
+                      <p className='font-medium'>
+                        {changes.schedule.avant.hours_per_week}h
+                      </p>
                     </div>
                   )}
                 </CardContent>
@@ -353,19 +394,29 @@ export default function AvenantDetailsPage() {
 
               <Card className='border-l-4 border-l-green-500'>
                 <CardHeader className='pb-3'>
-                  <CardTitle className='text-sm text-green-600 dark:text-green-400'>Après</CardTitle>
+                  <CardTitle className='text-sm text-green-600 dark:text-green-400'>
+                    Après
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className='space-y-2 text-sm'>
                   {changes.schedule.apres?.schedule_type && (
                     <div>
-                      <span className='text-muted-foreground text-xs'>Type:</span>
-                      <p className='font-medium'>{changes.schedule.apres.schedule_type}</p>
+                      <span className='text-muted-foreground text-xs'>
+                        Type:
+                      </span>
+                      <p className='font-medium'>
+                        {changes.schedule.apres.schedule_type}
+                      </p>
                     </div>
                   )}
                   {changes.schedule.apres?.hours_per_week && (
                     <div>
-                      <span className='text-muted-foreground text-xs'>Heures/semaine:</span>
-                      <p className='font-medium'>{changes.schedule.apres.hours_per_week}h</p>
+                      <span className='text-muted-foreground text-xs'>
+                        Heures/semaine:
+                      </span>
+                      <p className='font-medium'>
+                        {changes.schedule.apres.hours_per_week}h
+                      </p>
                     </div>
                   )}
                 </CardContent>
@@ -382,19 +433,27 @@ export default function AvenantDetailsPage() {
             <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
               <Card className='border-l-4 border-l-red-500'>
                 <CardHeader className='pb-3'>
-                  <CardTitle className='text-sm text-red-600 dark:text-red-400'>Avant</CardTitle>
+                  <CardTitle className='text-sm text-red-600 dark:text-red-400'>
+                    Avant
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className='space-y-2 text-sm'>
                   {changes.job.avant?.poste && (
                     <div>
-                      <span className='text-muted-foreground text-xs'>Poste:</span>
+                      <span className='text-muted-foreground text-xs'>
+                        Poste:
+                      </span>
                       <p className='font-medium'>{changes.job.avant.poste}</p>
                     </div>
                   )}
                   {changes.job.avant?.department && (
                     <div>
-                      <span className='text-muted-foreground text-xs'>Département:</span>
-                      <p className='font-medium'>{changes.job.avant.department}</p>
+                      <span className='text-muted-foreground text-xs'>
+                        Département:
+                      </span>
+                      <p className='font-medium'>
+                        {changes.job.avant.department}
+                      </p>
                     </div>
                   )}
                 </CardContent>
@@ -402,19 +461,27 @@ export default function AvenantDetailsPage() {
 
               <Card className='border-l-4 border-l-green-500'>
                 <CardHeader className='pb-3'>
-                  <CardTitle className='text-sm text-green-600 dark:text-green-400'>Après</CardTitle>
+                  <CardTitle className='text-sm text-green-600 dark:text-green-400'>
+                    Après
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className='space-y-2 text-sm'>
                   {changes.job.apres?.poste && (
                     <div>
-                      <span className='text-muted-foreground text-xs'>Poste:</span>
+                      <span className='text-muted-foreground text-xs'>
+                        Poste:
+                      </span>
                       <p className='font-medium'>{changes.job.apres.poste}</p>
                     </div>
                   )}
                   {changes.job.apres?.department && (
                     <div>
-                      <span className='text-muted-foreground text-xs'>Département:</span>
-                      <p className='font-medium'>{changes.job.apres.department}</p>
+                      <span className='text-muted-foreground text-xs'>
+                        Département:
+                      </span>
+                      <p className='font-medium'>
+                        {changes.job.apres.department}
+                      </p>
                     </div>
                   )}
                 </CardContent>
@@ -431,25 +498,25 @@ export default function AvenantDetailsPage() {
       <PageContainer scrollable>
         <div className='w-full space-y-6 p-4 md:p-6'>
           {/* Header Skeleton */}
-          <div className='relative overflow-hidden rounded-lg border bg-gradient-to-r from-primary/10 via-primary/5 to-background p-6'>
+          <div className='from-primary/10 via-primary/5 to-background relative overflow-hidden rounded-lg border bg-gradient-to-r p-6'>
             <div className='space-y-4'>
-              <div className='h-8 w-32 bg-muted animate-pulse rounded' />
+              <div className='bg-muted h-8 w-32 animate-pulse rounded' />
               <div className='flex items-center justify-between'>
-                <div className='space-y-3 flex-1'>
+                <div className='flex-1 space-y-3'>
                   <div className='flex items-center gap-3'>
-                    <div className='h-9 w-48 bg-muted animate-pulse rounded' />
-                    <div className='h-7 w-24 bg-muted animate-pulse rounded' />
+                    <div className='bg-muted h-9 w-48 animate-pulse rounded' />
+                    <div className='bg-muted h-7 w-24 animate-pulse rounded' />
                   </div>
                   <div className='flex items-center gap-2'>
-                    <div className='h-5 w-40 bg-muted animate-pulse rounded' />
-                    <div className='h-5 w-px bg-muted' />
-                    <div className='h-5 w-48 bg-muted animate-pulse rounded' />
+                    <div className='bg-muted h-5 w-40 animate-pulse rounded' />
+                    <div className='bg-muted h-5 w-px' />
+                    <div className='bg-muted h-5 w-48 animate-pulse rounded' />
                   </div>
                 </div>
                 <div className='flex gap-2'>
-                  <div className='h-9 w-32 bg-muted animate-pulse rounded' />
-                  <div className='h-9 w-32 bg-muted animate-pulse rounded' />
-                  <div className='h-9 w-32 bg-muted animate-pulse rounded' />
+                  <div className='bg-muted h-9 w-32 animate-pulse rounded' />
+                  <div className='bg-muted h-9 w-32 animate-pulse rounded' />
+                  <div className='bg-muted h-9 w-32 animate-pulse rounded' />
                 </div>
               </div>
             </div>
@@ -457,24 +524,24 @@ export default function AvenantDetailsPage() {
 
           <div className='grid grid-cols-1 gap-6 lg:grid-cols-3'>
             {/* Colonne principale */}
-            <div className='lg:col-span-2 space-y-6'>
+            <div className='space-y-6 lg:col-span-2'>
               {/* Card Informations Générales Skeleton */}
               <Card>
                 <CardHeader>
-                  <div className='h-6 w-48 bg-muted animate-pulse rounded' />
+                  <div className='bg-muted h-6 w-48 animate-pulse rounded' />
                 </CardHeader>
                 <CardContent className='space-y-4'>
                   <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
                     {[1, 2, 3, 4].map((i) => (
                       <div key={i} className='space-y-2'>
-                        <div className='h-4 w-24 bg-muted animate-pulse rounded' />
-                        <div className='h-5 w-full bg-muted animate-pulse rounded' />
+                        <div className='bg-muted h-4 w-24 animate-pulse rounded' />
+                        <div className='bg-muted h-5 w-full animate-pulse rounded' />
                       </div>
                     ))}
                   </div>
                   <div className='space-y-2'>
-                    <div className='h-4 w-16 bg-muted animate-pulse rounded' />
-                    <div className='h-20 w-full bg-muted animate-pulse rounded' />
+                    <div className='bg-muted h-4 w-16 animate-pulse rounded' />
+                    <div className='bg-muted h-20 w-full animate-pulse rounded' />
                   </div>
                 </CardContent>
               </Card>
@@ -482,20 +549,20 @@ export default function AvenantDetailsPage() {
               {/* Card Modifications Skeleton */}
               <Card>
                 <CardHeader>
-                  <div className='h-6 w-32 bg-muted animate-pulse rounded' />
+                  <div className='bg-muted h-6 w-32 animate-pulse rounded' />
                 </CardHeader>
                 <CardContent>
                   <div className='space-y-4'>
                     <div className='grid grid-cols-2 gap-4'>
-                      <div className='space-y-3 p-4 border rounded-lg'>
-                        <div className='h-5 w-20 bg-muted animate-pulse rounded' />
-                        <div className='h-4 w-full bg-muted animate-pulse rounded' />
-                        <div className='h-4 w-full bg-muted animate-pulse rounded' />
+                      <div className='space-y-3 rounded-lg border p-4'>
+                        <div className='bg-muted h-5 w-20 animate-pulse rounded' />
+                        <div className='bg-muted h-4 w-full animate-pulse rounded' />
+                        <div className='bg-muted h-4 w-full animate-pulse rounded' />
                       </div>
-                      <div className='space-y-3 p-4 border rounded-lg'>
-                        <div className='h-5 w-20 bg-muted animate-pulse rounded' />
-                        <div className='h-4 w-full bg-muted animate-pulse rounded' />
-                        <div className='h-4 w-full bg-muted animate-pulse rounded' />
+                      <div className='space-y-3 rounded-lg border p-4'>
+                        <div className='bg-muted h-5 w-20 animate-pulse rounded' />
+                        <div className='bg-muted h-4 w-full animate-pulse rounded' />
+                        <div className='bg-muted h-4 w-full animate-pulse rounded' />
                       </div>
                     </div>
                   </div>
@@ -505,21 +572,24 @@ export default function AvenantDetailsPage() {
               {/* Card Documents Skeleton */}
               <Card>
                 <CardHeader>
-                  <div className='h-6 w-32 bg-muted animate-pulse rounded' />
+                  <div className='bg-muted h-6 w-32 animate-pulse rounded' />
                 </CardHeader>
                 <CardContent className='space-y-3'>
                   {[1, 2].map((i) => (
-                    <div key={i} className='flex items-center justify-between p-4 border rounded-lg'>
+                    <div
+                      key={i}
+                      className='flex items-center justify-between rounded-lg border p-4'
+                    >
                       <div className='flex items-center gap-3'>
-                        <div className='h-10 w-10 bg-muted animate-pulse rounded' />
+                        <div className='bg-muted h-10 w-10 animate-pulse rounded' />
                         <div className='space-y-2'>
-                          <div className='h-4 w-48 bg-muted animate-pulse rounded' />
-                          <div className='h-3 w-32 bg-muted animate-pulse rounded' />
+                          <div className='bg-muted h-4 w-48 animate-pulse rounded' />
+                          <div className='bg-muted h-3 w-32 animate-pulse rounded' />
                         </div>
                       </div>
                       <div className='flex gap-2'>
-                        <div className='h-8 w-24 bg-muted animate-pulse rounded' />
-                        <div className='h-8 w-24 bg-muted animate-pulse rounded' />
+                        <div className='bg-muted h-8 w-24 animate-pulse rounded' />
+                        <div className='bg-muted h-8 w-24 animate-pulse rounded' />
                       </div>
                     </div>
                   ))}
@@ -542,7 +612,11 @@ export default function AvenantDetailsPage() {
             <Button
               variant='outline'
               className='mt-4'
-              onClick={() => router.push(`/admin/contrats-mouvements/contrats/${contractId}/details?tab=documents`)}
+              onClick={() =>
+                router.push(
+                  `/admin/contrats-mouvements/contrats/${contractId}/details?tab=documents`
+                )
+              }
             >
               Retour au contrat
             </Button>
@@ -559,20 +633,26 @@ export default function AvenantDetailsPage() {
     <PageContainer scrollable>
       <div className='w-full space-y-6 p-4 md:p-6'>
         {/* Header */}
-        <div className='relative overflow-hidden rounded-lg border bg-gradient-to-r from-primary/10 via-primary/5 to-background p-6'>
+        <div className='from-primary/10 via-primary/5 to-background relative overflow-hidden rounded-lg border bg-gradient-to-r p-6'>
           <div className='flex items-center justify-between'>
             <div>
               <Button
                 variant='ghost'
                 size='sm'
-                onClick={() => router.push(`/admin/contrats-mouvements/contrats/${contractId}/details?tab=documents`)}
+                onClick={() =>
+                  router.push(
+                    `/admin/contrats-mouvements/contrats/${contractId}/details?tab=documents`
+                  )
+                }
                 className='mb-3 -ml-2'
               >
                 <ArrowLeft className='mr-2 h-4 w-4' />
                 Retour au contrat
               </Button>
-              <div className='flex items-center gap-3 mb-2'>
-                <h1 className='text-3xl font-bold'>Avenant N°{avenant.numero}</h1>
+              <div className='mb-2 flex items-center gap-3'>
+                <h1 className='text-3xl font-bold'>
+                  Avenant N°{avenant.numero}
+                </h1>
                 {getStatusBadge(avenant.status)}
               </div>
               <p className='text-muted-foreground flex items-center gap-2'>
@@ -589,7 +669,11 @@ export default function AvenantDetailsPage() {
                   <Button
                     variant='outline'
                     size='sm'
-                    onClick={() => router.push(`/admin/contrats-mouvements/contrats/${contractId}/avenants/${avenantId}/edit`)}
+                    onClick={() =>
+                      router.push(
+                        `/admin/contrats-mouvements/contrats/${contractId}/avenants/${avenantId}/edit`
+                      )
+                    }
                   >
                     <Edit className='mr-2 h-4 w-4' />
                     Modifier
@@ -649,7 +733,7 @@ export default function AvenantDetailsPage() {
 
         <div className='grid grid-cols-1 gap-6 lg:grid-cols-3'>
           {/* Colonne principale (2/3) */}
-          <div className='lg:col-span-2 space-y-6'>
+          <div className='space-y-6 lg:col-span-2'>
             {/* Informations Générales */}
             <Card>
               <CardHeader>
@@ -658,8 +742,12 @@ export default function AvenantDetailsPage() {
               <CardContent className='space-y-4'>
                 <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
                   <div>
-                    <p className='text-muted-foreground text-sm'>Date d&apos;effet</p>
-                    <p className='font-medium'>{formatDateLong(avenant.date)}</p>
+                    <p className='text-muted-foreground text-sm'>
+                      Date d&apos;effet
+                    </p>
+                    <p className='font-medium'>
+                      {formatDateLong(avenant.date)}
+                    </p>
                   </div>
 
                   <div>
@@ -670,15 +758,21 @@ export default function AvenantDetailsPage() {
 
                 {avenant.motif && (
                   <div>
-                    <p className='text-muted-foreground text-sm mb-1'>Motif</p>
-                    <p className='text-sm whitespace-pre-wrap rounded-lg bg-muted/50 p-3'>{avenant.motif}</p>
+                    <p className='text-muted-foreground mb-1 text-sm'>Motif</p>
+                    <p className='bg-muted/50 rounded-lg p-3 text-sm whitespace-pre-wrap'>
+                      {avenant.motif}
+                    </p>
                   </div>
                 )}
 
                 {avenant.description && (
                   <div>
-                    <p className='text-muted-foreground text-sm mb-1'>Description</p>
-                    <p className='text-sm whitespace-pre-wrap rounded-lg bg-muted/50 p-3'>{avenant.description}</p>
+                    <p className='text-muted-foreground mb-1 text-sm'>
+                      Description
+                    </p>
+                    <p className='bg-muted/50 rounded-lg p-3 text-sm whitespace-pre-wrap'>
+                      {avenant.description}
+                    </p>
                   </div>
                 )}
 
@@ -687,12 +781,14 @@ export default function AvenantDetailsPage() {
                 <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
                   <div>
                     <p className='text-muted-foreground text-sm'>Créé le</p>
-                    <p className='font-medium text-sm'>{formatDateLong(avenant.created_at)}</p>
+                    <p className='text-sm font-medium'>
+                      {formatDateLong(avenant.created_at)}
+                    </p>
                   </div>
 
                   <div>
                     <p className='text-muted-foreground text-sm'>Créé par</p>
-                    <p className='font-medium text-sm'>{avenant.created_by}</p>
+                    <p className='text-sm font-medium'>{avenant.created_by}</p>
                   </div>
                 </div>
               </CardContent>
@@ -707,15 +803,13 @@ export default function AvenantDetailsPage() {
                     Comparaison avant/après des changements
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  {renderChanges(avenant.changes)}
-                </CardContent>
+                <CardContent>{renderChanges(avenant.changes)}</CardContent>
               </Card>
             )}
           </div>
 
           {/* Sidebar (1/3) - Documents */}
-          <div className='lg:col-span-1 space-y-6'>
+          <div className='space-y-6 lg:col-span-1'>
             {/* Document Généré */}
             {isValide && (
               <Card className='border-l-4 border-l-blue-500'>
@@ -728,9 +822,9 @@ export default function AvenantDetailsPage() {
                 <CardContent className='space-y-3'>
                   {avenant.document_url ? (
                     <>
-                      <div className='rounded-lg bg-blue-50 dark:bg-blue-950 p-3'>
+                      <div className='rounded-lg bg-blue-50 p-3 dark:bg-blue-950'>
                         <p className='text-sm font-medium'>PDF disponible</p>
-                        <p className='text-xs text-muted-foreground'>
+                        <p className='text-muted-foreground text-xs'>
                           Avenant_{avenant.numero}_{contract.reference}.pdf
                         </p>
                       </div>
@@ -739,7 +833,9 @@ export default function AvenantDetailsPage() {
                           variant='outline'
                           size='sm'
                           className='flex-1'
-                          onClick={() => handleViewDocument(avenant.document_url!)}
+                          onClick={() =>
+                            handleViewDocument(avenant.document_url!)
+                          }
                         >
                           <Eye className='mr-1 h-4 w-4' />
                           Voir
@@ -748,10 +844,12 @@ export default function AvenantDetailsPage() {
                           variant='outline'
                           size='sm'
                           className='flex-1'
-                          onClick={() => handleDownload(
-                            avenant.document_url!,
-                            `Avenant_${avenant.numero}_${contract.reference}.pdf`
-                          )}
+                          onClick={() =>
+                            handleDownload(
+                              avenant.document_url!,
+                              `Avenant_${avenant.numero}_${contract.reference}.pdf`
+                            )
+                          }
                         >
                           <Download className='mr-1 h-4 w-4' />
                           Télécharger
@@ -767,7 +865,7 @@ export default function AvenantDetailsPage() {
                     </>
                   ) : (
                     <>
-                      <p className='text-sm text-muted-foreground'>
+                      <p className='text-muted-foreground text-sm'>
                         Aucun document généré
                       </p>
                       <Button
@@ -806,15 +904,15 @@ export default function AvenantDetailsPage() {
                 <CardContent className='space-y-3'>
                   {avenant.signed_document ? (
                     <>
-                      <div className='rounded-lg bg-green-50 dark:bg-green-950 p-3'>
-                        <p className='text-sm font-medium flex items-center gap-2'>
+                      <div className='rounded-lg bg-green-50 p-3 dark:bg-green-950'>
+                        <p className='flex items-center gap-2 text-sm font-medium'>
                           <CheckCircle2 className='h-4 w-4 text-green-600' />
                           Document signé uploadé
                         </p>
-                        <p className='text-xs text-muted-foreground mt-1'>
+                        <p className='text-muted-foreground mt-1 text-xs'>
                           {avenant.signed_document.name}
                         </p>
-                        <p className='text-xs text-muted-foreground'>
+                        <p className='text-muted-foreground text-xs'>
                           {formatDateLong(avenant.signed_document.uploaded_at)}
                         </p>
                       </div>
@@ -823,7 +921,9 @@ export default function AvenantDetailsPage() {
                           variant='outline'
                           size='sm'
                           className='flex-1'
-                          onClick={() => handleViewDocument(avenant.signed_document!.url)}
+                          onClick={() =>
+                            handleViewDocument(avenant.signed_document!.url)
+                          }
                         >
                           <Eye className='mr-1 h-4 w-4' />
                           Voir
@@ -832,10 +932,12 @@ export default function AvenantDetailsPage() {
                           variant='outline'
                           size='sm'
                           className='flex-1'
-                          onClick={() => handleDownload(
-                            avenant.signed_document!.url,
-                            avenant.signed_document!.name
-                          )}
+                          onClick={() =>
+                            handleDownload(
+                              avenant.signed_document!.url,
+                              avenant.signed_document!.name
+                            )
+                          }
                         >
                           <Download className='mr-1 h-4 w-4' />
                           Télécharger
@@ -844,7 +946,7 @@ export default function AvenantDetailsPage() {
                     </>
                   ) : (
                     <>
-                      <p className='text-sm text-muted-foreground'>
+                      <p className='text-muted-foreground text-sm'>
                         Aucun document signé
                       </p>
                       <Button
@@ -870,7 +972,8 @@ export default function AvenantDetailsPage() {
             <AlertDialogHeader>
               <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
               <AlertDialogDescription>
-                Êtes-vous sûr de vouloir supprimer cet avenant ? Cette action est irréversible.
+                Êtes-vous sûr de vouloir supprimer cet avenant ? Cette action
+                est irréversible.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -892,7 +995,8 @@ export default function AvenantDetailsPage() {
             <DialogHeader>
               <DialogTitle>Uploader le document signé</DialogTitle>
               <DialogDescription>
-                Sélectionnez le fichier PDF de l&apos;avenant signé par les parties
+                Sélectionnez le fichier PDF de l&apos;avenant signé par les
+                parties
               </DialogDescription>
             </DialogHeader>
             <div className='py-4'>
@@ -910,4 +1014,3 @@ export default function AvenantDetailsPage() {
     </PageContainer>
   );
 }
-

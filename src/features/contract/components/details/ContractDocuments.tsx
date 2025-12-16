@@ -57,20 +57,22 @@ export default function ContractDocuments({
   const [isLoadingAvenants, setIsLoadingAvenants] = useState(false);
   const [isUploadingSignedDoc, setIsUploadingSignedDoc] = useState(false);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
-const router = useRouter();
+  const router = useRouter();
   // Load avenants for this contract
   useEffect(() => {
     const fetchAvenants = async () => {
       if (!contract.id) return;
-      
+
       setIsLoadingAvenants(true);
       try {
         const response = await apiClient.get(
           apiRoutes.admin.contratsEtMovements.avenants.byContract(contract.id)
         );
-        
+
         if (response.data) {
-          const data = Array.isArray(response.data) ? response.data : response.data.data || [];
+          const data = Array.isArray(response.data)
+            ? response.data
+            : response.data.data || [];
           setAvenants(data);
         }
       } catch (error) {
@@ -86,15 +88,15 @@ const router = useRouter();
 
   const handleUploadSignedDocument = async (files: File[]) => {
     if (files.length === 0) return;
-    
+
     setIsUploadingSignedDoc(true);
     try {
       const formData = new FormData();
       formData.append('file', files[0]);
-      
+
       // Mock upload - in production, upload to server first
       const mockFileUrl = `/uploads/contracts/${contract.id}/signed-${Date.now()}.pdf`;
-      
+
       const response = await apiClient.post(
         apiRoutes.admin.contratsEtMovements.contrats.uploadSigned(contract.id),
         {
@@ -131,7 +133,9 @@ const router = useRouter();
 
   const handleAddAvenant = () => {
     // Navigate to avenant creation page using Next.js client navigation
-    router.push(`/admin/contrats-mouvements/contrats/${contract.id}/avenants/create`);
+    router.push(
+      `/admin/contrats-mouvements/contrats/${contract.id}/avenants/create`
+    );
   };
 
   return (
@@ -164,7 +168,10 @@ const router = useRouter();
                     Contrat_{contract.reference}_Généré.pdf
                   </p>
                   <p className='text-muted-foreground text-sm'>
-                    Généré le {formatDateLong(contract.dates.start_date || new Date().toISOString())}
+                    Généré le{' '}
+                    {formatDateLong(
+                      contract.dates.start_date || new Date().toISOString()
+                    )}
                   </p>
                   <p className='text-muted-foreground text-xs'>
                     Document généré automatiquement par le système
@@ -176,7 +183,9 @@ const router = useRouter();
                   variant='ghost'
                   size='sm'
                   title='Aperçu'
-                  onClick={() => handleViewDocument(`/generated/contract-${contract.id}.pdf`)}
+                  onClick={() =>
+                    handleViewDocument(`/generated/contract-${contract.id}.pdf`)
+                  }
                 >
                   <Eye className='h-4 w-4' />
                 </Button>
@@ -184,10 +193,12 @@ const router = useRouter();
                   variant='ghost'
                   size='sm'
                   title='Télécharger'
-                  onClick={() => handleDownloadDocument(
-                    `/generated/contract-${contract.id}.pdf`,
-                    `Contrat_${contract.reference}_Généré.pdf`
-                  )}
+                  onClick={() =>
+                    handleDownloadDocument(
+                      `/generated/contract-${contract.id}.pdf`,
+                      `Contrat_${contract.reference}_Généré.pdf`
+                    )
+                  }
                 >
                   <Download className='h-4 w-4' />
                 </Button>
@@ -205,9 +216,7 @@ const router = useRouter();
             <div className='text-muted-foreground py-6 text-center'>
               <FileText className='mx-auto mb-2 h-12 w-12 opacity-50' />
               <p>Contrat en brouillon</p>
-              <p className='text-sm'>
-                Le contrat sera généré après validation
-              </p>
+              <p className='text-sm'>Le contrat sera généré après validation</p>
             </div>
           )}
         </CardContent>
@@ -246,7 +255,7 @@ const router = useRouter();
         </CardHeader>
         <CardContent>
           {showUploadDialog && (
-            <div className='mb-4 rounded-lg border border-dashed border-primary/50 bg-primary/5 p-4'>
+            <div className='border-primary/50 bg-primary/5 mb-4 rounded-lg border border-dashed p-4'>
               <FileUploader
                 maxFiles={1}
                 maxSize={10 * 1024 * 1024}
@@ -261,19 +270,24 @@ const router = useRouter();
               </p>
             </div>
           )}
-          
+
           {contract.signed_document ? (
             <div className='bg-muted/30 flex items-center justify-between rounded-lg border p-4'>
               <div className='flex items-center gap-3'>
-                <div className='bg-green-500/10 rounded-lg p-2'>
+                <div className='rounded-lg bg-green-500/10 p-2'>
                   <FileSignature className='h-5 w-5 text-green-600' />
                 </div>
                 <div>
                   <p className='font-medium'>
-                    {contract.signed_document.name || `Contrat_${contract.reference}_Signé.pdf`}
+                    {contract.signed_document.name ||
+                      `Contrat_${contract.reference}_Signé.pdf`}
                   </p>
                   <p className='text-muted-foreground text-sm'>
-                    Téléversé le {formatDateLong(contract.signed_document.uploaded_at || contract.dates.signature_date)}
+                    Téléversé le{' '}
+                    {formatDateLong(
+                      contract.signed_document.uploaded_at ||
+                        contract.dates.signature_date
+                    )}
                   </p>
                   <p className='text-muted-foreground text-xs'>
                     Document signé par les parties
@@ -285,7 +299,9 @@ const router = useRouter();
                   variant='ghost'
                   size='sm'
                   title='Aperçu'
-                  onClick={() => handleViewDocument(contract.signed_document!.url)}
+                  onClick={() =>
+                    handleViewDocument(contract.signed_document!.url)
+                  }
                 >
                   <Eye className='h-4 w-4' />
                 </Button>
@@ -293,10 +309,13 @@ const router = useRouter();
                   variant='ghost'
                   size='sm'
                   title='Télécharger'
-                  onClick={() => handleDownloadDocument(
-                    contract.signed_document!.url,
-                    contract.signed_document!.name || `Contrat_${contract.reference}_Signé.pdf`
-                  )}
+                  onClick={() =>
+                    handleDownloadDocument(
+                      contract.signed_document!.url,
+                      contract.signed_document!.name ||
+                        `Contrat_${contract.reference}_Signé.pdf`
+                    )
+                  }
                 >
                   <Download className='h-4 w-4' />
                 </Button>
@@ -330,9 +349,7 @@ const router = useRouter();
               <FileText className='h-5 w-5' />
               Avenants
               {avenants.length > 0 && (
-                <Badge variant='secondary'>
-                  {avenants.length}
-                </Badge>
+                <Badge variant='secondary'>{avenants.length}</Badge>
               )}
             </CardTitle>
             {contract.status !== 'Brouillon' && (
@@ -346,8 +363,10 @@ const router = useRouter();
         <CardContent>
           {isLoadingAvenants ? (
             <div className='py-6 text-center'>
-              <div className='mx-auto h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent' />
-              <p className='text-muted-foreground mt-2 text-sm'>Chargement des avenants...</p>
+              <div className='border-primary mx-auto h-8 w-8 animate-spin rounded-full border-4 border-t-transparent' />
+              <p className='text-muted-foreground mt-2 text-sm'>
+                Chargement des avenants...
+              </p>
             </div>
           ) : avenants.length > 0 ? (
             <div className='space-y-3'>
@@ -365,7 +384,8 @@ const router = useRouter();
                         <p className='font-medium'>
                           Avenant N°{avenant.numero}
                         </p>
-                        {avenant.status === 'Valide' || avenant.status === 'Signe' ? (
+                        {avenant.status === 'Valide' ||
+                        avenant.status === 'Signe' ? (
                           <Badge className='h-5 gap-1 bg-green-500 hover:bg-green-600'>
                             <CheckCircle2 className='h-3 w-3' />
                             Validé
@@ -395,7 +415,10 @@ const router = useRouter();
                       </p>
                     </div>
                   </div>
-                  <div className='flex items-center gap-2' onClick={(e) => e.stopPropagation()}>
+                  <div
+                    className='flex items-center gap-2'
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     {avenant.document_url && (
                       <>
                         <Button
@@ -444,7 +467,9 @@ const router = useRouter();
             <div className='text-muted-foreground py-6 text-center'>
               <FileText className='mx-auto mb-2 h-12 w-12 opacity-50' />
               <p>Aucun avenant</p>
-              <p className='text-sm'>Les avenants apparaîtront ici une fois créés</p>
+              <p className='text-sm'>
+                Les avenants apparaîtront ici une fois créés
+              </p>
             </div>
           )}
         </CardContent>

@@ -165,8 +165,8 @@
         "type": "CIMR",
         "code": "CIMR",
         "affiliationNumber": "CIMR-123456",
-        "employeeRatePct": 6.00,
-        "employerRatePct": 6.00,
+        "employeeRatePct": 6.0,
+        "employerRatePct": 6.0,
         "startDate": "2023-01-01",
         "notes": "Régime complémentaire"
       },
@@ -174,8 +174,8 @@
         "type": "Mutuelle",
         "code": "MUT-GEN",
         "affiliationNumber": "MUT-98765",
-        "employeeRatePct": 2.00,
-        "employerRatePct": 3.00,
+        "employeeRatePct": 2.0,
+        "employerRatePct": 3.0,
         "startDate": "2023-02-01",
         "providerName": "Mutuelle Générale"
       }
@@ -434,8 +434,8 @@
         "type": "Mutuelle",
         "code": "MUT-PREM",
         "affiliationNumber": "MUT-22222",
-        "employeeRatePct": 3.00,
-        "employerRatePct": 4.50,
+        "employeeRatePct": 3.0,
+        "employerRatePct": 4.5,
         "startDate": "2022-06-01",
         "providerName": "Mutuelle Premium"
       }

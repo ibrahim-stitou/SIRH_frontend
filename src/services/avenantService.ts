@@ -10,7 +10,9 @@ export async function getAvenants(params?: {
   contract_id?: string | number;
 }): Promise<Avenant[]> {
   if (params?.contract_id) {
-    const { data } = await apiClient.get(`/contracts/${params.contract_id}/avenants`);
+    const { data } = await apiClient.get(
+      `/contracts/${params.contract_id}/avenants`
+    );
     return data as Avenant[];
   }
   const { data } = await apiClient.get('/avenants');

@@ -8,7 +8,10 @@ export const avenantStatusEnum = z.enum([
 ]);
 
 export const avenantSchema = z.object({
-  contract_id: z.union([z.string().min(1, 'Contrat requis'), z.number().min(1, 'Contrat requis')]),
+  contract_id: z.union([
+    z.string().min(1, 'Contrat requis'),
+    z.number().min(1, 'Contrat requis')
+  ]),
   numero: z.number().int().positive().optional(),
   date: z.string().min(1, 'Date requise'),
   objet: z.string().min(3, "L'objet est requis"),

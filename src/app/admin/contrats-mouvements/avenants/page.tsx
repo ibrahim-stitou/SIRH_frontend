@@ -16,11 +16,13 @@ export default function AvenantsPage() {
         {/* Header */}
         <div className='flex items-center justify-between'>
           <div>
-            <div className='flex items-center gap-3 mb-2'>
+            <div className='mb-2 flex items-center gap-3'>
               <Button
                 variant='ghost'
                 size='sm'
-                onClick={() => router.push('/admin/contrats-mouvements/contrats')}
+                onClick={() =>
+                  router.push('/admin/contrats-mouvements/contrats')
+                }
               >
                 <ArrowLeft className='mr-2 h-4 w-4' />
                 Retour aux contrats
@@ -39,4 +41,3 @@ export default function AvenantsPage() {
     </PageContainer>
   );
 }
-

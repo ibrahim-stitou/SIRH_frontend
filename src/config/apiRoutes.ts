@@ -39,6 +39,7 @@ export const apiRoutes = {
     employees: {
       list: `${API_BASE}/hrEmployees`,
       simpleList: `${API_BASE}/hrEmployees/simple-list`,
+      managersSimpleList: `${API_BASE}/hrEmployees/managers/simple-list`,
       delete: (id: number | string) => `${API_BASE}/hrEmployees/${id}`,
       details: (id: number | string) => `${API_BASE}/hrEmployees/${id}`,
       update: (id: number | string) => `${API_BASE}/hrEmployees/${id}`
@@ -106,7 +107,15 @@ export const apiRoutes = {
     sieges: {
       // Enriched list with groups via custom route
       list: `${API_BASE}/sieges`,
-      show: (id: number | string) => `${API_BASE}/sieges/${id}`
+      show: (id: number | string) => `${API_BASE}/sieges/${id}`,
+      groupsBySiege: (id: number | string) => `${API_BASE}/sieges/${id}/groups`
+    },
+    groups: {
+      list: `${API_BASE}/groups`,
+      create: `${API_BASE}/groups`,
+      show: (id: number | string) => `${API_BASE}/groups/${id}`,
+      update: (id: number | string) => `${API_BASE}/groups/${id}`,
+      delete: (id: number | string) => `${API_BASE}/groups/${id}`
     }
   }
 };

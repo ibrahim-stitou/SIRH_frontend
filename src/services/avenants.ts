@@ -12,8 +12,8 @@ export interface CreateAvenantPayload {
 
 export async function createAvenant(payload: CreateAvenantPayload) {
   // If mock server, post to /avenants; otherwise use configured route
-  const baseUrl = process.env.NEXT_PUBLIC_USE_MOCK === 'true' ? '/avenants' : '/avenants';
+  const baseUrl =
+    process.env.NEXT_PUBLIC_USE_MOCK === 'true' ? '/avenants' : '/avenants';
   const { data } = await apiClient.post(baseUrl, payload);
   return data;
 }
-

@@ -3,6 +3,7 @@
 ## 🎯 Vue d'Ensemble
 
 Implémentation complète de la gestion des avenants avec:
+
 - ✅ **Statuts**: Brouillon, Validé
 - ✅ **Modification**: Possible uniquement si Brouillon
 - ✅ **Génération PDF**: Pour avenants validés
@@ -14,6 +15,7 @@ Implémentation complète de la gestion des avenants avec:
 ## 📊 Statuts d'Avenant
 
 ### 1. **Brouillon**
+
 - État initial après création
 - **Modifiable**: Oui
 - **Supprimable**: Oui
@@ -23,6 +25,7 @@ Implémentation complète de la gestion des avenants avec:
   - 🗑️ Supprimer
 
 ### 2. **Validé**
+
 - État après validation
 - **Modifiable**: Non
 - **Supprimable**: Non
@@ -71,6 +74,7 @@ Implémentation complète de la gestion des avenants avec:
 ### Header avec Actions Contextuelles
 
 **Si Brouillon:**
+
 ```tsx
 <div className='flex items-center gap-2'>
   <Button variant='outline' onClick={navigateToEdit}>
@@ -86,6 +90,7 @@ Implémentation complète de la gestion des avenants avec:
 ```
 
 **Si Validé:**
+
 ```tsx
 <div className='flex items-center gap-2'>
   <Button onClick={handleGeneratePDF}>
@@ -97,22 +102,25 @@ Implémentation complète de la gestion des avenants avec:
 ### Alerts Status
 
 **Brouillon:**
+
 ```tsx
 <Alert className='border-yellow-200 bg-yellow-50'>
   <AlertCircle className='text-yellow-600' />
   <AlertDescription>
-    Cet avenant est en brouillon. Vous pouvez le modifier ou le supprimer.
-    Une fois validé, il ne pourra plus être modifié.
+    Cet avenant est en brouillon. Vous pouvez le modifier ou le supprimer. Une
+    fois validé, il ne pourra plus être modifié.
   </AlertDescription>
 </Alert>
 ```
 
 **Validé:**
+
 ```tsx
 <Alert className='border-green-200 bg-green-50'>
   <CheckCircle2 className='text-green-600' />
   <AlertDescription>
-    Cet avenant est validé. Vous pouvez générer le PDF et uploader le document signé.
+    Cet avenant est validé. Vous pouvez générer le PDF et uploader le document
+    signé.
   </AlertDescription>
 </Alert>
 ```
@@ -145,34 +153,39 @@ Implémentation complète de la gestion des avenants avec:
 
 ```typescript
 export async function generateAvenantPDF(
-  contract: Contract, 
+  contract: Contract,
   avenant: Avenant
-): Promise<Blob>
+): Promise<Blob>;
 ```
 
 ### Structure du PDF
 
 1. **En-tête** (bleu)
+
    - Titre: "AVENANT AU CONTRAT DE TRAVAIL"
    - Numéro d'avenant
    - Référence contrat
 
 2. **Contrat Original**
+
    - Employé
    - Matricule
    - Type de contrat
    - Date de début
 
 3. **Informations Avenant**
+
    - Date d'effet
    - Objet
    - Statut
    - Date de création
 
 4. **Motif**
+
    - Description détaillée
 
 5. **Modifications** (avant/après)
+
    - **Salaire** (rouge → vert)
    - **Horaire** (rouge → vert)
    - **Poste** (rouge → vert)
@@ -240,7 +253,7 @@ interface Avenant {
       apres: { poste, department, ... }
     }
   };
-  
+
   // Documents
   document_url?: string;              // PDF généré
   signed_document?: {                 // Document signé
@@ -248,7 +261,7 @@ interface Avenant {
     name: string;
     uploaded_at: string;
   };
-  
+
   created_at: string;
   created_by: string;
 }
@@ -261,6 +274,7 @@ interface Avenant {
 ### Cards de Documents (Sidebar)
 
 #### Document Généré
+
 ```tsx
 <Card className='border-l-4 border-l-blue-500'>
   <CardHeader>
@@ -271,9 +285,7 @@ interface Avenant {
   <CardContent>
     {document_url ? (
       <>
-        <div className='bg-blue-50 p-3'>
-          PDF disponible
-        </div>
+        <div className='bg-blue-50 p-3'>PDF disponible</div>
         <div className='flex gap-2'>
           <Button onClick={handleView}>Voir</Button>
           <Button onClick={handleDownload}>Télécharger</Button>
@@ -281,15 +293,14 @@ interface Avenant {
         </div>
       </>
     ) : (
-      <Button onClick={handleGeneratePDF}>
-        Générer le PDF
-      </Button>
+      <Button onClick={handleGeneratePDF}>Générer le PDF</Button>
     )}
   </CardContent>
 </Card>
 ```
 
 #### Document Signé
+
 ```tsx
 <Card className='border-l-4 border-l-green-500'>
   <CardHeader>
@@ -383,12 +394,12 @@ const handleUploadSignedDocument = async (files: File[]) => {
   const file = files[0];
   const formData = new FormData();
   formData.append('file', file);
-  
+
   const response = await apiClient.post(
     `/avenants/${avenantId}/upload-signed`,
     { fileUrl: mockUrl, fileName: file.name }
   );
-  
+
   setAvenant({
     ...avenant,
     signed_document: {
@@ -397,7 +408,7 @@ const handleUploadSignedDocument = async (files: File[]) => {
       uploaded_at: new Date().toISOString()
     }
   });
-  
+
   toast.success('Document signé uploadé avec succès');
 };
 ```
@@ -407,6 +418,7 @@ const handleUploadSignedDocument = async (files: File[]) => {
 ## 🧪 Tests Recommandés
 
 ### Test 1: Création et Validation
+
 ```
 1. Créer un avenant (Brouillon)
 2. Vérifier actions: Modifier, Valider, Supprimer
@@ -416,6 +428,7 @@ const handleUploadSignedDocument = async (files: File[]) => {
 ```
 
 ### Test 2: Génération PDF
+
 ```
 1. Avoir un avenant Validé
 2. Cliquer "Générer PDF"
@@ -425,6 +438,7 @@ const handleUploadSignedDocument = async (files: File[]) => {
 ```
 
 ### Test 3: Upload Document Signé
+
 ```
 1. Avoir un avenant Validé avec PDF généré
 2. Cliquer "Uploader document signé"
@@ -435,6 +449,7 @@ const handleUploadSignedDocument = async (files: File[]) => {
 ```
 
 ### Test 4: Modification Brouillon
+
 ```
 1. Créer un avenant Brouillon
 2. Cliquer "Modifier"
@@ -444,6 +459,7 @@ const handleUploadSignedDocument = async (files: File[]) => {
 ```
 
 ### Test 5: Protection Validé
+
 ```
 1. Avoir un avenant Validé
 2. Vérifier bouton "Modifier" absent
@@ -481,6 +497,7 @@ const handleUploadSignedDocument = async (files: File[]) => {
 ## ✅ Checklist de Validation
 
 ### Fonctionnalités
+
 - [x] Statuts: Brouillon, Validé
 - [x] Modification uniquement si Brouillon
 - [x] Suppression uniquement si Brouillon
@@ -491,6 +508,7 @@ const handleUploadSignedDocument = async (files: File[]) => {
 - [x] Actions contextuelles selon statut
 
 ### UI/UX
+
 - [x] Alerts status colorés
 - [x] Badges status (Brouillon/Validé)
 - [x] Cards documents avec borders colorées
@@ -499,6 +517,7 @@ const handleUploadSignedDocument = async (files: File[]) => {
 - [x] Loading states
 
 ### API
+
 - [x] Routes génération PDF
 - [x] Routes upload document signé
 - [x] Routes validation
@@ -509,7 +528,9 @@ const handleUploadSignedDocument = async (files: File[]) => {
 ## 🚀 Prochaines Améliorations
 
 ### Court Terme
+
 1. **Workflow d'approbation**
+
    - Multi-niveaux (Manager → RH → Direction)
    - Notifications par email
 
@@ -518,7 +539,9 @@ const handleUploadSignedDocument = async (files: File[]) => {
    - Qui a fait quoi et quand
 
 ### Moyen Terme
+
 1. **Signature électronique**
+
    - Intégration DocuSign/HelloSign
    - Signature directement dans l'app
 
@@ -527,7 +550,9 @@ const handleUploadSignedDocument = async (files: File[]) => {
    - En-têtes personnalisés
 
 ### Long Terme
+
 1. **Comparaison avancée**
+
    - Diff visuel
    - Impact financier calculé
 
@@ -556,4 +581,3 @@ Le système de gestion des avenants est maintenant **complet et production-ready
 **Date**: 2025-12-12
 **Version**: 5.0.0 (Statuts et Documents)
 **Statut**: ✅ Production Ready
-

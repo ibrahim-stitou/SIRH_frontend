@@ -104,11 +104,7 @@ export default function ContractActions({
       )}
 
       {contract.status !== 'Brouillon' && onCreateAvenant && (
-        <Button
-          onClick={onCreateAvenant}
-          size='sm'
-          className='h-9 gap-1.5'
-        >
+        <Button onClick={onCreateAvenant} size='sm' className='h-9 gap-1.5'>
           <Plus className='h-3.5 w-3.5' /> Créer avenant
         </Button>
       )}
@@ -121,7 +117,6 @@ export default function ContractActions({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-56' sideOffset={5}>
-
           {canSendSignature && onSendSignature && (
             <DropdownMenuItem onClick={onSendSignature}>
               <Send className='mr-2 h-4 w-4' />

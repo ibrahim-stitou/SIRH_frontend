@@ -6,8 +6,22 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
@@ -41,9 +55,11 @@ import { AvenantFormSkeleton } from '@/components/custom/AvenantSkeleton';
 
 // Schema de validation pour avenant
 const avenantSchema = z.object({
-  date_effet: z.string().min(1, 'La date d\'effet est obligatoire'),
-  objet: z.string().min(10, 'L\'objet doit contenir au moins 10 caractères'),
-  motif: z.string().min(20, 'Le motif doit être explicite (min. 20 caractères)'),
+  date_effet: z.string().min(1, "La date d'effet est obligatoire"),
+  objet: z.string().min(10, "L'objet doit contenir au moins 10 caractères"),
+  motif: z
+    .string()
+    .min(20, 'Le motif doit être explicite (min. 20 caractères)'),
   type_modification: z.enum(['salary', 'schedule', 'job']),
   poste: z.string().optional(),
   department_id: z.string().optional(),
@@ -158,7 +174,8 @@ export default function EditAvenantPage() {
         );
 
         if (contractResponse.data) {
-          const contractData = contractResponse.data.data || contractResponse.data;
+          const contractData =
+            contractResponse.data.data || contractResponse.data;
           setContract(contractData);
         }
 
@@ -175,7 +192,8 @@ export default function EditAvenantPage() {
 
           const changes = avenantData.changes || {};
           let formValues: any = {
-            date_effet: avenantData.date || new Date().toISOString().split('T')[0],
+            date_effet:
+              avenantData.date || new Date().toISOString().split('T')[0],
             objet: avenantData.objet || '',
             motif: avenantData.motif || '',
             type_modification: avenantData.type_modification || 'salary',
@@ -185,21 +203,30 @@ export default function EditAvenantPage() {
           };
 
           const description = avenantData.description || '';
-          const justificationMatch = description.match(/Justification:\s*(.+?)(?:\n|$)/);
+          const justificationMatch = description.match(
+            /Justification:\s*(.+?)(?:\n|$)/
+          );
           formValues.justification = justificationMatch?.[1]?.trim() || '';
 
-          if (avenantData.type_modification === 'salary' && changes.salary?.apres) {
+          if (
+            avenantData.type_modification === 'salary' &&
+            changes.salary?.apres
+          ) {
             formValues = {
               ...formValues,
               salary_brut: changes.salary.apres.salary_brut || 0,
               salary_net: changes.salary.apres.salary_net || 0,
               currency: changes.salary.apres.currency || 'MAD',
               payment_method: changes.salary.apres.payment_method || 'Virement',
-              payment_frequency: changes.salary.apres.payment_frequency || 'Mensuel'
+              payment_frequency:
+                changes.salary.apres.payment_frequency || 'Mensuel'
             };
           }
 
-          if (avenantData.type_modification === 'schedule' && changes.schedule?.apres) {
+          if (
+            avenantData.type_modification === 'schedule' &&
+            changes.schedule?.apres
+          ) {
             formValues = {
               ...formValues,
               schedule_type: changes.schedule.apres.schedule_type || '',
@@ -228,12 +255,18 @@ export default function EditAvenantPage() {
 
         const deptResponse = await apiClient.get('/departments');
         if (deptResponse.data) {
-          setDepartments(Array.isArray(deptResponse.data) ? deptResponse.data : deptResponse.data.data || []);
+          setDepartments(
+            Array.isArray(deptResponse.data)
+              ? deptResponse.data
+              : deptResponse.data.data || []
+          );
         }
       } catch (error) {
         console.error('Error loading data:', error);
         toast.error('Erreur lors du chargement des données');
-        router.push(`/admin/contrats-mouvements/contrats/${contractId}/details?tab=documents`);
+        router.push(
+          `/admin/contrats-mouvements/contrats/${contractId}/details?tab=documents`
+        );
       } finally {
         setLoading(false);
       }
@@ -298,7 +331,9 @@ export default function EditAvenantPage() {
           },
           apres: {
             poste: data.poste,
-            department: departments.find(d => d.id.toString() === data.department_id)?.name || data.department_id,
+            department:
+              departments.find((d) => d.id.toString() === data.department_id)
+                ?.name || data.department_id,
             classification: data.classification,
             work_mode: data.work_mode
           }
@@ -329,18 +364,22 @@ export default function EditAvenantPage() {
 
       if (response.data) {
         toast.success(`Avenant N°${avenant.numero} modifié avec succès`);
-        router.push(`/admin/contrats-mouvements/contrats/${contractId}/avenants/${avenantId}`);
+        router.push(
+          `/admin/contrats-mouvements/contrats/${contractId}/avenants/${avenantId}`
+        );
       }
     } catch (error) {
       console.error('Error updating avenant:', error);
-      toast.error('Erreur lors de la modification de l\'avenant');
+      toast.error("Erreur lors de la modification de l'avenant");
     } finally {
       setSaving(false);
     }
   };
 
   const handleBack = () => {
-    router.push(`/admin/contrats-mouvements/contrats/${contractId}/avenants/${avenantId}`);
+    router.push(
+      `/admin/contrats-mouvements/contrats/${contractId}/avenants/${avenantId}`
+    );
   };
 
   if (loading) {
@@ -359,13 +398,13 @@ export default function EditAvenantPage() {
     <PageContainer scrollable={true}>
       <div className='w-full space-y-6'>
         {/* Header avec gradient */}
-        <div className='relative overflow-hidden rounded-lg border bg-gradient-to-r from-primary/10 via-primary/5 to-background p-6'>
+        <div className='from-primary/10 via-primary/5 to-background relative overflow-hidden rounded-lg border bg-gradient-to-r p-6'>
           <div className='relative z-10'>
             <div className='flex items-center justify-between'>
               <div>
-                <div className='flex items-center gap-3 mb-2'>
+                <div className='mb-2 flex items-center gap-3'>
                   <h1 className='text-3xl font-bold'>Modifier un Avenant</h1>
-                  <Badge variant='outline' className='text-base px-3 py-1'>
+                  <Badge variant='outline' className='px-3 py-1 text-base'>
                     <FileSignature className='mr-2 h-4 w-4' />
                     Avenant N°{avenant.numero}
                   </Badge>
@@ -430,8 +469,9 @@ export default function EditAvenantPage() {
             <AlertCircle className='h-4 w-4' />
             <AlertTitle>Modification Impossible</AlertTitle>
             <AlertDescription>
-              Cet avenant ne peut plus être modifié car son statut est &quot;{avenant.status}&quot;.
-              Seuls les avenants en statut &quot;Brouillon&quot; peuvent être modifiés.
+              Cet avenant ne peut plus être modifié car son statut est &quot;
+              {avenant.status}&quot;. Seuls les avenants en statut
+              &quot;Brouillon&quot; peuvent être modifiés.
             </AlertDescription>
           </Alert>
         )}
@@ -449,13 +489,19 @@ export default function EditAvenantPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className='space-y-3 text-sm'>
-                  <div className='rounded-lg bg-muted/50 p-3'>
-                    <span className='text-muted-foreground text-xs block mb-1'>Nom complet</span>
+                  <div className='bg-muted/50 rounded-lg p-3'>
+                    <span className='text-muted-foreground mb-1 block text-xs'>
+                      Nom complet
+                    </span>
                     <p className='font-semibold'>{contract.employee_name}</p>
                   </div>
-                  <div className='rounded-lg bg-muted/50 p-3'>
-                    <span className='text-muted-foreground text-xs block mb-1'>Matricule</span>
-                    <p className='font-mono text-xs font-medium'>{contract.employee_matricule}</p>
+                  <div className='bg-muted/50 rounded-lg p-3'>
+                    <span className='text-muted-foreground mb-1 block text-xs'>
+                      Matricule
+                    </span>
+                    <p className='font-mono text-xs font-medium'>
+                      {contract.employee_matricule}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -475,13 +521,19 @@ export default function EditAvenantPage() {
                   </div>
                   <Separator />
                   <div className='flex items-center justify-between'>
-                    <span className='text-muted-foreground text-xs'>Statut</span>
+                    <span className='text-muted-foreground text-xs'>
+                      Statut
+                    </span>
                     <Badge>{contract.status}</Badge>
                   </div>
                   <Separator />
                   <div>
-                    <span className='text-muted-foreground text-xs block mb-1'>Date de début</span>
-                    <p className='text-xs font-medium'>{formatDateLong(contract.dates.start_date)}</p>
+                    <span className='text-muted-foreground mb-1 block text-xs'>
+                      Date de début
+                    </span>
+                    <p className='text-xs font-medium'>
+                      {formatDateLong(contract.dates.start_date)}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -497,23 +549,34 @@ export default function EditAvenantPage() {
                 <CardContent className='space-y-3 text-xs'>
                   <div>
                     <p className='text-muted-foreground mb-1'>Poste</p>
-                    <p className='font-semibold'>{contract.job?.poste || 'N/A'}</p>
+                    <p className='font-semibold'>
+                      {contract.job?.poste || 'N/A'}
+                    </p>
                   </div>
                   <Separator />
                   <div>
                     <p className='text-muted-foreground mb-1'>Département</p>
-                    <p className='font-medium'>{contract.job?.department || 'N/A'}</p>
+                    <p className='font-medium'>
+                      {contract.job?.department || 'N/A'}
+                    </p>
                   </div>
                   <Separator />
                   <div>
                     <p className='text-muted-foreground mb-1'>Salaire Brut</p>
-                    <p className='font-mono font-bold text-purple-700'>{contract.salary?.salary_brut || 0} MAD</p>
+                    <p className='font-mono font-bold text-purple-700'>
+                      {contract.salary?.salary_brut || 0} MAD
+                    </p>
                   </div>
                   <Separator />
                   <div>
                     <p className='text-muted-foreground mb-1'>Horaire</p>
-                    <p className='font-medium'>{contract.schedule?.schedule_type || 'N/A'}</p>
-                    <p className='text-muted-foreground mt-1'>{contract.schedule?.annual_leave_days || 0} jours de congés</p>
+                    <p className='font-medium'>
+                      {contract.schedule?.schedule_type || 'N/A'}
+                    </p>
+                    <p className='text-muted-foreground mt-1'>
+                      {contract.schedule?.annual_leave_days || 0} jours de
+                      congés
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -523,12 +586,15 @@ export default function EditAvenantPage() {
           {/* Main: Formulaire (75%) */}
           <div className='xl:col-span-3'>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className='space-y-6'
+              >
                 {/* Métadonnées */}
-                <Card className='shadow-sm pt-0'>
-                  <CardHeader className='bg-purple-50 dark:bg-purple-950 pt-2'>
-                    <CardTitle className='flex items-center gap-2 text-primary dark:text-purple-400'>
-                      <Calendar className='h-5 w-5 text-primary' />
+                <Card className='pt-0 shadow-sm'>
+                  <CardHeader className='bg-purple-50 pt-2 dark:bg-purple-950'>
+                    <CardTitle className='text-primary flex items-center gap-2 dark:text-purple-400'>
+                      <Calendar className='text-primary h-5 w-5' />
                       Informations de l&apos;Avenant
                     </CardTitle>
                     <CardDescription>
@@ -548,10 +614,20 @@ export default function EditAvenantPage() {
                             </FormLabel>
                             <FormControl>
                               <DatePickerField
-                                value={field.value ? new Date(field.value) : undefined}
+                                value={
+                                  field.value
+                                    ? new Date(field.value)
+                                    : undefined
+                                }
                                 onChange={(date) => {
-                                  if (date && typeof date === 'object' && 'toISOString' in date) {
-                                    field.onChange((date as Date).toISOString().split('T')[0]);
+                                  if (
+                                    date &&
+                                    typeof date === 'object' &&
+                                    'toISOString' in date
+                                  ) {
+                                    field.onChange(
+                                      (date as Date).toISOString().split('T')[0]
+                                    );
                                   } else if (typeof date === 'string') {
                                     field.onChange(date);
                                   }
@@ -583,9 +659,15 @@ export default function EditAvenantPage() {
                                 placeholder='Sélectionner'
                                 disabled={!isEditable}
                                 options={[
-                                  { id: 'salary', label: 'Modification de Salaire' },
-                                  { id: 'schedule', label: "Modification d'Horaire" },
-                                  { id: 'job', label: 'Modification de Poste' },
+                                  {
+                                    id: 'salary',
+                                    label: 'Modification de Salaire'
+                                  },
+                                  {
+                                    id: 'schedule',
+                                    label: "Modification d'Horaire"
+                                  },
+                                  { id: 'job', label: 'Modification de Poste' }
                                 ]}
                               />
                             </FormControl>
@@ -632,7 +714,8 @@ export default function EditAvenantPage() {
                             />
                           </FormControl>
                           <FormDescription className='text-xs'>
-                            Justification administrative détaillée (minimum 20 caractères)
+                            Justification administrative détaillée (minimum 20
+                            caractères)
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -642,17 +725,35 @@ export default function EditAvenantPage() {
                 </Card>
 
                 {/* Tabs Modifications */}
-                <Tabs value={typeModification} onValueChange={(value) => form.setValue('type_modification', value as any)} className='w-full'>
-                  <TabsList className='grid w-full grid-cols-3 h-auto'>
-                    <TabsTrigger value='salary' disabled={!isEditable} className='data-[state=active]:bg-purple-500 data-[state=active]:text-white'>
+                <Tabs
+                  value={typeModification}
+                  onValueChange={(value) =>
+                    form.setValue('type_modification', value as any)
+                  }
+                  className='w-full'
+                >
+                  <TabsList className='grid h-auto w-full grid-cols-3'>
+                    <TabsTrigger
+                      value='salary'
+                      disabled={!isEditable}
+                      className='data-[state=active]:bg-purple-500 data-[state=active]:text-white'
+                    >
                       <DollarSign className='mr-2 h-4 w-4' />
                       Salaire
                     </TabsTrigger>
-                    <TabsTrigger value='schedule' disabled={!isEditable} className='data-[state=active]:bg-purple-500 data-[state=active]:text-white'>
+                    <TabsTrigger
+                      value='schedule'
+                      disabled={!isEditable}
+                      className='data-[state=active]:bg-purple-500 data-[state=active]:text-white'
+                    >
                       <Clock className='mr-2 h-4 w-4' />
                       Horaire
                     </TabsTrigger>
-                    <TabsTrigger value='job' disabled={!isEditable} className='data-[state=active]:bg-purple-500 data-[state=active]:text-white'>
+                    <TabsTrigger
+                      value='job'
+                      disabled={!isEditable}
+                      className='data-[state=active]:bg-purple-500 data-[state=active]:text-white'
+                    >
                       <Briefcase className='mr-2 h-4 w-4' />
                       Poste
                     </TabsTrigger>
@@ -660,8 +761,8 @@ export default function EditAvenantPage() {
 
                   {/* TAB: Salaire */}
                   <TabsContent value='salary' className='mt-6'>
-                    <Card className='shadow-sm border-l-4 border-l-purple-500 pt-0'>
-                      <CardHeader className='bg-purple-50 dark:bg-purple-950 pt-2'>
+                    <Card className='border-l-4 border-l-purple-500 pt-0 shadow-sm'>
+                      <CardHeader className='bg-purple-50 pt-2 dark:bg-purple-950'>
                         <CardTitle className='flex items-center gap-2 text-purple-700 dark:text-purple-400'>
                           <DollarSign className='h-5 w-5' />
                           Rémunération
@@ -677,7 +778,9 @@ export default function EditAvenantPage() {
                             name='salary_brut'
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className='text-base'>Salaire Brut (MAD) *</FormLabel>
+                                <FormLabel className='text-base'>
+                                  Salaire Brut (MAD) *
+                                </FormLabel>
                                 <FormControl>
                                   <Input
                                     type='number'
@@ -685,12 +788,18 @@ export default function EditAvenantPage() {
                                     className='text-base font-semibold'
                                     disabled={!isEditable}
                                     {...field}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                    onChange={(e) =>
+                                      field.onChange(parseFloat(e.target.value))
+                                    }
                                   />
                                 </FormControl>
                                 <FormDescription className='flex items-center gap-2 text-xs'>
-                                  <span className='text-muted-foreground'>Actuel:</span>
-                                  <span className='font-mono font-bold text-purple-700'>{contract.salary?.salary_net || 0} MAD</span>
+                                  <span className='text-muted-foreground'>
+                                    Actuel:
+                                  </span>
+                                  <span className='font-mono font-bold text-purple-700'>
+                                    {contract.salary?.salary_net || 0} MAD
+                                  </span>
                                 </FormDescription>
                                 <FormMessage />
                               </FormItem>
@@ -725,7 +834,11 @@ export default function EditAvenantPage() {
                               <FormItem>
                                 <FormLabel>Devise</FormLabel>
                                 <FormControl>
-                                  <Input {...field} placeholder='MAD' disabled={!isEditable} />
+                                  <Input
+                                    {...field}
+                                    placeholder='MAD'
+                                    disabled={!isEditable}
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -738,8 +851,8 @@ export default function EditAvenantPage() {
 
                   {/* TAB: Horaire */}
                   <TabsContent value='schedule' className='mt-6'>
-                    <Card className='shadow-sm border-l-4 border-l-purple-500 pt-0'>
-                      <CardHeader className='bg-purple-50 dark:bg-purple-950 pt-2'>
+                    <Card className='border-l-4 border-l-purple-500 pt-0 shadow-sm'>
+                      <CardHeader className='bg-purple-50 pt-2 dark:bg-purple-950'>
                         <CardTitle className='flex items-center gap-2 text-purple-700 dark:text-purple-400'>
                           <Clock className='h-5 w-5' />
                           Temps de Travail
@@ -755,7 +868,9 @@ export default function EditAvenantPage() {
                             name='schedule_type'
                             render={() => (
                               <FormItem>
-                                <FormLabel className='text-base'>Type d&apos;Horaire *</FormLabel>
+                                <FormLabel className='text-base'>
+                                  Type d&apos;Horaire *
+                                </FormLabel>
                                 <FormControl>
                                   <SelectField
                                     control={form.control}
@@ -768,8 +883,12 @@ export default function EditAvenantPage() {
                                   />
                                 </FormControl>
                                 <FormDescription className='flex items-center gap-2 text-xs'>
-                                  <span className='text-muted-foreground'>Actuel:</span>
-                                  <span className='font-medium'>{contract.schedule?.schedule_type || 'N/A'}</span>
+                                  <span className='text-muted-foreground'>
+                                    Actuel:
+                                  </span>
+                                  <span className='font-medium'>
+                                    {contract.schedule?.schedule_type || 'N/A'}
+                                  </span>
                                 </FormDescription>
                                 <FormMessage />
                               </FormItem>
@@ -810,12 +929,19 @@ export default function EditAvenantPage() {
                                     placeholder='22'
                                     disabled={!isEditable}
                                     {...field}
-                                    onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                    onChange={(e) =>
+                                      field.onChange(parseFloat(e.target.value))
+                                    }
                                   />
                                 </FormControl>
                                 <FormDescription className='flex items-center gap-2 text-xs'>
-                                  <span className='text-muted-foreground'>Actuel:</span>
-                                  <span className='font-medium'>{contract.schedule?.annual_leave_days || 0} jours</span>
+                                  <span className='text-muted-foreground'>
+                                    Actuel:
+                                  </span>
+                                  <span className='font-medium'>
+                                    {contract.schedule?.annual_leave_days || 0}{' '}
+                                    jours
+                                  </span>
                                 </FormDescription>
                                 <FormMessage />
                               </FormItem>
@@ -846,8 +972,8 @@ export default function EditAvenantPage() {
 
                   {/* TAB: Poste */}
                   <TabsContent value='job' className='mt-6'>
-                    <Card className='shadow-sm border-l-4 border-l-purple-500 pt-0'>
-                      <CardHeader className='bg-purple-50 dark:bg-purple-950 pt-2'>
+                    <Card className='border-l-4 border-l-purple-500 pt-0 shadow-sm'>
+                      <CardHeader className='bg-purple-50 pt-2 dark:bg-purple-950'>
                         <CardTitle className='flex items-center gap-2 text-purple-700 dark:text-purple-400'>
                           <Briefcase className='h-5 w-5' />
                           Poste et Fonction
@@ -863,13 +989,24 @@ export default function EditAvenantPage() {
                             name='poste'
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className='text-base'>Intitulé du Poste *</FormLabel>
+                                <FormLabel className='text-base'>
+                                  Intitulé du Poste *
+                                </FormLabel>
                                 <FormControl>
-                                  <Input {...field} placeholder='Ex: Senior Developer' className='text-base' disabled={!isEditable} />
+                                  <Input
+                                    {...field}
+                                    placeholder='Ex: Senior Developer'
+                                    className='text-base'
+                                    disabled={!isEditable}
+                                  />
                                 </FormControl>
                                 <FormDescription className='flex items-center gap-2 text-xs'>
-                                  <span className='text-muted-foreground'>Actuel:</span>
-                                  <span className='font-medium'>{contract.job?.poste || 'N/A'}</span>
+                                  <span className='text-muted-foreground'>
+                                    Actuel:
+                                  </span>
+                                  <span className='font-medium'>
+                                    {contract.job?.poste || 'N/A'}
+                                  </span>
                                 </FormDescription>
                                 <FormMessage />
                               </FormItem>
@@ -893,15 +1030,19 @@ export default function EditAvenantPage() {
                                     displayField='label'
                                     placeholder='Sélectionner un département'
                                     disabled={!isEditable}
-                                    options={departments.map(dept => ({
+                                    options={departments.map((dept) => ({
                                       id: dept.id.toString(),
                                       label: dept.name
                                     }))}
                                   />
                                 </FormControl>
                                 <FormDescription className='flex items-center gap-2 text-xs'>
-                                  <span className='text-muted-foreground'>Actuel:</span>
-                                  <span className='font-medium'>{contract.job?.department || 'N/A'}</span>
+                                  <span className='text-muted-foreground'>
+                                    Actuel:
+                                  </span>
+                                  <span className='font-medium'>
+                                    {contract.job?.department || 'N/A'}
+                                  </span>
                                 </FormDescription>
                                 <FormMessage />
                               </FormItem>
@@ -915,7 +1056,11 @@ export default function EditAvenantPage() {
                               <FormItem>
                                 <FormLabel>Métier</FormLabel>
                                 <FormControl>
-                                  <Input {...field} placeholder='Ex: Informatique' disabled={!isEditable} />
+                                  <Input
+                                    {...field}
+                                    placeholder='Ex: Informatique'
+                                    disabled={!isEditable}
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -929,7 +1074,11 @@ export default function EditAvenantPage() {
                               <FormItem>
                                 <FormLabel>Emploi</FormLabel>
                                 <FormControl>
-                                  <Input {...field} placeholder='Ex: Développeur' disabled={!isEditable} />
+                                  <Input
+                                    {...field}
+                                    placeholder='Ex: Développeur'
+                                    disabled={!isEditable}
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -964,11 +1113,19 @@ export default function EditAvenantPage() {
                               <FormItem>
                                 <FormLabel>Classification</FormLabel>
                                 <FormControl>
-                                  <Input {...field} placeholder='Ex: Niveau 5 - Échelon 2' disabled={!isEditable} />
+                                  <Input
+                                    {...field}
+                                    placeholder='Ex: Niveau 5 - Échelon 2'
+                                    disabled={!isEditable}
+                                  />
                                 </FormControl>
                                 <FormDescription className='flex items-center gap-2 text-xs'>
-                                  <span className='text-muted-foreground'>Actuel:</span>
-                                  <span className='font-medium'>{contract.job?.classification || 'N/A'}</span>
+                                  <span className='text-muted-foreground'>
+                                    Actuel:
+                                  </span>
+                                  <span className='font-medium'>
+                                    {contract.job?.classification || 'N/A'}
+                                  </span>
                                 </FormDescription>
                                 <FormMessage />
                               </FormItem>
@@ -982,7 +1139,11 @@ export default function EditAvenantPage() {
                               <FormItem className='lg:col-span-2'>
                                 <FormLabel>Lieu de Travail</FormLabel>
                                 <FormControl>
-                                  <Input {...field} placeholder='Ex: Casablanca, Maroc' disabled={!isEditable} />
+                                  <Input
+                                    {...field}
+                                    placeholder='Ex: Casablanca, Maroc'
+                                    disabled={!isEditable}
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -1014,11 +1175,14 @@ export default function EditAvenantPage() {
                 </Tabs>
 
                 {/* Justification */}
-                <Card className='shadow-sm border-t-4 border-t-yellow-500 pt-0'>
-                  <CardHeader className='bg-yellow-50 dark:bg-yellow-950 pt-2'>
-                    <CardTitle className='text-yellow-700 dark:text-yellow-400'>Justification Détaillée *</CardTitle>
+                <Card className='border-t-4 border-t-yellow-500 pt-0 shadow-sm'>
+                  <CardHeader className='bg-yellow-50 pt-2 dark:bg-yellow-950'>
+                    <CardTitle className='text-yellow-700 dark:text-yellow-400'>
+                      Justification Détaillée *
+                    </CardTitle>
                     <CardDescription>
-                      Justification complète et explicite de la modification (obligatoire)
+                      Justification complète et explicite de la modification
+                      (obligatoire)
                     </CardDescription>
                   </CardHeader>
                   <CardContent className='pt-6'>
@@ -1036,7 +1200,8 @@ export default function EditAvenantPage() {
                             />
                           </FormControl>
                           <FormDescription className='text-xs'>
-                            Minimum 20 caractères requis - Soyez précis et exhaustif
+                            Minimum 20 caractères requis - Soyez précis et
+                            exhaustif
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -1050,7 +1215,8 @@ export default function EditAvenantPage() {
                   <CardHeader>
                     <CardTitle>Workflow de Validation</CardTitle>
                     <CardDescription>
-                      Définir le circuit d&apos;approbation requis pour cet avenant
+                      Définir le circuit d&apos;approbation requis pour cet
+                      avenant
                     </CardDescription>
                   </CardHeader>
                   <CardContent className='space-y-4'>
@@ -1058,7 +1224,7 @@ export default function EditAvenantPage() {
                       control={form.control}
                       name='validation_manager'
                       render={({ field }) => (
-                        <FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-lg border-2 border-dashed p-4 transition-colors hover:border-primary'>
+                        <FormItem className='hover:border-primary flex flex-row items-start space-y-0 space-x-3 rounded-lg border-2 border-dashed p-4 transition-colors'>
                           <FormControl>
                             <Checkbox
                               checked={field.value}
@@ -1071,7 +1237,8 @@ export default function EditAvenantPage() {
                               Validation du manager requise
                             </FormLabel>
                             <FormDescription>
-                              L&apos;avenant nécessite l&apos;approbation du manager direct de l&apos;employé
+                              L&apos;avenant nécessite l&apos;approbation du
+                              manager direct de l&apos;employé
                             </FormDescription>
                           </div>
                         </FormItem>
@@ -1082,7 +1249,7 @@ export default function EditAvenantPage() {
                       control={form.control}
                       name='validation_rh'
                       render={({ field }) => (
-                        <FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-lg border-2 border-dashed p-4 transition-colors hover:border-primary'>
+                        <FormItem className='hover:border-primary flex flex-row items-start space-y-0 space-x-3 rounded-lg border-2 border-dashed p-4 transition-colors'>
                           <FormControl>
                             <Checkbox
                               checked={field.value}
@@ -1095,7 +1262,8 @@ export default function EditAvenantPage() {
                               Validation RH requise
                             </FormLabel>
                             <FormDescription>
-                              L&apos;avenant nécessite l&apos;approbation du service des Ressources Humaines
+                              L&apos;avenant nécessite l&apos;approbation du
+                              service des Ressources Humaines
                             </FormDescription>
                           </div>
                         </FormItem>

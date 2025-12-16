@@ -13,7 +13,9 @@ module.exports = function registerEmployeeRoutes(server, db) {
       all = all.filter((emp) => {
         const fieldVal = emp[key];
         if (fieldVal === undefined || fieldVal === null) return false;
-        return String(fieldVal).toLowerCase().includes(String(value).toLowerCase());
+        return String(fieldVal)
+          .toLowerCase()
+          .includes(String(value).toLowerCase());
       });
     });
 
@@ -29,21 +31,33 @@ module.exports = function registerEmployeeRoutes(server, db) {
         if (typeof av === 'number' && typeof bv === 'number') {
           return sortDir === 'asc' ? av - bv : bv - av;
         }
-        return sortDir === 'asc' ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
+        return sortDir === 'asc'
+          ? String(av).localeCompare(String(bv))
+          : String(bv).localeCompare(String(av));
       });
     }
 
     const recordsTotal = db.get('hrEmployees').value()?.length || 0;
-    const sliced = all.slice(start, start + length).map((row) => ({ ...row, actions: 1 }));
+    const sliced = all
+      .slice(start, start + length)
+      .map((row) => ({ ...row, actions: 1 }));
 
-    return res.json({ status: 'success', message: 'Liste des employés récupérée avec succès', data: sliced, recordsTotal, recordsFiltered });
+    return res.json({
+      status: 'success',
+      message: 'Liste des employés récupérée avec succès',
+      data: sliced,
+      recordsTotal,
+      recordsFiltered
+    });
   });
 
   server.delete('/hrEmployees/:id', (req, res) => {
     const id = parseInt(req.params.id, 10);
     const exists = db.get('hrEmployees').find({ id }).value();
     if (!exists) {
-      return res.status(404).json({ status: 'error', message: 'Employé introuvable' });
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Employé introuvable' });
     }
     db.get('hrEmployees').remove({ id }).write();
     return res.json({ status: 'success', message: `Employé #${id} supprimé` });
@@ -51,8 +65,48 @@ module.exports = function registerEmployeeRoutes(server, db) {
 
   server.get('/hrEmployees/simple-list', (req, res) => {
     const all = db.get('hrEmployees').value() || [];
-    const simple = all.map((e) => ({ id: e.id, firstName: e.firstName, lastName: e.lastName, matricule: e.matricule }));
+    const simple = all.map((e) => ({
+      id: e.id,
+      firstName: e.firstName,
+      lastName: e.lastName,
+      matricule: e.matricule
+    }));
     return res.json({ status: 'success', data: simple });
   });
-}
 
+  // New: managers simple list
+  server.get('/hrEmployees/managers/simple-list', (req, res) => {
+    const all = db.get('hrEmployees').value() || [];
+    const managers = all.filter((e) => {
+      const tags = Array.isArray(e.tags)
+        ? e.tags.map((t) => String(t).toLowerCase())
+        : [];
+      const hasMgmtTag = tags.some(
+        (t) => t.includes('management') || t.includes('manager')
+      );
+      const titles = []
+        .concat(e.position || [])
+        .concat(e.jobTitle || [])
+        .concat(e.notes || [])
+        .concat(
+          Array.isArray(e.experiences)
+            ? e.experiences.map((ex) => ex.title || '')
+            : []
+        )
+        .map((s) => String(s).toLowerCase());
+      const hasMgrTitle = titles.some(
+        (s) =>
+          s.includes('manager') || s.includes('gestion') || s.includes('chef')
+      );
+      return hasMgmtTag || hasMgrTitle;
+    });
+    const simple = managers.map((e) => ({
+      id: e.id,
+      firstName: e.firstName,
+      lastName: e.lastName,
+      matricule: e.matricule,
+      email: e.email
+    }));
+    return res.json({ status: 'success', data: simple });
+  });
+};

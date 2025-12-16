@@ -52,6 +52,12 @@ interface AvenantRow {
   // Informations du contrat (pour affichage)
   contract_reference?: string;
   employee_name?: string;
+  // Ajouts selon structure souhaitée
+  validations?: {
+    manager: boolean;
+    rh: boolean;
+  };
+  notes?: string;
 }
 
 export function AvenantsListing() {
@@ -196,16 +202,37 @@ export function AvenantsListing() {
       sortable: true,
       render: (v) => {
         const typeLabels: Record<string, { label: string; color: string }> = {
-          salary: { label: 'Salaire', color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' },
-          schedule: { label: 'Horaire', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' },
-          job: { label: 'Poste', color: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300' },
-          complete: { label: 'Complet', color: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300' }
+          salary: {
+            label: 'Salaire',
+            color:
+              'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+          },
+          schedule: {
+            label: 'Horaire',
+            color:
+              'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
+          },
+          job: {
+            label: 'Poste',
+            color:
+              'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300'
+          },
+          complete: {
+            label: 'Complet',
+            color:
+              'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300'
+          }
         };
 
-        const type = typeLabels[v || 'salary'] || { label: v || 'N/A', color: 'bg-gray-100 text-gray-800' };
+        const type = typeLabels[v || 'salary'] || {
+          label: v || 'N/A',
+          color: 'bg-gray-100 text-gray-800'
+        };
 
         return (
-          <span className={`rounded-md px-2 py-1 text-xs font-medium ${type.color}`}>
+          <span
+            className={`rounded-md px-2 py-1 text-xs font-medium ${type.color}`}
+          >
             {type.label}
           </span>
         );
@@ -213,7 +240,7 @@ export function AvenantsListing() {
     },
     {
       data: 'date',
-      label: 'Date d\'effet',
+      label: "Date d'effet",
       sortable: true,
       render: (v) => (
         <div className='text-sm'>
@@ -286,7 +313,7 @@ export function AvenantsListing() {
       label: 'Créé le',
       sortable: true,
       render: (v) => (
-        <div className='text-xs text-muted-foreground'>
+        <div className='text-muted-foreground text-xs'>
           {new Date(v).toLocaleDateString('fr-FR', {
             day: '2-digit',
             month: 'short',
@@ -416,32 +443,29 @@ export function AvenantsListing() {
 
   return (
     <>
+      <div className='flex flex-1 flex-col space-y-4'>
+        <CustomTable<AvenantRow>
+          url={apiRoutes.admin.contratsEtMovements.avenants.list}
+          columns={columns}
+          filters={filterConfig}
+          onInit={(instance: any) => setTableInstance(instance)}
+        />
 
-        <div className='flex flex-1 flex-col space-y-4'>
-      <CustomTable<AvenantRow>
-        url={apiRoutes.admin.contratsEtMovements.avenants.list}
-        columns={columns}
-        filters={filterConfig}
-        onInit={(instance: any) => setTableInstance(instance)}
-      />
-
-      {/* Delete Confirmation Dialog */}
-      <CustomAlertDialog
-        title='Confirmer la suppression'
-        description={
-          selectedAvenant
-            ? `Êtes-vous sûr de vouloir supprimer l'avenant N°${selectedAvenant.numero} ? Cette action est irréversible.`
-            : ''
-        }
-        confirmText='Supprimer'
-        cancelText='Annuler'
-        onConfirm={handleConfirmDelete}
-        open={openDeleteModal}
-        setOpen={setOpenDeleteModal}
-      />
-
+        {/* Delete Confirmation Dialog */}
+        <CustomAlertDialog
+          title='Confirmer la suppression'
+          description={
+            selectedAvenant
+              ? `Êtes-vous sûr de vouloir supprimer l'avenant N°${selectedAvenant.numero} ? Cette action est irréversible.`
+              : ''
+          }
+          confirmText='Supprimer'
+          cancelText='Annuler'
+          onConfirm={handleConfirmDelete}
+          open={openDeleteModal}
+          setOpen={setOpenDeleteModal}
+        />
       </div>
     </>
   );
 }
-

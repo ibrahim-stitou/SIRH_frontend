@@ -27,9 +27,24 @@
     "language": "Langue"
   },
   "common": {
+    "validation": {
+      "required": "Ce champ est requis",
+      "invalidEmail": "Adresse email invalide",
+      "minLength": "La longueur minimale est de {{count}} caractères",
+      "maxLength": "La longueur maximale est de {{count}} caractères",
+      "passwordsMismatch": "Les mots de passe ne correspondent pas",
+      "invalidDate": "Date invalide"
+    },
     "next": "Suivant",
     "optional": "Optionnel",
+    "confirmDelete": "Confirmer la suppression",
+    "selected": "Sélectionné",
+    "select": "Sélectionner",
+    "list": "Liste",
+    "addNew": "Ajouter nouveau",
+    "manager": "Manager",
     "groups": "Groupes",
+    "created": "Créé",
     "months": {
       "1": "Janvier",
       "2": "Février",
@@ -733,6 +748,7 @@
   "headquarters": {
     "title": "Sièges",
     "add": "Ajouter un siège",
+    "subtitle": "Gérez les sièges de l'entreprise et leurs groupes associés",
     "details": "Détails du siège",
     "name": "Nom",
     "code": "Code",
@@ -742,16 +758,16 @@
     "groupsCount": "Groupes",
     "updatedAt": "Dernière mise à jour",
     "create": {
-        "title": "Créer un siège",
-        "fields": {
-            "name": "Nom du siège",
-            "code": "Code du siège",
-            "address": "Adresse",
-            "city": "Ville",
-            "country": "Pays",
-            "phone": "Téléphone",
-            "email": "Email"
-        },
+      "title": "Créer un siège",
+      "fields": {
+        "name": "Nom du siège",
+        "code": "Code du siège",
+        "address": "Adresse",
+        "city": "Ville",
+        "country": "Pays",
+        "phone": "Téléphone",
+        "email": "Email"
+      },
       "subtitle": "Renseignez les informations du siège"
     },
     "dialog": {
