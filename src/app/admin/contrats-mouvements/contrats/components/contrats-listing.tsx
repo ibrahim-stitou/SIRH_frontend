@@ -1,14 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import {
-  Eye,
-  Download,
-  CheckCircle,
-  Trash2,
-  FileEdit,
-  Plus
-} from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Eye, Trash2, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -27,8 +20,6 @@ import {
 import { apiRoutes } from '@/config/apiRoutes';
 import apiClient from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
-import { downloadContractPDF } from '@/lib/pdf/contract-generator';
-import type { Contract } from '@/types/contract';
 
 // Row type mapped for CustomTable consumption
 interface ContractRow {
@@ -79,9 +70,50 @@ interface ContractRow {
   actions?: number;
 }
 
+type SelectOption = { label: string; value: string };
+
 export function ContratsListing() {
   const router = useRouter();
   const { t } = useLanguage();
+  const [employeeOptions, setEmployeeOptions] = useState<SelectOption[]>([]);
+  const [departmentOptions, setDepartmentOptions] = useState<SelectOption[]>([]);
+  const [typeOptions] = useState<SelectOption[]>([
+    { label: 'CDI', value: 'CDI' },
+    { label: 'CDD', value: 'CDD' },
+    { label: 'Stage', value: 'Stage' },
+    { label: 'Intérim', value: 'Intérim' },
+    { label: 'Apprentissage', value: 'Apprentissage' },
+    { label: 'Autre', value: 'Autre' }
+  ]);
+  const [statusOptions] = useState<SelectOption[]>([
+    { label: t('contracts.status.BROUILLON'), value: 'Brouillon' },
+    { label: t('contracts.status.ACTIF'), value: 'Actif' },
+    { label: "Période d'essai", value: 'Periode_essai' },
+    { label: 'En attente signature', value: 'En_attente_signature' },
+    { label: t('contracts.status.TERMINE'), value: 'Termine' },
+    { label: 'Résilié', value: 'Resilie' },
+    { label: t('contracts.status.ANNULE'), value: 'Annule' }
+  ]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const empResp = await apiClient.get(apiRoutes.admin.employees.simpleList);
+        const empData = Array.isArray(empResp?.data?.data) ? empResp.data.data : empResp.data;
+        const opts: SelectOption[] = (empData || []).map((e: any) => ({
+          label: `${e.firstName} ${e.lastName}${e.matricule ? ` (${e.matricule})` : ''}`,
+          value: e.matricule || e.id // filter by matricule or id fallback
+        }));
+        setEmployeeOptions(opts);
+      } catch {}
+      try {
+        const depResp = await apiClient.get(apiRoutes.admin.departments.simpleList);
+        const depData = Array.isArray(depResp?.data?.data) ? depResp.data.data : depResp.data;
+        const dOpts: SelectOption[] = (depData || []).map((d: any) => ({ label: d.name, value: d.name }));
+        setDepartmentOptions(dOpts);
+      } catch {}
+    })();
+  }, [t]);
   const [tableInstance, setTableInstance] = useState<Partial<
     UseTableReturn<ContractRow>
   > | null>(null);
@@ -120,48 +152,6 @@ export function ContratsListing() {
     }
     setOpenDeleteModal(false);
     setSelectedContract(null);
-  };
-
-  const handleValidate = async (row: ContractRow) => {
-    const currentStatus = row.status || row.statut;
-    if (currentStatus !== 'Brouillon') {
-      toast.error(t('contracts.messages.onlyDraftCanBeModified'));
-      return;
-    }
-    try {
-      const response = await apiClient.post(
-        apiRoutes.admin.contratsEtMovements.contrats.validate(row.id)
-      );
-      const data = response.data;
-      if (data?.status === 'success' || response.status === 200) {
-        toast.success(t('contracts.messages.validateSuccess'));
-        if (tableInstance?.refresh) tableInstance.refresh();
-      } else {
-        toast.error(data?.message || t('contracts.messages.error'));
-      }
-    } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.message || t('contracts.messages.error');
-      toast.error(`${t('common.error')}: ${errorMessage}`);
-    }
-  };
-
-  const handleGeneratePDF = async (row: ContractRow) => {
-    try {
-      const response = await apiClient.get(
-        apiRoutes.admin.contratsEtMovements.contrats.show(row.id)
-      );
-      const data = response.data;
-      const contract: Contract = data?.data || data; // fallback for json-server
-      if (contract) {
-        downloadContractPDF(contract);
-        toast.success(t('contracts.messages.pdfGenerated'));
-      }
-    } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.message || t('contracts.messages.error');
-      toast.error(`${t('common.error')}: ${errorMessage}`);
-    }
   };
 
   const columns: CustomTableColumn<ContractRow>[] = [
@@ -371,14 +361,10 @@ export function ContratsListing() {
   ];
 
   const filters: CustomTableFilterConfig[] = [
-    { field: 'employee', label: t('contracts.fields.employee'), type: 'text' },
-    { field: 'type_contrat', label: t('contracts.fields.type'), type: 'text' },
-    { field: 'statut', label: t('contracts.fields.status'), type: 'text' },
-    {
-      field: 'departement',
-      label: t('contracts.fields.department'),
-      type: 'text'
-    }
+    { field: 'employee_matricule', label: t('contracts.fields.employee'), type: 'select', options: employeeOptions },
+    { field: 'type_contrat', label: t('contracts.fields.type'), type: 'select', options: typeOptions },
+    { field: 'statut', label: t('contracts.fields.status'), type: 'select', options: statusOptions },
+    { field: 'departement', label: t('contracts.fields.department'), type: 'select', options: departmentOptions }
   ];
 
   return (

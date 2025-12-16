@@ -10,7 +10,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SelectField } from '@/components/custom/SelectField';
 import { useForm } from 'react-hook-form';
-import { ChevronDown, ChevronRight, FileText, Calendar, UserSquare2, ClipboardList, Briefcase, Building2, Users, WandSparkles } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronRight,
+  FileText,
+  Calendar,
+  UserSquare2,
+  ClipboardList,
+  Briefcase,
+  Building2,
+  Users,
+  WandSparkles,
+  List
+} from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
@@ -185,9 +197,16 @@ export default function EmployeHistory({ employeeId }: { employeeId: number }) {
     <Card className='border-border/70'>
       <CardHeader className='py-3'>
         <div className='flex items-center justify-between gap-3'>
-          <div>
-            <CardTitle className='text-lg'>Mouvements & Historique</CardTitle>
-            <CardDescription>Timeline des événements et tableau des modifications</CardDescription>
+          <div className='flex items-center gap-3'>
+            <div className='bg-primary/10 flex h-10 w-10 items-center justify-center rounded-lg'>
+              <List className='text-primary h-5 w-5' />
+            </div>
+            <div>
+              <h3 className='text-lg font-semibold'>Mouvements & Historique</h3>
+              <p className='text-muted-foreground text-xs'>
+                Timeline des événements et tableau des modifications
+              </p>
+            </div>
           </div>
           <div className='flex items-center gap-2'>
             {/* Filters */}

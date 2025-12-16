@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Eye,
   Download,
@@ -24,7 +24,8 @@ import CustomAlertDialog from '@/components/custom/customAlert';
 import CustomTable from '@/components/custom/data-table/custom-table';
 import {
   CustomTableColumn,
-  UseTableReturn
+  UseTableReturn,
+  CustomTableFilterConfig
 } from '@/components/custom/data-table/types';
 import { apiRoutes } from '@/config/apiRoutes';
 import apiClient from '@/lib/api';
@@ -49,10 +50,8 @@ interface AvenantRow {
   };
   created_at: string;
   created_by: string;
-  // Informations du contrat (pour affichage)
   contract_reference?: string;
   employee_name?: string;
-  // Ajouts selon structure souhaitée
   validations?: {
     manager: boolean;
     rh: boolean;
@@ -62,6 +61,17 @@ interface AvenantRow {
 
 export function AvenantsListing() {
   const router = useRouter();
+  const [statusOptions, setStatusOptions] = useState<Array<{ label: string; value: string }>>([
+    { label: 'Valide', value: 'Valide' },
+    { label: 'Brouillon', value: 'Brouillon' }
+  ]);
+  const [typeOptions, setTypeOptions] = useState<Array<{ label: string; value: string }>>([
+    { label: 'Salaire', value: 'salary' },
+    { label: 'Horaire', value: 'schedule' },
+    { label: 'Poste', value: 'job' },
+    { label: 'Complet', value: 'complete' }
+  ]);
+  const [contractOptions, setContractOptions] = useState<Array<{ label: string; value: string }>>([]);
   const [tableInstance, setTableInstance] = useState<Partial<
     UseTableReturn<AvenantRow>
   > | null>(null);
@@ -327,14 +337,13 @@ export function AvenantsListing() {
       label: 'Actions',
       sortable: false,
       render: (_value, row) => (
-        <div className='flex items-center gap-1'>
+        <div className='flex items-center space-x-2'>
           {/* Voir détails */}
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant='ghost'
-                size='icon'
-                className='h-8 w-8'
+                variant='outline'
+                className='h-8 w-8 p-1.5'
                 onClick={() => handleViewDetails(row)}
               >
                 <Eye className='h-4 w-4' />
@@ -347,9 +356,8 @@ export function AvenantsListing() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant='ghost'
-                size='icon'
-                className='h-8 w-8'
+                variant='outline'
+                className='h-8 w-8 p-1.5'
                 onClick={() => handleViewContract(row)}
               >
                 <FileText className='h-4 w-4' />
@@ -363,9 +371,8 @@ export function AvenantsListing() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant='ghost'
-                  size='icon'
-                  className='h-8 w-8'
+                  variant='outline'
+                  className='h-8 w-8 p-1.5'
                   onClick={() => handleGeneratePDF(row)}
                 >
                   <Download className='h-4 w-4' />
@@ -380,9 +387,8 @@ export function AvenantsListing() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant='ghost'
-                  size='icon'
-                  className='h-8 w-8 text-green-600 hover:bg-green-50 hover:text-green-700'
+                  variant='outline'
+                  className='h-8 w-8 p-1.5 text-green-600 hover:bg-green-50 hover:text-green-700'
                   onClick={() => handleValidate(row)}
                 >
                   <CheckCircle2 className='h-4 w-4' />
@@ -397,9 +403,8 @@ export function AvenantsListing() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant='ghost'
-                  size='icon'
-                  className='h-8 w-8'
+                  variant='outline'
+                  className='h-8 w-8 p-1.5'
                   onClick={() =>
                     router.push(
                       `/admin/contrats-mouvements/contrats/${row.contract_id}/avenants/${row.id}/edit`
@@ -418,9 +423,8 @@ export function AvenantsListing() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant='ghost'
-                  size='icon'
-                  className='h-8 w-8 text-red-600 hover:bg-red-50 hover:text-red-700'
+                  variant='outline'
+                  className='h-8 w-8 p-1.5 text-red-600 hover:bg-red-50 hover:text-red-700'
                   onClick={() => handleDelete(row)}
                 >
                   <Trash2 className='h-4 w-4' />
@@ -434,11 +438,50 @@ export function AvenantsListing() {
     }
   ];
 
-  const filterConfig = [
-    { field: 'status', label: 'Statut', type: 'text' as const },
-    { field: 'type_modification', label: 'Type', type: 'text' as const },
-    { field: 'contract_reference', label: 'Contrat', type: 'text' as const },
-    { field: 'objet', label: 'Objet', type: 'text' as const }
+  // Build dynamic options from current avenants dataset
+  useEffect(() => {
+    (async () => {
+      try {
+        const resp = await apiClient.get(apiRoutes.admin.contratsEtMovements.avenants.list);
+        const data = Array.isArray(resp?.data?.data) ? resp.data.data : (resp.data?.data ?? resp.data ?? []);
+        const contracts = new Map<string, string>();
+        const types = new Set<string>();
+        const statuses = new Set<string>();
+        (data || []).forEach((row: any) => {
+          const ref = row.contract_reference || row.contract_id;
+          if (ref) contracts.set(String(ref), String(ref));
+          if (row.type_modification) types.add(String(row.type_modification));
+          if (row.status) statuses.add(String(row.status));
+        });
+        if (contracts.size > 0) {
+          setContractOptions(Array.from(contracts.keys()).map((k) => ({ label: k, value: k })));
+        }
+        if (types.size > 0) {
+          // merge with defaults, preserve labels if known
+          const knownMap: Record<string, string> = {
+            salary: 'Salaire',
+            schedule: 'Horaire',
+            job: 'Poste',
+            complete: 'Complet'
+          };
+          setTypeOptions(
+            Array.from(types.values()).map((v) => ({ label: knownMap[v] || v, value: v }))
+          );
+        }
+        if (statuses.size > 0) {
+          setStatusOptions(Array.from(statuses.values()).map((s) => ({ label: s, value: s })));
+        }
+      } catch {
+        // keep defaults
+      }
+    })();
+  }, []);
+
+  const filterConfig: CustomTableFilterConfig[] = [
+    { field: 'status', label: 'Statut', type: 'select', options: statusOptions },
+    { field: 'type_modification', label: 'Type', type: 'select', options: typeOptions },
+    { field: 'contract_reference', label: 'Contrat', type: 'select', options: contractOptions },
+    { field: 'objet', label: 'Objet', type: 'text' }
   ];
 
   return (
