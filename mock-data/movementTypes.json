@@ -1,0 +1,10 @@
+[
+  { "code": "creation", "label": "Création", "icon": "wand" },
+  { "code": "contrat", "label": "Contrat", "icon": "file" },
+  { "code": "avenant", "label": "Avenant", "icon": "clipboard" },
+  { "code": "poste", "label": "Poste", "icon": "briefcase" },
+  { "code": "groupe", "label": "Groupe", "icon": "users" },
+  { "code": "siege", "label": "Siège", "icon": "building" },
+  { "code": "cadre", "label": "Cadre", "icon": "user-square" }
+]
+

@@ -1,0 +1,87 @@
+[
+  {
+    "id": "eh-1000-001",
+    "employeeId": 1000,
+    "type": "creation",
+    "title": "Création d\u2019employé",
+    "description": "Employé ajouté au système",
+    "oldValue": null,
+    "newValue": null,
+    "ref": null,
+    "createdAt": "2025-01-15T08:00:00Z",
+    "updatedAt": "2025-01-15T08:00:00Z"
+  },
+  {
+    "id": "eh-1000-002",
+    "employeeId": 1000,
+    "type": "contrat",
+    "title": "Contrat CDI",
+    "description": "Contrat initial signé",
+    "oldValue": null,
+    "newValue": "CDI",
+    "ref": "CTR-1000-01",
+    "createdAt": "2025-01-16T09:00:00Z",
+    "updatedAt": "2025-01-16T09:00:00Z"
+  },
+  {
+    "id": "eh-1000-003",
+    "employeeId": 1000,
+    "type": "avenant",
+    "title": "Avenant 1",
+    "description": "Changement de salaire",
+    "oldValue": "Salaire: 25000",
+    "newValue": "Salaire: 27000",
+    "ref": "AVN-1000-01",
+    "createdAt": "2025-02-01T10:00:00Z",
+    "updatedAt": "2025-02-01T10:00:00Z"
+  },
+  {
+    "id": "eh-1000-004",
+    "employeeId": 1000,
+    "type": "poste",
+    "title": "Modification poste",
+    "description": "Changement de poste",
+    "oldValue": "Chef de projet",
+    "newValue": "Responsable RH",
+    "ref": null,
+    "createdAt": "2025-03-10T11:00:00Z",
+    "updatedAt": "2025-03-10T11:00:00Z"
+  },
+  {
+    "id": "eh-1000-005",
+    "employeeId": 1000,
+    "type": "groupe",
+    "title": "Modification groupe",
+    "description": "Passage du groupe A au groupe B",
+    "oldValue": "Groupe A",
+    "newValue": "Groupe B",
+    "ref": null,
+    "createdAt": "2025-04-05T12:00:00Z",
+    "updatedAt": "2025-04-05T12:00:00Z"
+  },
+  {
+    "id": "eh-1000-006",
+    "employeeId": 1000,
+    "type": "siege",
+    "title": "Modification siège",
+    "description": "Transfert de Rabat à Casablanca",
+    "oldValue": "Rabat",
+    "newValue": "Casablanca",
+    "ref": null,
+    "createdAt": "2025-05-01T13:00:00Z",
+    "updatedAt": "2025-05-01T13:00:00Z"
+  },
+  {
+    "id": "eh-1000-007",
+    "employeeId": 1000,
+    "type": "cadre",
+    "title": "Modification cadre professionnel",
+    "description": "Évolution de employé à cadre",
+    "oldValue": "Employé",
+    "newValue": "Cadre",
+    "ref": null,
+    "createdAt": "2025-06-12T14:00:00Z",
+    "updatedAt": "2025-06-12T14:00:00Z"
+  }
+]
+

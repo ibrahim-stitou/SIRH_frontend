@@ -42,7 +42,10 @@ export const apiRoutes = {
       managersSimpleList: `${API_BASE}/hrEmployees/managers/simple-list`,
       delete: (id: number | string) => `${API_BASE}/hrEmployees/${id}`,
       details: (id: number | string) => `${API_BASE}/hrEmployees/${id}`,
-      update: (id: number | string) => `${API_BASE}/hrEmployees/${id}`
+      update: (id: number | string) => `${API_BASE}/hrEmployees/${id}`,
+      history: (id: number | string) => `${API_BASE}/hrEmployees/${id}/history`,
+      createHistory: (id: number | string) => `${API_BASE}/hrEmployees/${id}/history`,
+      movementTypes: `${API_BASE}/movement-types`
     },
     departments: {
       list: `${API_BASE}/departments`,

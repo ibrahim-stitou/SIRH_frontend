@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import apiClient from '@/lib/api';
 import { apiRoutes } from '@/config/apiRoutes';
@@ -57,8 +57,9 @@ import { SkillsTab } from '@/app/admin/personnel/employes/[id]/details/component
 import { DocumentsTab } from '@/app/admin/personnel/employes/[id]/details/components/DocumentsTab';
 import { PersonalTab } from '@/app/admin/personnel/employes/[id]/details/components/PersonalTab';
 import { ExperiencesTab } from './components/ExperiencesTab';
-import { SocialContributionsTab } from '@/app/admin/personnel/employes/[id]/details/components/SocialContributionsTab';
+import SocialContributionsManager, { type SocialContributionItem } from '@/app/admin/personnel/employes/[id]/details/components/SocialContributionsManager';
 import Image from 'next/image';
+import EmployeHistory from '@/app/admin/personnel/employes/[id]/details/components/EmployeHistory';
 
 interface EmployeeRow {
   id: number;
@@ -127,11 +128,10 @@ interface EmployeeRow {
 
 export default function EmployeeDetailsPage() {
   const params = useParams<{ id: string }>();
-  const id = useMemo(() => params?.id, [params]);
+  const id = params?.id as string;
   const router = useRouter();
   const [emp, setEmp] = useState<EmployeeRow | null>(null);
   const [active, setActive] = useState('personal');
-  const [media, setMedia] = useState<any[]>([]);
   const [openPreview, setOpenPreview] = useState(false);
   const [previewItem, setPreviewItem] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
@@ -158,8 +158,7 @@ export default function EmployeeDetailsPage() {
   const relForm = useForm<{ relationship: string }>({
     defaultValues: { relationship: '' }
   });
-  const [currentContributionType, setCurrentContributionType] =
-    useState<string>('CNSS');
+  const [currentContributionType] = useState<string>('CNSS');
   const [mutuellesList, setMutuellesList] = useState<any[]>([]);
   const typeForm = useForm<{ type: string }>({
     defaultValues: { type: 'CNSS' }
@@ -208,15 +207,6 @@ export default function EmployeeDetailsPage() {
           });
         }
         setEmp(payload as EmployeeRow);
-
-        const mediaRes = await apiClient.get(apiRoutes.admin.media.list);
-        const mediaPayload: any[] =
-          mediaRes.data &&
-          typeof mediaRes.data === 'object' &&
-          'data' in mediaRes.data
-            ? mediaRes.data.data
-            : mediaRes.data;
-        setMedia(mediaPayload);
       } catch (e) {
         toast.error("Impossible de charger l'employé");
         router.push('/admin/personnel/employes');
@@ -798,6 +788,15 @@ export default function EmployeeDetailsPage() {
                 {t('employeeDetails.tabs.experiences')}
               </span>
             </TabsTrigger>
+            <TabsTrigger
+              value='history'
+              className='data-[state=active]:bg-background gap-2 px-3 py-2'
+            >
+              <FileText className='h-4 w-4' />
+              <span className='text-sm'>
+                Mouvements & Historique
+              </span>
+            </TabsTrigger>
           </TabsList>
 
           {/* Personal Tab */}
@@ -872,14 +871,23 @@ export default function EmployeeDetailsPage() {
           {/* Social Tab */}
           <TabsContent value='social'>
             <AnimatedTabContent active={active === 'social'}>
-              <SocialContributionsTab
-                active={active === 'social'}
+              <SocialContributionsManager
                 items={(emp as any)?.socialContributions || []}
-                onAdd={() => openItemDialog('socialContributions')}
-                onEdit={(index) => openItemDialog('socialContributions', index)}
-                onDelete={(index) =>
-                  setConfirmDelete({ section: 'socialContributions', index })
-                }
+                mutuellesList={mutuellesList}
+                onAdd={async (item: SocialContributionItem) => {
+                  const next = [ ...(((emp as any)?.socialContributions) || []), item ];
+                  await patchEmployee({ socialContributions: next } as any);
+                }}
+                onUpdate={async (index: number, item: SocialContributionItem) => {
+                  const list = [ ...(((emp as any)?.socialContributions) || []) ];
+                  list[index] = item;
+                  await patchEmployee({ socialContributions: list } as any);
+                }}
+                onDelete={async (index: number) => {
+                  const list = [ ...(((emp as any)?.socialContributions) || []) ];
+                  list.splice(index, 1);
+                  await patchEmployee({ socialContributions: list } as any, 'Supprimé');
+                }}
               />
             </AnimatedTabContent>
           </TabsContent>
@@ -923,6 +931,11 @@ export default function EmployeeDetailsPage() {
               onEdit={(index: number) => openItemDialog('experiences', index)}
               onDelete={(index: number) => removeItem('experiences', index)}
             />
+          </TabsContent>
+
+          {/* New Tab: Mouvements & Historique */}
+          <TabsContent value='history'>
+            <EmployeHistory employeeId={Number(id)} />
           </TabsContent>
         </Tabs>
       </div>
@@ -1066,115 +1079,9 @@ export default function EmployeeDetailsPage() {
           <div className='space-y-4'>
             {/* Social Contributions form */}
             {openEditItem?.section === 'socialContributions' && (
-              <>
-                <div>
-                  <Label className='mb-1'>Type</Label>
-                  <SelectField
-                    name='type'
-                    control={typeForm.control}
-                    placeholder='Sélectionner'
-                    options={(mutuellesList || []).map((m: any) => ({
-                      label: m.name || m.code,
-                      value: m.code
-                    }))}
-                  />
-                </div>
-                <div>
-                  <Label className='mb-1'>Code</Label>
-                  <Input
-                    value={tempItem?.code || ''}
-                    onChange={(e) =>
-                      setTempItem((p: any) => ({ ...p, code: e.target.value }))
-                    }
-                  />
-                </div>
-                <div>
-                  <Label className='mb-1'>Numéro d&apos;affiliation</Label>
-                  <Input
-                    value={tempItem?.affiliationNumber || ''}
-                    onChange={(e) =>
-                      setTempItem((p: any) => ({
-                        ...p,
-                        affiliationNumber: e.target.value
-                      }))
-                    }
-                  />
-                </div>
-                <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
-                  <div>
-                    <Label className='mb-1'>Taux Employé (%)</Label>
-                    <Input
-                      type='number'
-                      step='0.01'
-                      value={tempItem?.employeeRatePct ?? ''}
-                      onChange={(e) =>
-                        setTempItem((p: any) => ({
-                          ...p,
-                          employeeRatePct: e.target.value
-                        }))
-                      }
-                      placeholder='ex: 4.48'
-                    />
-                  </div>
-                  <div>
-                    <Label className='mb-1'>Taux Employeur (%)</Label>
-                    <Input
-                      type='number'
-                      step='0.01'
-                      value={tempItem?.employerRatePct ?? ''}
-                      onChange={(e) =>
-                        setTempItem((p: any) => ({
-                          ...p,
-                          employerRatePct: e.target.value
-                        }))
-                      }
-                      placeholder='ex: 8.98'
-                    />
-                  </div>
-                </div>
-                <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
-                  <div>
-                    <Label className='mb-1'>Début</Label>
-                    <DatePickerField
-                      value={tempItem?.startDate || ''}
-                      onChange={(d) =>
-                        setTempItem((p: any) => ({ ...p, startDate: d || '' }))
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label className='mb-1'>Fin</Label>
-                    <DatePickerField
-                      value={tempItem?.endDate || ''}
-                      onChange={(d) =>
-                        setTempItem((p: any) => ({ ...p, endDate: d || '' }))
-                      }
-                    />
-                  </div>
-                </div>
-                {(tempItem?.type === 'Mutuelle' ||
-                  tempItem?.code === 'Mutuelle' ||
-                  (mutuellesList || []).some(
-                    (m: any) =>
-                      m.code === tempItem?.code &&
-                      (m.code || '').startsWith('MUT')
-                  )) && (
-                  <div>
-                    <Label className='mb-1'>Fournisseur (Mutuelle)</Label>
-                    <Input
-                      value={tempItem?.providerName || ''}
-                      onChange={(e) =>
-                        setTempItem((p: any) => ({
-                          ...p,
-                          providerName: e.target.value
-                        }))
-                      }
-                      placeholder='Ex: Mutuelle Générale'
-                    />
-                  </div>
-                )}
-                {/* Notes field removed per request */}
-              </>
+              <div className='text-sm text-muted-foreground'>
+                Édition des cotisations sociales sera finalisée ultérieurement.
+              </div>
             )}
 
             {openEditItem?.section === 'education' && (

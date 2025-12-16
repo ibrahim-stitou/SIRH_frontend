@@ -109,4 +109,44 @@ module.exports = function registerEmployeeRoutes(server, db) {
     }));
     return res.json({ status: 'success', data: simple });
   });
+
+  server.get('/hrEmployees/:id/history', (req, res) => {
+    const id = parseInt(req.params.id, 10);
+    const employee = db.get('hrEmployees').find({ id }).value();
+    if (!employee) {
+      return res.status(404).json({ status: 'error', message: 'Employé introuvable' });
+    }
+    const history = (db.get('employeeHistory').value() || []).filter((h) => h.employeeId === id);
+    const sorted = history.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    return res.json({ status: 'success', data: sorted });
+  });
+
+  server.get('/movement-types', (req, res) => {
+    const types = db.get('movementTypes').value() || [];
+    return res.json({ status: 'success', data: types });
+  });
+
+  server.post('/hrEmployees/:id/history', (req, res) => {
+    const id = parseInt(req.params.id, 10);
+    const employee = db.get('hrEmployees').find({ id }).value();
+    if (!employee) {
+      return res.status(404).json({ status: 'error', message: 'Employé introuvable' });
+    }
+    const body = req.body || {};
+    const item = {
+      id: `eh-${id}-${Date.now()}`,
+      employeeId: id,
+      type: body.type || 'custom',
+      title: body.title || 'Mouvement',
+      description: body.description || null,
+      oldValue: body.oldValue || null,
+      newValue: body.newValue || null,
+      ref: body.ref || null,
+      createdAt: body.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    const coll = db.get('employeeHistory');
+    coll.push(item).write();
+    return res.json({ status: 'success', data: item });
+  });
 };
