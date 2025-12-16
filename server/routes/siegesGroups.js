@@ -142,4 +142,28 @@ module.exports = function registerSiegesGroupsRoutes(server, db) {
       }
     });
   });
+
+  // New: replace members for a group
+  server.put('/groups/:id/members', (req, res) => {
+    const id = req.params.id;
+    const group = db.get('groups').find((row) => String(row.id) === String(id)).value();
+    if (!group) return res.status(404).json({ status: 'error', message: 'Groupe introuvable' });
+
+    const members = Array.isArray(req.body?.members) ? req.body.members : [];
+
+    // Remove existing members of the group
+    db.get('groupMembers').remove({ groupId: id }).write();
+
+    // Insert new members
+    const toInsert = members.map((m) => ({
+      id: `gm-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      groupId: id,
+      employeeId: m.employeeId,
+      isManager: !!m.isManager
+    }));
+
+    db.get('groupMembers').push(...toInsert).write();
+
+    return res.json({ status: 'success', message: 'Membres mis à jour', data: { groupId: id, count: toInsert.length } });
+  });
 };

@@ -781,6 +781,8 @@
     "title": "Groupes",
     "name": "Nom",
     "code": "Code",
-    "updatedAt": "Dernière mise à jour"
+    "updatedAt": "Dernière mise à jour",
+    "siegeGroupsTitle": "Groupes du siège",
+    "siegeGroupsDescription": "Gérez les groupes associés à ce siège"
   }
 }

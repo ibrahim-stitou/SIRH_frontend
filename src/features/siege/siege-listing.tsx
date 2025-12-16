@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import { Eye, Plus, Trash2 } from 'lucide-react';
+import { Users, Plus, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,7 @@ import { Modal } from '@/components/ui/modal';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import CustomAlertDialog from '@/components/custom/customAlert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 // Minimal subset of Headquarters (Siège) fields for listing
 interface SiegeRow {
@@ -59,6 +60,8 @@ export default function SiegeListing() {
     email: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<{ name?: string; code?: string }>({});
 
   // Delete confirmation modal state
   const [selectedSiegeId, setSelectedSiegeId] = useState<string | null>(null);
@@ -68,9 +71,13 @@ export default function SiegeListing() {
   const onCloseCreate = () => setIsCreateOpen(false);
 
   const handleCreate = async () => {
-    // Basic validation
-    if (!form.name || !form.code) {
-      toast.error(t('common.validation.required'));
+    setServerError(null);
+    // Basic validation with inline errors
+    const localErrors: { name?: string; code?: string } = {};
+    if (!form.name) localErrors.name = t('common.validation.required');
+    if (!form.code) localErrors.code = t('common.validation.required');
+    if (localErrors.name || localErrors.code) {
+      setErrors(localErrors);
       return;
     }
     try {
@@ -98,13 +105,15 @@ export default function SiegeListing() {
           phone: '',
           email: ''
         });
+        setErrors({});
+        setServerError(null);
         if (tableInstance?.refresh) tableInstance.refresh();
       } else {
-        toast.error(t('common.error'));
+        setServerError(t('common.error'));
       }
     } catch (e: any) {
       const msg = e?.response?.data?.message || t('common.error');
-      toast.error(`${t('common.error')}: ${msg}`);
+      setServerError(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -162,14 +171,12 @@ export default function SiegeListing() {
                 <Button
                   variant='outline'
                   className='h-8 w-8 p-1.5'
-                  onClick={() =>
-                    router.push(`/admin/sieges-groupes/${row.id}/groupes`)
-                  }
+                  onClick={() => router.push(`/admin/sieges-groupes/${row.id}/groupes`)}
                 >
-                  <Eye className='h-4 w-4' />
+                  <Users className='h-4 w-4' />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>{t('common.view')}</TooltipContent>
+              <TooltipContent>Voir les groupes</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -250,26 +257,36 @@ export default function SiegeListing() {
         isOpen={isCreateOpen}
         onClose={onCloseCreate}
       >
+        {serverError && (
+          <Alert variant='destructive' className='mb-3'>
+            <AlertTitle>{t('common.error')}</AlertTitle>
+            <AlertDescription>{serverError}</AlertDescription>
+          </Alert>
+        )}
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
           <div className='space-y-2'>
             <Label htmlFor='name'>
-              {t('headquarters.create.fields.name') || t('common.name')}
+              {(t('headquarters.create.fields.name') || t('common.name'))} <span className='text-destructive'>*</span>
             </Label>
             <Input
               id='name'
+              aria-invalid={!!errors.name}
               value={form.name}
-              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              onChange={(e) => { setForm((f) => ({ ...f, name: e.target.value })); if (errors.name) setErrors((prev) => ({ ...prev, name: undefined })); }}
             />
+            {errors.name && <div className='text-destructive text-xs'>{errors.name}</div>}
           </div>
           <div className='space-y-2'>
             <Label htmlFor='code'>
-              {t('headquarters.create.fields.code') || t('common.code')}
+              {(t('headquarters.create.fields.code') || t('common.code'))} <span className='text-destructive'>*</span>
             </Label>
             <Input
               id='code'
+              aria-invalid={!!errors.code}
               value={form.code}
-              onChange={(e) => setForm((f) => ({ ...f, code: e.target.value }))}
+              onChange={(e) => { setForm((f) => ({ ...f, code: e.target.value })); if (errors.code) setErrors((prev) => ({ ...prev, code: undefined })); }}
             />
+            {errors.code && <div className='text-destructive text-xs'>{errors.code}</div>}
           </div>
           <div className='space-y-2 sm:col-span-2'>
             <Label htmlFor='address'>

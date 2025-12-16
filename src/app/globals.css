@@ -122,3 +122,19 @@ tbody td {
   background: rgba(15, 23, 42, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
+
+/* Compact DataTable row heights (forced with !important) */
+[data-slot='table'] {
+  font-size: 0.85rem !important; /* slightly smaller text to reduce height */
+}
+[data-slot='table-head'] {
+  height: 2.4rem !important; /* reduce header row height */
+  padding: 6px 6px !important;
+}
+[data-slot='table-row'] {
+  height: 1.9rem !important; /* reduce body row height */
+}
+[data-slot='table-cell'] {
+  padding: 4px 6px !important; /* tighter cell padding */
+  line-height: 1rem !important; /* keep content compact */
+}

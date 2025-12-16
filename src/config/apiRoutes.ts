@@ -115,7 +115,9 @@ export const apiRoutes = {
       create: `${API_BASE}/groups`,
       show: (id: number | string) => `${API_BASE}/groups/${id}`,
       update: (id: number | string) => `${API_BASE}/groups/${id}`,
-      delete: (id: number | string) => `${API_BASE}/groups/${id}`
+      delete: (id: number | string) => `${API_BASE}/groups/${id}`,
+      members: (id: number | string) => `${API_BASE}/groups/${id}/members`,
+      updateMembers: (id: number | string) => `${API_BASE}/groups/${id}/members`
     }
   }
 };
