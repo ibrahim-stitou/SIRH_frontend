@@ -247,6 +247,7 @@
     "all": "Tous",
     "export": {
       "pdf": "Export PDF",
+      "xlsx": "Export XLSX",
       "excel": "Export Excel",
       "noSelection": "Aucune ligne sélectionnée"
     }
@@ -794,5 +795,12 @@
     "updatedAt": "Dernière mise à jour",
     "siegeGroupsTitle": "Groupes du siège",
     "siegeGroupsDescription": "Gérez les groupes associés à ce siège"
+  },
+  "absences": {
+    "title": "Absences",
+    "subtitle": "Gestion des absences des employés",
+    "actions": {
+      "create": "Créer une absence"
+    }
   }
 }

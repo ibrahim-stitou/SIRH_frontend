@@ -7,7 +7,7 @@ import { AnimatedTabContent } from '../components';
 import EditableInfoRow from './EditableInfoRow';
 import { toast } from 'sonner';
 import { DocumentUploadSection, DocumentItem } from './DocumentUploadSection';
-import { PROFESSIONAL_CATEGORY_OPTIONS } from '../../../create/schema';
+import { PROFESSIONAL_CATEGORY_OPTIONS } from '../../../ajouter/schema';
 
 interface PersonalTabProps {
   active: boolean;

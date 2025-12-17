@@ -134,7 +134,7 @@ export default function ContractDocuments({
   const handleAddAvenant = () => {
     // Navigate to avenant creation page using Next.js client navigation
     router.push(
-      `/admin/contrats-mouvements/contrats/${contract.id}/avenants/create`
+      `/admin/contrats-mouvements/contrats/${contract.id}/avenants/ajouter`
     );
   };
 

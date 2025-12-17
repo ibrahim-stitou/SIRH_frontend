@@ -137,7 +137,7 @@ export function DemandeAttestationListing({
     {
       field: 'status',
       label: t('attestations.columns.status'),
-      type: 'select',
+      type: 'datatable-select',
       options: [
         { label: t('attestations.status.en_attente'), value: 'en_attente' },
         { label: t('attestations.status.approuve'), value: 'approuve' },
@@ -148,7 +148,7 @@ export function DemandeAttestationListing({
     {
       field: 'typeAttestation',
       label: t('attestations.columns.type'),
-      type: 'select',
+      type: 'datatable-select',
       options: [
         { label: t('attestations.types.travail'), value: 'travail' },
         { label: t('attestations.types.salaire'), value: 'salaire' },
@@ -162,7 +162,7 @@ export function DemandeAttestationListing({
     {
       field: 'employeeId',
       label: t('attestations.columns.employee'),
-      type: 'select',
+      type: 'datatable-select',
       options: employees.map((emp) => ({
         label: `${emp.firstName} ${emp.lastName}`,
         value: String(emp.id)

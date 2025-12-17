@@ -121,6 +121,18 @@ export const apiRoutes = {
       delete: (id: number | string) => `${API_BASE}/groups/${id}`,
       members: (id: number | string) => `${API_BASE}/groups/${id}/members`,
       updateMembers: (id: number | string) => `${API_BASE}/groups/${id}/members`
+    },
+    absences: {
+      list: `${API_BASE}/absences`,
+      create: `${API_BASE}/absences`,
+      update: (id: number | string) => `${API_BASE}/absences/${id}`,
+      delete: (id: number | string) => `${API_BASE}/absences/${id}`,
+      show: (id: number | string) => `${API_BASE}/absences/${id}`,
+      cancel: (id: number | string) => `${API_BASE}/absences/${id}/cancel`,
+      validate: (id: number | string) => `${API_BASE}/absences/${id}/validate`,
+      close: (id: number | string) => `${API_BASE}/absences/${id}/close`,
+      types: `${API_BASE}/absence-types`,
+      typesSimple: `${API_BASE}/absence-types/simple-list`
     }
   }
 };

@@ -361,10 +361,10 @@ export function ContratsListing() {
   ];
 
   const filters: CustomTableFilterConfig[] = [
-    { field: 'employee_matricule', label: t('contracts.fields.employee'), type: 'select', options: employeeOptions },
-    { field: 'type_contrat', label: t('contracts.fields.type'), type: 'select', options: typeOptions },
-    { field: 'statut', label: t('contracts.fields.status'), type: 'select', options: statusOptions },
-    { field: 'departement', label: t('contracts.fields.department'), type: 'select', options: departmentOptions }
+    { field: 'employee_matricule', label: t('contracts.fields.employee'), type: 'datatable-select', options: employeeOptions },
+    { field: 'type_contrat', label: t('contracts.fields.type'), type: 'datatable-select', options: typeOptions },
+    { field: 'statut', label: t('contracts.fields.status'), type: 'datatable-select', options: statusOptions },
+    { field: 'departement', label: t('contracts.fields.department'), type: 'datatable-select', options: departmentOptions }
   ];
 
   return (
@@ -380,7 +380,7 @@ export function ContratsListing() {
         </div>
         <Button
           onClick={() =>
-            router.push('/admin/contrats-mouvements/contrats/create')
+            router.push('/admin/contrats-mouvements/contrats/ajouter')
           }
         >
           <Plus className='mr-2 h-4 w-4' />

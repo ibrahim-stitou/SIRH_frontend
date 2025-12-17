@@ -61,11 +61,9 @@ require('./server/routes/employees')(server, db);
 require('./server/routes/contracts')(server, db);
 require('./server/routes/avenants')(server, db);
 require('./server/routes/siegesGroups')(server, db);
-// Register specific routes before generic catch-all
 require('./server/routes/departments')(server, db);
+require('./server/routes/absences')(server, db);
 require('./server/routes/generic')(server, db, data);
-
-// Let json-server handle other routes
 server.use(router);
 
 const PORT = process.env.PORT || 3001;

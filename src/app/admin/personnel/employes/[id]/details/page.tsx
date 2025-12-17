@@ -60,6 +60,7 @@ import { ExperiencesTab } from './components/ExperiencesTab';
 import SocialContributionsManager, { type SocialContributionItem } from '@/app/admin/personnel/employes/[id]/details/components/SocialContributionsManager';
 import Image from 'next/image';
 import EmployeHistory from '@/app/admin/personnel/employes/[id]/details/components/EmployeHistory';
+import EmployeeAbsences from '@/app/admin/personnel/employes/[id]/details/components/EmployeeAbsences';
 
 interface EmployeeRow {
   id: number;
@@ -910,15 +911,7 @@ export default function EmployeeDetailsPage() {
           {/* Leaves Tab */}
           <TabsContent value='leaves'>
             <AnimatedTabContent active={active === 'leaves'}>
-              <Card className='border-2 border-dashed p-8 text-center'>
-                <Calendar className='text-muted-foreground/50 mx-auto mb-4 h-12 w-12' />
-                <h3 className='mb-2 text-lg font-semibold'>
-                  Gestion des congés
-                </h3>
-                <p className='text-muted-foreground text-sm'>
-                  Congés, absences et planning à développer
-                </p>
-              </Card>
+              <EmployeeAbsences employeeId={Number(id)} />
             </AnimatedTabContent>
           </TabsContent>
 

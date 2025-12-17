@@ -174,23 +174,37 @@ export function EmployeeListing() {
 
   const filters: CustomTableFilterConfig[] = [
     {
+      field: 'nom',
+      label: t('employees.filters.name'),
+      type: 'text'
+    },   {
       field: 'matricule',
       label: t('employees.filters.matricule'),
-      type: 'text'
-    },
-    { field: 'firstName', label: t('employees.filters.name'), type: 'text' },
-    { field: 'lastName', label: t('employees.filters.name'), type: 'text' },
-    {
-      field: 'professionalCategory',
-      label: 'Catégorie professionnelle',
       type: 'text'
     },
     {
       field: 'contractType',
       label: t('employees.filters.contractType'),
-      type: 'text'
+      type: 'datatable-select',
+      options: [
+        { label: 'Tous', value: '' },
+        { label: 'CDI', value: 'CDI' },
+        { label: 'CDD', value: 'CDD' },
+        { label: 'Stage', value: 'Stage' },
+        { label: 'Intérim', value: 'Interim' }
+      ]
     },
-    { field: 'status', label: t('employees.filters.status'), type: 'text' }
+    {
+      field: 'status',
+      label: t('employees.filters.status'),
+      type: 'datatable-select',
+      options: [
+        { label: 'Tous', value: '' },
+        { label: t('employees.status.actif'), value: 'actif' },
+        { label: t('employees.status.suspendu'), value: 'suspendu' },
+        { label: t('employees.status.parti'), value: 'parti' }
+      ]
+    }
   ];
 
   return (
@@ -204,7 +218,7 @@ export function EmployeeListing() {
             {t('employees.subtitle')}
           </p>
         </div>
-        <Button onClick={() => router.push('/admin/personnel/employes/create')}>
+        <Button onClick={() => router.push('/admin/personnel/employes/ajouter')}>
           {t('employees.actions.create')}
         </Button>
       </div>

@@ -74,7 +74,7 @@ Les employés sont liés à :
 
 ## Schéma de validation
 
-Le fichier `src/app/admin/personnel/employes/create/schema.ts` définit :
+Le fichier `src/app/admin/personnel/employes/ajouter/schema.ts` définit :
 
 ### Schema Zod
 
@@ -279,11 +279,11 @@ const onSubmit = async (data: EmployeeFormValues) => {
 ### Fichiers créés
 
 - ✅ `src/types/employee.ts` - Types centralisés
-- ✅ `src/app/admin/personnel/employes/create/schema.ts` - Schéma de validation
+- ✅ `src/app/admin/personnel/employes/ajouter/schema.ts` - Schéma de validation
 
 ### Fichiers modifiés
 
-- ✅ `src/app/admin/personnel/employes/create/page.tsx` - Ajout champ numero_cnss
+- ✅ `src/app/admin/personnel/employes/ajouter/page.tsx` - Ajout champ numero_cnss
 - ✅ `src/app/admin/personnel/employes/[id]/details/components/PersonalTab.tsx` - Affichage numero_cnss
 - ✅ `mock-data/employees.json` - Ajout numero_cnss et cin
 - ✅ `mock-data/hrEmployees.json` - Ajout numero_cnss

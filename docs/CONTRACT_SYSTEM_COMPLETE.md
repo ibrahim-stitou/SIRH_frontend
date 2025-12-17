@@ -55,7 +55,7 @@ src/
 │       ├── Règles métier marocaines
 │       └── Valeurs par défaut
 │
-└── app/admin/contrats-mouvements/contrats/create/
+└── app/admin/contrats-mouvements/contrats/ajouter/
     └── page.tsx (✨ RECRÉÉ - 1200+ lignes)
         ├── Formulaire multi-onglets moderne
         ├── Validation temps réel
@@ -73,11 +73,11 @@ src/
 {
   id: string | number;
   reference: string;              // Ex: "CTR-2025-001"
-  internal_reference?: string;    // Référence interne entreprise
+  internal_reference: string;    // Référence interne entreprise
   type: ContractType;             // CDI, CDD, etc.
   status: ContractStatus;         // Actif, Brouillon, etc.
   version: number;                // Versioning
-  company_id?: string | number;   // Multi-sociétés
+  company_id: string | number;   // Multi-sociétés
 }
 ```
 
@@ -85,16 +85,16 @@ src/
 
 ```typescript
 {
-  signature_date?: string;
+  signature_date: string;
   start_date: string;
-  end_date?: string | null;       // Obligatoire pour CDD
-  trial_period?: {
+  end_date: string | null;       // Obligatoire pour CDD
+  trial_period: {
     duration_months: number;
     renewable: boolean;
     status: 'En_cours' | 'Validee' | 'Rompue';
   };
-  termination_reason?: ResiliationReason;
-  notice_period_days?: number;    // 8 jours à 3 mois
+  termination_reason: ResiliationReason;
+  notice_period_days: number;    // 8 jours à 3 mois
 }
 ```
 
@@ -103,14 +103,14 @@ src/
 ```typescript
 {
   title: string;
-  title_ar?: string;              // Support arabe
+  title_ar: string;              // Support arabe
   department: string;
 
   // Classification professionnelle
   category: ProfessionalCategory; // Cadre, Employé, Ouvrier, etc.
-  echelle?: EchelleLevel;        // Échelle 1-12
-  coefficient?: number;           // Selon Convention Collective
-  grade?: string;
+  echelle: EchelleLevel;        // Échelle 1-12
+  coefficient: number;           // Selon Convention Collective
+  grade: string;
 
   // Localisation
   work_location: string;
@@ -119,7 +119,7 @@ src/
 
   // Missions
   missions: string;
-  responsibilities?: string[];
+  responsibilities: string; //liste détaillée
 }
 ```
 
@@ -134,12 +134,12 @@ src/
   rest_day: string;               // Dimanche, etc.
 
   // Options
-  night_work?: boolean;           // 21h-6h
-  overtime_authorized?: boolean;
+  night_work: boolean;           // 21h-6h
+  overtime_authorized: boolean;
 
   // Congés
   annual_leave_days: number;      // Min 18 jours
-  special_leaves?: {
+  special_leaves: {
     marriage: 4;                  // Jours
     birth: 3;
     death_relative: 3;
@@ -163,39 +163,39 @@ src/
   salary_net_imposable: number;
 
   // Primes
-  primes?: {
-    prime_anciennete?: number;    // 5% après 2 ans
-    prime_transport?: number;
-    prime_panier?: number;
-    prime_rendement?: number;
-    prime_nuit?: number;
-    treizieme_mois?: boolean;
+  primes: {
+    prime_anciennete: number;    // 5% après 2 ans
+    prime_transport: number;
+    prime_panier: number;
+    prime_rendement: number;
+    prime_nuit: number;
+    treizieme_mois: boolean;
     // ... autres primes
   };
 
   // Indemnités
-  indemnites?: {
-    indemnite_logement?: number;
-    indemnite_deplacement?: number;
-    indemnite_km?: number;
-    frais_telephone?: number;
+  indemnites: {
+    indemnite_logement: number;
+    indemnite_deplacement: number;
+    indemnite_km: number;
+    frais_telephone: number;
     // ... autres indemnités
   };
 
   // Avantages en nature
-  avantages_nature?: {
-    voiture_fonction?: boolean;
-    telephone?: boolean;
-    laptop?: boolean;
-    tickets_restaurant?: boolean;
-    mutuelle_famille?: boolean;
+  avantages_nature: {
+    voiture_fonction: boolean;
+    telephone: boolean;
+    laptop: boolean;
+    tickets_restaurant: boolean;
+    mutuelle_famille: boolean;
     // ... autres avantages
   };
 
   // Paiement
   payment_method: 'Virement' | 'Cheque' | 'Especes';
-  rib?: string;                   // RIB 24 chiffres
-  payment_day?: number;
+  rib: string;                   // RIB 24 chiffres
+  payment_day: number;
 }
 ```
 
@@ -205,55 +205,55 @@ src/
 {
   // CNSS (obligatoire)
   cnss_affiliation: boolean;
-  cnss_number?: string;
+  cnss_number: string;
   cnss_regime: 'General' | 'Agricole' | 'Artisanal' | 'Pecheurs';
   cnss_rate_employee: 4.48;       // %
   cnss_rate_employer: 16.46;      // %
 
   // AMO (obligatoire)
   amo: boolean;
-  amo_number?: string;
+  amo_number: string;
   amo_regime: 'CNSS' | 'CNOPS' | 'Autres';
-  amo_family_members?: number;
+  amo_family_members: number;
 
   // Retraite complémentaire
-  cimr?: boolean;
-  rcar?: boolean;
+  cimr: boolean;
+  rcar: boolean;
 
   // ANAPEC
-  contrat_anapec?: string;
-  anapec_type?: 'Idmaj' | 'TAHIL' | 'Autre';
-  taxe_formation?: boolean;       // 1.6%
+  contrat_anapec: string;
+  anapec_type: 'Idmaj' | 'TAHIL' | 'Autre';
+  taxe_formation: boolean;       // 1.6%
 
   // Fiscalité
-  tax_ir?: {
+  tax_ir: {
     taux: number;                 // 0-38%
     exonere: boolean;
   };
 
   // Convention collective
-  convention_collective?: string;
+  convention_collective: string;
 
   // Clauses
-  clauses?: {
+  clauses: {
     confidentialite: boolean;
     non_concurrence: boolean;
-    non_concurrence_duration?: number;  // mois
+    non_concurrence_duration: number;  // mois
     mobilite: boolean;
     exclusivite: boolean;
     formation: boolean;
     intellectual_property: boolean;
     discipline_interne: boolean;
-    teletravail?: {
+    teletravail: {
       jours_par_semaine: number;
-      materiel_fourni: string[];
-      frais_rembourses: string[];
+      materiel_fourni: string; // liste du matériel
+      frais_rembourses: string; // liste des frais
     };
   };
 
   // Médecine du travail
-  visite_medicale_embauche?: boolean;
-  aptitude_medicale?: 'Apte' | 'Apte_reserves' | 'Inapte';
+  visite_medicale_embauche: boolean;
+  aptitude_medicale: 'Apte' | 'Apte_reserves' | 'Inapte';
 }
 ```
 
@@ -265,10 +265,10 @@ src/
   created_by: string;
   updated_at: string;
   updated_by: string;
-  versions?: Array<{version, date, changes}>;
-  modifications?: Array<{date, field, old_value, new_value}>;
-  validations?: Array<{validator, status, comments}>;
-  signatures?: Array<{signatory, date, method}>;
+  versions: Array<{version, date, changes}>;
+  modifications: Array<{date, field, old_value, new_value}>;
+  validations: Array<{validator, status, comments}>;
+  signatures: Array<{signatory, date, method}>;
 }
 ```
 

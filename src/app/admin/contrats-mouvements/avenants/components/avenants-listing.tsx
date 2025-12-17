@@ -478,9 +478,9 @@ export function AvenantsListing() {
   }, []);
 
   const filterConfig: CustomTableFilterConfig[] = [
-    { field: 'status', label: 'Statut', type: 'select', options: statusOptions },
-    { field: 'type_modification', label: 'Type', type: 'select', options: typeOptions },
-    { field: 'contract_reference', label: 'Contrat', type: 'select', options: contractOptions },
+    { field: 'status', label: 'Statut', type: 'datatable-select', options: statusOptions },
+    { field: 'type_modification', label: 'Type', type: 'datatable-select', options: typeOptions },
+    { field: 'contract_reference', label: 'Contrat', type: 'datatable-select', options: contractOptions },
     { field: 'objet', label: 'Objet', type: 'text' }
   ];
 

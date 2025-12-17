@@ -1,3 +1,5 @@
+'use client';
+
 // Improved CustomTable.tsx with fixed bulk actions and selection
 
 import React, { useEffect, useRef, useState, useMemo } from 'react';

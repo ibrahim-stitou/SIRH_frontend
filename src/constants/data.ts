@@ -68,8 +68,8 @@ export const useNavItems = (): NavItem[] => {
       icon: 'calendar',
       description: 'US-EMP-008',
       items: [
-        { title: t('sidebar.absences'), url: '/admin/absences-conges/absences', icon: 'userRoundCheck', shortcut: ['a','b'], description: 'US-EMP-009' },
-        { title: t('sidebar.calendrier'), url: '/admin/absences-conges/conges', icon: 'calendarRange', shortcut: ['c','o'], description: 'US-EMP-010' }
+        { title: t('sidebar.absences'), url: '/admin/absences', icon: 'userRoundCheck', shortcut: ['a','b'], description: 'US-EMP-009' },
+        { title: t('sidebar.calendrier'), url: '/admin/absences/calendrier', icon: 'calendarRange', shortcut: ['c','o'], description: 'US-EMP-010' }
       ]
     }
   ];

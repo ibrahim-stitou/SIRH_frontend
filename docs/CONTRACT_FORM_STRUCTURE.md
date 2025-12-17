@@ -225,7 +225,7 @@ Exemples :
 - `src/features/contract/components/WorkScheduleTab.tsx` - Onglet 2
 - `src/features/contract/components/SalaryAndLegalTab.tsx` - Onglet 3
 - `src/features/contract/components/ContractRecapModal.tsx` - Modal de récapitulation
-- `src/app/admin/contrats-mouvements/contrats/create/page.tsx` - Page de création
+- `src/app/admin/contrats-mouvements/contrats/ajouter/page.tsx` - Page de création
 
 ### Données Mock
 

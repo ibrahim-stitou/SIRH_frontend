@@ -27,5 +27,7 @@ module.exports = {
   headquarters: require('./mock-data/headquarters.json'),
   groups: require('./mock-data/groups.json'),
   employeeHistory: require('./mock-data/employeeHistory.json'),
-  movementTypes: require('./mock-data/movementTypes.json')
+  movementTypes: require('./mock-data/movementTypes.json'),
+  absenceTypes: require('./mock-data/absenceTypes.json'),
+  absences: require('./mock-data/absences.json')
 };
