@@ -105,13 +105,69 @@ export default function AbsenceDetailPage() {
   if (loading) {
     return (
       <PageContainer scrollable>
-        <div className="flex h-96 items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="space-y-6 w-full">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-9 w-9 rounded-md bg-muted animate-pulse" />
+              <div className="space-y-2">
+                <div className="h-8 w-48 bg-muted rounded animate-pulse" />
+                <div className="h-4 w-64 bg-muted rounded animate-pulse" />
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <div className="h-9 w-24 bg-muted rounded animate-pulse" />
+              <div className="h-9 w-24 bg-muted rounded animate-pulse" />
+            </div>
+          </div>
+          <Card>
+            <CardHeader className="border-b bg-gradient-to-r from-primary/5 to-primary/10 pt-2 pb-2 rounded-t-lg">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-lg bg-muted animate-pulse" />
+                <div className="space-y-2">
+                  <div className="h-6 w-48 bg-muted rounded animate-pulse" />
+                  <div className="h-4 w-32 bg-muted rounded animate-pulse" />
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6 p-6">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <div className="h-4 w-20 bg-muted rounded animate-pulse" />
+                  <div className="h-6 w-40 bg-muted rounded animate-pulse" />
+                </div>
+                <div className="space-y-2">
+                  <div className="h-4 w-32 bg-muted rounded animate-pulse" />
+                  <div className="h-6 w-36 bg-muted rounded animate-pulse" />
+                </div>
+              </div>
+              <Separator />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <div className="h-4 w-16 bg-muted rounded animate-pulse" />
+                  <div className="h-6 w-full bg-muted rounded animate-pulse" />
+                </div>
+                <div className="space-y-2">
+                  <div className="h-4 w-16 bg-muted rounded animate-pulse" />
+                  <div className="h-6 w-24 bg-muted rounded animate-pulse" />
+                </div>
+              </div>
+              <Separator />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <div className="h-4 w-12 bg-muted rounded animate-pulse" />
+                  <div className="h-20 w-full bg-muted rounded animate-pulse" />
+                </div>
+                <div className="space-y-2">
+                  <div className="h-4 w-32 bg-muted rounded animate-pulse" />
+                  <div className="h-20 w-full bg-muted rounded animate-pulse" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </PageContainer>
     );
   }
-
   if (!absence) {
     return (
       <PageContainer scrollable>

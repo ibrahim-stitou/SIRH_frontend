@@ -283,7 +283,10 @@ export default function AbsencesListing() {
                     <CheckCircle2 className='h-4 w-4 text-emerald-600' />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Valider</TooltipContent>
+                <TooltipContent
+                  className='tooltip-content rounded-md bg-emerald-100 px-2 py-1 text-emerald-600 shadow-md'
+                  sideOffset={5}
+                >Valider</TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -291,7 +294,10 @@ export default function AbsencesListing() {
                     <XCircle className='h-4 w-4 text-blue-600' />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Clôturer</TooltipContent>
+                <TooltipContent
+                  className='tooltip-content rounded-md bg-blue-100 px-2 py-1 text-blue-600 shadow-md'
+                  sideOffset={5}
+                >Clôturer</TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -299,15 +305,21 @@ export default function AbsencesListing() {
                     <CircleX className='h-4 w-4 text-amber-600' />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Annuler</TooltipContent>
+                <TooltipContent
+                  className='tooltip-content rounded-md bg-amber-100 px-2 py-1 text-amber-600 shadow-md'
+                  sideOffset={5}
+                >Annuler</TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button variant='destructive' className='h-8 w-8 p-1.5' disabled={!canRefuse} onClick={() => onRefuse(row)}>
-                    <XCircle className='h-4 w-4 text-destructive' />
+                    <XCircle className='h-4 w-4' />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Refuser</TooltipContent>
+                <TooltipContent
+                  className='tooltip-content rounded-md bg-red-100 px-2 py-1 text-red-600 shadow-md'
+                  sideOffset={5}
+                >Refuser</TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -315,7 +327,10 @@ export default function AbsencesListing() {
                     <Trash2 className='h-4 w-4' />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Supprimer</TooltipContent>
+                <TooltipContent
+                  className='tooltip-content rounded-md bg-red-100 px-2 py-1 text-red-600 shadow-md'
+                  sideOffset={5}
+                >Supprimer</TooltipContent>
               </Tooltip>
             </div>
           );
