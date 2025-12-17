@@ -21,7 +21,11 @@
     "avenants": "Avenants",
     "contratEtMovements": "Contrats & Mouv",
     "contrat": "Contrats",
-    "siegeEtGroupe": "Siège et groupe"
+    "siegeEtGroupe": "Siège et groupe",
+    "absencesConges": "Absences & Congés",
+    "absences": "Absences",
+    "conges": "Congés",
+    "calendrier": "Calendrier"
   },
   "header": {
     "language": "Langue"

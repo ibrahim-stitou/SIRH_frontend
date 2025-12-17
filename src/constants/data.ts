@@ -61,6 +61,16 @@ export const useNavItems = (): NavItem[] => {
       url: '/admin/sieges-groupes',
       icon: 'companies',
       description: 'US-PRO-003'
+    },
+    {
+      title: t('sidebar.absencesConges'),
+      url: '#',
+      icon: 'calendar',
+      description: 'US-EMP-008',
+      items: [
+        { title: t('sidebar.absences'), url: '/admin/absences-conges/absences', icon: 'userRoundCheck', shortcut: ['a','b'], description: 'US-EMP-009' },
+        { title: t('sidebar.calendrier'), url: '/admin/absences-conges/conges', icon: 'calendarRange', shortcut: ['c','o'], description: 'US-EMP-010' }
+      ]
     }
   ];
 };

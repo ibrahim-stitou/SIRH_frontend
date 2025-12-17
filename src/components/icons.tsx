@@ -75,6 +75,7 @@ import {
   IconX,
   IconZoomCheck
 } from '@tabler/icons-react';
+import { CalendarRange, UserRoundCheck } from 'lucide-react';
 
 export type Icon = React.ComponentType<IconProps>;
 
@@ -98,6 +99,8 @@ export const Icons = {
   calendarx: IconCalendarX,
   camera: IconFireExtinguisher,
   car: IconCarGarage,
+  calendarRange:CalendarRange ,
+  userRoundCheck:UserRoundCheck,
   license: IconLicense,
   check: IconCheck,
   chevronLeft: IconChevronLeft,
