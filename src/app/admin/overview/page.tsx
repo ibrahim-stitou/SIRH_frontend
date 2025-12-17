@@ -1,7 +1,5 @@
 'use client';
 import React, { useEffect, useState, useMemo } from 'react';
-import apiClient from '@/lib/api';
-import { useLanguage } from '@/context/LanguageContext';
 import {
   ResponsiveContainer,
   LineChart,
@@ -61,74 +59,65 @@ const COLORS = [
   '#EC4899'
 ];
 
-export default function OverviewDashboard() {
-  const { t } = useLanguage();
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [leaves, setLeaves] = useState<Leave[]>([]);
-  const [payslips, setPayslips] = useState<Payslip[]>([]);
-  const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+// Mock data generator
+const generateMockData = () => {
+  const departments: Department[] = [
+    { id: 1, name: 'Engineering' },
+    { id: 2, name: 'Marketing' },
+    { id: 3, name: 'Sales' },
+    { id: 4, name: 'HR' }
+  ];
 
-  const tSnapshot = React.useRef(t);
+  const employees: Employee[] = Array.from({ length: 45 }, (_, i) => ({
+    id: i + 1,
+    status: Math.random() > 0.1 ? 'active' : 'inactive',
+    departmentId: Math.floor(Math.random() * 4) + 1,
+    salaryBase: 30000 + Math.floor(Math.random() * 70000),
+    hireDate: new Date(2020 + Math.floor(Math.random() * 5), Math.floor(Math.random() * 12), 1).toISOString()
+  }));
+
+  const leaves: Leave[] = Array.from({ length: 20 }, (_, i) => ({
+    id: i + 1,
+    status: ['pending', 'approved', 'rejected'][Math.floor(Math.random() * 3)],
+    type: 'vacation'
+  }));
+
+  const payslips: Payslip[] = Array.from({ length: 30 }, (_, i) => ({
+    id: i + 1,
+    net: 2000 + Math.floor(Math.random() * 4000),
+    gross: 3000 + Math.floor(Math.random() * 6000),
+    status: 'published',
+    period: `2024-${String((i % 12) + 1).padStart(2, '0')}`,
+    employeeId: Math.floor(Math.random() * 45) + 1
+  }));
+
+  const evaluations: Evaluation[] = Array.from({ length: 25 }, (_, i) => ({
+    id: i + 1,
+    employeeId: Math.floor(Math.random() * 45) + 1,
+    score: 3 + Math.random() * 2
+  }));
+
+  return { employees, departments, leaves, payslips, evaluations };
+};
+
+export default function OverviewDashboard() {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
-    async function load() {
-      try {
-        const [empRes, deptRes, leaveRes, payRes, evalRes] = await Promise.all([
-          apiClient.get('/employees'),
-          apiClient.get('/departments'),
-          apiClient.get('/leaves'),
-          apiClient.get('/payslips'),
-          apiClient.get('/evaluations')
-        ]);
-        if (!mounted) return;
-        setEmployees(empRes.data.data || []);
-        setDepartments(deptRes.data.data || []);
-        setLeaves(leaveRes.data.data || []);
-        setPayslips(payRes.data.data || []);
-        setEvaluations(evalRes.data.data || []);
-      } catch (e: any) {
-        if (mounted)
-          setError(e?.message || tSnapshot.current('dashboard.error'));
-      } finally {
-        mounted && setLoading(false);
-      }
-    }
-    load();
-    return () => {
-      mounted = false;
-    };
+    // Simulate API call
+    const timer = setTimeout(() => {
+      setData(generateMockData());
+      setLoading(false);
+    }, 2000);
+    return () => clearTimeout(timer);
   }, []);
 
-  const activeEmployees = employees.filter((e) => e.status === 'active');
-  const pendingLeavesCount = leaves.filter(
-    (l) => l.status === 'pending'
-  ).length;
-  const publishedPayslips = payslips.filter((p) => p.status === 'published');
-  const totalNetPayroll = publishedPayslips.reduce(
-    (s, p) => s + (p.net || 0),
-    0
-  );
-  const averageEvaluation = evaluations.length
-    ? (
-        evaluations.reduce((s, ev) => s + (ev.score || 0), 0) /
-        evaluations.length
-      ).toFixed(2)
-    : 'N/A';
-  const avgSalary = activeEmployees.length
-    ? (
-        activeEmployees.reduce((s, e) => s + (e.salaryBase || 0), 0) /
-        activeEmployees.length
-      ).toFixed(0)
-    : '0';
-
-  // Hiring trend (last 6 hire months)
+  // Hiring trend
   const hiringTrend = useMemo(() => {
+    if (!data?.employees) return [];
     const hires: Record<string, number> = {};
-    employees.forEach((e) => {
+    data.employees.forEach((e: Employee) => {
       if (!e.hireDate) return;
       const d = new Date(e.hireDate);
       const year = d.getUTCFullYear();
@@ -138,37 +127,39 @@ export default function OverviewDashboard() {
     });
     const sortedKeys = Object.keys(hires).sort().slice(-6);
     return sortedKeys.map((k) => ({ month: k, hires: hires[k] }));
-  }, [employees]);
+  }, [data?.employees]);
 
-  // Payroll distribution by department (net sum of published)
+  // Payroll by department
   const payrollByDept = useMemo(() => {
+    if (!data?.payslips || !data?.employees || !data?.departments) return [];
+    const publishedPayslips = data.payslips.filter((p: Payslip) => p.status === 'published');
     const map: Record<number, number> = {};
-    publishedPayslips.forEach((p) => {
-      const emp = employees.find((e) => e.id === p.employeeId);
+    publishedPayslips.forEach((p: Payslip) => {
+      const emp = data.employees.find((e: Employee) => e.id === p.employeeId);
       if (!emp) return;
       map[emp.departmentId] = (map[emp.departmentId] || 0) + (p.net || 0);
     });
     return Object.entries(map)
       .map(([deptId, net]) => ({
-        dept:
-          departments.find((d) => d.id === Number(deptId))?.name ||
-          `Dept ${deptId}`,
+        dept: data.departments.find((d: Department) => d.id === Number(deptId))?.name || `Dept ${deptId}`,
         net
       }))
       .sort((a, b) => b.net - a.net);
-  }, [publishedPayslips, employees, departments]);
+  }, [data?.payslips, data?.employees, data?.departments]);
 
-  // Leave status pie
+  // Leave status
   const leaveStatusData = useMemo(() => {
+    if (!data?.leaves) return [];
     const counts: Record<string, number> = {};
-    leaves.forEach((l) => (counts[l.status] = (counts[l.status] || 0) + 1));
+    data.leaves.forEach((l: Leave) => (counts[l.status] = (counts[l.status] || 0) + 1));
     return Object.entries(counts).map(([status, value]) => ({ status, value }));
-  }, [leaves]);
+  }, [data?.leaves]);
 
-  // Performance radar (average per employee for top 6)
+  // Performance radar
   const performanceData = useMemo(() => {
+    if (!data?.evaluations) return [];
     const scores: Record<number, { total: number; count: number }> = {};
-    evaluations.forEach((ev) => {
+    data.evaluations.forEach((ev: Evaluation) => {
       scores[ev.employeeId] = scores[ev.employeeId] || { total: 0, count: 0 };
       scores[ev.employeeId].total += ev.score;
       scores[ev.employeeId].count += 1;
@@ -177,281 +168,350 @@ export default function OverviewDashboard() {
       .slice(0, 6)
       .map(([empId, v]) => ({
         employee: `E${empId}`,
-        score: (v.total / v.count).toFixed(2)
+        score: parseFloat((v.total / v.count).toFixed(2))
       }));
-  }, [evaluations]);
+  }, [data?.evaluations]);
 
-  if (loading)
-    return (
-      <div className='text-muted-foreground text-sm'>
-        {t('dashboard.loading')}
-      </div>
-    );
-  if (error) return <div className='text-sm text-red-600'>{error}</div>;
+  if (loading) {
+    return <DashboardSkeleton />;
+  }
+
+  const { employees, departments, leaves, payslips, evaluations } = data;
+
+  const activeEmployees = employees.filter((e: Employee) => e.status === 'active');
+  const pendingLeavesCount = leaves.filter((l: Leave) => l.status === 'pending').length;
+  const publishedPayslips = payslips.filter((p: Payslip) => p.status === 'published');
+  const totalNetPayroll = publishedPayslips.reduce((s: number, p: Payslip) => s + (p.net || 0), 0);
+  const averageEvaluation = evaluations.length
+    ? (evaluations.reduce((s: number, ev: Evaluation) => s + (ev.score || 0), 0) / evaluations.length).toFixed(1)
+    : 'N/A';
 
   return (
-    <PageContainer scrollable={true} className='w-full space-y-6'>
-      <div className='flex w-full flex-col gap-6'>
-        <div className='flex items-center justify-between'>
-          <h1 className='text-primary text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl'>
-            {t('dashboard.title')}
-          </h1>
-        </div>
+    <PageContainer scrollable={true}>
+      <div className=" w-full p-0 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">
+        <div className="mx-auto sm:p-6 lg:p-8">
+          {/* Metrics cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <MetricCard
+              label="Active Employees"
+              value={activeEmployees.length}
+              trend={hiringTrend.slice(-2).map((d) => d.hires)}
+              gradient="from-blue-500 to-cyan-500"
+              icon={<UsersIcon />}
+            />
+            <MetricCard
+              label="Departments"
+              value={departments.length}
+              gradient="from-purple-500 to-pink-500"
+              icon={<BuildingIcon />}
+            />
+            <MetricCard
+              label="Pending Leaves"
+              value={pendingLeavesCount}
+              gradient="from-amber-500 to-orange-500"
+              icon={<CalendarIcon />}
+            />
+            <MetricCard
+              label="Avg Evaluation"
+              value={averageEvaluation}
+              gradient="from-emerald-500 to-teal-500"
+              icon={<StarIcon />}
+            />
+          </div>
 
-        {/* Metrics cards */}
-        <div className='grid grid-cols-2 gap-4 lg:grid-cols-4'>
-          <MetricCard
-            label={t('dashboard.metrics.activeEmployees')}
-            value={activeEmployees.length}
-            trend={hiringTrend.slice(-2).map((d) => d.hires)}
-          />
-          <MetricCard
-            label={t('dashboard.metrics.departments')}
-            value={departments.length}
-          />
-          <MetricCard
-            label={t('dashboard.metrics.pendingLeaves')}
-            value={pendingLeavesCount}
-          />
-          <MetricCard
-            label={t('dashboard.metrics.avgEvaluation')}
-            value={averageEvaluation}
-          />
-        </div>
+          {/* Charts grid */}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+            <ChartBox title="Hiring Trend" subtitle="Last 6 months">
+              <ResponsiveContainer width="100%" height={240}>
+                <LineChart data={hiringTrend}>
+                  <defs>
+                    <linearGradient id="colorHires" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#6366F1" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#6366F1" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="month" tick={{ fontSize: 12 }} stroke="#94a3b8" />
+                  <YAxis allowDecimals={false} stroke="#94a3b8" />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      border: 'none',
+                      borderRadius: '12px',
+                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="hires"
+                    stroke="#6366F1"
+                    strokeWidth={3}
+                    dot={{ r: 5, fill: '#6366F1', strokeWidth: 2, stroke: '#fff' }}
+                    activeDot={{ r: 7 }}
+                    fill="url(#colorHires)"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </ChartBox>
 
-        {/* Charts grid */}
-        <div className='grid grid-cols-1 gap-6 xl:grid-cols-3'>
-          <ChartBox
-            title={t('dashboard.sections.hiringTrend')}
-            subtitle={t('dashboard.metrics.payrollGrowth')}
-          >
-            <ResponsiveContainer width='100%' height={240}>
-              <LineChart data={hiringTrend}>
-                <XAxis dataKey='month' tick={{ fontSize: 12 }} />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
-                <Line
-                  type='monotone'
-                  dataKey='hires'
-                  stroke='#6366F1'
-                  strokeWidth={3}
-                  dot={{ r: 4 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </ChartBox>
-          <ChartBox
-            title={t('dashboard.sections.payrollDistribution')}
-            subtitle={t('dashboard.metrics.netPayroll')}
-          >
-            <ResponsiveContainer width='100%' height={240}>
-              <BarChart data={payrollByDept}>
-                <XAxis dataKey='dept' tick={{ fontSize: 12 }} />
-                <YAxis />
-                <Tooltip formatter={(v) => `€ ${Number(v).toLocaleString()}`} />
-                <Bar dataKey='net' radius={[6, 6, 0, 0]} fill='#10B981'>
-                  {payrollByDept.map((_, i) => (
-                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-            <div className='text-muted-foreground mt-2 text-xs'>
-              € {totalNetPayroll.toLocaleString()}
+            <ChartBox title="Payroll Distribution" subtitle={`Total: MAD${totalNetPayroll.toLocaleString()}`}>
+              <ResponsiveContainer width="100%" height={240}>
+                <BarChart data={payrollByDept}>
+                  <XAxis dataKey="dept" tick={{ fontSize: 12 }} stroke="#94a3b8" />
+                  <YAxis stroke="#94a3b8" />
+                  <Tooltip
+                    formatter={(v) => `MAD${Number(v).toLocaleString()}`}
+                    contentStyle={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      border: 'none',
+                      borderRadius: '12px',
+                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                    }}
+                  />
+                  <Bar dataKey="net" radius={[8, 8, 0, 0]}>
+                    {payrollByDept.map((_: any, i: number) => (
+                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartBox>
+
+            <ChartBox title="Leave Status" subtitle={`${leaves.length} total requests`}>
+              <ResponsiveContainer width="100%" height={240}>
+                <PieChart>
+                  <Pie
+                    data={leaveStatusData}
+                    dataKey="value"
+                    nameKey="status"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={90}
+                    paddingAngle={3}
+                  >
+                    {leaveStatusData.map((_: any, i: number) => (
+                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      border: 'none',
+                      borderRadius: '12px',
+                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </ChartBox>
+          </div>
+
+          {/* Bottom section */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <ChartBox title="Performance Scores" subtitle="Top 6 employees">
+              <ResponsiveContainer width="100%" height={300}>
+                <RadarChart data={performanceData} outerRadius={100}>
+                  <PolarGrid stroke="#cbd5e1" />
+                  <PolarAngleAxis dataKey="employee" tick={{ fontSize: 12 }} />
+                  <PolarRadiusAxis angle={30} domain={[0, 5]} tick={{ fontSize: 10 }} />
+                  <Radar
+                    name="Score"
+                    dataKey="score"
+                    stroke="#8B5CF6"
+                    fill="#8B5CF6"
+                    fillOpacity={0.6}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      border: 'none',
+                      borderRadius: '12px',
+                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                    }}
+                  />
+                </RadarChart>
+              </ResponsiveContainer>
+            </ChartBox>
+
+            <div className="grid gap-6">
+              <ListBox
+                title="Recent Leaves"
+                items={leaves.slice(0, 5).map((l: Leave) => ({
+                  id: l.id,
+                  primary: `Leave Request #${l.id}`,
+                  secondary: l.status
+                }))}
+              />
+              <ListBox
+                title="Recent Payslips"
+                items={publishedPayslips.slice(0, 5).map((p: Payslip) => ({
+                  id: p.id,
+                  primary: `${p.period}`,
+                  secondary: `MAD${p.net.toLocaleString()}`
+                }))}
+              />
             </div>
-          </ChartBox>
-          <ChartBox
-            title={t('dashboard.sections.leaveStatus')}
-            subtitle={t('dashboard.metrics.pendingLeaves')}
-          >
-            <ResponsiveContainer width='100%' height={240}>
-              <PieChart>
-                <Pie
-                  data={leaveStatusData}
-                  dataKey='value'
-                  nameKey='status'
-                  innerRadius={50}
-                  outerRadius={80}
-                  paddingAngle={4}
-                >
-                  {leaveStatusData.map((_, i) => (
-                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </ChartBox>
-        </div>
-
-        <div className='grid grid-cols-1 gap-6 xl:grid-cols-2'>
-          <ChartBox
-            title={t('dashboard.sections.performanceScores')}
-            subtitle={t('dashboard.metrics.avgEvaluation')}
-          >
-            <ResponsiveContainer width='100%' height={300}>
-              <RadarChart data={performanceData} outerRadius={95}>
-                <PolarGrid />
-                <PolarAngleAxis dataKey='employee' />
-                <PolarRadiusAxis angle={30} domain={[0, 5]} />
-                <Radar
-                  name='Score'
-                  dataKey='score'
-                  stroke='#8B5CF6'
-                  fill='#8B5CF6'
-                  fillOpacity={0.5}
-                />
-                <Tooltip />
-              </RadarChart>
-            </ResponsiveContainer>
-          </ChartBox>
-          <div className='grid gap-6'>
-            <ListBox
-              title={t('dashboard.sections.recentLeaves')}
-              items={leaves.slice(0, 5).map((l) => ({
-                id: l.id,
-                primary: `#${l.id}`,
-                secondary: l.status
-              }))}
-            />
-            <ListBox
-              title={t('dashboard.sections.recentPayslips')}
-              items={publishedPayslips.slice(0, 5).map((p) => ({
-                id: p.id,
-                primary: `${p.period} #${p.id}`,
-                secondary: `€ ${p.net}`
-              }))}
-              footer={`€ ${totalNetPayroll.toLocaleString()}`}
-            />
-            <ListBox
-              title={t('dashboard.sections.evaluations')}
-              items={evaluations.slice(0, 5).map((ev) => ({
-                id: ev.id,
-                primary: `E${ev.employeeId}`,
-                secondary: ev.score.toString()
-              }))}
-            />
           </div>
         </div>
       </div>
+
+    </PageContainer>
+     );
+}
+
+function DashboardSkeleton() {
+  return (
+    <PageContainer scrollable={true}>  <div className="min-h-screen w-full p-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">
+      <div className="mx-auto  p-4 sm:p-6 lg:p-8 animate-pulse">
+        {/* Metrics skeleton */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-32 rounded-2xl bg-white/50 dark:bg-slate-900/50" />
+          ))}
+        </div>
+
+        {/* Charts skeleton */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-80 rounded-2xl bg-white/50 dark:bg-slate-900/50" />
+          ))}
+        </div>
+
+        {/* Bottom section skeleton */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <div className="h-96 rounded-2xl bg-white/50 dark:bg-slate-900/50" />
+          <div className="space-y-6">
+            <div className="h-44 rounded-2xl bg-white/50 dark:bg-slate-900/50" />
+            <div className="h-44 rounded-2xl bg-white/50 dark:bg-slate-900/50" />
+          </div>
+        </div>
+      </div>
+    </div>
     </PageContainer>
   );
 }
 
 function MetricCard({
-  label,
-  value,
-  trend,
-  icon
-}: {
+                      label,
+                      value,
+                      trend,
+                      gradient,
+                      icon
+                    }: {
   label: string;
   value: number | string;
   trend?: number[];
+  gradient: string;
   icon?: React.ReactNode;
 }) {
   return (
-    <div className='group relative transform overflow-hidden rounded-2xl border bg-gradient-to-br from-neutral-50 to-neutral-100 p-4 shadow-sm transition-transform hover:-translate-y-1 hover:shadow-lg dark:from-gray-900 dark:to-gray-800'>
-      <div className='flex items-start justify-between'>
-        <div className='flex items-center gap-3'>
-          <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20'>
-            {icon ?? (
-              <svg
-                width='20'
-                height='20'
-                viewBox='0 0 24 24'
-                fill='none'
-                xmlns='http://www.w3.org/2000/svg'
-                aria-hidden
-              >
-                <path
-                  d='M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5z'
-                  stroke='currentColor'
-                  strokeWidth='1.5'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                />
-                <path
-                  d='M20 21v-1a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v1'
-                  stroke='currentColor'
-                  strokeWidth='1.5'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                />
-              </svg>
-            )}
+    <div className="group relative overflow-hidden rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-white/20 dark:border-slate-700/50">
+      <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
+
+      <div className="relative flex items-start justify-between">
+        <div className="flex-1">
+          <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${gradient} mb-4 shadow-lg`}>
+            <div className="text-white">{icon}</div>
           </div>
-          <div>
-            <div className='text-muted-foreground text-xs tracking-wide uppercase'>
-              {label}
-            </div>
-            <div className='mt-1 text-2xl font-semibold'>{value}</div>
+          <div className="text-slate-600 dark:text-slate-400 text-sm font-medium uppercase tracking-wide mb-2">
+            {label}
+          </div>
+          <div className="text-4xl font-bold text-slate-900 dark:text-white">
+            {value}
           </div>
         </div>
+
         {trend && trend.length === 2 && (
-          <div
-            className={`flex items-center gap-2 text-sm font-medium ${trend[1] >= trend[0] ? 'text-green-600' : 'text-red-600'}`}
-          >
-            <span className='text-xs'>{trend[1] >= trend[0] ? '▲' : '▼'}</span>
-            <span>{trend[1] - trend[0] || 0}</span>
+          <div className={`flex flex-col items-end ${trend[1] >= trend[0] ? 'text-emerald-600' : 'text-rose-600'}`}>
+            <span className="text-2xl">{trend[1] >= trend[0] ? '↑' : '↓'}</span>
+            <span className="text-sm font-semibold">{Math.abs(trend[1] - trend[0])}</span>
           </div>
         )}
       </div>
-      <div className='pointer-events-none absolute inset-0 bg-gradient-to-tr from-indigo-500/10 via-transparent to-pink-500/0 opacity-0 transition-opacity group-hover:opacity-30' />
     </div>
   );
 }
 
 function ChartBox({
-  title,
-  subtitle,
-  children
-}: {
+                    title,
+                    subtitle,
+                    children
+                  }: {
   title: string;
   subtitle?: string;
   children: React.ReactNode;
 }) {
   return (
-    <div className='flex flex-col rounded-xl border bg-white/60 p-4 shadow-sm backdrop-blur-sm dark:bg-gray-900/60'>
-      <div className='mb-3 flex items-center justify-between'>
-        <h2 className='text-sm font-medium'>{title}</h2>
+    <div className="rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-white/20 dark:border-slate-700/50">
+      <div className="mb-6">
+        <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-1">{title}</h2>
         {subtitle && (
-          <span className='text-muted-foreground text-xs'>{subtitle}</span>
+          <p className="text-sm text-slate-600 dark:text-slate-400">{subtitle}</p>
         )}
       </div>
-      <div className='flex-1'>{children}</div>
+      <div>{children}</div>
     </div>
   );
 }
 
 function ListBox({
-  title,
-  items,
-  footer
-}: {
+                   title,
+                   items
+                 }: {
   title: string;
   items: { id: number; primary: string; secondary: string }[];
-  footer?: string;
 }) {
   return (
-    <div className='rounded-xl border bg-white p-4 shadow-sm dark:bg-gray-900'>
-      <h3 className='mb-3 text-sm font-medium'>{title}</h3>
-      <ul className='space-y-2 text-sm'>
+    <div className="rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl p-6 shadow-lg border border-white/20 dark:border-slate-700/50">
+      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{title}</h3>
+      <div className="space-y-2">
         {items.map((item) => (
-          <li
+          <div
             key={item.id}
-            className='flex justify-between rounded-md border px-3 py-2 transition-colors hover:bg-neutral-50 dark:hover:bg-gray-800'
+            className="flex justify-between items-center p-3 rounded-xl bg-slate-50/50 dark:bg-slate-800/50 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 transition-colors duration-200"
           >
-            <span>{item.primary}</span>
-            <span className='font-medium text-indigo-600 dark:text-indigo-400'>
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              {item.primary}
+            </span>
+            <span className="text-sm font-bold text-indigo-600 dark:text-indigo-400">
               {item.secondary}
             </span>
-          </li>
+          </div>
         ))}
-        {items.length === 0 && <li className='text-muted-foreground'>—</li>}
-      </ul>
-      {footer && (
-        <div className='text-muted-foreground mt-3 text-xs'>{footer}</div>
-      )}
+      </div>
     </div>
+  );
+}
+
+// Icons
+function UsersIcon() {
+  return (
+    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+    </svg>
+  );
+}
+
+function BuildingIcon() {
+  return (
+    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+    </svg>
+  );
+}
+
+function CalendarIcon() {
+  return (
+    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+    </svg>
+  );
+}
+
+function StarIcon() {
+  return (
+    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+    </svg>
   );
 }
