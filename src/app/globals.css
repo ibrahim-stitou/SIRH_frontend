@@ -49,6 +49,12 @@
   box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
 }
 
+/* Required field indicator */
+.required::after {
+  content: ' *';
+  @apply text-red-500;
+}
+
 /* Boutons Modernes */
 .btn {
   @apply inline-flex h-11 items-center justify-center rounded-xl px-5 text-sm font-medium whitespace-nowrap shadow-sm transition-all duration-200;

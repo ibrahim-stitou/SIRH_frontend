@@ -132,7 +132,8 @@ export const apiRoutes = {
       validate: (id: number | string) => `${API_BASE}/absences/${id}/validate`,
       close: (id: number | string) => `${API_BASE}/absences/${id}/close`,
       types: `${API_BASE}/absence-types`,
-      typesSimple: `${API_BASE}/absence-types/simple-list`
+      typesSimple: `${API_BASE}/absence-types/simple-list`,
+      refuse: (id: string | number) => `/absences/${id}/refuse`
     }
   }
 };

@@ -42,6 +42,7 @@ type DatePickerFieldProps = {
   dateFormat?: string;
   id?: string;
   showMonthYearPicker?: boolean;
+  withTime?: boolean;
 };
 
 export const DatePickerField: React.FC<DatePickerFieldProps> = ({
@@ -63,10 +64,12 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
   showClearButton = true,
   dateFormat,
   id,
-  showMonthYearPicker = true
+  withTime = false
 }) => {
   const { t, language } = useLanguage();
   const [open, setOpen] = React.useState(false);
+  const [hours, setHours] = React.useState('09');
+  const [minutes, setMinutes] = React.useState('00');
 
   // Get locale based on current language
   const locale = localeMap[language as keyof typeof localeMap] || fr;
@@ -76,7 +79,7 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
     if (!value) return null;
     if (value instanceof Date) return value;
 
-    // Try parsing string in YYYY-MM-DD format
+    // Try parsing string in YYYY-MM-DD format or ISO format
     try {
       const parsed = new Date(value);
       return isValid(parsed) ? parsed : null;
@@ -85,9 +88,22 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
     }
   }, [value]);
 
+  // Extract hours and minutes from dateValue when component mounts or value changes
+  React.useEffect(() => {
+    if (withTime && dateValue) {
+      const h = dateValue.getHours();
+      const m = dateValue.getMinutes();
+      setHours(h.toString().padStart(2, '0'));
+      setMinutes(m.toString().padStart(2, '0'));
+    }
+  }, [dateValue, withTime]);
+
   // Format for display
-  const displayFormat =
-    dateFormat || (language === 'en' ? 'MM/dd/yyyy' : 'dd/MM/yyyy');
+  const displayFormat = React.useMemo(() => {
+    if (dateFormat) return dateFormat;
+    const baseFormat = language === 'en' ? 'MM/dd/yyyy' : 'dd/MM/yyyy';
+    return withTime ? `${baseFormat} HH:mm` : baseFormat;
+  }, [dateFormat, language, withTime]);
 
   // Default placeholder
   const defaultPlaceholder =
@@ -104,16 +120,40 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
   const handleSelect = React.useCallback(
     (day: Date | undefined) => {
       if (day) {
-        // Return ISO string format (YYYY-MM-DD)
-        const isoString = format(day, 'yyyy-MM-dd');
-        onChange(isoString);
+        if (withTime) {
+          // Include time in ISO string (YYYY-MM-DDTHH:mm:ss)
+          const dateWithTime = new Date(day);
+          dateWithTime.setHours(parseInt(hours, 10));
+          dateWithTime.setMinutes(parseInt(minutes, 10));
+          dateWithTime.setSeconds(0);
+          const isoString = dateWithTime.toISOString();
+          onChange(isoString);
+        } else {
+          // Return ISO string format (YYYY-MM-DD)
+          const isoString = format(day, 'yyyy-MM-dd');
+          onChange(isoString);
+        }
       } else {
         onChange(null);
       }
-      setOpen(false);
+      if (!withTime) {
+        setOpen(false);
+      }
     },
-    [onChange]
+    [onChange, withTime, hours, minutes]
   );
+
+  const handleTimeConfirm = React.useCallback(() => {
+    if (dateValue) {
+      const dateWithTime = new Date(dateValue);
+      dateWithTime.setHours(parseInt(hours, 10));
+      dateWithTime.setMinutes(parseInt(minutes, 10));
+      dateWithTime.setSeconds(0);
+      const isoString = dateWithTime.toISOString();
+      onChange(isoString);
+    }
+    setOpen(false);
+  }, [dateValue, hours, minutes, onChange]);
 
   const handleClear = React.useCallback(
     (e: React.MouseEvent) => {
@@ -209,9 +249,49 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
             selected={dateValue || undefined}
             onSelect={handleSelect}
             disabled={disabled ? true : dateConstraints}
-            className='rounded-md border shadow-sm'
+            className='rounded-md border-0 shadow-sm'
             captionLayout='dropdown'
           />
+          {withTime && (
+            <div className='border-t p-3'>
+              <div className='flex items-center gap-2'>
+                <div className='flex flex-1 items-center gap-2'>
+                  <label className='text-sm font-medium'>Heure:</label>
+                  <input
+                    type='number'
+                    min='0'
+                    max='23'
+                    value={hours}
+                    onChange={(e) => {
+                      const val = Math.min(23, Math.max(0, parseInt(e.target.value) || 0));
+                      setHours(val.toString().padStart(2, '0'));
+                    }}
+                    className='w-16 rounded-md border px-2 py-1 text-center text-sm'
+                  />
+                  <span>:</span>
+                  <input
+                    type='number'
+                    min='0'
+                    max='59'
+                    value={minutes}
+                    onChange={(e) => {
+                      const val = Math.min(59, Math.max(0, parseInt(e.target.value) || 0));
+                      setMinutes(val.toString().padStart(2, '0'));
+                    }}
+                    className='w-16 rounded-md border px-2 py-1 text-center text-sm'
+                  />
+                </div>
+                <Button
+                  size='sm'
+                  onClick={handleTimeConfirm}
+                  disabled={!dateValue}
+                  className='ml-2'
+                >
+                  OK
+                </Button>
+              </div>
+            </div>
+          )}
         </PopoverContent>
       </Popover>
 

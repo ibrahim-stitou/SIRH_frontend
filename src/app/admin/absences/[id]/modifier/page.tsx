@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Textarea } from '@/components/ui/textarea';
-import { SelectField } from '@/components/custom/SelectField';
-import { DatePickerField } from '@/components/custom/DatePickerField';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { toast } from 'sonner';
-import apiClient from '@/lib/api';
-import { apiRoutes } from '@/config/apiRoutes';
+import { useEffect, useState } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+import { SelectField } from "@/components/custom/SelectField";
+import { DatePickerField } from "@/components/custom/DatePickerField";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
+import apiClient from "@/lib/api";
+import { apiRoutes } from "@/config/apiRoutes";
 import {
   ArrowLeft,
   Save,
@@ -25,25 +25,24 @@ import {
   Clock,
   Info,
   AlertCircle
-} from 'lucide-react';
-import { format, parseISO, differenceInDays, isAfter, differenceInMilliseconds, isValid } from 'date-fns';
-import { fr } from 'date-fns/locale';
-import { cn } from '@/lib/utils';
-import PageContainer from '@/components/layout/page-container';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Switch } from '@/components/ui/switch';
-import { FileUploader } from '@/components/file-uploader';
+} from "lucide-react";
+import { format, parseISO, isAfter, differenceInMilliseconds, isValid } from "date-fns";
+import { fr } from "date-fns/locale";
+import { cn } from "@/lib/utils";
+import PageContainer from "@/components/layout/page-container";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Switch } from "@/components/ui/switch";
+import { FileUploader } from "@/components/file-uploader";
 
-// Schema de validation
 const absenceSchema = z.object({
-  employeeId: z.string().min(1, 'Employé requis'),
-  type_absence_id: z.string().min(1, 'Type d\'absence requis'),
-  date_debut: z.string().min(1, 'Date de début requise'),
-  date_fin: z.string().min(1, 'Date de fin requise'),
+  employeeId: z.string().min(1, "Employé requis"),
+  type_absence_id: z.string().min(1, "Type d'absence requis"),
+  date_debut: z.string().min(1, "Date de début requise"),
+  date_fin: z.string().min(1, "Date de fin requise"),
   motif: z.string().optional(),
   justifie: z.boolean().default(false),
   commentaire_rh: z.string().optional(),
-  statut: z.enum(['brouillon', 'validee']).default('brouillon'),
+  statut: z.enum(["brouillon", "validee"]).default("brouillon"),
   justificatif: z.any().optional()
 }).refine((data) => {
   if (data.date_debut && data.date_fin) {
@@ -53,41 +52,23 @@ const absenceSchema = z.object({
   }
   return true;
 }, {
-  message: 'La date de début doit être antérieure ou égale à la date de fin',
-  path: ['date_fin']
+  message: "La date de début doit être antérieure ou égale à la date de fin",
+  path: ["date_fin"]
 });
 
 type AbsenceFormValues = z.infer<typeof absenceSchema>;
 
-interface Employee {
-  id: number | string;
-  firstName: string;
-  lastName: string;
-  matricule?: string;
-  departement?: {
-    name: string;
-  };
-}
-
-interface AbsenceType {
-  id: number;
-  code: string;
-  libelle: string;
-  couleur_hexa?: string;
-  est_remuneree?: boolean;
-  deduit_compteur_conge?: boolean;
-  necessite_justification?: boolean;
-  est_conge?: boolean;
-}
-
-export default function AjouterAbsencePage() {
+export default function ModifierAbsencePage() {
   const router = useRouter();
+  const params = useParams();
+  const id = params?.id as string;
   const [loading, setLoading] = useState(false);
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [absenceTypes, setAbsenceTypes] = useState<AbsenceType[]>([]);
-  const [selectedType, setSelectedType] = useState<AbsenceType | null>(null);
+  const [employees, setEmployees] = useState<any[]>([]);
+  const [absenceTypes, setAbsenceTypes] = useState<any[]>([]);
+  const [selectedType, setSelectedType] = useState<any | null>(null);
   const [calculatedDuration, setCalculatedDuration] = useState<{ days: number, hours: number, minutes: number }>({ days: 0, hours: 0, minutes: 0 });
   const [justificatifFile, setJustificatifFile] = useState<File | null>(null);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   const form = useForm<AbsenceFormValues>({
     resolver: zodResolver(absenceSchema),
@@ -104,33 +85,42 @@ export default function AjouterAbsencePage() {
     }
   });
 
-  // Charger les employés
+  // Charger les données initiales
   useEffect(() => {
-    const loadEmployees = async () => {
+    async function fetchData() {
       try {
-        const response = await apiClient.get(apiRoutes.admin.employees.simpleList);
-        setEmployees(response.data?.data || []);
-      } catch (error) {
-        console.error('Erreur chargement employés:', error);
-        toast.error('Erreur lors du chargement des employés');
+        const [empRes, typeRes, absenceRes] = await Promise.all([
+          apiClient.get(apiRoutes.admin.employees.simpleList),
+          apiClient.get(apiRoutes.admin.absences.types),
+          apiClient.get(apiRoutes.admin.absences.show(id))
+        ]);
+        setEmployees(empRes.data?.data || []);
+        setAbsenceTypes(typeRes.data?.data || []);
+        const absence = absenceRes.data?.data;
+        if (absence) {
+          form.reset({
+            employeeId: String(absence.employeeId),
+            type_absence_id: String(absence.type_absence_id),
+            date_debut: absence.date_debut,
+            date_fin: absence.date_fin,
+            motif: absence.motif || '',
+            justifie: !!absence.justifie,
+            commentaire_rh: absence.commentaire_rh || '',
+            statut: absence.statut || 'brouillon',
+            justificatif: null // On ne pré-remplit pas le fichier
+          });
+          // Sélectionner le type d'absence pour l'affichage
+          setSelectedType(typeRes.data?.data.find((t: any) => t.id === Number(absence.type_absence_id)) || null);
+        }
+      } catch (e) {
+        toast.error("Erreur lors du chargement de l'absence");
+      } finally {
+        setInitialLoading(false);
       }
-    };
-    loadEmployees();
-  }, []);
-
-  // Charger les types d'absence
-  useEffect(() => {
-    const loadAbsenceTypes = async () => {
-      try {
-        const response = await apiClient.get(apiRoutes.admin.absences.types);
-        setAbsenceTypes(response.data?.data || []);
-      } catch (error) {
-        console.error('Erreur chargement types:', error);
-        toast.error('Erreur lors du chargement des types d\'absence');
-      }
-    };
-    loadAbsenceTypes();
-  }, []);
+    }
+    fetchData();
+    // eslint-disable-next-line
+  }, [id]);
 
   // Calculer la durée automatiquement (jours, heures, minutes)
   useEffect(() => {
@@ -142,7 +132,6 @@ export default function AjouterAbsencePage() {
           if (isValid(debut) && isValid(fin) && !isAfter(debut, fin)) {
             const diffMs = differenceInMilliseconds(fin, debut);
             if (diffMs >= 0) {
-              // Calcul détaillé
               const totalMinutes = Math.floor(diffMs / (1000 * 60));
               const days = Math.floor(totalMinutes / (60 * 24));
               const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
@@ -160,18 +149,18 @@ export default function AjouterAbsencePage() {
       }
     });
     return () => subscription.unsubscribe();
-  }, [form.watch]);
+  }, [form]);
 
   // Mettre à jour le type sélectionné
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
       if (name === 'type_absence_id' && value.type_absence_id) {
-        const type = absenceTypes.find(t => t.id === Number(value.type_absence_id));
+        const type = absenceTypes.find((t) => t.id === Number(value.type_absence_id));
         setSelectedType(type || null);
       }
     });
     return () => subscription.unsubscribe();
-  }, [form.watch, absenceTypes]);
+  }, [form, absenceTypes]);
 
   const onSubmit = async (data: AbsenceFormValues) => {
     setLoading(true);
@@ -188,19 +177,11 @@ export default function AjouterAbsencePage() {
         statut: data.statut,
         createdBy: 'admin'
       };
-
-      await apiClient.post(apiRoutes.admin.absences.create, payload);
-
-      toast.success(
-        data.statut === 'validee'
-          ? 'Absence créée et validée avec succès !'
-          : 'Absence créée en brouillon avec succès !'
-      );
-
+      await apiClient.put(apiRoutes.admin.absences.update(id), payload);
+      toast.success('Absence modifiée avec succès !');
       router.push('/admin/absences');
     } catch (error: any) {
-      console.error('Erreur création absence:', error);
-      toast.error(error.response?.data?.message || 'Erreur lors de la création de l\'absence');
+      toast.error(error.response?.data?.message || "Erreur lors de la modification de l'absence");
     } finally {
       setLoading(false);
     }
@@ -211,19 +192,26 @@ export default function AjouterAbsencePage() {
     value: String(emp.id)
   }));
 
-  const typeOptions = absenceTypes
-    .filter(type => type)
-    .map(type => ({
-      label: type.libelle,
-      value: String(type.id)
-    }));
+  const typeOptions = absenceTypes.map(type => ({
+    label: type.libelle,
+    value: String(type.id)
+  }));
 
   const selectedEmployee = employees.find(e => String(e.id) === form.watch('employeeId'));
 
+  if (initialLoading) {
+    return (
+      <PageContainer scrollable>
+        <div className="flex h-96 items-center justify-center">
+          <div className="animate-spin h-8 w-8 rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+      </PageContainer>
+    );
+  }
+
   return (
     <PageContainer scrollable>
-      <div className='space-y-6'>
-        {/* Header */}
+      <div className='space-y-6 w-full'>
         <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
           <div className='flex items-center gap-3'>
             <Button
@@ -236,19 +224,17 @@ export default function AjouterAbsencePage() {
             </Button>
             <div>
               <h1 className='text-2xl font-bold tracking-tight md:text-3xl'>
-                Nouvelle absence
+                Modifier une absence
               </h1>
               <p className='text-muted-foreground mt-1 text-sm'>
-                Créer une absence ou un congé pour un employé
+                Modifier les informations d&apos;une absence ou d&apos;un congé
               </p>
             </div>
           </div>
         </div>
-
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
             <div className='grid gap-6 lg:grid-cols-3'>
-              {/* Formulaire principal */}
               <div className='lg:col-span-2'>
                 <Card className="py-0 rounded-lg">
                   <CardHeader className='border-b bg-gradient-to-r from-primary/5 to-primary/10 pt-2 pb-2 rounded-t-lg'>
@@ -259,7 +245,7 @@ export default function AjouterAbsencePage() {
                       <div>
                         <CardTitle className='text-xl'>Formulaire d&apos;absence</CardTitle>
                         <p className='text-muted-foreground mt-0.5 text-sm'>
-                          Remplissez tous les champs requis
+                          Modifiez les champs nécessaires
                         </p>
                       </div>
                     </div>
@@ -271,7 +257,6 @@ export default function AjouterAbsencePage() {
                         <User className='h-4 w-4 text-primary' />
                         <h3 className='font-semibold text-sm'>Informations de base</h3>
                       </div>
-
                       <div className='grid gap-4 sm:grid-cols-2'>
                         <FormField
                           control={form.control}
@@ -291,7 +276,6 @@ export default function AjouterAbsencePage() {
                             </FormItem>
                           )}
                         />
-
                         <FormField
                           control={form.control}
                           name='type_absence_id'
@@ -311,8 +295,6 @@ export default function AjouterAbsencePage() {
                           )}
                         />
                       </div>
-
-                      {/* Infos employé sélectionné */}
                       {selectedEmployee && (
                         <Alert className='col-span-2'>
                           <Info className='h-4 w-4' />
@@ -337,8 +319,6 @@ export default function AjouterAbsencePage() {
                           </AlertDescription>
                         </Alert>
                       )}
-
-                      {/* Infos type sélectionné */}
                       {selectedType && (
                         <div className='col-span-2 rounded-lg border-2 p-3' style={{ borderColor: selectedType.couleur_hexa || '#94a3b8' }}>
                           <div className='flex items-center gap-2 mb-2'>
@@ -371,56 +351,51 @@ export default function AjouterAbsencePage() {
                         </div>
                       )}
                     </div>
-
                     <Separator />
-
                     {/* Section 2: Période d'absence */}
                     <div className='space-y-4'>
                       <div className='flex items-center gap-2 pb-2'>
                         <Calendar className='h-4 w-4 text-primary' />
                         <h3 className='font-semibold text-sm'>Période d&apos;absence</h3>
                       </div>
-                    <div className='grid gap-4 sm:grid-cols-2'>
-                      <FormField
-                        control={form.control}
-                        name='date_debut'
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className='required'>Date de début *</FormLabel>
-                            <FormControl>
-                              <DatePickerField
-                                value={field.value}
-                                onChange={field.onChange}
-                                placeholder='Sélectionner une date'
-                                withTime
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name='date_fin'
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className='required'>Date de fin *</FormLabel>
-                            <FormControl>
-                              <DatePickerField
-                                value={field.value}
-                                onChange={field.onChange}
-                                placeholder='Sélectionner une date'
-                                withTime
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                      {/* Durée calculée */}
+                      <div className='grid gap-4 sm:grid-cols-2'>
+                        <FormField
+                          control={form.control}
+                          name='date_debut'
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className='required'>Date de début *</FormLabel>
+                              <FormControl>
+                                <DatePickerField
+                                  value={field.value}
+                                  onChange={field.onChange}
+                                  placeholder='Sélectionner une date'
+                                  withTime
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name='date_fin'
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className='required'>Date de fin *</FormLabel>
+                              <FormControl>
+                                <DatePickerField
+                                  value={field.value}
+                                  onChange={field.onChange}
+                                  placeholder='Sélectionner une date'
+                                  withTime
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                       {(calculatedDuration.days > 0 || calculatedDuration.hours > 0 || calculatedDuration.minutes > 0) && (
                         <Alert>
                           <Clock className='h-4 w-4' />
@@ -440,125 +415,118 @@ export default function AjouterAbsencePage() {
                         </Alert>
                       )}
                     </div>
-
                     <Separator />
-
                     {/* Section 3: Détails */}
                     <div className='space-y-4'>
                       <div className='flex items-center gap-2 pb-2'>
                         <FileText className='h-4 w-4 text-primary' />
                         <h3 className='font-semibold text-sm'>Détails de l&apos;absence</h3>
                       </div>
-                    <FormField
-                      control={form.control}
-                      name='motif'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Motif</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              {...field}
-                              placeholder='Raison de l&apos;absence...'
-                              rows={3}
-                              className='resize-none'
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name='justifie'
-                      render={({ field }) => (
-                        <FormItem className='flex flex-row items-center justify-between rounded-lg border p-3'>
-                          <div className='space-y-0.5'>
-                            <FormLabel className='text-base'>Absence justifiée</FormLabel>
-                            <div className='text-muted-foreground text-sm'>
-                              L&apos;employé a fourni un justificatif
+                      <FormField
+                        control={form.control}
+                        name='motif'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Motif</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                {...field}
+                                placeholder='Raison de l&apos;absence...'
+                                rows={3}
+                                className='resize-none'
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name='justifie'
+                        render={({ field }) => (
+                          <FormItem className='flex flex-row items-center justify-between rounded-lg border p-3'>
+                            <div className='space-y-0.5'>
+                              <FormLabel className='text-base'>Absence justifiée</FormLabel>
+                              <div className='text-muted-foreground text-sm'>
+                                L&apos;employé a fourni un justificatif
+                              </div>
+                            </div>
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      {selectedType?.necessite_justification && (
+                        <div className='rounded-lg border-2 border-amber-200 bg-amber-50/50 p-4'>
+                          <div className='mb-3 flex items-center gap-2'>
+                            <AlertCircle className='h-5 w-5 text-amber-600' />
+                            <div>
+                              <h4 className='font-semibold text-amber-900'>Justificatif requis</h4>
+                              <p className='text-amber-700 text-sm'>
+                                Ce type d&apos;absence nécessite un document justificatif
+                              </p>
                             </div>
                           </div>
-                          <FormControl>
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Section upload justificatif si nécessaire */}
-                    {selectedType?.necessite_justification && (
-                      <div className='rounded-lg border-2 border-amber-200 bg-amber-50/50 p-4'>
-                        <div className='mb-3 flex items-center gap-2'>
-                          <AlertCircle className='h-5 w-5 text-amber-600' />
-                          <div>
-                            <h4 className='font-semibold text-amber-900'>Justificatif requis</h4>
-                            <p className='text-amber-700 text-sm'>
-                              Ce type d&apos;absence nécessite un document justificatif
-                            </p>
-                          </div>
+                          <FormField
+                            control={form.control}
+                            name='justificatif'
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Document justificatif</FormLabel>
+                                <FormControl>
+                                  <FileUploader
+                                    value={justificatifFile ? [justificatifFile] : []}
+                                    onValueChange={(files) => {
+                                      const fileList = Array.isArray(files) ? files : [];
+                                      const file = fileList.length > 0 ? fileList[0] : null;
+                                      setJustificatifFile(file);
+                                      field.onChange(file);
+                                    }}
+                                    maxFiles={1}
+                                    maxSize={5 * 1024 * 1024}
+                                    accept={{
+                                      'application/pdf': ['.pdf'],
+                                      'image/*': ['.png', '.jpg', '.jpeg'],
+                                      'application/msword': ['.doc'],
+                                      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
+                                    }}
+                                  />
+                                </FormControl>
+                                <p className='text-muted-foreground text-xs'>
+                                  Formats acceptés: PDF, Images, Word (max 5 MB)
+                                </p>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
                         </div>
-                        <FormField
-                          control={form.control}
-                          name='justificatif'
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Document justificatif</FormLabel>
-                              <FormControl>
-                                <FileUploader
-                                  value={justificatifFile ? [justificatifFile] : []}
-                                  onValueChange={(files) => {
-                                    const fileList = Array.isArray(files) ? files : [];
-                                    const file = fileList.length > 0 ? fileList[0] : null;
-                                    setJustificatifFile(file);
-                                    field.onChange(file);
-                                  }}
-                                  maxFiles={1}
-                                  maxSize={5 * 1024 * 1024}
-                                  accept={{
-                                    'application/pdf': ['.pdf'],
-                                    'image/*': ['.png', '.jpg', '.jpeg'],
-                                    'application/msword': ['.doc'],
-                                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
-                                  }}
-                                />
-                              </FormControl>
-                              <p className='text-muted-foreground text-xs'>
-                                Formats acceptés: PDF, Images, Word (max 5 MB)
-                              </p>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    )}
-
-                    <FormField
-                      control={form.control}
-                      name='commentaire_rh'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Commentaire RH (interne)</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              {...field}
-                              placeholder='Commentaire pour l&apos;équipe RH...'
-                              rows={2}
-                              className='resize-none'
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
                       )}
-                    />
+                      <FormField
+                        control={form.control}
+                        name='commentaire_rh'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Commentaire RH (interne)</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                {...field}
+                                placeholder='Commentaire pour l&apos;équipe RH...'
+                                rows={2}
+                                className='resize-none'
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
                   </CardContent>
                 </Card>
               </div>
-
               {/* Sidebar */}
               <div className='space-y-6'>
                 {/* Statut */}
@@ -597,7 +565,6 @@ export default function AjouterAbsencePage() {
                                 </div>
                               </div>
                             </div>
-
                             <div
                               onClick={() => field.onChange('validee')}
                               className={cn(
@@ -629,7 +596,6 @@ export default function AjouterAbsencePage() {
                     />
                   </CardContent>
                 </Card>
-
                 {/* Aide */}
                 <Card className='border-blue-200 bg-blue-50/50'>
                   <CardHeader>
@@ -661,7 +627,6 @@ export default function AjouterAbsencePage() {
                     </div>
                   </CardContent>
                 </Card>
-
                 {/* Actions */}
                 <div className='space-y-3'>
                   <Button
@@ -677,11 +642,10 @@ export default function AjouterAbsencePage() {
                     ) : (
                       <>
                         <Save className='h-4 w-4' />
-                        Enregistrer
+                        Enregistrer les modifications
                       </>
                     )}
                   </Button>
-
                   <Button
                     type='button'
                     variant='outline'
@@ -700,3 +664,4 @@ export default function AjouterAbsencePage() {
     </PageContainer>
   );
 }
+

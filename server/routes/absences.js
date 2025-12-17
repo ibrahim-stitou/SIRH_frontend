@@ -135,4 +135,29 @@ module.exports = function registerAbsencesRoutes(server, db) {
     const row = db.get('absences').find({ id }).value();
     return res.json({ status: 'success', message: 'Absence clôturée', data: row });
   });
+
+  // Refuser une absence (statut = refusee, motif_refus)
+  server.post('/absences/:id/refuse', (req, res) => {
+    const id = req.params.id;
+    const { motif_refus } = req.body;
+    const absences = db.get('absences');
+    const absence = absences.find({ id: isNaN(Number(id)) ? id : Number(id) }).value();
+
+    if (!absence) {
+      return res.status(404).json({ status: 'error', message: 'Absence non trouvée', data: null });
+    }
+
+    absences
+      .find({ id: isNaN(Number(id)) ? id : Number(id) })
+      .assign({ statut: 'refusee', motif_refus: motif_refus || '' })
+      .write();
+
+    const updated = absences.find({ id: isNaN(Number(id)) ? id : Number(id) }).value();
+
+    res.json({
+      status: 'success',
+      message: 'Absence refusée',
+      data: updated
+    });
+  });
 };

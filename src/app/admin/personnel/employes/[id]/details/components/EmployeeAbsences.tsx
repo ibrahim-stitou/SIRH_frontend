@@ -9,7 +9,9 @@ import {
   Clock,
   ChevronLeft,
   ChevronRight,
-  Plus
+  Plus,
+  LayoutGrid,
+  ArrowRight
 } from 'lucide-react';
 import { format, parseISO, getMonth, startOfYear, endOfYear } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -57,6 +59,7 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
   const [absences, setAbsences] = useState<Absence[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null);
 
   const loadAbsences = useCallback(async () => {
     setLoading(true);
@@ -88,6 +91,26 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
     loadAbsences();
   }, [loadAbsences]);
 
+  // Fonction pour scroller jusqu'à la fin
+  const scrollToEnd = useCallback(() => {
+    if (scrollContainerRef) {
+      scrollContainerRef.scrollTo({
+        left: scrollContainerRef.scrollWidth,
+        behavior: 'smooth'
+      });
+    }
+  }, [scrollContainerRef]);
+
+  // Fonction pour scroller jusqu'au début
+  const scrollToStart = useCallback(() => {
+    if (scrollContainerRef) {
+      scrollContainerRef.scrollTo({
+        left: 0,
+        behavior: 'smooth'
+      });
+    }
+  }, [scrollContainerRef]);
+
   const absencesByMonth = useMemo(() => {
     const grouped: { [key: number]: Absence[] } = {};
     for (let i = 0; i < 12; i++) {
@@ -117,21 +140,21 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
         <Tooltip delayDuration={150}>
           <TooltipTrigger asChild>
             <button
-              className='group relative w-full cursor-pointer overflow-hidden rounded-lg border-2 p-2 text-center shadow-sm transition-all duration-200 hover:shadow-md active:scale-95 md:p-3'
+              className='group relative w-full cursor-pointer overflow-hidden rounded-xl border p-2.5 text-center shadow-md transition-all duration-200 hover:scale-[1.02] hover:shadow-xl active:scale-95 md:p-3'
               style={{
-                borderColor: bgColor,
-                backgroundColor: `${bgColor}18`,
-                minHeight: '70px',
+                borderColor: `${bgColor}40`,
+                backgroundColor: `${bgColor}10`,
+                minHeight: '75px',
                 WebkitTapHighlightColor: 'transparent'
               }}
               type='button'
               aria-label={`${absence.type_absence?.libelle} du ${format(dateDebut, 'dd MMM', { locale: fr })} - ${absence.duree} jour${absence.duree > 1 ? 's' : ''}`}
             >
-              {/* Badge statut */}
-              <div className='absolute -right-1 -top-1'>
+              {/* Badge statut - Plus petit et discret */}
+              <div className='absolute right-1.5 top-1.5'>
                 <div
                   className={cn(
-                    'h-3 w-3 rounded-full border-2 border-white shadow-md',
+                    'h-2 w-2 rounded-full shadow-sm ring-1 ring-white/50',
                     absence.statut === 'validee' && 'bg-emerald-500',
                     absence.statut === 'brouillon' && 'bg-amber-500',
                     absence.statut === 'cloture' && 'bg-blue-500',
@@ -140,29 +163,24 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
                 />
               </div>
 
-              {/* Effet hover */}
-              <div className='absolute inset-0 bg-gradient-to-br from-white/0 to-white/20 opacity-0 transition-opacity group-hover:opacity-100' />
-
+              {/* Effet hover - Plus subtil */}
+              <div className='absolute inset-0 bg-gradient-to-br from-white/5 to-black/5 opacity-0 transition-opacity group-hover:opacity-100' />
               {/* Contenu */}
-              <div className='relative flex h-full flex-col items-center justify-center space-y-1'>
-                <div className='flex items-center justify-center gap-1'>
-                  <div
-                    className='h-3 w-3 flex-shrink-0 rounded-full shadow-sm'
-                    style={{ backgroundColor: bgColor }}
-                  />
+              <div className='relative flex h-full flex-col items-center justify-center space-y-1.5'>
+                <div className='flex items-center justify-center gap-1.5'>
                   <span
-                    className='truncate text-[10px] font-bold leading-none tracking-wide'
+                    className='truncate text-[11px] font-extrabold leading-none tracking-wide'
                     style={{ color: bgColor }}
                   >
                     {absence.type_absence?.code}
                   </span>
                 </div>
-                <div className='text-[10px] font-bold leading-tight text-foreground'>
+                <div className='text-[11px] font-semibold leading-tight text-foreground'>
                   {format(dateDebut, 'dd MMM', { locale: fr })}
                 </div>
-                <div className='flex items-center justify-center gap-1 rounded-full bg-background/60 px-1.5 py-0.5'>
+                <div className='flex items-center justify-center gap-1 rounded-full bg-background/80 px-2 py-0.5 shadow-sm ring-1 ring-black/5'>
                   <Clock className='h-2.5 w-2.5 flex-shrink-0 text-muted-foreground' />
-                  <span className='text-[9px] font-bold tabular-nums text-foreground'>
+                  <span className='text-[10px] font-black tabular-nums text-foreground'>
                     {absence.duree}j
                   </span>
                 </div>
@@ -172,29 +190,35 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
           <TooltipContent
             side='top'
             align='center'
-            sideOffset={5}
-            className='max-w-[280px] overflow-hidden rounded-lg border-2 bg-card p-0 shadow-xl sm:max-w-sm'
-            style={{ borderColor: bgColor }}
+            sideOffset={8}
+            className='max-w-[280px] overflow-hidden rounded-2xl border-2 bg-card p-0 shadow-2xl sm:max-w-sm'
+            style={{ borderColor: `${bgColor}60` }}
           >
             <div className='space-y-0'>
               {/* Header */}
               <div
-                className='flex items-center gap-3 p-3'
+                className='relative flex items-center gap-3 p-4'
                 style={{
-                  background: `linear-gradient(135deg, ${bgColor}15 0%, ${bgColor}05 100%)`
+                  background: `linear-gradient(135deg, ${bgColor}20 0%, ${bgColor}08 100%)`
                 }}
               >
+                {/* Barre latérale */}
                 <div
-                  className='flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg shadow-md'
+                  className='absolute left-0 top-0 h-full w-1.5 rounded-l-2xl'
+                  style={{ backgroundColor: bgColor }}
+                />
+
+                <div
+                  className='flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl shadow-lg ring-2 ring-white/50'
                   style={{ backgroundColor: bgColor }}
                 >
-                  <CalendarIcon className='h-5 w-5 text-white' />
+                  <CalendarIcon className='h-6 w-6 text-white drop-shadow-sm' />
                 </div>
                 <div className='min-w-0 flex-1'>
                   <div className='truncate text-sm font-bold text-foreground'>
                     {absence.type_absence?.libelle}
                   </div>
-                  <div className='truncate text-xs font-medium' style={{ color: bgColor }}>
+                  <div className='truncate text-xs font-semibold' style={{ color: bgColor }}>
                     {absence.type_absence?.code}
                   </div>
                 </div>
@@ -308,7 +332,7 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
   }
 
   return (
-    <Card className='overflow-hidden shadow-md transition-shadow hover:shadow-lg'>
+    <Card className='overflow-hidden shadow-md transition-shadow hover:shadow-lg py-0'>
       <CardHeader className='border-b bg-gradient-to-br from-muted/50 to-background p-4 md:p-6'>
         {/* Titre et description */}
         <div className='mb-4'>
@@ -342,7 +366,7 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
           </div>
 
           {/* Contrôles année + bouton */}
-          <div className='flex items-center gap-2'>
+          <div className='flex flex-wrap items-center gap-2'>
             <div className='flex items-center gap-1 rounded-lg bg-background p-1 shadow-sm ring-1 ring-border'>
               <Button
                 variant='ghost'
@@ -368,7 +392,7 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
             </div>
             <Button size='sm' className='h-8 gap-1.5 px-3 text-sm shadow-sm'>
               <Plus className='h-4 w-4' />
-              <span>+</span>
+              <span className='hidden sm:inline'>Ajouter</span>
             </Button>
           </div>
         </div>
@@ -388,57 +412,56 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
             </p>
           </div>
         ) : (
+          /* Vue Grille Responsive */
           <div className='relative'>
-            {/* Timeline scrollable avec scroll snap */}
-            <div className='relative overflow-x-auto overflow-y-visible rounded-lg bg-card/50 p-3 md:p-4'>
-              {/* Gradients de scroll */}
-              <div className='pointer-events-none absolute left-0 top-0 z-10 h-full w-6 bg-gradient-to-r from-card/80 via-card/50 to-transparent' />
-              <div className='pointer-events-none absolute right-0 top-0 z-10 h-full w-6 bg-gradient-to-l from-card/80 via-card/50 to-transparent' />
+            <div className='grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-12'>
+              {MONTHS.map((month, index) => {
+                const monthAbsences = absencesByMonth[index] || [];
 
-              <div className='flex min-w-max gap-3 pb-2 md:gap-4' style={{ scrollSnapType: 'x proximity' }}>
-                {MONTHS.map((month, index) => {
-                  const monthAbsences = absencesByMonth[index] || [];
-
-                  return (
-                    <div
-                      key={index}
-                      className={cn(
-                        'flex w-28 flex-shrink-0 flex-col transition-opacity',
-                        monthAbsences.length === 0 && 'opacity-40 hover:opacity-70'
-                      )}
-                    >
-                      {/* Header mois */}
-                      <div className='sticky top-0 z-20 mb-3 bg-card/50 backdrop-blur-sm'>
-                        <div className='group flex flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-primary/20 bg-gradient-to-br from-primary/10 to-background p-2.5 shadow-sm transition-all hover:shadow-md md:p-3'>
-                          <span className='text-sm font-bold text-primary md:text-base'>
+                return (
+                  <div
+                    key={index}
+                    className={cn(
+                      'flex flex-col transition-all duration-200',
+                      monthAbsences.length === 0 && 'opacity-50 hover:opacity-80'
+                    )}
+                  >
+                    {/* Header mois - Style distinctif */}
+                    <div className='mb-3'>
+                      <div className='group relative overflow-hidden rounded-2xl border-2 border-primary/30  p-3 shadow-lg ring-2 ring-primary/10 transition-all hover:border-primary/50 hover:shadow-xl hover:ring-primary/20 xl:p-2.5'>
+                        {/* Badge décoratif */}
+                        <div className='flex flex-col items-center justify-center'>
+                          <span className='text-base font-extrabold tracking-tight text-primary xl:text-sm'>
                             {month}
                           </span>
-                          <div className='mt-1 h-0.5 w-8 rounded-full bg-primary/40 md:w-10' />
-                          <div className='mt-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 md:h-6 md:w-6'>
-                            <span className='text-xs font-bold text-primary'>
-                              {monthAbsences.length}
-                            </span>
-                          </div>
                         </div>
                       </div>
-
-                      {/* Liste absences */}
-                      <div className='flex flex-col gap-2'>
-                        {monthAbsences.length > 0 ? (
-                          monthAbsences.map(renderMiniAbsenceCard)
-                        ) : (
-                          <div className='flex h-20 items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/20 bg-muted/10'>
-                            <span className='text-xs font-medium text-muted-foreground/50'>—</span>
-                          </div>
-                        )}
-                      </div>
                     </div>
-                  );
-                })}
-              </div>
+
+                    {/* Liste absences - Style carte classique */}
+                    <div className='flex flex-1 flex-col gap-2.5'>
+                      {monthAbsences.length > 0 ? (
+                        monthAbsences.slice(0, 3).map(renderMiniAbsenceCard)
+                      ) : (
+                        <div className='flex h-20 items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/20 bg-gradient-to-br from-muted/20 to-muted/5 backdrop-blur-sm transition-all hover:border-muted-foreground/30 hover:bg-muted/30'>
+                          <span className='text-xs font-medium text-muted-foreground/60'>—</span>
+                        </div>
+                      )}
+                      {monthAbsences.length > 3 && (
+                        <div className='flex items-center justify-center gap-1.5 rounded-lg border border-primary/30 bg-gradient-to-r from-primary/10 to-primary/5 py-1.5 text-xs font-bold text-primary shadow-sm transition-all hover:border-primary/40 hover:shadow-md'>
+                          <span className='flex h-4 w-4 items-center justify-center rounded-full bg-primary/20 text-[10px] font-black'>
+                            +
+                          </span>
+                          {monthAbsences.length - 3} autres
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          </div>
-        )}
+          </div>)}
+
       </CardContent>
     </Card>
   );
