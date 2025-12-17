@@ -244,7 +244,12 @@
     "totalRows": "lignes au total",
     "clear": "Effacer",
     "none": "Aucune donnée",
-    "all": "Tous"
+    "all": "Tous",
+    "export": {
+      "pdf": "Export PDF",
+      "excel": "Export Excel",
+      "noSelection": "Aucune ligne sélectionnée"
+    }
   },
   "employeeCreate": {
     "title": "Créer un employé",

@@ -1,6 +1,6 @@
 // Improved CustomTable.tsx with fixed bulk actions and selection
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { useCustomTable } from '@/hooks/use-custom-table';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import {
@@ -12,12 +12,14 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { CustomTableProps } from '@/components/custom/data-table/types';
+import { CustomTableProps, CustomTableBulkAction } from '@/components/custom/data-table/types';
 import { CustomTableToolbar } from '@/components/custom/data-table/custom-table-toolbar';
 import { IconLoader } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import CustomTablePagination from '@/components/custom/data-table/custom-table-pagination';
 import { useLanguage } from '@/context/LanguageContext';
+import { exportToPDF, exportToExcel } from '@/utils/table-export';
+import { FileText, FileSpreadsheet } from 'lucide-react';
 
 const CustomTable = <T extends Record<string, any>>({
   url,
@@ -90,6 +92,40 @@ const CustomTable = <T extends Record<string, any>>({
     setShowBulkActions(table.selectedRows.length > 0);
   }, [table.selectedRows]);
 
+  // Create automatic export actions
+  const defaultExportActions = useMemo<CustomTableBulkAction<T>[]>(() => {
+    // Export all columns except 'actions' - render functions are handled in export utils
+    const exportColumns = columns.filter(col =>
+      col.data !== 'actions' && col.label // Exclude only actions column
+    );
+
+    return [
+      {
+        label: t('table.export.pdf'),
+        icon: <FileText className="h-4 w-4" />,
+        className: 'bg-red-50 hover:bg-red-100 text-red-700 border-red-200',
+        action: () => {
+          exportToPDF(table.data, exportColumns, 'export');
+        },
+        disabled: () => table.data.length === 0,
+      },
+      {
+        label: t('table.export.excel'),
+        icon: <FileSpreadsheet className="h-4 w-4" />,
+        className: 'bg-green-50 hover:bg-green-100 text-green-700 border-green-200',
+        action: () => {
+          exportToExcel(table.data, exportColumns, 'export');
+        },
+        disabled: () => table.data.length === 0,
+      }
+    ];
+  }, [columns, table.data, t]);
+
+  // Combine custom bulk actions with default export actions
+  const allBulkActions = useMemo(() => {
+    return [...(bulkActions || []), ...defaultExportActions];
+  }, [bulkActions, defaultExportActions]);
+
   const areAllRowsSelected =
     table.data.length > 0 &&
     table.data.every((row) =>
@@ -105,14 +141,14 @@ const CustomTable = <T extends Record<string, any>>({
       </div>
 
       {/* Bulk Actions Bar */}
-      {showBulkActions && bulkActions && bulkActions.length > 0 && (
+      {showBulkActions && allBulkActions && allBulkActions.length > 0 && (
         <div className='bg-muted flex items-center gap-2 rounded-md p-2'>
           <span className='text-sm font-medium'>
             {table.selectedRows.length} {t('table.selected')}
           </span>
           <div className='flex-1'></div>
           <div className='flex items-center gap-2'>
-            {bulkActions.map((action, index) => (
+            {allBulkActions.map((action, index) => (
               <Button
                 key={index}
                 variant='outline'
@@ -149,7 +185,7 @@ const CustomTable = <T extends Record<string, any>>({
                   <TableHeader className='bg-muted sticky top-0 z-10'>
                     <TableRow>
                       {/* Selection checkbox column */}
-                      {bulkActions && bulkActions.length > 0 && (
+                      {allBulkActions && allBulkActions.length > 0 && (
                         <TableHead className='w-[50px]'>
                           <Checkbox
                             checked={areAllRowsSelected}
@@ -258,7 +294,7 @@ const CustomTable = <T extends Record<string, any>>({
 
                               // Adjust for the checkbox column if present
                               const columnIndex =
-                                bulkActions && bulkActions.length > 0
+                                allBulkActions && allBulkActions.length > 0
                                   ? cellIndex - 1
                                   : cellIndex;
 
@@ -320,7 +356,7 @@ const CustomTable = <T extends Record<string, any>>({
                           }}
                         >
                           {/* Row selection checkbox */}
-                          {bulkActions && bulkActions.length > 0 && (
+                          {allBulkActions && allBulkActions.length > 0 && (
                             <TableCell>
                               <Checkbox
                                 checked={table.selectedRows.some(
@@ -380,7 +416,7 @@ const CustomTable = <T extends Record<string, any>>({
                       <TableRow>
                         <TableCell
                           colSpan={
-                            (bulkActions && bulkActions.length > 0 ? 1 : 0) +
+                            (allBulkActions && allBulkActions.length > 0 ? 1 : 0) +
                             (table.visibleColumns.length ?? 0)
                           }
                           className='h-24 text-center'
