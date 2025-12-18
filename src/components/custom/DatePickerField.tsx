@@ -263,7 +263,10 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
                     max='23'
                     value={hours}
                     onChange={(e) => {
-                      const val = Math.min(23, Math.max(0, parseInt(e.target.value) || 0));
+                      const val = Math.min(
+                        23,
+                        Math.max(0, parseInt(e.target.value) || 0)
+                      );
                       setHours(val.toString().padStart(2, '0'));
                     }}
                     className='w-16 rounded-md border px-2 py-1 text-center text-sm'
@@ -275,7 +278,10 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
                     max='59'
                     value={minutes}
                     onChange={(e) => {
-                      const val = Math.min(59, Math.max(0, parseInt(e.target.value) || 0));
+                      const val = Math.min(
+                        59,
+                        Math.max(0, parseInt(e.target.value) || 0)
+                      );
                       setMinutes(val.toString().padStart(2, '0'));
                     }}
                     className='w-16 rounded-md border px-2 py-1 text-center text-sm'

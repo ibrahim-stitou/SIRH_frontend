@@ -57,7 +57,9 @@ import { SkillsTab } from '@/app/admin/personnel/employes/[id]/details/component
 import { DocumentsTab } from '@/app/admin/personnel/employes/[id]/details/components/DocumentsTab';
 import { PersonalTab } from '@/app/admin/personnel/employes/[id]/details/components/PersonalTab';
 import { ExperiencesTab } from './components/ExperiencesTab';
-import SocialContributionsManager, { type SocialContributionItem } from '@/app/admin/personnel/employes/[id]/details/components/SocialContributionsManager';
+import SocialContributionsManager, {
+  type SocialContributionItem
+} from '@/app/admin/personnel/employes/[id]/details/components/SocialContributionsManager';
 import Image from 'next/image';
 import EmployeHistory from '@/app/admin/personnel/employes/[id]/details/components/EmployeHistory';
 import EmployeeAbsences from '@/app/admin/personnel/employes/[id]/details/components/EmployeeAbsences';
@@ -794,9 +796,7 @@ export default function EmployeeDetailsPage() {
               className='data-[state=active]:bg-background gap-2 px-3 py-2'
             >
               <FileText className='h-4 w-4' />
-              <span className='text-sm'>
-                Mouvements & Historique
-              </span>
+              <span className='text-sm'>Mouvements & Historique</span>
             </TabsTrigger>
           </TabsList>
 
@@ -876,18 +876,27 @@ export default function EmployeeDetailsPage() {
                 items={(emp as any)?.socialContributions || []}
                 mutuellesList={mutuellesList}
                 onAdd={async (item: SocialContributionItem) => {
-                  const next = [ ...(((emp as any)?.socialContributions) || []), item ];
+                  const next = [
+                    ...((emp as any)?.socialContributions || []),
+                    item
+                  ];
                   await patchEmployee({ socialContributions: next } as any);
                 }}
-                onUpdate={async (index: number, item: SocialContributionItem) => {
-                  const list = [ ...(((emp as any)?.socialContributions) || []) ];
+                onUpdate={async (
+                  index: number,
+                  item: SocialContributionItem
+                ) => {
+                  const list = [...((emp as any)?.socialContributions || [])];
                   list[index] = item;
                   await patchEmployee({ socialContributions: list } as any);
                 }}
                 onDelete={async (index: number) => {
-                  const list = [ ...(((emp as any)?.socialContributions) || []) ];
+                  const list = [...((emp as any)?.socialContributions || [])];
                   list.splice(index, 1);
-                  await patchEmployee({ socialContributions: list } as any, 'Supprimé');
+                  await patchEmployee(
+                    { socialContributions: list } as any,
+                    'Supprimé'
+                  );
                 }}
               />
             </AnimatedTabContent>
@@ -1072,7 +1081,7 @@ export default function EmployeeDetailsPage() {
           <div className='space-y-4'>
             {/* Social Contributions form */}
             {openEditItem?.section === 'socialContributions' && (
-              <div className='text-sm text-muted-foreground'>
+              <div className='text-muted-foreground text-sm'>
                 Édition des cotisations sociales sera finalisée ultérieurement.
               </div>
             )}

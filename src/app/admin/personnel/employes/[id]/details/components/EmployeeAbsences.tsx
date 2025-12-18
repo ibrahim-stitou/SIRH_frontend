@@ -51,15 +51,28 @@ interface EmployeeAbsencesProps {
 }
 
 const MONTHS = [
-  'Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun',
-  'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'
+  'Jan',
+  'Fév',
+  'Mar',
+  'Avr',
+  'Mai',
+  'Jun',
+  'Jul',
+  'Aoû',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Déc'
 ];
 
-export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) {
+export default function EmployeeAbsences({
+  employeeId
+}: EmployeeAbsencesProps) {
   const [absences, setAbsences] = useState<Absence[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null);
+  const [scrollContainerRef, setScrollContainerRef] =
+    useState<HTMLDivElement | null>(null);
 
   const loadAbsences = useCallback(async () => {
     setLoading(true);
@@ -151,7 +164,7 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
               aria-label={`${absence.type_absence?.libelle} du ${format(dateDebut, 'dd MMM', { locale: fr })} - ${absence.duree} jour${absence.duree > 1 ? 's' : ''}`}
             >
               {/* Badge statut - Plus petit et discret */}
-              <div className='absolute right-1.5 top-1.5'>
+              <div className='absolute top-1.5 right-1.5'>
                 <div
                   className={cn(
                     'h-2 w-2 rounded-full shadow-sm ring-1 ring-white/50',
@@ -169,18 +182,18 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
               <div className='relative flex h-full flex-col items-center justify-center space-y-1.5'>
                 <div className='flex items-center justify-center gap-1.5'>
                   <span
-                    className='truncate text-[11px] font-extrabold leading-none tracking-wide'
+                    className='truncate text-[11px] leading-none font-extrabold tracking-wide'
                     style={{ color: bgColor }}
                   >
                     {absence.type_absence?.code}
                   </span>
                 </div>
-                <div className='text-[11px] font-semibold leading-tight text-foreground'>
+                <div className='text-foreground text-[11px] leading-tight font-semibold'>
                   {format(dateDebut, 'dd MMM', { locale: fr })}
                 </div>
-                <div className='flex items-center justify-center gap-1 rounded-full bg-background/80 px-2 py-0.5 shadow-sm ring-1 ring-black/5'>
-                  <Clock className='h-2.5 w-2.5 flex-shrink-0 text-muted-foreground' />
-                  <span className='text-[10px] font-black tabular-nums text-foreground'>
+                <div className='bg-background/80 flex items-center justify-center gap-1 rounded-full px-2 py-0.5 shadow-sm ring-1 ring-black/5'>
+                  <Clock className='text-muted-foreground h-2.5 w-2.5 flex-shrink-0' />
+                  <span className='text-foreground text-[10px] font-black tabular-nums'>
                     {absence.duree}j
                   </span>
                 </div>
@@ -191,7 +204,7 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
             side='top'
             align='center'
             sideOffset={8}
-            className='max-w-[280px] overflow-hidden rounded-2xl border-2 bg-card p-0 shadow-2xl sm:max-w-sm'
+            className='bg-card max-w-[280px] overflow-hidden rounded-2xl border-2 p-0 shadow-2xl sm:max-w-sm'
             style={{ borderColor: `${bgColor}60` }}
           >
             <div className='space-y-0'>
@@ -204,7 +217,7 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
               >
                 {/* Barre latérale */}
                 <div
-                  className='absolute left-0 top-0 h-full w-1.5 rounded-l-2xl'
+                  className='absolute top-0 left-0 h-full w-1.5 rounded-l-2xl'
                   style={{ backgroundColor: bgColor }}
                 />
 
@@ -215,10 +228,13 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
                   <CalendarIcon className='h-6 w-6 text-white drop-shadow-sm' />
                 </div>
                 <div className='min-w-0 flex-1'>
-                  <div className='truncate text-sm font-bold text-foreground'>
+                  <div className='text-foreground truncate text-sm font-bold'>
                     {absence.type_absence?.libelle}
                   </div>
-                  <div className='truncate text-xs font-semibold' style={{ color: bgColor }}>
+                  <div
+                    className='truncate text-xs font-semibold'
+                    style={{ color: bgColor }}
+                  >
                     {absence.type_absence?.code}
                   </div>
                 </div>
@@ -227,22 +243,26 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
               {/* Body */}
               <div className='space-y-2 p-3'>
                 {/* Dates */}
-                <div className='space-y-1 rounded-lg bg-muted/30 p-2'>
+                <div className='bg-muted/30 space-y-1 rounded-lg p-2'>
                   <div className='flex items-center gap-1.5 text-xs'>
-                    <span className='font-medium text-muted-foreground'>Du</span>
-                    <span className='flex-1 truncate font-semibold text-foreground'>
+                    <span className='text-muted-foreground font-medium'>
+                      Du
+                    </span>
+                    <span className='text-foreground flex-1 truncate font-semibold'>
                       {format(dateDebut, 'dd MMM yyyy', { locale: fr })}
                     </span>
                   </div>
                   <div className='flex items-center gap-1.5 text-xs'>
-                    <span className='font-medium text-muted-foreground'>Au</span>
-                    <span className='flex-1 truncate font-semibold text-foreground'>
+                    <span className='text-muted-foreground font-medium'>
+                      Au
+                    </span>
+                    <span className='text-foreground flex-1 truncate font-semibold'>
                       {format(dateFin, 'dd MMM yyyy', { locale: fr })}
                     </span>
                   </div>
                   <div className='mt-1.5 flex items-center gap-1.5 border-t pt-1.5'>
-                    <Clock className='h-3 w-3 flex-shrink-0 text-muted-foreground' />
-                    <span className='text-xs font-bold tabular-nums text-foreground'>
+                    <Clock className='text-muted-foreground h-3 w-3 flex-shrink-0' />
+                    <span className='text-foreground text-xs font-bold tabular-nums'>
                       {absence.duree} jour{absence.duree > 1 ? 's' : ''}
                     </span>
                   </div>
@@ -251,13 +271,13 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
                 {/* Motif */}
                 {absence.motif && (
                   <div
-                    className='rounded-lg border-l-4 bg-muted/20 p-2'
+                    className='bg-muted/20 rounded-lg border-l-4 p-2'
                     style={{ borderColor: bgColor }}
                   >
-                    <div className='mb-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground'>
+                    <div className='text-muted-foreground mb-0.5 text-[10px] font-medium tracking-wide uppercase'>
                       Motif
                     </div>
-                    <div className='text-xs font-medium leading-tight text-foreground'>
+                    <div className='text-foreground text-xs leading-tight font-medium'>
                       {absence.motif}
                     </div>
                   </div>
@@ -269,10 +289,14 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
                     variant='outline'
                     className={cn(
                       'text-xs font-semibold',
-                      absence.statut === 'validee' && 'border-emerald-500 bg-emerald-50 text-emerald-700',
-                      absence.statut === 'brouillon' && 'border-amber-500 bg-amber-50 text-amber-700',
-                      absence.statut === 'cloture' && 'border-blue-500 bg-blue-50 text-blue-700',
-                      absence.statut === 'annulee' && 'border-rose-500 bg-rose-50 text-rose-700'
+                      absence.statut === 'validee' &&
+                        'border-emerald-500 bg-emerald-50 text-emerald-700',
+                      absence.statut === 'brouillon' &&
+                        'border-amber-500 bg-amber-50 text-amber-700',
+                      absence.statut === 'cloture' &&
+                        'border-blue-500 bg-blue-50 text-blue-700',
+                      absence.statut === 'annulee' &&
+                        'border-rose-500 bg-rose-50 text-rose-700'
                     )}
                   >
                     {absence.statut === 'validee' && '✓ Validée'}
@@ -292,22 +316,22 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
   if (loading) {
     return (
       <Card className='overflow-hidden shadow-md'>
-        <CardHeader className='border-b bg-gradient-to-br from-muted/50 to-background p-4 md:p-6'>
+        <CardHeader className='from-muted/50 to-background border-b bg-gradient-to-br p-4 md:p-6'>
           <div className='flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between'>
             <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-6'>
               <div>
-                <div className='mb-2 h-6 w-32 animate-pulse rounded bg-muted md:w-40' />
-                <div className='h-3 w-36 animate-pulse rounded bg-muted md:w-48' />
+                <div className='bg-muted mb-2 h-6 w-32 animate-pulse rounded md:w-40' />
+                <div className='bg-muted h-3 w-36 animate-pulse rounded md:w-48' />
               </div>
               <div className='flex flex-wrap items-center gap-2'>
-                <div className='h-8 w-16 animate-pulse rounded-lg bg-muted' />
-                <div className='h-8 w-16 animate-pulse rounded-lg bg-muted' />
-                <div className='h-8 w-20 animate-pulse rounded-lg bg-muted' />
+                <div className='bg-muted h-8 w-16 animate-pulse rounded-lg' />
+                <div className='bg-muted h-8 w-16 animate-pulse rounded-lg' />
+                <div className='bg-muted h-8 w-20 animate-pulse rounded-lg' />
               </div>
             </div>
             <div className='flex items-center gap-2'>
-              <div className='h-8 w-32 animate-pulse rounded-lg bg-muted' />
-              <div className='h-8 w-16 animate-pulse rounded-lg bg-muted' />
+              <div className='bg-muted h-8 w-32 animate-pulse rounded-lg' />
+              <div className='bg-muted h-8 w-16 animate-pulse rounded-lg' />
             </div>
           </div>
         </CardHeader>
@@ -316,10 +340,13 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
             <div className='flex min-w-max gap-3'>
               {Array.from({ length: 12 }).map((_, i) => (
                 <div key={i} className='w-28'>
-                  <div className='mb-3 h-16 animate-pulse rounded-lg bg-muted' />
+                  <div className='bg-muted mb-3 h-16 animate-pulse rounded-lg' />
                   <div className='space-y-2'>
                     {Array.from({ length: 3 }).map((_, j) => (
-                      <div key={j} className='h-20 animate-pulse rounded-lg bg-muted' />
+                      <div
+                        key={j}
+                        className='bg-muted h-20 animate-pulse rounded-lg'
+                      />
                     ))}
                   </div>
                 </div>
@@ -332,17 +359,17 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
   }
 
   return (
-    <Card className='overflow-hidden shadow-md transition-shadow hover:shadow-lg py-0'>
-      <CardHeader className='border-b bg-gradient-to-br from-muted/50 to-background p-4 md:p-6'>
+    <Card className='overflow-hidden py-0 shadow-md transition-shadow hover:shadow-lg'>
+      <CardHeader className='from-muted/50 to-background border-b bg-gradient-to-br p-4 md:p-6'>
         {/* Titre et description */}
         <div className='mb-4'>
           <CardTitle className='flex items-center gap-2.5 text-lg font-bold md:text-xl'>
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 md:h-9 md:w-9'>
-              <CalendarIcon className='h-4 w-4 text-primary md:h-5 md:w-5' />
+            <div className='bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg md:h-9 md:w-9'>
+              <CalendarIcon className='text-primary h-4 w-4 md:h-5 md:w-5' />
             </div>
             <span>Absences {selectedYear}</span>
           </CardTitle>
-          <p className='ml-10 mt-1 text-xs font-medium text-muted-foreground md:ml-11'>
+          <p className='text-muted-foreground mt-1 ml-10 text-xs font-medium md:ml-11'>
             Aperçu chronologique de l&apos;année
           </p>
         </div>
@@ -351,40 +378,50 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
         <div className='flex flex-wrap items-center justify-between gap-3'>
           {/* Stats */}
           <div className='flex flex-wrap items-center gap-2'>
-            <div className='flex items-center gap-1.5 rounded-lg bg-primary/5 px-3 py-1.5 ring-1 ring-primary/10'>
-              <span className='text-xs font-medium text-muted-foreground'>Total</span>
-              <span className='text-sm font-bold tabular-nums text-primary'>{totals.total}</span>
+            <div className='bg-primary/5 ring-primary/10 flex items-center gap-1.5 rounded-lg px-3 py-1.5 ring-1'>
+              <span className='text-muted-foreground text-xs font-medium'>
+                Total
+              </span>
+              <span className='text-primary text-sm font-bold tabular-nums'>
+                {totals.total}
+              </span>
             </div>
             <div className='flex items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-1.5 ring-1 ring-emerald-200'>
-              <span className='text-xs font-medium text-emerald-700'>Jours</span>
-              <span className='text-sm font-bold tabular-nums text-emerald-600'>{totals.jours}</span>
+              <span className='text-xs font-medium text-emerald-700'>
+                Jours
+              </span>
+              <span className='text-sm font-bold text-emerald-600 tabular-nums'>
+                {totals.jours}
+              </span>
             </div>
             <div className='flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-1.5 ring-1 ring-blue-200'>
               <span className='text-xs font-medium text-blue-700'>Valid.</span>
-              <span className='text-sm font-bold tabular-nums text-blue-600'>{totals.validees}</span>
+              <span className='text-sm font-bold text-blue-600 tabular-nums'>
+                {totals.validees}
+              </span>
             </div>
           </div>
 
           {/* Contrôles année + bouton */}
           <div className='flex flex-wrap items-center gap-2'>
-            <div className='flex items-center gap-1 rounded-lg bg-background p-1 shadow-sm ring-1 ring-border'>
+            <div className='bg-background ring-border flex items-center gap-1 rounded-lg p-1 shadow-sm ring-1'>
               <Button
                 variant='ghost'
                 size='icon'
                 onClick={() => setSelectedYear((y) => y - 1)}
-                className='h-7 w-7 hover:bg-primary/10 hover:text-primary'
+                className='hover:bg-primary/10 hover:text-primary h-7 w-7'
                 aria-label='Année précédente'
               >
                 <ChevronLeft className='h-4 w-4' />
               </Button>
-              <div className='flex h-7 min-w-[60px] items-center justify-center rounded-md bg-primary/5 px-3 text-sm font-bold text-primary'>
+              <div className='bg-primary/5 text-primary flex h-7 min-w-[60px] items-center justify-center rounded-md px-3 text-sm font-bold'>
                 {selectedYear}
               </div>
               <Button
                 variant='ghost'
                 size='icon'
                 onClick={() => setSelectedYear((y) => y + 1)}
-                className='h-7 w-7 hover:bg-primary/10 hover:text-primary'
+                className='hover:bg-primary/10 hover:text-primary h-7 w-7'
                 aria-label='Année suivante'
               >
                 <ChevronRight className='h-4 w-4' />
@@ -398,16 +435,16 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
         </div>
       </CardHeader>
 
-      <CardContent className='bg-gradient-to-b from-background to-muted/10 p-4 md:p-6'>
+      <CardContent className='from-background to-muted/10 bg-gradient-to-b p-4 md:p-6'>
         {absences.length === 0 ? (
           <div className='flex flex-col items-center justify-center rounded-xl border-2 border-dashed py-12 md:py-16'>
-            <div className='rounded-full bg-muted/50 p-4 md:p-6'>
-              <CalendarIcon className='h-12 w-12 text-muted-foreground/40 md:h-16 md:w-16' />
+            <div className='bg-muted/50 rounded-full p-4 md:p-6'>
+              <CalendarIcon className='text-muted-foreground/40 h-12 w-12 md:h-16 md:w-16' />
             </div>
             <h3 className='mt-3 text-base font-semibold md:mt-4 md:text-lg'>
               Aucune absence en {selectedYear}
             </h3>
-            <p className='mt-1 text-center text-xs text-muted-foreground md:mt-2 md:text-sm'>
+            <p className='text-muted-foreground mt-1 text-center text-xs md:mt-2 md:text-sm'>
               Aucune donnée à afficher pour cette année
             </p>
           </div>
@@ -423,15 +460,16 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
                     key={index}
                     className={cn(
                       'flex flex-col transition-all duration-200',
-                      monthAbsences.length === 0 && 'opacity-50 hover:opacity-80'
+                      monthAbsences.length === 0 &&
+                        'opacity-50 hover:opacity-80'
                     )}
                   >
                     {/* Header mois - Style distinctif */}
                     <div className='mb-3'>
-                      <div className='group relative overflow-hidden rounded-2xl border-2 border-primary/30  p-3 shadow-lg ring-2 ring-primary/10 transition-all hover:border-primary/50 hover:shadow-xl hover:ring-primary/20 xl:p-2.5'>
+                      <div className='group border-primary/30 ring-primary/10 hover:border-primary/50 hover:ring-primary/20 relative overflow-hidden rounded-2xl border-2 p-3 shadow-lg ring-2 transition-all hover:shadow-xl xl:p-2.5'>
                         {/* Badge décoratif */}
                         <div className='flex flex-col items-center justify-center'>
-                          <span className='text-base font-extrabold tracking-tight text-primary xl:text-sm'>
+                          <span className='text-primary text-base font-extrabold tracking-tight xl:text-sm'>
                             {month}
                           </span>
                         </div>
@@ -443,13 +481,15 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
                       {monthAbsences.length > 0 ? (
                         monthAbsences.slice(0, 3).map(renderMiniAbsenceCard)
                       ) : (
-                        <div className='flex h-20 items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/20 bg-gradient-to-br from-muted/20 to-muted/5 backdrop-blur-sm transition-all hover:border-muted-foreground/30 hover:bg-muted/30'>
-                          <span className='text-xs font-medium text-muted-foreground/60'>—</span>
+                        <div className='border-muted-foreground/20 from-muted/20 to-muted/5 hover:border-muted-foreground/30 hover:bg-muted/30 flex h-20 items-center justify-center rounded-xl border-2 border-dashed bg-gradient-to-br backdrop-blur-sm transition-all'>
+                          <span className='text-muted-foreground/60 text-xs font-medium'>
+                            —
+                          </span>
                         </div>
                       )}
                       {monthAbsences.length > 3 && (
-                        <div className='flex items-center justify-center gap-1.5 rounded-lg border border-primary/30 bg-gradient-to-r from-primary/10 to-primary/5 py-1.5 text-xs font-bold text-primary shadow-sm transition-all hover:border-primary/40 hover:shadow-md'>
-                          <span className='flex h-4 w-4 items-center justify-center rounded-full bg-primary/20 text-[10px] font-black'>
+                        <div className='border-primary/30 from-primary/10 to-primary/5 text-primary hover:border-primary/40 flex items-center justify-center gap-1.5 rounded-lg border bg-gradient-to-r py-1.5 text-xs font-bold shadow-sm transition-all hover:shadow-md'>
+                          <span className='bg-primary/20 flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-black'>
                             +
                           </span>
                           {monthAbsences.length - 3} autres
@@ -460,8 +500,8 @@ export default function EmployeeAbsences({ employeeId }: EmployeeAbsencesProps) 
                 );
               })}
             </div>
-          </div>)}
-
+          </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -61,17 +61,23 @@ interface AvenantRow {
 
 export function AvenantsListing() {
   const router = useRouter();
-  const [statusOptions, setStatusOptions] = useState<Array<{ label: string; value: string }>>([
+  const [statusOptions, setStatusOptions] = useState<
+    Array<{ label: string; value: string }>
+  >([
     { label: 'Valide', value: 'Valide' },
     { label: 'Brouillon', value: 'Brouillon' }
   ]);
-  const [typeOptions, setTypeOptions] = useState<Array<{ label: string; value: string }>>([
+  const [typeOptions, setTypeOptions] = useState<
+    Array<{ label: string; value: string }>
+  >([
     { label: 'Salaire', value: 'salary' },
     { label: 'Horaire', value: 'schedule' },
     { label: 'Poste', value: 'job' },
     { label: 'Complet', value: 'complete' }
   ]);
-  const [contractOptions, setContractOptions] = useState<Array<{ label: string; value: string }>>([]);
+  const [contractOptions, setContractOptions] = useState<
+    Array<{ label: string; value: string }>
+  >([]);
   const [tableInstance, setTableInstance] = useState<Partial<
     UseTableReturn<AvenantRow>
   > | null>(null);
@@ -442,8 +448,12 @@ export function AvenantsListing() {
   useEffect(() => {
     (async () => {
       try {
-        const resp = await apiClient.get(apiRoutes.admin.contratsEtMovements.avenants.list);
-        const data = Array.isArray(resp?.data?.data) ? resp.data.data : (resp.data?.data ?? resp.data ?? []);
+        const resp = await apiClient.get(
+          apiRoutes.admin.contratsEtMovements.avenants.list
+        );
+        const data = Array.isArray(resp?.data?.data)
+          ? resp.data.data
+          : (resp.data?.data ?? resp.data ?? []);
         const contracts = new Map<string, string>();
         const types = new Set<string>();
         const statuses = new Set<string>();
@@ -454,7 +464,9 @@ export function AvenantsListing() {
           if (row.status) statuses.add(String(row.status));
         });
         if (contracts.size > 0) {
-          setContractOptions(Array.from(contracts.keys()).map((k) => ({ label: k, value: k })));
+          setContractOptions(
+            Array.from(contracts.keys()).map((k) => ({ label: k, value: k }))
+          );
         }
         if (types.size > 0) {
           // merge with defaults, preserve labels if known
@@ -465,11 +477,16 @@ export function AvenantsListing() {
             complete: 'Complet'
           };
           setTypeOptions(
-            Array.from(types.values()).map((v) => ({ label: knownMap[v] || v, value: v }))
+            Array.from(types.values()).map((v) => ({
+              label: knownMap[v] || v,
+              value: v
+            }))
           );
         }
         if (statuses.size > 0) {
-          setStatusOptions(Array.from(statuses.values()).map((s) => ({ label: s, value: s })));
+          setStatusOptions(
+            Array.from(statuses.values()).map((s) => ({ label: s, value: s }))
+          );
         }
       } catch {
         // keep defaults
@@ -478,9 +495,24 @@ export function AvenantsListing() {
   }, []);
 
   const filterConfig: CustomTableFilterConfig[] = [
-    { field: 'status', label: 'Statut', type: 'datatable-select', options: statusOptions },
-    { field: 'type_modification', label: 'Type', type: 'datatable-select', options: typeOptions },
-    { field: 'contract_reference', label: 'Contrat', type: 'datatable-select', options: contractOptions },
+    {
+      field: 'status',
+      label: 'Statut',
+      type: 'datatable-select',
+      options: statusOptions
+    },
+    {
+      field: 'type_modification',
+      label: 'Type',
+      type: 'datatable-select',
+      options: typeOptions
+    },
+    {
+      field: 'contract_reference',
+      label: 'Contrat',
+      type: 'datatable-select',
+      options: contractOptions
+    },
     { field: 'objet', label: 'Objet', type: 'text' }
   ];
 

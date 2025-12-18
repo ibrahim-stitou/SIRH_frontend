@@ -35,11 +35,14 @@ Vos datatables existantes fonctionnent déjà avec l'export :
 ## 🎨 Apparence
 
 ### Boutons d'export
+
 - **Export PDF** : Bouton rouge avec icône 📄
 - **Export Excel** : Bouton vert avec icône 📊
 
 ### Localisation
+
 Les boutons sont traduits automatiquement selon la langue de l'interface :
+
 - 🇫🇷 Français : "Export PDF" / "Export Excel"
 - 🇬🇧 Anglais : "Export PDF" / "Export Excel"
 - 🇸🇦 Arabe : (à ajouter dans les traductions si nécessaire)
@@ -63,4 +66,3 @@ Si vous voulez personnaliser l'export pour une datatable spécifique, consultez 
 ---
 
 **Note** : Cette fonctionnalité est disponible pour **toutes les datatables** de l'application sans aucune modification de code nécessaire !
-

@@ -25,7 +25,8 @@ module.exports = function registerAbsencesRoutes(server, db) {
     const sortBy = req.query.sortBy;
     const sortDir = req.query.sortDir === 'desc' ? 'desc' : 'asc';
 
-    const employeeId = req.query.employeeId || req.query.employee || req.query.employe;
+    const employeeId =
+      req.query.employeeId || req.query.employee || req.query.employe;
     const typeId = req.query.type || req.query.type_absence_id;
     const status = req.query.status || req.query.statut;
     const from = req.query.from || req.query.periodStart || req.query.startDate;
@@ -43,7 +44,9 @@ module.exports = function registerAbsencesRoutes(server, db) {
     }
     // Filter by status
     if (status) {
-      all = all.filter((a) => String(a.statut).toLowerCase() === String(status).toLowerCase());
+      all = all.filter(
+        (a) => String(a.statut).toLowerCase() === String(status).toLowerCase()
+      );
     }
     // Filter by overlapping period
     if (from || to) {
@@ -78,8 +81,12 @@ module.exports = function registerAbsencesRoutes(server, db) {
     const recordsTotal = db.get('absences').value()?.length || 0;
 
     // Enrich with type and employee minimal info
-    const typesById = Object.fromEntries((db.get('absenceTypes').value() || []).map((t) => [String(t.id), t]));
-    const employeesById = Object.fromEntries((db.get('hrEmployees').value() || []).map((e) => [String(e.id), e]));
+    const typesById = Object.fromEntries(
+      (db.get('absenceTypes').value() || []).map((t) => [String(t.id), t])
+    );
+    const employeesById = Object.fromEntries(
+      (db.get('hrEmployees').value() || []).map((e) => [String(e.id), e])
+    );
 
     const enriched = all.map((a) => ({
       ...a,
@@ -110,30 +117,60 @@ module.exports = function registerAbsencesRoutes(server, db) {
   server.patch('/absences/:id/cancel', (req, res) => {
     const id = isNaN(+req.params.id) ? req.params.id : +req.params.id;
     const exists = db.get('absences').find({ id }).value();
-    if (!exists) return res.status(404).json({ status: 'error', message: 'Absence introuvable', data: null });
-    db.get('absences').find({ id }).assign({ statut: 'annulee', updatedAt: new Date().toISOString() }).write();
+    if (!exists)
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Absence introuvable', data: null });
+    db.get('absences')
+      .find({ id })
+      .assign({ statut: 'annulee', updatedAt: new Date().toISOString() })
+      .write();
     const row = db.get('absences').find({ id }).value();
-    return res.json({ status: 'success', message: 'Absence annulée', data: row });
+    return res.json({
+      status: 'success',
+      message: 'Absence annulée',
+      data: row
+    });
   });
 
   // Validate an absence (set statut = 'validee')
   server.patch('/absences/:id/validate', (req, res) => {
     const id = isNaN(+req.params.id) ? req.params.id : +req.params.id;
     const exists = db.get('absences').find({ id }).value();
-    if (!exists) return res.status(404).json({ status: 'error', message: 'Absence introuvable', data: null });
-    db.get('absences').find({ id }).assign({ statut: 'validee', updatedAt: new Date().toISOString() }).write();
+    if (!exists)
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Absence introuvable', data: null });
+    db.get('absences')
+      .find({ id })
+      .assign({ statut: 'validee', updatedAt: new Date().toISOString() })
+      .write();
     const row = db.get('absences').find({ id }).value();
-    return res.json({ status: 'success', message: 'Absence validée', data: row });
+    return res.json({
+      status: 'success',
+      message: 'Absence validée',
+      data: row
+    });
   });
 
   // Close (clôturer) an absence (set statut = 'cloture')
   server.patch('/absences/:id/close', (req, res) => {
     const id = isNaN(+req.params.id) ? req.params.id : +req.params.id;
     const exists = db.get('absences').find({ id }).value();
-    if (!exists) return res.status(404).json({ status: 'error', message: 'Absence introuvable', data: null });
-    db.get('absences').find({ id }).assign({ statut: 'cloture', updatedAt: new Date().toISOString() }).write();
+    if (!exists)
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Absence introuvable', data: null });
+    db.get('absences')
+      .find({ id })
+      .assign({ statut: 'cloture', updatedAt: new Date().toISOString() })
+      .write();
     const row = db.get('absences').find({ id }).value();
-    return res.json({ status: 'success', message: 'Absence clôturée', data: row });
+    return res.json({
+      status: 'success',
+      message: 'Absence clôturée',
+      data: row
+    });
   });
 
   // Refuser une absence (statut = refusee, motif_refus)
@@ -141,10 +178,14 @@ module.exports = function registerAbsencesRoutes(server, db) {
     const id = req.params.id;
     const { motif_refus } = req.body;
     const absences = db.get('absences');
-    const absence = absences.find({ id: isNaN(Number(id)) ? id : Number(id) }).value();
+    const absence = absences
+      .find({ id: isNaN(Number(id)) ? id : Number(id) })
+      .value();
 
     if (!absence) {
-      return res.status(404).json({ status: 'error', message: 'Absence non trouvée', data: null });
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Absence non trouvée', data: null });
     }
 
     absences
@@ -152,7 +193,9 @@ module.exports = function registerAbsencesRoutes(server, db) {
       .assign({ statut: 'refusee', motif_refus: motif_refus || '' })
       .write();
 
-    const updated = absences.find({ id: isNaN(Number(id)) ? id : Number(id) }).value();
+    const updated = absences
+      .find({ id: isNaN(Number(id)) ? id : Number(id) })
+      .value();
 
     res.json({
       status: 'success',

@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { useLanguage } from '@/context/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
@@ -13,11 +13,28 @@ import { apiRoutes } from '@/config/apiRoutes';
 import apiClient from '@/lib/api';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { Plus, Eye, CheckCircle2, XCircle, CircleX, Trash2 } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Plus,
+  Eye,
+  CheckCircle2,
+  XCircle,
+  CircleX,
+  Trash2
+} from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip';
 import CustomAlertDialog from '@/components/custom/customAlert';
 import { toast } from 'sonner';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
+} from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 
 interface AbsenceRow {
@@ -54,9 +71,9 @@ export default function AbsencesListing() {
   const { t } = useLanguage();
   const router = useRouter();
 
-  const [_tableInstance, setTableInstance] = useState<
-    Partial<UseTableReturn<AbsenceRow>> | null
-  >(null);
+  const [_tableInstance, setTableInstance] = useState<Partial<
+    UseTableReturn<AbsenceRow>
+  > | null>(null);
 
   const [absenceTypes, setAbsenceTypes] = useState<
     { label: string; value: string | number }[]
@@ -64,7 +81,9 @@ export default function AbsencesListing() {
   const [employees, setEmployees] = useState<
     { label: string; value: string | number }[]
   >([]);
-  const [confirmDeleteId, setConfirmDeleteId] = useState<number | string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<
+    number | string | null
+  >(null);
   const [showRefuseModal, setShowRefuseModal] = useState(false);
   const [refuseReason, setRefuseReason] = useState('');
   const [refuseLoading, setRefuseLoading] = useState(false);
@@ -150,14 +169,16 @@ export default function AbsencesListing() {
     if (!rowToRefuse) return;
     setRefuseLoading(true);
     try {
-      await apiClient.post(apiRoutes.admin.absences.refuse(rowToRefuse.id), { motif_refus: refuseReason });
+      await apiClient.post(apiRoutes.admin.absences.refuse(rowToRefuse.id), {
+        motif_refus: refuseReason
+      });
       toast.success('Absence refusée');
       setShowRefuseModal(false);
       setRefuseReason('');
       setRowToRefuse(null);
       _tableInstance?.refresh?.();
     } catch (e: any) {
-      toast.error(e.response?.data?.message || "Erreur lors du refus");
+      toast.error(e.response?.data?.message || 'Erreur lors du refus');
     } finally {
       setRefuseLoading(false);
     }
@@ -175,7 +196,9 @@ export default function AbsencesListing() {
             <div className='flex flex-col'>
               <span className='font-medium'>{`${row.employee.firstName} ${row.employee.lastName}`}</span>
               {row.employee.matricule && (
-                <span className='text-muted-foreground text-xs'>{row.employee.matricule}</span>
+                <span className='text-muted-foreground text-xs'>
+                  {row.employee.matricule}
+                </span>
               )}
             </div>
           ) : (
@@ -223,7 +246,11 @@ export default function AbsencesListing() {
         sortable: true,
         render: (_v, row) => (
           <Badge
-            className={row.justifie ? 'border-emerald-500 text-emerald-600' : 'border-amber-500 text-amber-600'}
+            className={
+              row.justifie
+                ? 'border-emerald-500 text-emerald-600'
+                : 'border-amber-500 text-amber-600'
+            }
             variant='outline'
           >
             {row.justifie ? 'Oui' : 'Non'}
@@ -235,14 +262,25 @@ export default function AbsencesListing() {
         label: 'Statut',
         sortable: true,
         render: (v: AbsenceRow['statut'], row) => {
-          const map: Record<AbsenceRow['statut'], { text: string; cls: string }>
-            = {
-              brouillon: { text: 'Brouillon', cls: 'border-gray-400 text-gray-600' },
-              validee: { text: 'Validée', cls: 'border-emerald-500 text-emerald-600' },
-              annulee: { text: 'Annulée', cls: 'border-rose-500 text-rose-600' },
-              cloture: { text: 'Clôturée', cls: 'border-blue-500 text-blue-600' },
-              refusee: { text: 'Refusée', cls: 'border-destructive text-destructive' }
-            };
+          const map: Record<
+            AbsenceRow['statut'],
+            { text: string; cls: string }
+          > = {
+            brouillon: {
+              text: 'Brouillon',
+              cls: 'border-gray-400 text-gray-600'
+            },
+            validee: {
+              text: 'Validée',
+              cls: 'border-emerald-500 text-emerald-600'
+            },
+            annulee: { text: 'Annulée', cls: 'border-rose-500 text-rose-600' },
+            cloture: { text: 'Clôturée', cls: 'border-blue-500 text-blue-600' },
+            refusee: {
+              text: 'Refusée',
+              cls: 'border-destructive text-destructive'
+            }
+          };
           const m = map[v] || map.brouillon;
           return (
             <div>
@@ -250,8 +288,9 @@ export default function AbsencesListing() {
                 {m.text}
               </Badge>
               {v === 'refusee' && row.motif_refus && (
-                <div className='text-xs text-destructive mt-1'>
-                  <span className='font-semibold'>Motif :</span> {row.motif_refus}
+                <div className='text-destructive mt-1 text-xs'>
+                  <span className='font-semibold'>Motif :</span>{' '}
+                  {row.motif_refus}
                 </div>
               )}
             </div>
@@ -265,13 +304,19 @@ export default function AbsencesListing() {
         render: (_v, row) => {
           const canValidate = row.statut === 'brouillon';
           const canClose = row.statut === 'validee';
-          const canCancel = row.statut === 'brouillon' || row.statut === 'validee';
-          const canRefuse = row.statut === 'brouillon' || row.statut === 'validee';
+          const canCancel =
+            row.statut === 'brouillon' || row.statut === 'validee';
+          const canRefuse =
+            row.statut === 'brouillon' || row.statut === 'validee';
           return (
             <div className='flex items-center space-x-2'>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant='outline' className='h-8 w-8 p-1.5' onClick={() => onView(row)}>
+                  <Button
+                    variant='outline'
+                    className='h-8 w-8 p-1.5'
+                    onClick={() => onView(row)}
+                  >
                     <Eye className='h-4 w-4' />
                   </Button>
                 </TooltipTrigger>
@@ -279,58 +324,92 @@ export default function AbsencesListing() {
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant='outline' className='h-8 w-8 p-1.5' disabled={!canValidate} onClick={() => onValidate(row)}>
+                  <Button
+                    variant='outline'
+                    className='h-8 w-8 p-1.5'
+                    disabled={!canValidate}
+                    onClick={() => onValidate(row)}
+                  >
                     <CheckCircle2 className='h-4 w-4 text-emerald-600' />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent
                   className='tooltip-content rounded-md bg-emerald-100 px-2 py-1 text-emerald-600 shadow-md'
                   sideOffset={5}
-                >Valider</TooltipContent>
+                >
+                  Valider
+                </TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant='outline' className='h-8 w-8 p-1.5' disabled={!canClose} onClick={() => onClose(row)}>
+                  <Button
+                    variant='outline'
+                    className='h-8 w-8 p-1.5'
+                    disabled={!canClose}
+                    onClick={() => onClose(row)}
+                  >
                     <XCircle className='h-4 w-4 text-blue-600' />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent
                   className='tooltip-content rounded-md bg-blue-100 px-2 py-1 text-blue-600 shadow-md'
                   sideOffset={5}
-                >Clôturer</TooltipContent>
+                >
+                  Clôturer
+                </TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant='outline' className='h-8 w-8 p-1.5' disabled={!canCancel} onClick={() => onCancel(row)}>
+                  <Button
+                    variant='outline'
+                    className='h-8 w-8 p-1.5'
+                    disabled={!canCancel}
+                    onClick={() => onCancel(row)}
+                  >
                     <CircleX className='h-4 w-4 text-amber-600' />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent
                   className='tooltip-content rounded-md bg-amber-100 px-2 py-1 text-amber-600 shadow-md'
                   sideOffset={5}
-                >Annuler</TooltipContent>
+                >
+                  Annuler
+                </TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant='destructive' className='h-8 w-8 p-1.5' disabled={!canRefuse} onClick={() => onRefuse(row)}>
+                  <Button
+                    variant='destructive'
+                    className='h-8 w-8 p-1.5'
+                    disabled={!canRefuse}
+                    onClick={() => onRefuse(row)}
+                  >
                     <XCircle className='h-4 w-4' />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent
                   className='tooltip-content rounded-md bg-red-100 px-2 py-1 text-red-600 shadow-md'
                   sideOffset={5}
-                >Refuser</TooltipContent>
+                >
+                  Refuser
+                </TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant='destructive' className='h-8 w-8 p-1.5' onClick={() => onAskDelete(row)}>
+                  <Button
+                    variant='destructive'
+                    className='h-8 w-8 p-1.5'
+                    onClick={() => onAskDelete(row)}
+                  >
                     <Trash2 className='h-4 w-4' />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent
                   className='tooltip-content rounded-md bg-red-100 px-2 py-1 text-red-600 shadow-md'
                   sideOffset={5}
-                >Supprimer</TooltipContent>
+                >
+                  Supprimer
+                </TooltipContent>
               </Tooltip>
             </div>
           );
@@ -393,7 +472,8 @@ export default function AbsencesListing() {
           </p>
         </div>
         <Button onClick={() => router.push('/admin/absences/ajouter')}>
-          <Plus/>{t('absences.actions.create') || 'Nouvelle absence'}
+          <Plus />
+          {t('absences.actions.create') || 'Nouvelle absence'}
         </Button>
       </div>
       <div className='flex flex-1 flex-col space-y-4'>
@@ -410,30 +490,36 @@ export default function AbsencesListing() {
           confirmText={'Supprimer'}
           onConfirm={onConfirmDelete}
           open={!!confirmDeleteId}
-          setOpen={(o) => !o ? setConfirmDeleteId(null) : void 0}
+          setOpen={(o) => (!o ? setConfirmDeleteId(null) : void 0)}
         />
         <Dialog open={showRefuseModal} onOpenChange={setShowRefuseModal}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Refuser l&apos;absence</DialogTitle>
             </DialogHeader>
-            <div className="space-y-3">
-              <label className="block text-sm font-medium">Motif du refus <span className="text-destructive">*</span></label>
+            <div className='space-y-3'>
+              <label className='block text-sm font-medium'>
+                Motif du refus <span className='text-destructive'>*</span>
+              </label>
               <Textarea
                 value={refuseReason}
-                onChange={e => setRefuseReason(e.target.value)}
+                onChange={(e) => setRefuseReason(e.target.value)}
                 rows={4}
-                placeholder="Saisir le motif du refus..."
-                className="resize-none"
+                placeholder='Saisir le motif du refus...'
+                className='resize-none'
                 required
               />
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setShowRefuseModal(false)} disabled={refuseLoading}>
+              <Button
+                variant='outline'
+                onClick={() => setShowRefuseModal(false)}
+                disabled={refuseLoading}
+              >
                 Annuler
               </Button>
               <Button
-                variant="destructive"
+                variant='destructive'
                 onClick={handleRefuse}
                 disabled={refuseLoading || !refuseReason.trim()}
               >

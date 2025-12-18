@@ -72,12 +72,12 @@ src/
 ```typescript
 {
   id: string | number;
-  reference: string;              // Ex: "CTR-2025-001"
-  internal_reference: string;    // Référence interne entreprise
-  type: ContractType;             // CDI, CDD, etc.
-  status: ContractStatus;         // Actif, Brouillon, etc.
-  version: number;                // Versioning
-  company_id: string | number;   // Multi-sociétés
+  reference: string; // Ex: "CTR-2025-001"
+  internal_reference: string; // Référence interne entreprise
+  type: ContractType; // CDI, CDD, etc.
+  status: ContractStatus; // Actif, Brouillon, etc.
+  version: number; // Versioning
+  company_id: string | number; // Multi-sociétés
 }
 ```
 
@@ -87,14 +87,14 @@ src/
 {
   signature_date: string;
   start_date: string;
-  end_date: string | null;       // Obligatoire pour CDD
+  end_date: string | null; // Obligatoire pour CDD
   trial_period: {
     duration_months: number;
     renewable: boolean;
     status: 'En_cours' | 'Validee' | 'Rompue';
-  };
+  }
   termination_reason: ResiliationReason;
-  notice_period_days: number;    // 8 jours à 3 mois
+  notice_period_days: number; // 8 jours à 3 mois
 }
 ```
 
@@ -103,19 +103,19 @@ src/
 ```typescript
 {
   title: string;
-  title_ar: string;              // Support arabe
+  title_ar: string; // Support arabe
   department: string;
 
   // Classification professionnelle
   category: ProfessionalCategory; // Cadre, Employé, Ouvrier, etc.
-  echelle: EchelleLevel;        // Échelle 1-12
-  coefficient: number;           // Selon Convention Collective
+  echelle: EchelleLevel; // Échelle 1-12
+  coefficient: number; // Selon Convention Collective
   grade: string;
 
   // Localisation
   work_location: string;
-  work_mode: WorkMode;            // Présentiel, Hybride, Télétravail
-  mobility_clause: boolean;       // Clause de mobilité
+  work_mode: WorkMode; // Présentiel, Hybride, Télétravail
+  mobility_clause: boolean; // Clause de mobilité
 
   // Missions
   missions: string;
@@ -127,25 +127,25 @@ src/
 
 ```typescript
 {
-  weekly_hours: number;           // Max 44h (loi)
-  daily_hours: number;            // Max 10h
-  work_schedule: string;          // Ex: "09:00 - 18:00"
+  weekly_hours: number; // Max 44h (loi)
+  daily_hours: number; // Max 10h
+  work_schedule: string; // Ex: "09:00 - 18:00"
   work_schedule_type: 'Normal' | 'Equipe' | 'Continu' | 'Variable';
-  rest_day: string;               // Dimanche, etc.
+  rest_day: string; // Dimanche, etc.
 
   // Options
-  night_work: boolean;           // 21h-6h
+  night_work: boolean; // 21h-6h
   overtime_authorized: boolean;
 
   // Congés
-  annual_leave_days: number;      // Min 18 jours
+  annual_leave_days: number; // Min 18 jours
   special_leaves: {
-    marriage: 4;                  // Jours
+    marriage: 4; // Jours
     birth: 3;
     death_relative: 3;
     circumcision: 2;
     hajj: 30;
-  };
+  }
 }
 ```
 
@@ -153,8 +153,8 @@ src/
 
 ```typescript
 {
-  base_salary: number;            // Min SMIG: 3112.85 MAD
-  currency: string;               // MAD
+  base_salary: number; // Min SMIG: 3112.85 MAD
+  currency: string; // MAD
   payment_frequency: 'Mensuel' | 'Horaire' | 'Journalier';
 
   // Calculs
@@ -164,14 +164,14 @@ src/
 
   // Primes
   primes: {
-    prime_anciennete: number;    // 5% après 2 ans
+    prime_anciennete: number; // 5% après 2 ans
     prime_transport: number;
     prime_panier: number;
     prime_rendement: number;
     prime_nuit: number;
     treizieme_mois: boolean;
     // ... autres primes
-  };
+  }
 
   // Indemnités
   indemnites: {
@@ -180,7 +180,7 @@ src/
     indemnite_km: number;
     frais_telephone: number;
     // ... autres indemnités
-  };
+  }
 
   // Avantages en nature
   avantages_nature: {
@@ -190,11 +190,11 @@ src/
     tickets_restaurant: boolean;
     mutuelle_famille: boolean;
     // ... autres avantages
-  };
+  }
 
   // Paiement
   payment_method: 'Virement' | 'Cheque' | 'Especes';
-  rib: string;                   // RIB 24 chiffres
+  rib: string; // RIB 24 chiffres
   payment_day: number;
 }
 ```
@@ -207,8 +207,8 @@ src/
   cnss_affiliation: boolean;
   cnss_number: string;
   cnss_regime: 'General' | 'Agricole' | 'Artisanal' | 'Pecheurs';
-  cnss_rate_employee: 4.48;       // %
-  cnss_rate_employer: 16.46;      // %
+  cnss_rate_employee: 4.48; // %
+  cnss_rate_employer: 16.46; // %
 
   // AMO (obligatoire)
   amo: boolean;
@@ -223,13 +223,13 @@ src/
   // ANAPEC
   contrat_anapec: string;
   anapec_type: 'Idmaj' | 'TAHIL' | 'Autre';
-  taxe_formation: boolean;       // 1.6%
+  taxe_formation: boolean; // 1.6%
 
   // Fiscalité
   tax_ir: {
-    taux: number;                 // 0-38%
+    taux: number; // 0-38%
     exonere: boolean;
-  };
+  }
 
   // Convention collective
   convention_collective: string;
@@ -238,7 +238,7 @@ src/
   clauses: {
     confidentialite: boolean;
     non_concurrence: boolean;
-    non_concurrence_duration: number;  // mois
+    non_concurrence_duration: number; // mois
     mobilite: boolean;
     exclusivite: boolean;
     formation: boolean;
@@ -248,8 +248,8 @@ src/
       jours_par_semaine: number;
       materiel_fourni: string; // liste du matériel
       frais_rembourses: string; // liste des frais
-    };
-  };
+    }
+  }
 
   // Médecine du travail
   visite_medicale_embauche: boolean;
@@ -265,10 +265,10 @@ src/
   created_by: string;
   updated_at: string;
   updated_by: string;
-  versions: Array<{version, date, changes}>;
-  modifications: Array<{date, field, old_value, new_value}>;
-  validations: Array<{validator, status, comments}>;
-  signatures: Array<{signatory, date, method}>;
+  versions: Array<{ version; date; changes }>;
+  modifications: Array<{ date; field; old_value; new_value }>;
+  validations: Array<{ validator; status; comments }>;
+  signatures: Array<{ signatory; date; method }>;
 }
 ```
 

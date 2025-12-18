@@ -114,10 +114,16 @@ module.exports = function registerEmployeeRoutes(server, db) {
     const id = parseInt(req.params.id, 10);
     const employee = db.get('hrEmployees').find({ id }).value();
     if (!employee) {
-      return res.status(404).json({ status: 'error', message: 'Employé introuvable' });
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Employé introuvable' });
     }
-    const history = (db.get('employeeHistory').value() || []).filter((h) => h.employeeId === id);
-    const sorted = history.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    const history = (db.get('employeeHistory').value() || []).filter(
+      (h) => h.employeeId === id
+    );
+    const sorted = history.sort(
+      (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+    );
     return res.json({ status: 'success', data: sorted });
   });
 
@@ -130,7 +136,9 @@ module.exports = function registerEmployeeRoutes(server, db) {
     const id = parseInt(req.params.id, 10);
     const employee = db.get('hrEmployees').find({ id }).value();
     if (!employee) {
-      return res.status(404).json({ status: 'error', message: 'Employé introuvable' });
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Employé introuvable' });
     }
     const body = req.body || {};
     const item = {

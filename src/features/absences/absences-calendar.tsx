@@ -75,16 +75,13 @@ type ViewMode = 'month' | 'week';
 
 export default function AbsencesCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [viewMode, setViewMode] = useState<ViewMode>('month');
   const [absences, setAbsences] = useState<AbsenceEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const [showLegend, setShowLegend] = useState(true);
 
   // Filter states
   const [absenceTypes, setAbsenceTypes] = useState<any[]>([]);
-  const [employees, setEmployees] = useState<any[]>([]);
   const [selectedTypes, setSelectedTypes] = useState<number[]>([]);
-  const [selectedEmployees, setSelectedEmployees] = useState<number[]>([]);
   const [selectedStatuts, setSelectedStatuts] = useState<string[]>([]);
 
   // Load filters data
@@ -98,14 +95,6 @@ export default function AbsencesCalendar() {
         if (mounted) setAbsenceTypes(res.data?.data || []);
       })
       .catch(() => void 0);
-
-    apiClient
-      .get(apiRoutes.admin.employees.simpleList)
-      .then((res) => {
-        if (mounted) setEmployees(res.data?.data || []);
-      })
-      .catch(() => void 0);
-
     return () => {
       mounted = false;
     };
@@ -116,15 +105,10 @@ export default function AbsencesCalendar() {
     const fetchAbsences = async () => {
       setLoading(true);
       try {
-        const start =
-          viewMode === 'month'
-            ? startOfWeek(startOfMonth(currentDate), { weekStartsOn: 1 })
-            : startOfWeek(currentDate, { weekStartsOn: 1 });
-        const end =
-          viewMode === 'month'
-            ? endOfWeek(endOfMonth(currentDate), { weekStartsOn: 1 })
-            : endOfWeek(currentDate, { weekStartsOn: 1 });
-
+        const start = startOfWeek(startOfMonth(currentDate), {
+          weekStartsOn: 1
+        });
+        const end = endOfWeek(endOfMonth(currentDate), { weekStartsOn: 1 });
         const params: any = {
           from: format(start, 'yyyy-MM-dd'),
           to: format(end, 'yyyy-MM-dd'),
@@ -143,7 +127,7 @@ export default function AbsencesCalendar() {
       }
     };
     fetchAbsences();
-  }, [currentDate, viewMode]);
+  }, [currentDate]);
 
   // Filter absences
   const filteredAbsences = useMemo(() => {
@@ -153,56 +137,33 @@ export default function AbsencesCalendar() {
         !selectedTypes.includes(Number(abs.type_absence_id))
       )
         return false;
-      if (
-        selectedEmployees.length > 0 &&
-        !selectedEmployees.includes(Number(abs.employeeId))
-      )
-        return false;
       if (selectedStatuts.length > 0 && !selectedStatuts.includes(abs.statut))
         return false;
       return true;
     });
-  }, [absences, selectedTypes, selectedEmployees, selectedStatuts]);
+  }, [absences, selectedTypes, selectedStatuts]);
 
   // Navigation
   const handlePrevious = () => {
-    setCurrentDate(
-      viewMode === 'month'
-        ? addMonths(currentDate, -1)
-        : addWeeks(currentDate, -1)
-    );
+    setCurrentDate(addMonths(currentDate, -1));
   };
   const handleNext = () => {
-    setCurrentDate(
-      viewMode === 'month'
-        ? addMonths(currentDate, 1)
-        : addWeeks(currentDate, 1)
-    );
+    setCurrentDate(addMonths(currentDate, 1));
   };
   const handleToday = () => setCurrentDate(new Date());
 
   // Get days to display
   const daysToDisplay = useMemo(() => {
-    if (viewMode === 'month') {
-      const start = startOfWeek(startOfMonth(currentDate), { weekStartsOn: 1 });
-      const end = endOfWeek(endOfMonth(currentDate), { weekStartsOn: 1 });
-      const days: Date[] = [];
-      let day = start;
-      while (day <= end) {
-        days.push(day);
-        day = addDays(day, 1);
-      }
-      return days;
-    } else {
-      // week
-      const start = startOfWeek(currentDate, { weekStartsOn: 1 });
-      const days: Date[] = [];
-      for (let i = 0; i < 7; i++) {
-        days.push(addDays(start, i));
-      }
-      return days;
+    const start = startOfWeek(startOfMonth(currentDate), { weekStartsOn: 1 });
+    const end = endOfWeek(endOfMonth(currentDate), { weekStartsOn: 1 });
+    const days: Date[] = [];
+    let day = start;
+    while (day <= end) {
+      days.push(day);
+      day = addDays(day, 1);
     }
-  }, [currentDate, viewMode]);
+    return days;
+  }, [currentDate]);
 
   // Get absences for a specific day
   const getAbsencesForDay = (day: Date) => {
@@ -220,11 +181,12 @@ export default function AbsencesCalendar() {
         <Button variant='outline' size='sm' className='gap-2'>
           <Filter className='h-4 w-4' />
           Filtres
-          {(selectedTypes.length > 0 ||
-            selectedEmployees.length > 0 ||
-            selectedStatuts.length > 0) && (
-            <Badge variant='secondary' className='ml-1 rounded-full px-1.5 py-0.5'>
-              {selectedTypes.length + selectedEmployees.length + selectedStatuts.length}
+          {(selectedTypes.length > 0 || selectedStatuts.length > 0) && (
+            <Badge
+              variant='secondary'
+              className='ml-1 rounded-full px-1.5 py-0.5'
+            >
+              {selectedTypes.length + selectedStatuts.length}
             </Badge>
           )}
         </Button>
@@ -233,7 +195,9 @@ export default function AbsencesCalendar() {
         <ScrollArea className='h-[400px]'>
           <div className='space-y-4 p-1'>
             <div>
-              <h4 className='mb-3 text-sm font-semibold'>Types d&apos;absence</h4>
+              <h4 className='mb-3 text-sm font-semibold'>
+                Types d&apos;absence
+              </h4>
               <div className='space-y-2'>
                 {absenceTypes.map((type) => (
                   <div key={type.id} className='flex items-center space-x-2'>
@@ -268,7 +232,10 @@ export default function AbsencesCalendar() {
                   { value: 'cloture', label: 'Clôturée' },
                   { value: 'annulee', label: 'Annulée' }
                 ].map((statut) => (
-                  <div key={statut.value} className='flex items-center space-x-2'>
+                  <div
+                    key={statut.value}
+                    className='flex items-center space-x-2'
+                  >
                     <Checkbox
                       id={`statut-${statut.value}`}
                       checked={selectedStatuts.includes(statut.value)}
@@ -291,48 +258,13 @@ export default function AbsencesCalendar() {
               </div>
             </div>
 
-            <div>
-              <h4 className='mb-3 text-sm font-semibold'>Employés</h4>
-              <div className='space-y-2'>
-                {employees.slice(0, 10).map((emp) => (
-                  <div key={emp.id} className='flex items-center space-x-2'>
-                    <Checkbox
-                      id={`emp-${emp.id}`}
-                      checked={selectedEmployees.includes(emp.id)}
-                      onCheckedChange={(checked) => {
-                        setSelectedEmployees((prev) =>
-                          checked
-                            ? [...prev, emp.id]
-                            : prev.filter((id) => id !== emp.id)
-                        );
-                      }}
-                    />
-                    <Label
-                      htmlFor={`emp-${emp.id}`}
-                      className='flex-1 cursor-pointer text-sm'
-                    >
-                      {emp.firstName} {emp.lastName}
-                    </Label>
-                  </div>
-                ))}
-                {employees.length > 10 && (
-                  <p className='text-muted-foreground text-xs'>
-                    ... et {employees.length - 10} autres
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {(selectedTypes.length > 0 ||
-              selectedEmployees.length > 0 ||
-              selectedStatuts.length > 0) && (
+            {(selectedTypes.length > 0 || selectedStatuts.length > 0) && (
               <Button
                 variant='outline'
                 size='sm'
                 className='w-full'
                 onClick={() => {
                   setSelectedTypes([]);
-                  setSelectedEmployees([]);
                   setSelectedStatuts([]);
                 }}
               >
@@ -368,7 +300,7 @@ export default function AbsencesCalendar() {
             .map((type: any) => (
               <div
                 key={type.id}
-                className='flex items-center gap-3 rounded-md p-2 transition-colors hover:bg-muted/50'
+                className='hover:bg-muted/50 flex items-center gap-3 rounded-md p-2 transition-colors'
               >
                 <div
                   className='h-4 w-4 flex-shrink-0 rounded-full shadow-sm'
@@ -441,8 +373,10 @@ export default function AbsencesCalendar() {
                             variant='secondary'
                             className={cn(
                               'h-6 rounded-full px-2 text-[10px] font-bold',
-                              dayAbsences.length > 5 && 'bg-orange-100 text-orange-700',
-                              dayAbsences.length > 8 && 'bg-red-100 text-red-700'
+                              dayAbsences.length > 5 &&
+                                'bg-orange-100 text-orange-700',
+                              dayAbsences.length > 8 &&
+                                'bg-red-100 text-red-700'
                             )}
                           >
                             {dayAbsences.length}
@@ -453,12 +387,13 @@ export default function AbsencesCalendar() {
                     <CardContent className='p-2'>
                       <div className='flex flex-wrap gap-1.5'>
                         {dayAbsences.map((abs, index) => {
-                          const bgColor = abs.type_absence?.couleur_hexa || '#94a3b8';
+                          const bgColor =
+                            abs.type_absence?.couleur_hexa || '#94a3b8';
                           return (
                             <Tooltip key={abs.id} delayDuration={200}>
                               <TooltipTrigger asChild>
                                 <div
-                                  className='group relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-full shadow-md transition-all hover:scale-125 hover:shadow-xl hover:z-10'
+                                  className='group relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-full shadow-md transition-all hover:z-10 hover:scale-125 hover:shadow-xl'
                                   style={{
                                     backgroundColor: bgColor,
                                     border: '2px solid white'
@@ -466,7 +401,7 @@ export default function AbsencesCalendar() {
                                 >
                                   <User className='h-4 w-4 text-white' />
                                   <div
-                                    className='absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-white text-[9px] font-bold shadow-sm'
+                                    className='absolute -right-0.5 -bottom-0.5 flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-white text-[9px] font-bold shadow-sm'
                                     style={{ color: bgColor }}
                                   >
                                     {index + 1}
@@ -475,7 +410,7 @@ export default function AbsencesCalendar() {
                               </TooltipTrigger>
                               <TooltipContent
                                 side='right'
-                                className='max-w-sm border-2 bg-card p-0 shadow-xl'
+                                className='bg-card max-w-sm border-2 p-0 shadow-xl'
                                 style={{ borderColor: bgColor }}
                               >
                                 <div className='space-y-3 p-4'>
@@ -490,8 +425,9 @@ export default function AbsencesCalendar() {
                                         {abs.employee?.lastName?.charAt(0)}
                                       </div>
                                       <div>
-                                        <div className='font-semibold text-foreground'>
-                                          {abs.employee?.firstName} {abs.employee?.lastName}
+                                        <div className='text-foreground font-semibold'>
+                                          {abs.employee?.firstName}{' '}
+                                          {abs.employee?.lastName}
                                         </div>
                                         {abs.employee?.matricule && (
                                           <div className='text-muted-foreground text-xs'>
@@ -503,7 +439,7 @@ export default function AbsencesCalendar() {
                                     <Badge
                                       variant='outline'
                                       className={cn(
-                                        'text-xs font-medium flex-shrink-0',
+                                        'flex-shrink-0 text-xs font-medium',
                                         abs.statut === 'validee' &&
                                           'border-emerald-500 bg-emerald-50 text-emerald-700',
                                         abs.statut === 'brouillon' &&
@@ -515,7 +451,8 @@ export default function AbsencesCalendar() {
                                       )}
                                     >
                                       {abs.statut === 'validee' && '✓ Validée'}
-                                      {abs.statut === 'brouillon' && '○ Brouillon'}
+                                      {abs.statut === 'brouillon' &&
+                                        '○ Brouillon'}
                                       {abs.statut === 'cloture' && '● Clôturée'}
                                       {abs.statut === 'annulee' && '✕ Annulée'}
                                     </Badge>
@@ -531,27 +468,38 @@ export default function AbsencesCalendar() {
                                       style={{ backgroundColor: bgColor }}
                                     />
                                     <div className='flex flex-col'>
-                                      <span className='text-sm font-semibold text-foreground'>
+                                      <span className='text-foreground text-sm font-semibold'>
                                         {abs.type_absence?.libelle}
                                       </span>
-                                      <span className='text-xs font-medium' style={{ color: bgColor }}>
+                                      <span
+                                        className='text-xs font-medium'
+                                        style={{ color: bgColor }}
+                                      >
                                         {abs.type_absence?.code}
                                       </span>
                                     </div>
                                   </div>
 
                                   {/* Dates */}
-                                  <div className='space-y-2 rounded-lg bg-muted/50 p-3'>
-                                    <div className='flex items-center gap-2 text-sm text-foreground'>
-                                      <CalendarIcon className='h-4 w-4 text-muted-foreground' />
+                                  <div className='bg-muted/50 space-y-2 rounded-lg p-3'>
+                                    <div className='text-foreground flex items-center gap-2 text-sm'>
+                                      <CalendarIcon className='text-muted-foreground h-4 w-4' />
                                       <span className='font-medium'>
-                                        Du {format(parseISO(abs.date_debut), 'dd/MM/yyyy')}
+                                        Du{' '}
+                                        {format(
+                                          parseISO(abs.date_debut),
+                                          'dd/MM/yyyy'
+                                        )}
                                       </span>
                                     </div>
-                                    <div className='flex items-center gap-2 text-sm text-foreground'>
-                                      <CalendarIcon className='h-4 w-4 text-muted-foreground' />
+                                    <div className='text-foreground flex items-center gap-2 text-sm'>
+                                      <CalendarIcon className='text-muted-foreground h-4 w-4' />
                                       <span className='font-medium'>
-                                        Au {format(parseISO(abs.date_fin), 'dd/MM/yyyy')}
+                                        Au{' '}
+                                        {format(
+                                          parseISO(abs.date_fin),
+                                          'dd/MM/yyyy'
+                                        )}
                                       </span>
                                     </div>
                                     <div
@@ -566,13 +514,15 @@ export default function AbsencesCalendar() {
                                   {/* Motif */}
                                   {abs.motif && (
                                     <div
-                                      className='rounded-lg border-l-4 bg-muted/30 p-3'
+                                      className='bg-muted/30 rounded-lg border-l-4 p-3'
                                       style={{ borderColor: bgColor }}
                                     >
                                       <div className='text-muted-foreground mb-1 text-xs font-medium'>
                                         Motif
                                       </div>
-                                      <div className='text-sm text-foreground'>{abs.motif}</div>
+                                      <div className='text-foreground text-sm'>
+                                        {abs.motif}
+                                      </div>
                                     </div>
                                   )}
                                 </div>
@@ -636,7 +586,8 @@ export default function AbsencesCalendar() {
                       variant='secondary'
                       className={cn(
                         'rounded-full px-3 py-1 text-xs font-bold',
-                        dayAbsences.length > 5 && 'bg-orange-100 text-orange-700',
+                        dayAbsences.length > 5 &&
+                          'bg-orange-100 text-orange-700',
                         dayAbsences.length > 8 && 'bg-red-100 text-red-700'
                       )}
                     >
@@ -648,12 +599,13 @@ export default function AbsencesCalendar() {
                   <div className='space-y-2 pr-2'>
                     <div className='grid grid-cols-2 gap-2'>
                       {dayAbsences.map((abs, index) => {
-                        const bgColor = abs.type_absence?.couleur_hexa || '#94a3b8';
+                        const bgColor =
+                          abs.type_absence?.couleur_hexa || '#94a3b8';
                         return (
                           <Tooltip key={abs.id} delayDuration={200}>
                             <TooltipTrigger asChild>
                               <Card
-                                className='cursor-pointer border-2 transition-all hover:scale-105 hover:shadow-lg hover:z-10'
+                                className='cursor-pointer border-2 transition-all hover:z-10 hover:scale-105 hover:shadow-lg'
                                 style={{
                                   borderColor: bgColor,
                                   backgroundColor: `${bgColor}10`
@@ -670,7 +622,7 @@ export default function AbsencesCalendar() {
                                         <User className='h-5 w-5 text-white' />
                                       </div>
                                       <div
-                                        className='absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white bg-white text-[10px] font-bold shadow-sm'
+                                        className='absolute -right-1 -bottom-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white bg-white text-[10px] font-bold shadow-sm'
                                         style={{ color: bgColor }}
                                       >
                                         {index + 1}
@@ -678,12 +630,12 @@ export default function AbsencesCalendar() {
                                     </div>
                                     {/* Nom */}
                                     <div className='text-center'>
-                                      <div className='text-[10px] font-semibold text-foreground leading-tight'>
+                                      <div className='text-foreground text-[10px] leading-tight font-semibold'>
                                         {abs.employee?.firstName?.charAt(0)}.{' '}
                                         {abs.employee?.lastName}
                                       </div>
                                       <div
-                                        className='text-[9px] font-medium mt-0.5'
+                                        className='mt-0.5 text-[9px] font-medium'
                                         style={{ color: bgColor }}
                                       >
                                         {abs.type_absence?.code}
@@ -693,7 +645,7 @@ export default function AbsencesCalendar() {
                                     <Badge
                                       variant='outline'
                                       className={cn(
-                                        'text-[8px] font-bold px-1.5 py-0 h-4',
+                                        'h-4 px-1.5 py-0 text-[8px] font-bold',
                                         abs.statut === 'validee' &&
                                           'border-emerald-500 bg-emerald-50 text-emerald-700',
                                         abs.statut === 'brouillon' &&
@@ -715,7 +667,7 @@ export default function AbsencesCalendar() {
                             </TooltipTrigger>
                             <TooltipContent
                               side='right'
-                              className='max-w-sm border-2 bg-card p-0 shadow-xl'
+                              className='bg-card max-w-sm border-2 p-0 shadow-xl'
                               style={{ borderColor: bgColor }}
                             >
                               <div className='space-y-3 p-4'>
@@ -730,8 +682,9 @@ export default function AbsencesCalendar() {
                                       {abs.employee?.lastName?.charAt(0)}
                                     </div>
                                     <div>
-                                      <div className='font-semibold text-foreground'>
-                                        {abs.employee?.firstName} {abs.employee?.lastName}
+                                      <div className='text-foreground font-semibold'>
+                                        {abs.employee?.firstName}{' '}
+                                        {abs.employee?.lastName}
                                       </div>
                                       {abs.employee?.matricule && (
                                         <div className='text-muted-foreground text-xs'>
@@ -743,7 +696,7 @@ export default function AbsencesCalendar() {
                                   <Badge
                                     variant='outline'
                                     className={cn(
-                                      'text-xs font-medium flex-shrink-0',
+                                      'flex-shrink-0 text-xs font-medium',
                                       abs.statut === 'validee' &&
                                         'border-emerald-500 bg-emerald-50 text-emerald-700',
                                       abs.statut === 'brouillon' &&
@@ -755,7 +708,8 @@ export default function AbsencesCalendar() {
                                     )}
                                   >
                                     {abs.statut === 'validee' && '✓ Validée'}
-                                    {abs.statut === 'brouillon' && '○ Brouillon'}
+                                    {abs.statut === 'brouillon' &&
+                                      '○ Brouillon'}
                                     {abs.statut === 'cloture' && '● Clôturée'}
                                     {abs.statut === 'annulee' && '✕ Annulée'}
                                   </Badge>
@@ -771,27 +725,38 @@ export default function AbsencesCalendar() {
                                     style={{ backgroundColor: bgColor }}
                                   />
                                   <div className='flex flex-col'>
-                                    <span className='text-sm font-semibold text-foreground'>
+                                    <span className='text-foreground text-sm font-semibold'>
                                       {abs.type_absence?.libelle}
                                     </span>
-                                    <span className='text-xs font-medium' style={{ color: bgColor }}>
+                                    <span
+                                      className='text-xs font-medium'
+                                      style={{ color: bgColor }}
+                                    >
                                       {abs.type_absence?.code}
                                     </span>
                                   </div>
                                 </div>
 
                                 {/* Dates */}
-                                <div className='space-y-2 rounded-lg bg-muted/50 p-3'>
-                                  <div className='flex items-center gap-2 text-sm text-foreground'>
-                                    <CalendarIcon className='h-4 w-4 text-muted-foreground' />
+                                <div className='bg-muted/50 space-y-2 rounded-lg p-3'>
+                                  <div className='text-foreground flex items-center gap-2 text-sm'>
+                                    <CalendarIcon className='text-muted-foreground h-4 w-4' />
                                     <span className='font-medium'>
-                                      Du {format(parseISO(abs.date_debut), 'dd/MM/yyyy')}
+                                      Du{' '}
+                                      {format(
+                                        parseISO(abs.date_debut),
+                                        'dd/MM/yyyy'
+                                      )}
                                     </span>
                                   </div>
-                                  <div className='flex items-center gap-2 text-sm text-foreground'>
-                                    <CalendarIcon className='h-4 w-4 text-muted-foreground' />
+                                  <div className='text-foreground flex items-center gap-2 text-sm'>
+                                    <CalendarIcon className='text-muted-foreground h-4 w-4' />
                                     <span className='font-medium'>
-                                      Au {format(parseISO(abs.date_fin), 'dd/MM/yyyy')}
+                                      Au{' '}
+                                      {format(
+                                        parseISO(abs.date_fin),
+                                        'dd/MM/yyyy'
+                                      )}
                                     </span>
                                   </div>
                                   <div
@@ -806,13 +771,15 @@ export default function AbsencesCalendar() {
                                 {/* Motif */}
                                 {abs.motif && (
                                   <div
-                                    className='rounded-lg border-l-4 bg-muted/30 p-3'
+                                    className='bg-muted/30 rounded-lg border-l-4 p-3'
                                     style={{ borderColor: bgColor }}
                                   >
                                     <div className='text-muted-foreground mb-1 text-xs font-medium'>
                                       Motif
                                     </div>
-                                    <div className='text-sm text-foreground'>{abs.motif}</div>
+                                    <div className='text-foreground text-sm'>
+                                      {abs.motif}
+                                    </div>
                                   </div>
                                 )}
                               </div>
@@ -824,7 +791,7 @@ export default function AbsencesCalendar() {
                   </div>
                 </ScrollArea>
                 {dayAbsences.length === 0 && (
-                  <div className='text-muted-foreground flex h-24 items-center justify-center rounded-lg border-2 border-dashed bg-muted/20 text-center text-xs font-medium'>
+                  <div className='text-muted-foreground bg-muted/20 flex h-24 items-center justify-center rounded-lg border-2 border-dashed text-center text-xs font-medium'>
                     Aucune absence
                   </div>
                 )}
@@ -847,7 +814,7 @@ export default function AbsencesCalendar() {
                 variant='outline'
                 size='icon'
                 onClick={handlePrevious}
-                className='h-10 w-10 rounded-lg transition-all hover:bg-primary hover:text-primary-foreground'
+                className='hover:bg-primary hover:text-primary-foreground h-10 w-10 rounded-lg transition-all'
               >
                 <ChevronLeft className='h-5 w-5' />
               </Button>
@@ -855,7 +822,7 @@ export default function AbsencesCalendar() {
                 variant='outline'
                 size='sm'
                 onClick={handleToday}
-                className='min-w-[120px] rounded-lg font-medium transition-all hover:bg-primary hover:text-primary-foreground'
+                className='hover:bg-primary hover:text-primary-foreground min-w-[120px] rounded-lg font-medium transition-all'
               >
                 Aujourd&apos;hui
               </Button>
@@ -863,49 +830,22 @@ export default function AbsencesCalendar() {
                 variant='outline'
                 size='icon'
                 onClick={handleNext}
-                className='h-10 w-10 rounded-lg transition-all hover:bg-primary hover:text-primary-foreground'
+                className='hover:bg-primary hover:text-primary-foreground h-10 w-10 rounded-lg transition-all'
               >
                 <ChevronRight className='h-5 w-5' />
               </Button>
-              <div className='ml-4 flex items-center gap-3 rounded-lg bg-muted/50 px-4 py-2'>
+              <div className='bg-muted/50 ml-4 flex items-center gap-3 rounded-lg px-4 py-2'>
                 <CalendarIcon className='text-primary h-5 w-5' />
-                <h2 className='text-lg font-bold capitalize text-foreground'>
+                <h2 className='text-foreground text-lg font-bold capitalize'>
                   {format(currentDate, 'MMMM yyyy', { locale: fr })}
                 </h2>
               </div>
             </div>
 
-            <div className='flex items-center gap-3'>
-              {renderFilters()}
-              <div className='flex rounded-lg border-2 shadow-sm'>
-                <Button
-                  variant={viewMode === 'month' ? 'default' : 'ghost'}
-                  size='sm'
-                  onClick={() => setViewMode('month')}
-                  className={cn(
-                    'rounded-r-none font-medium transition-all',
-                    viewMode === 'month' && 'shadow-sm'
-                  )}
-                >
-                  📅 Mois
-                </Button>
-                <Button
-                  variant={viewMode === 'week' ? 'default' : 'ghost'}
-                  size='sm'
-                  onClick={() => setViewMode('week')}
-                  className={cn(
-                    'rounded-l-none font-medium transition-all',
-                    viewMode === 'week' && 'shadow-sm'
-                  )}
-                >
-                  📆 Semaine
-                </Button>
-              </div>
-            </div>
+            <div className='flex items-center gap-3'>{renderFilters()}</div>
           </div>
         </CardContent>
       </Card>
-
 
       <div className='grid grid-cols-1 gap-6 lg:grid-cols-6'>
         {/* Legend */}
@@ -919,9 +859,7 @@ export default function AbsencesCalendar() {
             </div>
           ) : (
             <Card>
-              <CardContent className='p-6'>
-                {viewMode === 'month' ? renderMonthView() : renderWeekView()}
-              </CardContent>
+              <CardContent className='p-6'>{renderMonthView()}</CardContent>
             </Card>
           )}
         </div>

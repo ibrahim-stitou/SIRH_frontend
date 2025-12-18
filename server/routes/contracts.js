@@ -124,12 +124,10 @@ module.exports = function registerContractRoutes(server, db) {
     }
     const currentStatus = contract.status || contract.statut;
     if (currentStatus !== 'Brouillon') {
-      return res
-        .status(400)
-        .json({
-          status: 'error',
-          message: 'Seuls les contrats en brouillon peuvent être validés'
-        });
+      return res.status(400).json({
+        status: 'error',
+        message: 'Seuls les contrats en brouillon peuvent être validés'
+      });
     }
     const updates = {
       status: 'Actif',
@@ -183,12 +181,10 @@ module.exports = function registerContractRoutes(server, db) {
     }
     const currentStatus = exists.status || exists.statut;
     if (currentStatus !== 'Brouillon') {
-      return res
-        .status(400)
-        .json({
-          status: 'error',
-          message: 'Seuls les contrats en brouillon peuvent être supprimés'
-        });
+      return res.status(400).json({
+        status: 'error',
+        message: 'Seuls les contrats en brouillon peuvent être supprimés'
+      });
     }
     db.get('contracts')
       .remove((c) => String(c.id) === String(id))

@@ -64,6 +64,7 @@ export default async function RootLayout({
         />
       </head>
       <body
+        suppressHydrationWarning
         className={cn(
           'bg-background theme-sirh overflow-hidden overscroll-none font-sans antialiased',
           fontVariables

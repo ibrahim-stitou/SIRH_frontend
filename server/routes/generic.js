@@ -26,13 +26,11 @@ module.exports = function registerGenericRoutes(server, db, data) {
       const payload = req.body;
       if (!payload.id) payload.id = Date.now();
       db.get(col).push(payload).write();
-      res
-        .status(201)
-        .json({
-          status: 'success',
-          message: 'Création réussie',
-          data: payload
-        });
+      res.status(201).json({
+        status: 'success',
+        message: 'Création réussie',
+        data: payload
+      });
     });
     server.put(`/${col}/:id`, (req, res) => {
       const id = isNaN(+req.params.id) ? req.params.id : +req.params.id;

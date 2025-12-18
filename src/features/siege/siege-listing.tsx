@@ -171,7 +171,9 @@ export default function SiegeListing() {
                 <Button
                   variant='outline'
                   className='h-8 w-8 p-1.5'
-                  onClick={() => router.push(`/admin/sieges-groupes/${row.id}/groupes`)}
+                  onClick={() =>
+                    router.push(`/admin/sieges-groupes/${row.id}/groupes`)
+                  }
                 >
                   <Users className='h-4 w-4' />
                 </Button>
@@ -266,27 +268,41 @@ export default function SiegeListing() {
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
           <div className='space-y-2'>
             <Label htmlFor='name'>
-              {(t('headquarters.create.fields.name') || t('common.name'))} <span className='text-destructive'>*</span>
+              {t('headquarters.create.fields.name') || t('common.name')}{' '}
+              <span className='text-destructive'>*</span>
             </Label>
             <Input
               id='name'
               aria-invalid={!!errors.name}
               value={form.name}
-              onChange={(e) => { setForm((f) => ({ ...f, name: e.target.value })); if (errors.name) setErrors((prev) => ({ ...prev, name: undefined })); }}
+              onChange={(e) => {
+                setForm((f) => ({ ...f, name: e.target.value }));
+                if (errors.name)
+                  setErrors((prev) => ({ ...prev, name: undefined }));
+              }}
             />
-            {errors.name && <div className='text-destructive text-xs'>{errors.name}</div>}
+            {errors.name && (
+              <div className='text-destructive text-xs'>{errors.name}</div>
+            )}
           </div>
           <div className='space-y-2'>
             <Label htmlFor='code'>
-              {(t('headquarters.create.fields.code') || t('common.code'))} <span className='text-destructive'>*</span>
+              {t('headquarters.create.fields.code') || t('common.code')}{' '}
+              <span className='text-destructive'>*</span>
             </Label>
             <Input
               id='code'
               aria-invalid={!!errors.code}
               value={form.code}
-              onChange={(e) => { setForm((f) => ({ ...f, code: e.target.value })); if (errors.code) setErrors((prev) => ({ ...prev, code: undefined })); }}
+              onChange={(e) => {
+                setForm((f) => ({ ...f, code: e.target.value }));
+                if (errors.code)
+                  setErrors((prev) => ({ ...prev, code: undefined }));
+              }}
             />
-            {errors.code && <div className='text-destructive text-xs'>{errors.code}</div>}
+            {errors.code && (
+              <div className='text-destructive text-xs'>{errors.code}</div>
+            )}
           </div>
           <div className='space-y-2 sm:col-span-2'>
             <Label htmlFor='address'>

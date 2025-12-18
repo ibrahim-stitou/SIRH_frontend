@@ -5,4 +5,3 @@ module.exports = function registerDepartmentsRoutes(server, db) {
     return res.json({ status: 'success', data: simple });
   });
 };
-

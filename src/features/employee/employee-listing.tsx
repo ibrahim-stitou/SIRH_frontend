@@ -177,7 +177,8 @@ export function EmployeeListing() {
       field: 'nom',
       label: t('employees.filters.name'),
       type: 'text'
-    },   {
+    },
+    {
       field: 'matricule',
       label: t('employees.filters.matricule'),
       type: 'text'
@@ -218,7 +219,9 @@ export function EmployeeListing() {
             {t('employees.subtitle')}
           </p>
         </div>
-        <Button onClick={() => router.push('/admin/personnel/employes/ajouter')}>
+        <Button
+          onClick={() => router.push('/admin/personnel/employes/ajouter')}
+        >
           {t('employees.actions.create')}
         </Button>
       </div>

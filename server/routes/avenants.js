@@ -86,7 +86,11 @@ module.exports = function registerAvenantRoutes(server, db) {
         .json({ status: 'error', message: 'Avenant introuvable', data: null });
     db.get('avenants').find({ id }).assign(req.body).write();
     const updated = db.get('avenants').find({ id }).value();
-    return res.json({ status: 'success', message: 'Mise à jour réussie', data: updated });
+    return res.json({
+      status: 'success',
+      message: 'Mise à jour réussie',
+      data: updated
+    });
   });
 
   server.delete('/avenants/:id', (req, res) => {
@@ -108,8 +112,15 @@ module.exports = function registerAvenantRoutes(server, db) {
         .status(404)
         .json({ status: 'error', message: 'Avenant introuvable', data: null });
     const documentUrl = `/uploads/avenants/${id}/generated.pdf`;
-    db.get('avenants').find({ id }).assign({ document_url: documentUrl }).write();
-    return res.json({ status: 'success', document_url: documentUrl, message: 'PDF généré' });
+    db.get('avenants')
+      .find({ id })
+      .assign({ document_url: documentUrl })
+      .write();
+    return res.json({
+      status: 'success',
+      document_url: documentUrl,
+      message: 'PDF généré'
+    });
   });
 
   server.post('/avenants/:id/upload-signed', (req, res) => {

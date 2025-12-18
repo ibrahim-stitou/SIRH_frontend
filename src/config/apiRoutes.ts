@@ -44,7 +44,8 @@ export const apiRoutes = {
       details: (id: number | string) => `${API_BASE}/hrEmployees/${id}`,
       update: (id: number | string) => `${API_BASE}/hrEmployees/${id}`,
       history: (id: number | string) => `${API_BASE}/hrEmployees/${id}/history`,
-      createHistory: (id: number | string) => `${API_BASE}/hrEmployees/${id}/history`,
+      createHistory: (id: number | string) =>
+        `${API_BASE}/hrEmployees/${id}/history`,
       movementTypes: `${API_BASE}/movement-types`
     },
     departments: {
@@ -134,6 +135,14 @@ export const apiRoutes = {
       types: `${API_BASE}/absence-types`,
       typesSimple: `${API_BASE}/absence-types/simple-list`,
       refuse: (id: string | number) => `/absences/${id}/refuse`
+    },
+    conges: {
+      congeCompteurs: {
+        list: `${API_BASE}/congeCompteurs`,
+        show: (id: number | string) => `${API_BASE}/congeCompteurs/${id}`,
+        compteursByEmployee: (employeeId: number | string) =>
+          `${API_BASE}/congeCompteurs/employee/${employeeId}`
+      }
     }
   }
 };

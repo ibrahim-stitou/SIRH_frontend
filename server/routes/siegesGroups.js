@@ -146,8 +146,14 @@ module.exports = function registerSiegesGroupsRoutes(server, db) {
   // New: replace members for a group
   server.put('/groups/:id/members', (req, res) => {
     const id = req.params.id;
-    const group = db.get('groups').find((row) => String(row.id) === String(id)).value();
-    if (!group) return res.status(404).json({ status: 'error', message: 'Groupe introuvable' });
+    const group = db
+      .get('groups')
+      .find((row) => String(row.id) === String(id))
+      .value();
+    if (!group)
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Groupe introuvable' });
 
     const members = Array.isArray(req.body?.members) ? req.body.members : [];
 
@@ -162,8 +168,14 @@ module.exports = function registerSiegesGroupsRoutes(server, db) {
       isManager: !!m.isManager
     }));
 
-    db.get('groupMembers').push(...toInsert).write();
+    db.get('groupMembers')
+      .push(...toInsert)
+      .write();
 
-    return res.json({ status: 'success', message: 'Membres mis à jour', data: { groupId: id, count: toInsert.length } });
+    return res.json({
+      status: 'success',
+      message: 'Membres mis à jour',
+      data: { groupId: id, count: toInsert.length }
+    });
   });
 };

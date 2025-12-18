@@ -76,7 +76,9 @@ export function ContratsListing() {
   const router = useRouter();
   const { t } = useLanguage();
   const [employeeOptions, setEmployeeOptions] = useState<SelectOption[]>([]);
-  const [departmentOptions, setDepartmentOptions] = useState<SelectOption[]>([]);
+  const [departmentOptions, setDepartmentOptions] = useState<SelectOption[]>(
+    []
+  );
   const [typeOptions] = useState<SelectOption[]>([
     { label: 'CDI', value: 'CDI' },
     { label: 'CDD', value: 'CDD' },
@@ -98,8 +100,12 @@ export function ContratsListing() {
   useEffect(() => {
     (async () => {
       try {
-        const empResp = await apiClient.get(apiRoutes.admin.employees.simpleList);
-        const empData = Array.isArray(empResp?.data?.data) ? empResp.data.data : empResp.data;
+        const empResp = await apiClient.get(
+          apiRoutes.admin.employees.simpleList
+        );
+        const empData = Array.isArray(empResp?.data?.data)
+          ? empResp.data.data
+          : empResp.data;
         const opts: SelectOption[] = (empData || []).map((e: any) => ({
           label: `${e.firstName} ${e.lastName}${e.matricule ? ` (${e.matricule})` : ''}`,
           value: e.matricule || e.id // filter by matricule or id fallback
@@ -107,9 +113,16 @@ export function ContratsListing() {
         setEmployeeOptions(opts);
       } catch {}
       try {
-        const depResp = await apiClient.get(apiRoutes.admin.departments.simpleList);
-        const depData = Array.isArray(depResp?.data?.data) ? depResp.data.data : depResp.data;
-        const dOpts: SelectOption[] = (depData || []).map((d: any) => ({ label: d.name, value: d.name }));
+        const depResp = await apiClient.get(
+          apiRoutes.admin.departments.simpleList
+        );
+        const depData = Array.isArray(depResp?.data?.data)
+          ? depResp.data.data
+          : depResp.data;
+        const dOpts: SelectOption[] = (depData || []).map((d: any) => ({
+          label: d.name,
+          value: d.name
+        }));
         setDepartmentOptions(dOpts);
       } catch {}
     })();
@@ -361,10 +374,30 @@ export function ContratsListing() {
   ];
 
   const filters: CustomTableFilterConfig[] = [
-    { field: 'employee_matricule', label: t('contracts.fields.employee'), type: 'datatable-select', options: employeeOptions },
-    { field: 'type_contrat', label: t('contracts.fields.type'), type: 'datatable-select', options: typeOptions },
-    { field: 'statut', label: t('contracts.fields.status'), type: 'datatable-select', options: statusOptions },
-    { field: 'departement', label: t('contracts.fields.department'), type: 'datatable-select', options: departmentOptions }
+    {
+      field: 'employee_matricule',
+      label: t('contracts.fields.employee'),
+      type: 'datatable-select',
+      options: employeeOptions
+    },
+    {
+      field: 'type_contrat',
+      label: t('contracts.fields.type'),
+      type: 'datatable-select',
+      options: typeOptions
+    },
+    {
+      field: 'statut',
+      label: t('contracts.fields.status'),
+      type: 'datatable-select',
+      options: statusOptions
+    },
+    {
+      field: 'departement',
+      label: t('contracts.fields.department'),
+      type: 'datatable-select',
+      options: departmentOptions
+    }
   ];
 
   return (

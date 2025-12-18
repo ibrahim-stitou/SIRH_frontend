@@ -83,7 +83,11 @@ const getCellValue = <T extends Record<string, any>>(
 
     // Handle dates - check if it looks like a date string
     const dateValue = value as any;
-    if (dateValue && typeof dateValue === 'object' && dateValue.toLocaleDateString) {
+    if (
+      dateValue &&
+      typeof dateValue === 'object' &&
+      dateValue.toLocaleDateString
+    ) {
       return dateValue.toLocaleDateString('fr-FR');
     }
 
@@ -135,17 +139,17 @@ export const exportToPDF = <T extends Record<string, any>>(
     startY: 25,
     styles: {
       fontSize: 8,
-      cellPadding: 2,
+      cellPadding: 2
     },
     headStyles: {
       fillColor: [41, 128, 185],
       textColor: 255,
-      fontStyle: 'bold',
+      fontStyle: 'bold'
     },
     alternateRowStyles: {
-      fillColor: [245, 245, 245],
+      fillColor: [245, 245, 245]
     },
-    margin: { top: 25 },
+    margin: { top: 25 }
   });
 
   // Save the PDF
@@ -186,7 +190,7 @@ export const exportToExcel = <T extends Record<string, any>>(
   worksheet['!cols'] = columns
     .filter((col) => col.label && col.data !== 'actions')
     .map((col) => ({
-      wch: col.width ? col.width / 10 : 15, // Convert pixels to character width
+      wch: col.width ? col.width / 10 : 15 // Convert pixels to character width
     }));
 
   // Create workbook
@@ -197,6 +201,3 @@ export const exportToExcel = <T extends Record<string, any>>(
   XLSX.writeFile(workbook, `${filename}.xlsx`);
   toast.success(`Excel exporté avec succès: ${filename}.xlsx`);
 };
-
-
-

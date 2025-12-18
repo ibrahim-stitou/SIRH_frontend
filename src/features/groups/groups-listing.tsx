@@ -1,6 +1,15 @@
 'use client';
 import React, { useMemo, useState } from 'react';
-import { Plus, Trash2, ArrowLeft, Users, Save, CheckSquare, Square, UserPlus } from 'lucide-react';
+import {
+  Plus,
+  Trash2,
+  ArrowLeft,
+  Users,
+  Save,
+  CheckSquare,
+  Square,
+  UserPlus
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -36,7 +45,13 @@ import {
 } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription
+} from '@/components/ui/card';
 
 interface GroupeRow {
   id: string;
@@ -62,16 +77,14 @@ type GroupMember = {
   id: string;
   employeeId: number | string;
   isManager: boolean;
-  employee?:
-    | {
-        id: number | string;
-        firstName: string;
-        lastName: string;
-        email?: string;
-        matricule?: string;
-        position?: string;
-      }
-    | null;
+  employee?: {
+    id: number | string;
+    firstName: string;
+    lastName: string;
+    email?: string;
+    matricule?: string;
+    position?: string;
+  } | null;
 };
 
 // Create a tiny form type for the add-employee select in the sheet
@@ -112,7 +125,9 @@ export default function GroupsListing({ id }: { id?: string }) {
   const [openSheet, setOpenSheet] = useState(false);
   const [activeGroup, setActiveGroup] = useState<GroupeRow | null>(null);
   const [members, setMembers] = useState<GroupMember[]>([]);
-  const [selectedMemberIds, setSelectedMemberIds] = useState<(number | string)[]>([]);
+  const [selectedMemberIds, setSelectedMemberIds] = useState<
+    (number | string)[]
+  >([]);
   const [loadingMembers, setLoadingMembers] = useState(false);
   const addMemberForm = useForm<AddMemberForm>({
     defaultValues: { employeeId: '' }
@@ -157,7 +172,10 @@ export default function GroupsListing({ id }: { id?: string }) {
       const data = resp?.data?.data;
       const groupMembers: GroupMember[] = data?.members || [];
       setMembers(groupMembers);
-      setSelectedMemberIds(groupMembers.filter(m => !!m.employee)?.map(m => m.employee!.id) || []);
+      setSelectedMemberIds(
+        groupMembers.filter((m) => !!m.employee)?.map((m) => m.employee!.id) ||
+          []
+      );
       if (!employeesOptions.length) await fetchEmployeesSimple();
     } catch (e) {
       toast.error(t('common.error'));
@@ -168,7 +186,9 @@ export default function GroupsListing({ id }: { id?: string }) {
 
   const toggleSelectAll = (checked: boolean) => {
     if (checked) {
-      const allIds = members.filter(m => !!m.employee).map(m => m.employee!.id);
+      const allIds = members
+        .filter((m) => !!m.employee)
+        .map((m) => m.employee!.id);
       setSelectedMemberIds(allIds);
     } else {
       setSelectedMemberIds([]);
@@ -178,26 +198,40 @@ export default function GroupsListing({ id }: { id?: string }) {
   const toggleMember = (empId: number | string, checked: boolean) => {
     setSelectedMemberIds((prev) => {
       const set = new Set(prev);
-      if (checked) set.add(empId); else set.delete(empId);
+      if (checked) set.add(empId);
+      else set.delete(empId);
       return Array.from(set);
     });
   };
 
   const addEmployeeToListById = (idVal: number | string) => {
-    const exists = members.some(m => String(m.employee?.id ?? m.employeeId) === String(idVal));
-    const emp = employeesOptions.find(e => String(e.id) === String(idVal));
+    const exists = members.some(
+      (m) => String(m.employee?.id ?? m.employeeId) === String(idVal)
+    );
+    const emp = employeesOptions.find((e) => String(e.id) === String(idVal));
     if (!exists && emp) {
       setMembers((prev) => [
         ...prev,
-        { id: `temp-${Date.now()}`, employeeId: emp.id, isManager: false, employee: { id: emp.id, firstName: emp.firstName, lastName: emp.lastName, matricule: emp.matricule } }
+        {
+          id: `temp-${Date.now()}`,
+          employeeId: emp.id,
+          isManager: false,
+          employee: {
+            id: emp.id,
+            firstName: emp.firstName,
+            lastName: emp.lastName,
+            matricule: emp.matricule
+          }
+        }
       ]);
-      setSelectedMemberIds((prev)=> Array.from(new Set([...prev, emp.id])));
+      setSelectedMemberIds((prev) => Array.from(new Set([...prev, emp.id])));
     }
   };
   const handleAddFromForm = () => {
     const val = addMemberForm.getValues('employeeId');
     if (!val) return;
-    const num = typeof val === 'string' && /^\d+$/.test(val) ? Number(val) : val;
+    const num =
+      typeof val === 'string' && /^\d+$/.test(val) ? Number(val) : val;
     addEmployeeToListById(num);
     addMemberForm.reset({ employeeId: '' });
   };
@@ -208,10 +242,18 @@ export default function GroupsListing({ id }: { id?: string }) {
       setSavingMembers(true);
       const payload = {
         members: members
-          .filter(m => selectedMemberIds.includes(m.employee?.id ?? m.employeeId))
-          .map(m => ({ employeeId: m.employee?.id ?? m.employeeId, isManager: !!m.isManager }))
+          .filter((m) =>
+            selectedMemberIds.includes(m.employee?.id ?? m.employeeId)
+          )
+          .map((m) => ({
+            employeeId: m.employee?.id ?? m.employeeId,
+            isManager: !!m.isManager
+          }))
       };
-      await apiClient.put(apiRoutes.admin.groups.updateMembers(activeGroup.id), payload);
+      await apiClient.put(
+        apiRoutes.admin.groups.updateMembers(activeGroup.id),
+        payload
+      );
       toast.success(t('common.saved'));
       // refresh table maybe if count displayed later
       setOpenSheet(false);
@@ -352,7 +394,7 @@ export default function GroupsListing({ id }: { id?: string }) {
 
   return (
     <>
-      <div className="flex justify-between ">
+      <div className='flex justify-between'>
         <div>
           <h1 className='text-2xl font-bold'>
             {id
@@ -362,7 +404,7 @@ export default function GroupsListing({ id }: { id?: string }) {
           <p className='text-muted-foreground'>
             {id
               ? t('groups.siegeGroupsDescription') ||
-                "Gérez les groupes associés à ce siège."
+                'Gérez les groupes associés à ce siège.'
               : t('groups.allGroupsDescription') ||
                 "Gérez tous les groupes de l'entreprise."}
           </p>
@@ -383,7 +425,7 @@ export default function GroupsListing({ id }: { id?: string }) {
               </Button>
             </div>
           ) : (
-            <Card className='border-border/70 bg-gradient-to-br from-primary/5 to-accent/10'>
+            <Card className='border-border/70 from-primary/5 to-accent/10 bg-gradient-to-br'>
               <CardHeader className='py-3'>
                 <div className='flex items-start justify-between gap-2'>
                   <div>
@@ -404,10 +446,7 @@ export default function GroupsListing({ id }: { id?: string }) {
             </Card>
           )}
         </div>
-
-
       </div>
-
 
       <div className='flex flex-1 flex-col space-y-4'>
         <CustomTable<GroupeRow>
@@ -485,11 +524,12 @@ export default function GroupsListing({ id }: { id?: string }) {
         <SheetContent side='right' className='sm:max-w-xl'>
           <SheetHeader>
             <SheetTitle className='flex items-center gap-2'>
-              <Users className='h-4 w-4' /> Membres du groupe {activeGroup?.name}
+              <Users className='h-4 w-4' /> Membres du groupe{' '}
+              {activeGroup?.name}
             </SheetTitle>
             <SheetDescription>
-              Cocher pour garder un membre, décocher pour l&apos;enlever. Vous pouvez
-              aussi ajouter un employé.
+              Cocher pour garder un membre, décocher pour l&apos;enlever. Vous
+              pouvez aussi ajouter un employé.
             </SheetDescription>
           </SheetHeader>
           <div className='p-4'>
@@ -497,7 +537,7 @@ export default function GroupsListing({ id }: { id?: string }) {
               {loadingMembers ? (
                 <Skeleton className='h-4 w-44' />
               ) : (
-                <div className='text-sm text-muted-foreground'>
+                <div className='text-muted-foreground text-sm'>
                   {selectedMemberIds.length}/{members.length} sélectionné(s)
                 </div>
               )}
@@ -527,7 +567,10 @@ export default function GroupsListing({ id }: { id?: string }) {
               <div className='max-h-[50vh] divide-y overflow-auto'>
                 {loadingMembers ? (
                   Array.from({ length: 6 }).map((_, idx) => (
-                    <div key={idx} className='flex items-center justify-between gap-3 p-3'>
+                    <div
+                      key={idx}
+                      className='flex items-center justify-between gap-3 p-3'
+                    >
                       <div className='w-full space-y-2'>
                         <Skeleton className='h-3 w-1/3' />
                         <Skeleton className='h-2 w-1/5' />
@@ -557,9 +600,16 @@ export default function GroupsListing({ id }: { id?: string }) {
                         <div>
                           <input
                             type='checkbox'
-                            className='h-4 w-4 accent-primary'
-                            checked={selectedMemberIds.includes(m.employee?.id ?? m.employeeId)}
-                            onChange={(e) => toggleMember(m.employee?.id ?? m.employeeId, e.target.checked)}
+                            className='accent-primary h-4 w-4'
+                            checked={selectedMemberIds.includes(
+                              m.employee?.id ?? m.employeeId
+                            )}
+                            onChange={(e) =>
+                              toggleMember(
+                                m.employee?.id ?? m.employeeId,
+                                e.target.checked
+                              )
+                            }
                           />
                         </div>
                       </div>
@@ -582,7 +632,12 @@ export default function GroupsListing({ id }: { id?: string }) {
                 name={'employeeId'}
                 label={''}
                 control={addMemberForm.control}
-                options={employeesOptions.map((e) => ({ id: e.id, value: String(e.id), label: `${e.firstName} ${e.lastName}`, matricule: e.matricule }))}
+                options={employeesOptions.map((e) => ({
+                  id: e.id,
+                  value: String(e.id),
+                  label: `${e.firstName} ${e.lastName}`,
+                  matricule: e.matricule
+                }))}
                 secondaryField='matricule'
                 placeholder={'Rechercher un employé'}
                 className='w-full'

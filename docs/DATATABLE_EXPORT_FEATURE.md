@@ -38,6 +38,7 @@ Les actions d'export sont automatiquement ajoutées à **toutes** les datatables
 ### 2. Colonnes exportées
 
 Par défaut, le système exporte uniquement les colonnes qui :
+
 - Ont un `label` défini
 - N'ont PAS de fonction `render` personnalisée (colonnes simples uniquement)
 - Ne sont PAS nommées "actions"
@@ -49,8 +50,8 @@ Cela signifie que les colonnes avec des boutons, des badges personnalisés, ou d
 Si vous souhaitez contrôler quelles colonnes sont exportées, vous pouvez modifier le filtre dans `custom-table.tsx` :
 
 ```typescript
-const exportColumns = columns.filter(col => 
-  col.data !== 'actions' && !col.render // Logique actuelle
+const exportColumns = columns.filter(
+  (col) => col.data !== 'actions' && !col.render // Logique actuelle
 );
 ```
 
@@ -59,6 +60,7 @@ const exportColumns = columns.filter(col =>
 ### Fichiers créés
 
 1. **`src/utils/table-export.tsx`**
+
    - Contient les fonctions `exportToPDF()` et `exportToExcel()`
    - Gère la conversion des données en formats PDF et Excel
    - Ajoute les notifications de succès
@@ -71,6 +73,7 @@ const exportColumns = columns.filter(col =>
 ### Fichiers modifiés
 
 1. **`src/components/custom/data-table/custom-table.tsx`**
+
    - Ajout automatique des actions d'export
    - Utilise `useMemo` pour optimiser les performances
    - Combine les actions personnalisées avec les actions d'export
@@ -82,6 +85,7 @@ const exportColumns = columns.filter(col =>
 ## Dépendances
 
 Les packages suivants ont été installés :
+
 - `jspdf` : Génération de fichiers PDF
 - `jspdf-autotable` : Création de tableaux dans les PDFs
 - `xlsx` : Génération de fichiers Excel
@@ -112,12 +116,14 @@ const customBulkActions: CustomTableBulkAction<EmployeeRow>[] = [
 ## Exemples de sortie
 
 ### Export PDF
+
 - Format A4
 - En-tête avec titre
 - Tableau avec styles (en-têtes bleus, lignes alternées)
 - Police de taille 8pt pour optimiser l'espace
 
 ### Export Excel
+
 - Format .xlsx
 - En-têtes en première ligne
 - Largeur de colonnes automatiquement ajustée
@@ -134,11 +140,11 @@ autoTable(doc, {
   // ...
   headStyles: {
     fillColor: [41, 128, 185], // Changez la couleur de l'en-tête
-    textColor: 255,
+    textColor: 255
   },
   alternateRowStyles: {
-    fillColor: [245, 245, 245], // Changez la couleur des lignes alternées
-  },
+    fillColor: [245, 245, 245] // Changez la couleur des lignes alternées
+  }
 });
 ```
 
@@ -149,7 +155,7 @@ Par défaut, les fichiers sont nommés "export.pdf" ou "export.xlsx". Pour perso
 ```typescript
 action: () => {
   exportToPDF(table.data, exportColumns, 'mon-fichier-personnalise');
-}
+};
 ```
 
 ## Limitations actuelles
@@ -170,4 +176,3 @@ action: () => {
 ## Support
 
 Pour toute question ou amélioration, contactez l'équipe de développement.
-

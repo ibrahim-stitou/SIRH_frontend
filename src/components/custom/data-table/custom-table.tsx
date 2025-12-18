@@ -14,7 +14,10 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { CustomTableProps, CustomTableBulkAction } from '@/components/custom/data-table/types';
+import {
+  CustomTableProps,
+  CustomTableBulkAction
+} from '@/components/custom/data-table/types';
 import { CustomTableToolbar } from '@/components/custom/data-table/custom-table-toolbar';
 import { IconLoader } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
@@ -97,28 +100,29 @@ const CustomTable = <T extends Record<string, any>>({
   // Create automatic export actions
   const defaultExportActions = useMemo<CustomTableBulkAction<T>[]>(() => {
     // Export all columns except 'actions' - render functions are handled in export utils
-    const exportColumns = columns.filter(col =>
-      col.data !== 'actions' && col.label // Exclude only actions column
+    const exportColumns = columns.filter(
+      (col) => col.data !== 'actions' && col.label // Exclude only actions column
     );
 
     return [
       {
         label: t('table.export.pdf'),
-        icon: <FileText className="h-4 w-4" />,
+        icon: <FileText className='h-4 w-4' />,
         className: 'bg-red-50 hover:bg-red-100 text-red-700 border-red-200',
         action: () => {
           exportToPDF(table.data, exportColumns, 'export');
         },
-        disabled: () => table.data.length === 0,
+        disabled: () => table.data.length === 0
       },
       {
         label: t('table.export.excel'),
-        icon: <FileSpreadsheet className="h-4 w-4" />,
-        className: 'bg-green-50 hover:bg-green-100 text-green-700 border-green-200',
+        icon: <FileSpreadsheet className='h-4 w-4' />,
+        className:
+          'bg-green-50 hover:bg-green-100 text-green-700 border-green-200',
         action: () => {
           exportToExcel(table.data, exportColumns, 'export');
         },
-        disabled: () => table.data.length === 0,
+        disabled: () => table.data.length === 0
       }
     ];
   }, [columns, table.data, t]);
@@ -418,8 +422,9 @@ const CustomTable = <T extends Record<string, any>>({
                       <TableRow>
                         <TableCell
                           colSpan={
-                            (allBulkActions && allBulkActions.length > 0 ? 1 : 0) +
-                            (table.visibleColumns.length ?? 0)
+                            (allBulkActions && allBulkActions.length > 0
+                              ? 1
+                              : 0) + (table.visibleColumns.length ?? 0)
                           }
                           className='h-24 text-center'
                         >

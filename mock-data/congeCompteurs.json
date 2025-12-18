@@ -1,0 +1,80 @@
+[
+  {
+    "id": 1,
+    "employee_id": 1,
+    "type_absence_id": 1,
+    "annee": 2023,
+    "solde_initial": 18,
+    "solde_acquis": 12,
+    "solde_utilise": 5,
+    "solde_restant": 13,
+    "solde_report": 2,
+    "created_at": "2023-06-01T00:00",
+    "updated_at": "2023-06-01T00:00"
+  },
+  {
+    "id": 2,
+    "employee_id": 1,
+    "type_absence_id": 2,
+    "annee": 2023,
+    "solde_initial": 10,
+    "solde_acquis": 10,
+    "solde_utilise": 3,
+    "solde_restant": 7,
+    "solde_report": 0,
+    "created_at": "2023-06-01T00:00",
+    "updated_at": "2023-06-01T00:00"
+  },
+  {
+    "id": 3,
+    "employee_id": 2,
+    "type_absence_id": 1,
+    "annee": 2023,
+    "solde_initial": 18,
+    "solde_acquis": 12,
+    "solde_utilise": 8,
+    "solde_restant": 10,
+    "solde_report": 1,
+    "created_at": "2023-06-01T00:00",
+    "updated_at": "2023-06-01T00:00"
+  },
+  {
+    "id": 4,
+    "employee_id": 2,
+    "type_absence_id": 3,
+    "annee": 2023,
+    "solde_initial": 5,
+    "solde_acquis": 5,
+    "solde_utilise": 2,
+    "solde_restant": 3,
+    "solde_report": 0,
+    "created_at": "2023-06-01T00:00",
+    "updated_at": "2023-06-01T00:00"
+  },
+  {
+    "id": 5,
+    "employee_id": 3,
+    "type_absence_id": 1,
+    "annee": 2023,
+    "solde_initial": 18,
+    "solde_acquis": 12,
+    "solde_utilise": 6,
+    "solde_restant": 12,
+    "solde_report": 0,
+    "created_at": "2023-06-01T00:00",
+    "updated_at": "2023-06-01T00:00"
+  },
+  {
+    "id": 6,
+    "employee_id": 3,
+    "type_absence_id": 4,
+    "annee": 2023,
+    "solde_initial": 3,
+    "solde_acquis": 3,
+    "solde_utilise": 1,
+    "solde_restant": 2,
+    "solde_report": 0,
+    "created_at": "2023-06-01T00:00",
+    "updated_at": "2023-06-01T00:00"
+  }
+]
