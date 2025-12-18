@@ -63,7 +63,9 @@ require('./server/routes/avenants')(server, db);
 require('./server/routes/siegesGroups')(server, db);
 require('./server/routes/departments')(server, db);
 require('./server/routes/absences')(server, db);
+require('./server/routes/conges')(server, db);
 require('./server/routes/generic')(server, db, data);
+
 server.use(router);
 
 const PORT = process.env.PORT || 3001;

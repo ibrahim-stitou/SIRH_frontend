@@ -217,7 +217,7 @@ export default function AbsenceDetailPage() {
             </Button>
             <div>
               <h1 className='text-2xl font-bold tracking-tight md:text-3xl'>
-                Détail de l&apos;absence
+                Détail de l&apos;absence - congé
               </h1>
               <p className='text-muted-foreground mt-1 text-sm'>
                 Toutes les informations sur cette absence

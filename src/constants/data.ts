@@ -84,7 +84,7 @@ export const useNavItems = (): NavItem[] => {
         },
         {
           title: t('sidebar.conges'),
-          url: '/admin/absences/conges',
+          url: '/admin/conges',
           icon: 'receipt',
           shortcut: ['c', 'o'],
           description: 'US-EMP-010'

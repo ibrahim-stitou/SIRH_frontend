@@ -1,6 +1,6 @@
-module.expots = function registerCongeRoutes(server, db) {
+module.exports = function registerCongeRoutes(server, db) {
   // List with optional pagination and sorting
-  server.get('/congeCompteurs', (req, res) => {
+  server.get('/conge-compteurs', (req, res) => {
     const start = parseInt(req.query.start || '0', 10);
     const length = parseInt(req.query.length || '10', 10);
     const sortBy = req.query.sortBy;
@@ -17,8 +17,6 @@ module.expots = function registerCongeRoutes(server, db) {
         return String(v).toLowerCase().includes(String(value).toLowerCase());
       });
     });
-
-    const recordsFiltered = all.length;
     if (sortBy) {
       all.sort((a, b) => {
         const av = a[sortBy];
@@ -36,8 +34,29 @@ module.expots = function registerCongeRoutes(server, db) {
     }
 
     const recordsTotal = (db.get('congeCompteurs').value() || []).length;
-    const sliced = all.slice(start, start + length);
-    return res.json({
+    const employeesById = Object.fromEntries(
+      (db.get('hrEmployees').value() || []).map((e) => [String(e.id), e])
+    );
+
+    const typesById = Object.fromEntries(
+      (db.get('absenceTypes').value() || []).map((t) => [String(t.id), t])
+    );
+
+    const enriched = all.map((compteur) =>  ({
+      ...compteur,
+      type_absence: typesById[String(compteur.type_absence_id)] || null,
+      employee: employeesById[String(compteur.employee_id)]
+        ?{
+        id: employeesById[String(compteur.employee_id)].id,
+        first_name: employeesById[String(compteur.employee_id)].firstName,
+        last_name: employeesById[String(compteur.employee_id)].lastName,
+        matricule: employeesById[String(compteur.employee_id)].matricule
+      } : null
+    }));
+
+    const recordsFiltered = enriched.length;
+    const sliced = enriched.slice(start, start + length);
+    return res.status(200).json({
       status: 'success',
       message: 'Liste des compteurs de congés récupérée avec succès',
       data: sliced,
@@ -46,7 +65,7 @@ module.expots = function registerCongeRoutes(server, db) {
     });
   });
 
-  server.get('/congeCompteurs/:id', (req, res) => {
+  server.get('/conge-compteurs/:id', (req, res) => {
     const id = req.params.id;
     const congeCompteur = db
       .get('congeCompteurs')
@@ -65,7 +84,7 @@ module.expots = function registerCongeRoutes(server, db) {
     });
   });
 
-  server.ger('/congeCompteurs/employee/:employeeId', (req, res) => {
+  server.get('/conge-compteurs/employee/:employeeId', (req, res) => {
     const employeeId = req.params.employeeId;
     const congeCompteurs = db
       .get('congeCompteurs')
@@ -78,7 +97,7 @@ module.expots = function registerCongeRoutes(server, db) {
     });
   });
 
-  server.post('/congeCompteurs', (req, res) => {
+  server.post('/conge-compteurs', (req, res) => {
     const body = req.body || {};
     const newCompteur = { id: Date.now(), ...body };
     db.get('congeCompteurs').push(newCompteur).write();

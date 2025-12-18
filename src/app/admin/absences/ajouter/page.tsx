@@ -272,7 +272,7 @@ export default function AjouterAbsencePage() {
             </Button>
             <div>
               <h1 className='text-xl font-bold tracking-tight sm:text-2xl md:text-3xl'>
-                Nouvelle absence
+                Nouvelle absence - congé
               </h1>
               <p className='text-muted-foreground mt-0.5 text-xs sm:text-sm'>
                 Créer une absence ou un congé pour un employé

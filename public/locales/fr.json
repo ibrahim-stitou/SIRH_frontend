@@ -129,7 +129,6 @@
     "sunday": "Dimanche",
     "send": "Envoyer"
   },
-
   "dataTable": {
     "searchColumns": "Rechercher dans les colonnes",
     "loading": "Chargement...",
@@ -304,7 +303,10 @@
       "help": "Ajoutez vos documents de base (CIN, photo, diplômes)."
     },
     "enums": {
-      "gender": { "M": "Homme", "F": "Femme" },
+      "gender": {
+        "M": "Homme",
+        "F": "Femme"
+      },
       "maritalStatus": {
         "celibataire": "Célibataire",
         "marie": "Marié(e)",
@@ -801,6 +803,27 @@
     "subtitle": "Gestion des absences des employés",
     "actions": {
       "create": "Créer une absence"
+    }
+  },
+  "conges": {
+    "title": "Congés",
+    "subtitle": "Gestion des congés des employés",
+    "description": "Gérez les types de congés, les soldes et les demandes de congés des employés.",
+    "addConge": "Ajouter un congé",
+    "actions": {
+      "create": "Créer un congé"
+    },
+    "fields": {
+      "id": "ID",
+      "employee": "Employé",
+      "typeAbsenceId": "Type de congé",
+      "annee": "Année",
+      "soldeInitial": "Solde initial",
+      "soldeAcquis": "Solde acquis",
+      "soldeUtilise": "Solde utilisé",
+      "soldeRestant": "Solde restant",
+      "soldeReport": "Solde reporté",
+      "actions": "Actions"
     }
   }
 }

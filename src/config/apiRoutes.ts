@@ -138,10 +138,10 @@ export const apiRoutes = {
     },
     conges: {
       congeCompteurs: {
-        list: `${API_BASE}/congeCompteurs`,
-        show: (id: number | string) => `${API_BASE}/congeCompteurs/${id}`,
+        list: `${API_BASE}/conge-compteurs`,
+        show: (id: number | string) => `${API_BASE}/conge-compteurs/${id}`,
         compteursByEmployee: (employeeId: number | string) =>
-          `${API_BASE}/congeCompteurs/employee/${employeeId}`
+          `${API_BASE}/conge-compteurs/employee/${employeeId}`
       }
     }
   }
