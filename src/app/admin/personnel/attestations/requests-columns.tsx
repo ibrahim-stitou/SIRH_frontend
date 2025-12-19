@@ -1,7 +1,7 @@
 'use client';
 
 import { CustomTableColumn } from '@/components/custom/data-table/types';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/custom/status-badge';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -33,14 +33,11 @@ export const getRequestsColumns = (
   };
 
   const getStatusBadge = (status: AttestationRequestStatus) => {
-    const variants: Record<
-      AttestationRequestStatus,
-      'secondary' | 'default' | 'destructive'
-    > = {
-      en_attente: 'secondary',
-      approuve: 'default',
-      rejete: 'destructive',
-      genere: 'default'
+    const tones: Record<AttestationRequestStatus, 'warning' | 'success' | 'danger' | 'info'> = {
+      en_attente: 'warning',
+      approuve: 'success',
+      rejete: 'danger',
+      genere: 'info'
     };
 
     const icons = {
@@ -74,10 +71,11 @@ export const getRequestsColumns = (
     };
 
     return (
-      <Badge variant={variants[status]} className='gap-1'>
-        {icons[status]}
-        {t(`attestations.status.${status}`)}
-      </Badge>
+      <StatusBadge
+        icon={icons[status]}
+        tone={tones[status]}
+        label={t(`attestations.status.${status}`)}
+      />
     );
   };
 
@@ -98,7 +96,9 @@ export const getRequestsColumns = (
       data: 'typeAttestation',
       label: t('attestations.columns.type'),
       sortable: true,
-      render: (value) => t(`attestations.types.${value}`)
+      render: (value) => (
+        <StatusBadge label={t(`attestations.types.${value}`)} tone='neutral' />
+      )
     },
     {
       data: 'dateRequest',

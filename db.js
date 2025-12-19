@@ -32,5 +32,6 @@ module.exports = {
   absences: require('./mock-data/absences.json'),
   politiqueConges: require('./mock-data/politiqueConges.json'),
   congeCompteurs: require('./mock-data/congeCompteurs.json'),
-  congeMouvements: require('./mock-data/congeMouvements.json')
+  congeMouvements: require('./mock-data/congeMouvements.json'),
+  pointages: require('./mock-data/pointages.json')
 };

@@ -184,7 +184,7 @@ export default function SiegeListing() {
               <TooltipTrigger asChild>
                 <Button
                   variant='destructive'
-                  className='h-8 w-8 p-1.5'
+                  className='h-8 w-8 bg-red-100 p-1.5 text-red-600 hover:bg-red-200'
                   onClick={() => openDeleteConfirm(row.id)}
                 >
                   <Trash2 className='h-4 w-4' />

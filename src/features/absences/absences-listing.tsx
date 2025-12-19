@@ -3,7 +3,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import CustomTable from '@/components/custom/data-table/custom-table';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import {
   CustomTableColumn,
   CustomTableFilterConfig,
@@ -11,7 +11,6 @@ import {
 } from '@/components/custom/data-table/types';
 import { apiRoutes } from '@/config/apiRoutes';
 import apiClient from '@/lib/api';
-import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import {
   Plus,
@@ -36,6 +35,7 @@ import {
   DialogFooter
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { StatusBadge } from '@/components/custom/status-badge';
 
 interface AbsenceRow {
   id: number | string;
@@ -120,8 +120,10 @@ export default function AbsencesListing() {
     };
   }, []);
 
-  const onView = (row: AbsenceRow) => router.push(`/admin/absences/${row.id}`);
-  const onValidate = async (row: AbsenceRow) => {
+  const onView = useCallback((row: AbsenceRow) => {
+    router.push(`/admin/absences/${row.id}`);
+  }, [router]);
+  const onValidate = useCallback(async (row: AbsenceRow) => {
     try {
       await apiClient.patch(apiRoutes.admin.absences.validate(row.id));
       toast.success('Absence validée');
@@ -129,8 +131,8 @@ export default function AbsencesListing() {
     } catch (e: any) {
       toast.error(e?.response?.data?.message || 'Erreur');
     }
-  };
-  const onClose = async (row: AbsenceRow) => {
+  }, [_tableInstance]);
+  const onClose = useCallback(async (row: AbsenceRow) => {
     try {
       await apiClient.patch(apiRoutes.admin.absences.close(row.id));
       toast.success('Absence clôturée');
@@ -138,8 +140,8 @@ export default function AbsencesListing() {
     } catch (e: any) {
       toast.error(e?.response?.data?.message || 'Erreur');
     }
-  };
-  const onCancel = async (row: AbsenceRow) => {
+  }, [_tableInstance]);
+  const onCancel = useCallback(async (row: AbsenceRow) => {
     try {
       await apiClient.patch(apiRoutes.admin.absences.cancel(row.id));
       toast.success('Absence annulée');
@@ -147,7 +149,7 @@ export default function AbsencesListing() {
     } catch (e: any) {
       toast.error(e?.response?.data?.message || 'Erreur');
     }
-  };
+  }, [_tableInstance]);
   const onAskDelete = (row: AbsenceRow) => setConfirmDeleteId(row.id);
   const onConfirmDelete = async () => {
     if (!confirmDeleteId) return;
@@ -245,16 +247,10 @@ export default function AbsencesListing() {
         label: 'Justifiée',
         sortable: true,
         render: (_v, row) => (
-          <Badge
-            className={
-              row.justifie
-                ? 'border-emerald-500 text-emerald-600'
-                : 'border-amber-500 text-amber-600'
-            }
-            variant='outline'
-          >
-            {row.justifie ? 'Oui' : 'Non'}
-          </Badge>
+          <StatusBadge
+            tone={row.justifie ? 'success' : 'warning'}
+            label={row.justifie ? 'Oui' : 'Non'}
+          />
         )
       },
       {
@@ -264,29 +260,18 @@ export default function AbsencesListing() {
         render: (v: AbsenceRow['statut'], row) => {
           const map: Record<
             AbsenceRow['statut'],
-            { text: string; cls: string }
+            { text: string; tone: 'neutral' | 'success' | 'danger' | 'warning' | 'info' }
           > = {
-            brouillon: {
-              text: 'Brouillon',
-              cls: 'border-gray-400 text-gray-600'
-            },
-            validee: {
-              text: 'Validée',
-              cls: 'border-emerald-500 text-emerald-600'
-            },
-            annulee: { text: 'Annulée', cls: 'border-rose-500 text-rose-600' },
-            cloture: { text: 'Clôturée', cls: 'border-blue-500 text-blue-600' },
-            refusee: {
-              text: 'Refusée',
-              cls: 'border-destructive text-destructive'
-            }
+            brouillon: { text: 'Brouillon', tone: 'neutral' },
+            validee: { text: 'Validée', tone: 'success' },
+            annulee: { text: 'Annulée', tone: 'danger' },
+            cloture: { text: 'Clôturée', tone: 'info' },
+            refusee: { text: 'Refusée', tone: 'danger' }
           };
           const m = map[v] || map.brouillon;
           return (
             <div>
-              <Badge variant='outline' className={m.cls}>
-                {m.text}
-              </Badge>
+              <StatusBadge label={m.text} tone={m.tone} />
               {v === 'refusee' && row.motif_refus && (
                 <div className='text-destructive mt-1 text-xs'>
                   <span className='font-semibold'>Motif :</span>{' '}
@@ -397,8 +382,7 @@ export default function AbsencesListing() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    variant='destructive'
-                    className='h-8 w-8 p-1.5'
+                    className='h-8 w-8 bg-red-100 p-1.5 text-red-600 hover:bg-red-200'
                     onClick={() => onAskDelete(row)}
                   >
                     <Trash2 className='h-4 w-4' />
@@ -416,7 +400,7 @@ export default function AbsencesListing() {
         }
       }
     ],
-    [t]
+    [t, onView, onValidate, onClose, onCancel]
   );
 
   const filters: CustomTableFilterConfig[] = useMemo(

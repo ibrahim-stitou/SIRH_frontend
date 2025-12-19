@@ -1,0 +1,312 @@
+[
+  {
+    "id": 1,
+    "employeeId": 101,
+    "check_in": "2024-06-01T09:00",
+    "check_out": "2024-06-01T17:00",
+    "worked_minutes": 360,
+    "source": "manuel",
+    "status": "bruillon",
+    "employee": {
+      "id": 101,
+      "matricule": "EMP-0001",
+      "firstName": "Ibrahim",
+      "lastName": "Karim"
+    },
+    "motif_rejet": null,
+    "groupe": {
+      "id": 1,
+      "name": "Developers",
+      "code": "DEV"
+    },
+    "siege": {
+      "id": 1,
+      "name": "Headquarters A",
+      "address": "123 Main St",
+      "city": "New York",
+      "country": "USA"
+    },
+    "created_at": "2024-06-01T08:00:00.000Z",
+    "updated_at": "2024-06-01T18:00:00.000Z",
+    "updated_by": "admin"
+  },
+  {
+    "id": 2,
+    "employeeId": 102,
+    "check_in": "2024-06-01T08:30",
+    "check_out": "2024-06-01T16:30",
+    "worked_minutes": 8,
+    "source": "automatique",
+    "status": "valide",
+    "employee": {
+      "id": 102,
+      "matricule": "EMP-0002",
+      "firstName": "Sara",
+      "lastName": "Lemoine"
+    },
+    "motif_rejet": null,
+    "groupe": {
+      "id": 2,
+      "name": "Marketing",
+      "code": "MKT"
+    },
+    "siege": {
+      "id": 1,
+      "name": "Headquarters A",
+      "address": "123 Main St",
+      "city": "New York",
+      "country": "USA"
+    },
+    "created_at": "2024-06-01T07:45:00.000Z",
+    "updated_at": "2024-06-01T17:00:00.000Z",
+    "updated_by": "system"
+  },
+  {
+    "id": 3,
+    "employeeId": 103,
+    "check_in": "2024-06-01T09:15",
+    "check_out": "2024-06-01T17:15",
+    "worked_minutes": 300,
+    "source": "manuel",
+    "status": "rejete",
+    "employee": {
+      "id": 103,
+      "matricule": "EMP-0003",
+      "firstName": "Liam",
+      "lastName": "Nguyen"
+    },
+    "motif_rejet": "Heures non conformes",
+    "groupe": {
+      "id": 1,
+      "name": "Developers",
+      "code": "DEV"
+    },
+    "siege": {
+      "id": 2,
+      "name": "Headquarters B",
+      "address": "456 Market St",
+      "city": "San Francisco",
+      "country": "USA"
+    },
+    "created_at": "2024-06-01T09:00:00.000Z",
+    "updated_at": "2024-06-01T19:00:00.000Z",
+    "updated_by": "manager"
+  },
+  {
+    "id": 4,
+    "employeeId": 104,
+    "check_in": "2024-06-01T10:00",
+    "check_out": "2024-06-01T18:00",
+    "worked_minutes": 8,
+    "source": "automatique",
+    "status": "valide",
+    "employee": {
+      "id": 104,
+      "matricule": "EMP-0004",
+      "firstName": "Emma",
+      "lastName": "Garcia"
+    },
+    "motif_rejet": null,
+    "groupe": {
+      "id": 3,
+      "name": "Sales",
+      "code": "SLS"
+    },
+    "siege": {
+      "id": 1,
+      "name": "Headquarters A",
+      "address": "123 Main St",
+      "city": "New York",
+      "country": "USA"
+    },
+    "created_at": "2024-06-01T10:15:00.000Z",
+    "updated_at": "2024-06-01T20:00:00.000Z",
+    "updated_by": "system"
+  },
+  {
+    "id": 5,
+    "employeeId": 105,
+    "check_in": "2024-06-01T09:45",
+    "check_out": "2024-06-01T17:45",
+    "worked_minutes":420,
+    "source": "manuel",
+    "status": "bruillon",
+    "employee": {
+      "id": 105,
+      "matricule": "EMP-0005",
+      "firstName": "Noah",
+      "lastName": "Schmidt"
+    },
+    "motif_rejet": null,
+    "groupe": {
+      "id": 2,
+      "name": "Marketing",
+      "code": "MKT"
+    },
+    "siege": {
+      "id": 2,
+      "name": "Headquarters B",
+      "address": "456 Market St",
+      "city": "San Francisco",
+      "country": "USA"
+    },
+    "created_at": "2024-06-01T09:30:00.000Z",
+    "updated_at": "2024-06-01T19:30:00.000Z",
+    "updated_by": "admin"
+  },
+  {
+    "id": 6,
+    "employeeId": 106,
+    "check_in": "2024-06-01T08:00",
+    "check_out": "2024-06-01T16:00",
+    "worked_minutes": 360,
+    "source": "automatique",
+    "status": "valide",
+    "employee": {
+      "id": 106,
+      "matricule": "EMP-0006",
+      "firstName": "Olivia",
+      "lastName": "Brown"
+    },
+    "motif_rejet": null,
+    "groupe": {
+      "id": 3,
+      "name": "Sales",
+      "code": "SLS"
+    },
+    "siege": {
+      "id": 1,
+      "name": "Headquarters A",
+      "address": "123 Main St",
+      "city": "New York",
+      "country": "USA"
+    },
+    "created_at": "2024-06-01T07:50:00.000Z",
+    "updated_at": "2024-06-01T17:10:00.000Z",
+    "updated_by": "system"
+  },
+  {
+    "id": 7,
+    "employeeId": 107,
+    "check_in": "2024-06-01T09:30",
+    "check_out": "2024-06-01T17:30",
+    "worked_minutes": 480,
+    "source": "manuel",
+    "status": "rejete",
+    "employee": {
+      "id": 107,
+      "matricule": "EMP-0007",
+      "firstName": "Lucas",
+      "lastName": "Wilson"
+    },
+    "motif_rejet": "Heures non conformes",
+    "groupe": {
+      "id": 1,
+      "name": "Developers",
+      "code": "DEV"
+    },
+    "siege": {
+      "id": 2,
+      "name": "Headquarters B",
+      "address": "456 Market St",
+      "city": "San Francisco",
+      "country": "USA"
+    },
+    "created_at": "2024-06-01T09:10:00.000Z",
+    "updated_at": "2024-06-01T19:20:00.000Z",
+    "updated_by": "manager"
+  },
+  {
+    "id": 8,
+    "employeeId": 108,
+    "check_in": "2024-06-01T10:15",
+    "check_out": "2024-06-01T18:15",
+    "worked_minutes": 540,
+    "source": "automatique",
+    "status": "valide",
+    "employee": {
+      "id": 108,
+      "matricule": "EMP-0008",
+      "firstName": "Mia",
+      "lastName": "Davis"
+    },
+    "motif_rejet": null,
+    "groupe": {
+      "id": 3,
+      "name": "Sales",
+      "code": "SLS"
+    },
+    "siege": {
+      "id": 1,
+      "name": "Headquarters A",
+      "address": "123 Main St",
+      "city": "New York",
+      "country": "USA"
+    },
+    "created_at": "2024-06-01T10:05:00.000Z",
+    "updated_at": "2024-06-01T20:10:00.000Z",
+    "updated_by": "system"
+  },
+  {
+    "id": 9,
+    "employeeId": 109,
+    "check_in": "2024-06-01T09:20",
+    "check_out": "2024-06-01T17:20",
+    "worked_minutes": 240,
+    "source": "manuel",
+    "status": "bruillon",
+    "employee": {
+      "id": 109,
+      "matricule": "EMP-0009",
+      "firstName": "Ethan",
+      "lastName": "Miller"
+    },
+    "motif_rejet": null,
+    "groupe": {
+      "id": 2,
+      "name": "Marketing",
+      "code": "MKT"
+    },
+    "siege": {
+      "id": 2,
+      "name": "Headquarters B",
+      "address": "456 Market St",
+      "city": "San Francisco",
+      "country": "USA"
+    },
+    "created_at": "2024-06-01T09:05:00.000Z",
+    "updated_at": "2024-06-01T19:15:00.000Z",
+    "updated_by": "admin"
+  },
+  {
+    "id": 10,
+    "employeeId": 110,
+    "check_in": "2024-06-01T08:45",
+    "check_out": "2024-06-01T16:45",
+    "worked_minutes": 240,
+    "source": "automatique",
+    "status": "valide",
+    "employee": {
+      "id": 110,
+      "matricule": "EMP-0010",
+      "firstName": "Ava",
+      "lastName": "Martinez"
+    },
+    "motif_rejet": null,
+    "groupe": {
+      "id": 3,
+      "name": "Sales",
+      "code": "SLS"
+    },
+    "siege": {
+      "id": 1,
+      "name": "Headquarters A",
+      "address": "123 Main St",
+      "city": "New York",
+      "country": "USA"
+    },
+    "created_at": "2024-06-01T08:40:00.000Z",
+    "updated_at": "2024-06-01T16:50:00.000Z",
+    "updated_by": "system"
+  }
+]

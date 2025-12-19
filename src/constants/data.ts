@@ -24,7 +24,6 @@ export const useNavItems = (): NavItem[] => {
           shortcut: ['r', 'e'],
           description: 'US-EMP-001'
         },
-        // { title: t('sidebar.orgChart'), url: '/admin/personnel/organigramme', icon: 'companies', shortcut: ['o','g'], description: 'US-EMP-006' },
         {
           title: t('sidebar.certificates'),
           url: '/admin/personnel/attestations',
@@ -88,6 +87,28 @@ export const useNavItems = (): NavItem[] => {
           icon: 'receipt',
           shortcut: ['c', 'o'],
           description: 'US-EMP-010'
+        }
+      ]
+    },
+    {
+      title: t('sidebar.tempsEtActivites'),
+      icon: 'clock',
+      url:'#',
+      description: 'US-EMP-011',
+      items: [
+        {
+          title: t('sidebar.pointages'),
+          url: '/admin/pointages',
+          icon: 'pointage',
+          shortcut: ['p', 'o'],
+          description: 'US-EMP-012'
+        },
+        {
+          title: t('sidebar.activites'),
+          url: '/admin/activites',
+          icon: 'briefcase',
+          shortcut: ['a', 'c'],
+          description: 'US-EMP-013'
         }
       ]
     }

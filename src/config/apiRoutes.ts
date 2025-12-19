@@ -123,6 +123,22 @@ export const apiRoutes = {
       members: (id: number | string) => `${API_BASE}/groups/${id}/members`,
       updateMembers: (id: number | string) => `${API_BASE}/groups/${id}/members`
     },
+    pointages: {
+      list: `${API_BASE}/pointages`,
+      show: (id: number | string) => `${API_BASE}/pointages/${id}`,
+      create: `${API_BASE}/pointages`,
+      update: (id: number | string) => `${API_BASE}/pointages/${id}`,
+      delete: (id: number | string) => `${API_BASE}/pointages/${id}`,
+      validate: (id: number | string) => `${API_BASE}/pointages/${id}/validate`,
+      refuse: (id: number | string) => `${API_BASE}/pointages/${id}/refuse`,
+      export: {
+        csv: `${API_BASE}/pointages/export.csv`,
+        xlsx: `${API_BASE}/pointages/export.xlsx`,
+        modelCsv: `${API_BASE}/pointages/export/model.csv`,
+        modelXlsx: `${API_BASE}/pointages/export/model.xlsx`
+      },
+      import: `${API_BASE}/pointages/import`
+    },
     absences: {
       list: `${API_BASE}/absences`,
       create: `${API_BASE}/absences`,

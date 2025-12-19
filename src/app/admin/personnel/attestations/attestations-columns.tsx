@@ -10,6 +10,7 @@ import {
 import { Download } from 'lucide-react';
 import { format } from 'date-fns';
 import type { Attestation } from '@/types/attestation';
+import { StatusBadge } from '@/components/custom/status-badge';
 
 interface AttestationRow extends Attestation {
   employeeName?: string;
@@ -44,7 +45,9 @@ export const getAttestationsColumns = (
       data: 'typeAttestation',
       label: t('attestations.columns.type'),
       sortable: true,
-      render: (value) => t(`attestations.types.${value}`)
+      render: (value) => (
+        <StatusBadge label={t(`attestations.types.${value}`)} tone='neutral' />
+      )
     },
     {
       data: 'dateGeneration',

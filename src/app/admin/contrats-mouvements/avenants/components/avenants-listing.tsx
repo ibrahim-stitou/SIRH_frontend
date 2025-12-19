@@ -14,7 +14,6 @@ import {
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   Tooltip,
   TooltipContent,
@@ -29,6 +28,7 @@ import {
 } from '@/components/custom/data-table/types';
 import { apiRoutes } from '@/config/apiRoutes';
 import apiClient from '@/lib/api';
+import { StatusBadge } from '@/components/custom/status-badge';
 
 // Interface pour les lignes de la table
 interface AvenantRow {
@@ -217,40 +217,17 @@ export function AvenantsListing() {
       label: 'Type',
       sortable: true,
       render: (v) => {
-        const typeLabels: Record<string, { label: string; color: string }> = {
-          salary: {
-            label: 'Salaire',
-            color:
-              'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-          },
-          schedule: {
-            label: 'Horaire',
-            color:
-              'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
-          },
-          job: {
-            label: 'Poste',
-            color:
-              'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300'
-          },
-          complete: {
-            label: 'Complet',
-            color:
-              'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300'
-          }
+        const typeLabels: Record<string, { label: string; tone: 'success' | 'info' | 'purple' | 'orange' | 'neutral' }> = {
+          salary: { label: 'Salaire', tone: 'success' },
+          schedule: { label: 'Horaire', tone: 'info' },
+          job: { label: 'Poste', tone: 'purple' },
+          complete: { label: 'Complet', tone: 'orange' }
         };
 
-        const type = typeLabels[v || 'salary'] || {
-          label: v || 'N/A',
-          color: 'bg-gray-100 text-gray-800'
-        };
+        const type = typeLabels[v || ''] || { label: v || 'N/A', tone: 'neutral' } as const;
 
         return (
-          <span
-            className={`rounded-md px-2 py-1 text-xs font-medium ${type.color}`}
-          >
-            {type.label}
-          </span>
+          <StatusBadge label={type.label} tone={type.tone} />
         );
       }
     },
@@ -275,21 +252,15 @@ export function AvenantsListing() {
       render: (v) => {
         if (v === 'Valide') {
           return (
-            <Badge className='gap-1 bg-green-500 hover:bg-green-600'>
-              <CheckCircle2 className='h-3 w-3' />
-              Validé
-            </Badge>
+            <StatusBadge label='Validé' tone='success' icon={<CheckCircle2 className='h-3 w-3' />} />
           );
         }
         if (v === 'Brouillon') {
           return (
-            <Badge variant='secondary' className='gap-1'>
-              <Clock className='h-3 w-3' />
-              Brouillon
-            </Badge>
+            <StatusBadge label='Brouillon' tone='neutral' icon={<Clock className='h-3 w-3' />} />
           );
         }
-        return <Badge variant='outline'>{v}</Badge>;
+        return <StatusBadge label={v} tone='neutral' />;
       }
     },
     {
@@ -400,7 +371,10 @@ export function AvenantsListing() {
                   <CheckCircle2 className='h-4 w-4' />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Valider l&apos;avenant</TooltipContent>
+              <TooltipContent
+                className='tooltip-content rounded-md bg-green-100 px-2 py-1 text-green-600 shadow-md'
+                sideOffset={5}
+              >Valider l&apos;avenant</TooltipContent>
             </Tooltip>
           )}
 
@@ -429,14 +403,17 @@ export function AvenantsListing() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant='outline'
-                  className='h-8 w-8 p-1.5 text-red-600 hover:bg-red-50 hover:text-red-700'
+                  variant='destructive'
+                  className='h-8 w-8 bg-red-100 p-1.5 text-red-600 hover:bg-red-200'
                   onClick={() => handleDelete(row)}
                 >
                   <Trash2 className='h-4 w-4' />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Supprimer</TooltipContent>
+              <TooltipContent
+                className='tooltip-content rounded-md bg-red-100 px-2 py-1 text-red-600 shadow-md'
+                sideOffset={5}
+              >Supprimer</TooltipContent>
             </Tooltip>
           )}
         </div>

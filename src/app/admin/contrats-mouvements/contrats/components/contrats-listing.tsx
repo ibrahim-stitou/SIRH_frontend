@@ -20,6 +20,7 @@ import {
 import { apiRoutes } from '@/config/apiRoutes';
 import apiClient from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
+import { StatusBadge } from '@/components/custom/status-badge';
 
 // Row type mapped for CustomTable consumption
 interface ContractRow {
@@ -211,7 +212,7 @@ export function ContratsListing() {
       render: (_value, row) => {
         const type = row.type || row.type_contrat || 'N/A';
         return (
-          <span className='rounded-md border px-2 py-0.5 text-xs'>{type}</span>
+          <StatusBadge label={type} tone='neutral' />
         );
       }
     },
@@ -313,16 +314,17 @@ export function ContratsListing() {
       sortable: true,
       render: (_value, row) => {
         const status = row.status || row.statut || 'N/A';
-        const map: Record<string, string> = {
-          Brouillon: t('contracts.status.BROUILLON'),
-          Actif: t('contracts.status.ACTIF'),
-          Periode_essai: "Période d'essai",
-          En_attente_signature: 'En attente signature',
-          Termine: t('contracts.status.TERMINE'),
-          Resilie: 'Résilié',
-          Annule: t('contracts.status.ANNULE')
+        const map: Record<string, { label: string; tone: 'neutral' | 'success' | 'danger' | 'warning' | 'info' }> = {
+          Brouillon: { label: t('contracts.status.BROUILLON'), tone: 'neutral' },
+          Actif: { label: t('contracts.status.ACTIF'), tone: 'success' },
+          Periode_essai: { label: "Période d'essai", tone: 'warning' },
+          En_attente_signature: { label: 'En attente signature', tone: 'info' },
+          Termine: { label: t('contracts.status.TERMINE'), tone: 'neutral' },
+          Resilie: { label: 'Résilié', tone: 'danger' },
+          Annule: { label: t('contracts.status.ANNULE'), tone: 'danger' }
         };
-        return map[status] || status;
+        const m = map[status] || { label: status, tone: 'neutral' };
+        return <StatusBadge label={m.label} tone={m.tone} />;
       }
     },
     {

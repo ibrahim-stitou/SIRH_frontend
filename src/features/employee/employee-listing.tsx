@@ -20,6 +20,7 @@ import {
 import { apiRoutes } from '@/config/apiRoutes';
 import apiClient from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
+import { StatusBadge } from '@/components/custom/status-badge';
 
 // Minimal subset of Employee fields for listing
 interface EmployeeRow {
@@ -122,12 +123,13 @@ export function EmployeeListing() {
       label: t('employees.columns.status'),
       sortable: true,
       render: (value) => {
-        const map: Record<string, string> = {
-          actif: t('employees.status.actif'),
-          suspendu: t('employees.status.suspendu'),
-          parti: t('employees.status.parti')
+        const map: Record<string, { label: string; tone: 'success' | 'warning' | 'danger' | 'neutral' }> = {
+          actif: { label: t('employees.status.actif'), tone: 'success' },
+          suspendu: { label: t('employees.status.suspendu'), tone: 'warning' },
+          parti: { label: t('employees.status.parti'), tone: 'danger' }
         };
-        return map[value] || value;
+        const m = map[value] || { label: value, tone: 'neutral' };
+        return <StatusBadge label={m.label} tone={m.tone} />;
       }
     },
     {
