@@ -42,16 +42,17 @@ module.exports = function registerCongeRoutes(server, db) {
       (db.get('absenceTypes').value() || []).map((t) => [String(t.id), t])
     );
 
-    const enriched = all.map((compteur) =>  ({
+    const enriched = all.map((compteur) => ({
       ...compteur,
       type_absence: typesById[String(compteur.type_absence_id)] || null,
       employee: employeesById[String(compteur.employee_id)]
-        ?{
-        id: employeesById[String(compteur.employee_id)].id,
-        first_name: employeesById[String(compteur.employee_id)].firstName,
-        last_name: employeesById[String(compteur.employee_id)].lastName,
-        matricule: employeesById[String(compteur.employee_id)].matricule
-      } : null
+        ? {
+            id: employeesById[String(compteur.employee_id)].id,
+            first_name: employeesById[String(compteur.employee_id)].firstName,
+            last_name: employeesById[String(compteur.employee_id)].lastName,
+            matricule: employeesById[String(compteur.employee_id)].matricule
+          }
+        : null
     }));
 
     const recordsFiltered = enriched.length;
@@ -71,11 +72,18 @@ module.exports = function registerCongeRoutes(server, db) {
       .get('congeCompteurs')
       .find({ id: Number(id) })
       .value();
-    if (congeCompteur) {
+    const typesById = Object.fromEntries(
+      (db.get('absenceTypes').value() || []).map((t) => [String(t.id), t])
+    );
+    const enrriched = congeCompteur.map((compteur) => ({
+      ...compteur,
+      type_absence: typesById[String(compteur.type_absence_id)] || null
+    }));
+    if (enrriched) {
       return res.json({
         status: 'success',
         message: 'Compteur de congés récupéré avec succès',
-        data: congeCompteur
+        data: enrriched
       });
     }
     return res.status(404).json({
@@ -90,10 +98,17 @@ module.exports = function registerCongeRoutes(server, db) {
       .get('congeCompteurs')
       .filter({ employee_id: Number(employeeId) })
       .value();
+    const enrriched = congeCompteurs.map((compteur) => ({
+      ...compteur,
+      type_absence: db
+        .get('absenceTypes')
+        .find({ id: compteur.type_absence_id })
+        .value() || null
+    }));
     return res.json({
       status: 'success',
       message: "Compteurs de congés de l'employé récupérés avec succès",
-      data: congeCompteurs
+      data: enrriched
     });
   });
 

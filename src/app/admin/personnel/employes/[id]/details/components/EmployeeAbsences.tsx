@@ -10,8 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Plus,
-  LayoutGrid,
-  ArrowRight
+  LayoutGrid
 } from 'lucide-react';
 import { format, parseISO, getMonth, startOfYear, endOfYear } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -24,6 +23,8 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from '@/components/ui/tooltip';
+import { useRouter } from 'next/navigation';
+import { Progress } from '@/components/ui/progress';
 
 interface Absence {
   id: number | string;
@@ -44,6 +45,28 @@ interface Absence {
   justifie: boolean;
   motif?: string;
   createdBy?: string;
+}
+
+// NEW: Conge compteur types
+interface CongeCompteur {
+  id: number | string;
+  employee_id: number | string;
+  type_absence_id: number;
+  annee: number;
+  solde_initial: number;
+  solde_acquis: number;
+  solde_utilise: number;
+  solde_restant: number;
+  solde_report: number;
+  created_at?: string;
+  updated_at?: string;
+  // When enriched by API in list route
+  type_absence?: {
+    id: number;
+    code: string;
+    libelle: string;
+    couleur_hexa?: string;
+  } | null;
 }
 
 interface EmployeeAbsencesProps {
@@ -71,8 +94,11 @@ export default function EmployeeAbsences({
   const [absences, setAbsences] = useState<Absence[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [scrollContainerRef, setScrollContainerRef] =
-    useState<HTMLDivElement | null>(null);
+  const router = useRouter();
+
+  // NEW: conge compteurs state
+  const [compteurs, setCompteurs] = useState<CongeCompteur[]>([]);
+  const [loadingCompteurs, setLoadingCompteurs] = useState<boolean>(false);
 
   const loadAbsences = useCallback(async () => {
     setLoading(true);
@@ -100,29 +126,33 @@ export default function EmployeeAbsences({
     }
   }, [employeeId, selectedYear]);
 
+  // NEW: load conge compteurs by employee
+  const loadCompteurs = useCallback(async () => {
+    setLoadingCompteurs(true);
+    try {
+      const response = await apiClient.get(
+        apiRoutes.admin.conges.congeCompteurs.compteursByEmployee(employeeId as number | string)
+      );
+      const list: CongeCompteur[] = response.data?.data || [];
+      console.log('Compteurs raw:', list);
+      // Filter by selected year on client side
+      setCompteurs(list.filter((c) => Number(c.annee) === Number(selectedYear)));
+    } catch (error) {
+      console.error('Erreur chargement compteurs de congés:', error);
+      setCompteurs([]);
+    } finally {
+      setLoadingCompteurs(false);
+    }
+  }, [employeeId, selectedYear]);
+
   useEffect(() => {
     loadAbsences();
   }, [loadAbsences]);
 
-  // Fonction pour scroller jusqu'à la fin
-  const scrollToEnd = useCallback(() => {
-    if (scrollContainerRef) {
-      scrollContainerRef.scrollTo({
-        left: scrollContainerRef.scrollWidth,
-        behavior: 'smooth'
-      });
-    }
-  }, [scrollContainerRef]);
-
-  // Fonction pour scroller jusqu'au début
-  const scrollToStart = useCallback(() => {
-    if (scrollContainerRef) {
-      scrollContainerRef.scrollTo({
-        left: 0,
-        behavior: 'smooth'
-      });
-    }
-  }, [scrollContainerRef]);
+  // NEW: effect to load compteurs when year or employee changes
+  useEffect(() => {
+    loadCompteurs();
+  }, [loadCompteurs]);
 
   const absencesByMonth = useMemo(() => {
     const grouped: { [key: number]: Absence[] } = {};
@@ -142,6 +172,35 @@ export default function EmployeeAbsences({
     const validees = absences.filter((a) => a.statut === 'validee').length;
     return { total, jours, validees };
   }, [absences]);
+
+  // NEW: compute compteur summary
+  const compteurSummary = useMemo(() => {
+    const totalInitial = compteurs.reduce((s, c) => s + (c.solde_initial || 0), 0);
+    const totalAcquis = compteurs.reduce((s, c) => s + (c.solde_acquis || 0), 0);
+    const totalUtilise = compteurs.reduce((s, c) => s + (c.solde_utilise || 0), 0);
+    const totalRestant = compteurs.reduce((s, c) => s + (c.solde_restant || 0), 0);
+    const totalReport = compteurs.reduce((s, c) => s + (c.solde_report || 0), 0);
+    return { totalInitial, totalAcquis, totalUtilise, totalRestant, totalReport };
+  }, [compteurs]);
+
+  // NEW: deduplicate counters per type/year (choose latest updated)
+  const dedupedCompteurs = useMemo(() => {
+    const map = new Map<string, CongeCompteur>();
+    compteurs.forEach((c) => {
+      const key = `${c.type_absence_id}-${c.annee}`;
+      const existing = map.get(key);
+      if (!existing) {
+        map.set(key, c);
+      } else {
+        const existingUpdated = existing.updated_at ? Date.parse(existing.updated_at) : 0;
+        const currentUpdated = c.updated_at ? Date.parse(c.updated_at) : 0;
+        if (currentUpdated >= existingUpdated) {
+          map.set(key, c);
+        }
+      }
+    });
+    return Array.from(map.values());
+  }, [compteurs]);
 
   const renderMiniAbsenceCard = (absence: Absence) => {
     const bgColor = absence.type_absence?.couleur_hexa || '#94a3b8';
@@ -427,7 +486,7 @@ export default function EmployeeAbsences({
                 <ChevronRight className='h-4 w-4' />
               </Button>
             </div>
-            <Button size='sm' className='h-8 gap-1.5 px-3 text-sm shadow-sm'>
+            <Button size='sm' className='h-8 gap-1.5 px-3 text-sm shadow-sm' onClick={()=>{router.push('/admin/absences/ajouter')}}>
               <Plus className='h-4 w-4' />
               <span className='hidden sm:inline'>Ajouter</span>
             </Button>
@@ -436,6 +495,125 @@ export default function EmployeeAbsences({
       </CardHeader>
 
       <CardContent className='from-background to-muted/10 bg-gradient-to-b p-4 md:p-6'>
+        {/* NEW: Section compteurs de congés */}
+        <div className='mb-6'>
+          <div className='mb-3 flex items-center justify-between'>
+            <div className='flex items-center gap-2.5'>
+              <div className='bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg'>
+                <LayoutGrid className='h-4 w-4 text-primary' />
+              </div>
+              <div>
+                <div className='text-base font-bold'>Compteurs de congés {selectedYear}</div>
+                <div className='text-muted-foreground text-xs'>Suivi des soldes par type d&apos;absence</div>
+              </div>
+            </div>
+            {loadingCompteurs && (
+              <div className='text-muted-foreground text-xs'>Chargement…</div>
+            )}
+          </div>
+
+          {compteurs.length === 0 ? (
+            <div className='rounded-xl border-2 border-dashed p-4 text-center text-sm text-muted-foreground'>
+              Aucun compteur pour cette année
+            </div>
+          ) : (
+            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
+              {dedupedCompteurs.map((c) => {
+                const color = c.type_absence?.couleur_hexa || '#2563eb';
+                const totalCapacity = (c.solde_initial || 0) + (c.solde_acquis || 0) + (c.solde_report || 0);
+                const used = Math.min(c.solde_utilise || 0, totalCapacity);
+                const remaining = Math.max(totalCapacity - used, 0);
+                const progressValue = totalCapacity > 0 ? Math.round((used / totalCapacity) * 100) : 0;
+                return (
+                  <div
+                    key={c.id}
+                    className='group relative overflow-hidden rounded-2xl border p-4 shadow-sm transition-all hover:shadow-md'
+                    style={{ borderColor: `${color}33`, backgroundColor: `${color}0a` }}
+                  >
+                    <div className='absolute inset-0 opacity-0 transition-opacity group-hover:opacity-5' style={{ background: `linear-gradient(135deg, ${color} 0%, transparent 100%)` }} />
+
+                    <div className='mb-3 flex items-center gap-3'>
+                      <div className='flex h-10 w-10 items-center justify-center rounded-xl text-white shadow ring-2 ring-white/40' style={{ backgroundColor: color }}>
+                        <CalendarIcon className='h-5 w-5' />
+                      </div>
+                      <div className='min-w-0'>
+                        <div className='truncate text-sm font-bold text-foreground'>{c.type_absence?.libelle || 'Type absence'}</div>
+                        <div className='truncate text-xs font-semibold' style={{ color }}>{c.type_absence?.code || `#${c.type_absence_id}`}</div>
+                      </div>
+                      <Badge variant='outline' className='ml-auto text-[10px] font-semibold' style={{ borderColor: `${color}66`, color }}>
+                        {selectedYear}
+                      </Badge>
+                    </div>
+
+                    <div className='space-y-2'>
+                      <Progress value={progressValue} className='h-2' />
+                      <div className='flex items-center justify-between text-[11px] text-muted-foreground'>
+                        <div className='flex items-center gap-1'>
+                          <span>Utilisé</span>
+                          <span className='text-foreground font-bold tabular-nums'>{used}</span>
+                        </div>
+                        <div className='flex items-center gap-1'>
+                          <span>Capacité</span>
+                          <span className='text-foreground font-bold tabular-nums'>{totalCapacity}</span>
+                        </div>
+                        <div className='flex items-center gap-1'>
+                          <span>Restant</span>
+                          <span className='text-foreground font-bold tabular-nums'>{remaining}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className='mt-3 grid grid-cols-4 gap-2'>
+                      <div className='rounded-lg bg-white/40 p-2 ring-1 ring-black/5 backdrop-blur'>
+                        <div className='text-[10px] font-medium text-muted-foreground'>Initial</div>
+                        <div className='text-sm font-bold text-foreground tabular-nums'>{c.solde_initial}</div>
+                      </div>
+                      <div className='rounded-lg bg-white/40 p-2 ring-1 ring-black/5 backdrop-blur'>
+                        <div className='text-[10px] font-medium text-muted-foreground'>Acquis</div>
+                        <div className='text-sm font-bold text-foreground tabular-nums'>{c.solde_acquis}</div>
+                      </div>
+                      <div className='rounded-lg bg-white/40 p-2 ring-1 ring-black/5 backdrop-blur'>
+                        <div className='text-[10px] font-medium text-muted-foreground'>Report</div>
+                        <div className='text-sm font-bold text-foreground tabular-nums'>{c.solde_report}</div>
+                      </div>
+                      <div className='rounded-lg bg-white/40 p-2 ring-1 ring-black/5 backdrop-blur'>
+                        <div className='text-[10px] font-medium text-muted-foreground'>Utilisé</div>
+                        <div className='text-sm font-bold text-foreground tabular-nums'>{c.solde_utilise}</div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Summary strip */}
+          {compteurs.length > 0 && (
+            <div className='mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5'>
+              <div className='flex items-center gap-1.5 rounded-lg bg-primary/5 px-3 py-1.5 ring-1 ring-primary/10'>
+                <span className='text-[11px] text-muted-foreground'>Initial</span>
+                <span className='text-sm font-bold text-primary tabular-nums'>{compteurSummary.totalInitial}</span>
+              </div>
+              <div className='flex items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-1.5 ring-1 ring-emerald-200'>
+                <span className='text-[11px] text-emerald-700'>Acquis</span>
+                <span className='text-sm font-bold text-emerald-700 tabular-nums'>{compteurSummary.totalAcquis}</span>
+              </div>
+              <div className='flex items-center gap-1.5 rounded-lg bg-amber-50 px-3 py-1.5 ring-1 ring-amber-200'>
+                <span className='text-[11px] text-amber-700'>Utilisé</span>
+                <span className='text-sm font-bold text-amber-700 tabular-nums'>{compteurSummary.totalUtilise}</span>
+              </div>
+              <div className='flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-1.5 ring-1 ring-blue-200'>
+                <span className='text-[11px] text-blue-700'>Restant</span>
+                <span className='text-sm font-bold text-blue-700 tabular-nums'>{compteurSummary.totalRestant}</span>
+              </div>
+              <div className='flex items-center gap-1.5 rounded-lg bg-violet-50 px-3 py-1.5 ring-1 ring-violet-200'>
+                <span className='text-[11px] text-violet-700'>Report</span>
+                <span className='text-sm font-bold text-violet-700 tabular-nums'>{compteurSummary.totalReport}</span>
+              </div>
+            </div>
+          )}
+        </div>
+
         {absences.length === 0 ? (
           <div className='flex flex-col items-center justify-center rounded-xl border-2 border-dashed py-12 md:py-16'>
             <div className='bg-muted/50 rounded-full p-4 md:p-6'>
