@@ -160,7 +160,38 @@ export default function PointageDetailsPage() {
           </CardHeader>
           <CardContent className=''>
             {loading ? (
-              <div className='text-muted-foreground text-sm'>Chargement…</div>
+              <div className='grid grid-cols-1 gap-4 md:grid-cols-2 animate-pulse'>
+                <div className='rounded-lg border p-3'>
+                  <div className='h-4 w-28 bg-muted rounded mb-2'></div>
+                  <div className='h-5 w-48 bg-muted rounded mb-1'></div>
+                  <div className='h-3 w-24 bg-muted rounded'></div>
+                </div>
+                <div className='rounded-lg border p-3'>
+                  <div className='h-4 w-20 bg-muted rounded mb-2'></div>
+                  <div className='h-5 w-40 bg-muted rounded'></div>
+                </div>
+                <div className='rounded-lg border p-3'>
+                  <div className='h-4 w-20 bg-muted rounded mb-2'></div>
+                  <div className='h-5 w-40 bg-muted rounded'></div>
+                </div>
+                <div className='rounded-lg border p-3'>
+                  <div className='h-4 w-20 bg-muted rounded mb-2'></div>
+                  <div className='h-5 w-32 bg-muted rounded'></div>
+                </div>
+                <div className='rounded-lg border p-3'>
+                  <div className='h-4 w-16 bg-muted rounded mb-2'></div>
+                  <div className='h-7 w-24 bg-muted rounded'></div>
+                </div>
+                <div className='rounded-lg border p-3'>
+                  <div className='h-4 w-16 bg-muted rounded mb-2'></div>
+                  <div className='h-7 w-24 bg-muted rounded'></div>
+                  <div className='h-3 w-48 bg-muted rounded mt-2'></div>
+                </div>
+                <div className='rounded-lg border p-3 md:col-span-2'>
+                  <div className='h-4 w-40 bg-muted rounded mb-2'></div>
+                  <div className='h-4 w-64 bg-muted rounded'></div>
+                </div>
+              </div>
             ) : data ? (
               <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
                 <div className='rounded-lg border p-3'>

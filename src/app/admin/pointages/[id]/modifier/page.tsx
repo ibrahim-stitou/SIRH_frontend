@@ -20,6 +20,7 @@ interface PointageForm {
   check_in: string | null; // YYYY-MM-DDTHH:mm
   check_out: string | null; // YYYY-MM-DDTHH:mm
   source: 'manuel' | 'automatique';
+  status?: 'bruillon' | 'valide' | 'rejete';
 }
 
 export default function ModifierPointagePage() {
@@ -34,10 +35,10 @@ export default function ModifierPointagePage() {
     employeeId: null,
     check_in: null,
     check_out: null,
-    source: 'manuel'
+    source: 'manuel',
+    status: 'bruillon'
   });
 
-  // Fetch employees and the pointage details
   useEffect(() => {
     let mounted = true;
     Promise.all([
@@ -56,7 +57,8 @@ export default function ModifierPointagePage() {
           employeeId: row?.employeeId ?? null,
           check_in: row?.check_in ?? null,
           check_out: row?.check_out ?? null,
-          source: row?.source === 'automatique' ? 'automatique' : 'manuel'
+          source: row?.source === 'automatique' ? 'automatique' : 'manuel',
+          status: row?.status || 'bruillon'
         });
       })
       .catch((e) => {
@@ -166,6 +168,7 @@ export default function ModifierPointagePage() {
         check_in: form.check_in,
         check_out: form.check_out,
         source: form.source,
+        status: form.status,
         worked_minutes
       });
       toast.success('Pointage modifié');
@@ -176,7 +179,6 @@ export default function ModifierPointagePage() {
       setSaving(false);
     }
   };
-
   return (
     <PageContainer scrollable>
       <div className='flex flex-1 flex-col space-y-6'>
@@ -203,7 +205,39 @@ export default function ModifierPointagePage() {
           </CardHeader>
           <CardContent className=''>
             {loading ? (
-              <div className='text-muted-foreground text-sm'>Chargement…</div>
+              <div className='space-y-4'>
+                <div className='grid grid-cols-1 gap-3 md:grid-cols-2 animate-pulse'>
+                  <div>
+                    <div className='h-4 w-40 bg-muted rounded mb-2'></div>
+                    <div className='h-10 bg-muted rounded'></div>
+                  </div>
+                  <div>
+                    <div className='h-4 w-32 bg-muted rounded mb-2'></div>
+                    <div className='h-10 bg-muted rounded'></div>
+                  </div>
+                  <div>
+                    <div className='h-4 w-56 bg-muted rounded mb-2'></div>
+                    <div className='grid grid-cols-1 gap-2 md:grid-cols-2'>
+                      <div className='h-10 bg-muted rounded'></div>
+                      <div className='h-10 bg-muted rounded'></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className='h-4 w-56 bg-muted rounded mb-2'></div>
+                    <div className='grid grid-cols-1 gap-2 md:grid-cols-2'>
+                      <div className='h-10 bg-muted rounded'></div>
+                      <div className='h-10 bg-muted rounded'></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className='h-4 w-24 bg-muted rounded mb-2'></div>
+                    <div className='h-10 bg-muted rounded'></div>
+                  </div>
+                  <div className='md:col-span-2'>
+                    <div className='h-4 w-64 bg-muted rounded'></div>
+                  </div>
+                </div>
+              </div>
             ) : (
               <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
                 <div>
@@ -225,7 +259,6 @@ export default function ModifierPointagePage() {
                   </Select>
                 </div>
                 <div>
-
                 </div>
                 <div>
                   <Label className='mb-1 block'>Entrée (date et heure)</Label>
@@ -241,6 +274,23 @@ export default function ModifierPointagePage() {
                     onChange={(val) => setForm((s) => ({ ...s, check_out: val }))}
                   />
                 </div>
+                <div>
+                  <Label className={`mb-1 block`}>Statut</Label>
+                  <Select
+                    value={form.status || 'bruillon'}
+                    disabled={form.status === 'rejete'}
+                    onValueChange={(v)=> setForm((s)=> ({...s, status: v as 'bruillon' | 'valide'}))}
+                  >
+                    <SelectTrigger className='w-full'>
+                      <SelectValue placeholder='Sélectionner un statut' />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='bruillon'>Brouillon</SelectItem>
+                      <SelectItem value='valide'>Validé</SelectItem>
+                      <SelectItem value='rejete'>Rejeté</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 {estimatedMinutes !== undefined && (
                   <div className='md:col-span-2 flex items-center gap-2 text-sm text-muted-foreground'>
                     <Clock className='h-4 w-4' /> Durée estimée :
@@ -255,4 +305,3 @@ export default function ModifierPointagePage() {
     </PageContainer>
   );
 }
-

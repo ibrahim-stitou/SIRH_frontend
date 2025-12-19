@@ -1,6 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import CustomTable from '@/components/custom/data-table/custom-table';
 import {
@@ -11,7 +11,7 @@ import {
 import { apiRoutes } from '@/config/apiRoutes';
 import apiClient from '@/lib/api';
 import { format } from 'date-fns';
-import { Upload, Trash2, Plus, Pencil, Eye } from 'lucide-react';
+import { Upload, Trash2, Plus, Pencil, Eye, CheckCircle2, XCircle } from 'lucide-react';
 import CustomAlertDialog from '@/components/custom/customAlert';
 import { toast } from 'sonner';
 import {
@@ -24,7 +24,11 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Dialog as AlertDialog, DialogContent as AlertDialogContent, DialogHeader as AlertDialogHeader, DialogTitle as AlertDialogTitle, DialogFooter as AlertDialogFooter } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import { StatusBadge } from '@/components/custom/status-badge';
+import { FileUploader } from '@/components/file-uploader';
+import type { DropzoneProps } from 'react-dropzone';
 
 interface EmployeeLite {
   id: number | string;
@@ -67,6 +71,12 @@ export default function PointagesListing() {
   // Import modal state
   const [showImportModal, setShowImportModal] = useState(false);
   const [importType, setImportType] = useState<'csv' | 'excel'>('csv');
+  const [importStatus, setImportStatus] = useState<'bruillon' | 'valide'>('bruillon');
+  const [refuseOpen, setRefuseOpen] = useState(false);
+  const [refuseLoading, setRefuseLoading] = useState(false);
+  const [refuseReason, setRefuseReason] = useState('');
+  const [rowToRefuse, setRowToRefuse] = useState<PointageRow | null>(null);
+  const [importFiles, setImportFiles] = useState<File[]>([]);
 
   useEffect(() => {
     let mounted = true;
@@ -86,6 +96,41 @@ export default function PointagesListing() {
       mounted = false;
     };
   }, []);
+
+  const onValidate = useCallback(async (row: PointageRow) => {
+    try {
+      await apiClient.patch(apiRoutes.admin.pointages.validate(row.id));
+      toast.success('Pointage validé');
+      _tableInstance?.refresh?.();
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message || 'Erreur');
+    }
+  }, [_tableInstance]);
+  const onOpenRefuse = (row: PointageRow) => {
+    setRowToRefuse(row);
+    setRefuseReason('');
+    setRefuseOpen(true);
+  };
+  const onRefuseConfirm = async () => {
+    if (!rowToRefuse) return;
+    if (!refuseReason.trim()) {
+      toast.error('Veuillez saisir un motif');
+      return;
+    }
+    setRefuseLoading(true);
+    try {
+      await apiClient.patch(apiRoutes.admin.pointages.refuse(rowToRefuse.id), { motif_rejet: refuseReason });
+      toast.success('Pointage refusé');
+      setRefuseOpen(false);
+      setRowToRefuse(null);
+      setRefuseReason('');
+      _tableInstance?.refresh?.();
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message || 'Erreur');
+    } finally {
+      setRefuseLoading(false);
+    }
+  };
 
   const onAskDelete = (row: PointageRow) => setConfirmDeleteId(row.id);
   const onConfirmDelete = async () => {
@@ -108,6 +153,33 @@ export default function PointagesListing() {
       : apiRoutes.admin.pointages.export.modelXlsx;
     if (typeof window !== 'undefined') window.open(url, '_blank');
   };
+
+  const onImportUpload = async (files: File[]) => {
+    try {
+      const file = files[0];
+      const form = new FormData();
+      form.append('file', file);
+      form.append('status', importStatus);
+      await apiClient.post(apiRoutes.admin.pointages.import, form, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      toast.success('Import des pointages lancé');
+      setShowImportModal(false);
+      setImportFiles([]);
+      _tableInstance?.refresh?.();
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message || 'Erreur lors de l\'import');
+      throw e; // let FileUploader show error toast too
+    }
+  };
+  const acceptMap = useMemo<DropzoneProps['accept']>(() => {
+    return (importType === 'csv'
+      ? { 'text/csv': ['.csv'] }
+      : {
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+          'application/vnd.ms-excel': ['.xls']
+        }) as DropzoneProps['accept'];
+  }, [importType]);
 
   const columns: CustomTableColumn<PointageRow>[] = useMemo(
     () => [
@@ -210,10 +282,42 @@ export default function PointagesListing() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
+                  variant='outline'
+                  className='h-8 w-8 p-1.5'
+                  onClick={() => onValidate(row)}
+                  title='Valider'
+                  disabled={!(row.status === 'bruillon' || row.status === 'valide')}
+                >
+                  <CheckCircle2 className='h-4 w-4 text-emerald-600' />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Valider</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant='destructive'
+                  className='h-8 w-8 p-1.5'
+                  onClick={() => onOpenRefuse(row)}
+                  title='Refuser'
+                  disabled={!(row.status === 'bruillon' || row.status === 'valide')}
+                >
+                  <XCircle className='h-4 w-4' />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent
+                className='tooltip-content rounded-md bg-red-100 px-2 py-1 text-red-600 shadow-md'
+                sideOffset={5}
+              >Refuser</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
                   variant='destructive'
                   className='h-8 w-8 bg-red-100 p-1.5 text-red-600 hover:bg-red-200'
                   onClick={() => onAskDelete(row)}
                   title='Supprimer'
+                  disabled={!(row.status === 'bruillon' || row.status === 'rejete')}
                 >
                   <Trash2 className='h-4 w-4' />
                 </Button>
@@ -227,7 +331,7 @@ export default function PointagesListing() {
         )
       }
     ],
-    [router]
+    [router, onValidate]
   );
 
   const filters: CustomTableFilterConfig[] = useMemo(
@@ -302,10 +406,39 @@ export default function PointagesListing() {
                 </RadioGroup>
               </div>
 
+              <div>
+                <Label className='mb-2 block text-sm font-medium'>Statut appliqué aux pointages importés</Label>
+                <RadioGroup value={importStatus} onValueChange={(v) => setImportStatus(v as 'bruillon' | 'valide')} className='grid grid-cols-2 gap-2'>
+                  <div className='flex items-center space-x-2 rounded-md border p-2'>
+                    <RadioGroupItem value='bruillon' id='status-bruillon' />
+                    <Label htmlFor='status-bruillon'>Brouillon</Label>
+                  </div>
+                  <div className='flex items-center space-x-2 rounded-md border p-2'>
+                    <RadioGroupItem value='valide' id='status-valide' />
+                    <Label htmlFor='status-valide'>Validé</Label>
+                  </div>
+                </RadioGroup>
+                <p className='mt-2 text-muted-foreground text-xs'>Tous les enregistrements importés seront créés avec le statut sélectionné: <span className='font-semibold'>{importStatus === 'valide' ? 'Validé' : 'Brouillon'}</span>.</p>
+              </div>
+
               <div className='flex flex-wrap items-center gap-2'>
                 <Button variant='outline' onClick={onDownloadModel} title='Télécharger le modèle'>
                   Télécharger le modèle {importType.toUpperCase()}
                 </Button>
+              </div>
+
+              <div className='space-y-2'>
+                <Label className='text-sm font-medium'>Fichier à importer (CSV ou Excel)</Label>
+                <FileUploader
+                  accept={acceptMap}
+                  maxFiles={1}
+                  multiple={false}
+                  description={`Déposez votre fichier ${importType.toUpperCase()} contenant les pointages.`}
+                  value={importFiles}
+                  onValueChange={setImportFiles}
+                  showPreview={false}
+                  variant='default'
+                />
               </div>
 
               <div className='rounded-lg border bg-muted/30 p-3'>
@@ -321,14 +454,39 @@ export default function PointagesListing() {
               </div>
 
               <p className='text-muted-foreground text-xs'>
-                Remplissez le fichier avec ces colonnes et importez-le via le module backend (mock endpoints prêts côté Front). Pour un import réel, un upload de fichier sera nécessaire côté API.
+                Remplissez le fichier avec ces colonnes et importez-le via le module backend (mock endpoints prêts côté Front). Pour un import réel, un upload de fichier sera nécessaire côté API. Le statut sélectionné ci-dessus sera appliqué aux enregistrements importés.
               </p>
             </div>
             <DialogFooter>
+              <Button onClick={() => onImportUpload(importFiles)} disabled={importFiles.length === 0}>Importer</Button>
               <Button variant='outline' onClick={() => setShowImportModal(false)}>Fermer</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Refuse motif dialog */}
+        <AlertDialog open={refuseOpen} onOpenChange={setRefuseOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Refuser le pointage</AlertDialogTitle>
+            </AlertDialogHeader>
+            <div className='space-y-3'>
+              <Label className='text-sm font-medium'>Motif du refus</Label>
+              <Textarea
+                value={refuseReason}
+                onChange={(e) => setRefuseReason(e.target.value)}
+                rows={4}
+                placeholder='Saisir le motif du refus...'
+              />
+            </div>
+            <AlertDialogFooter>
+              <Button variant='outline' onClick={() => setRefuseOpen(false)} disabled={refuseLoading}>Annuler</Button>
+              <Button variant='destructive' onClick={onRefuseConfirm} disabled={refuseLoading || !refuseReason.trim()}>
+                {refuseLoading ? 'Refus en cours...' : 'Refuser'}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </>
   );
