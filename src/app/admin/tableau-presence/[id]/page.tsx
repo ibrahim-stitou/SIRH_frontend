@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { SelectField } from '@/components/custom/SelectField';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -53,6 +52,8 @@ import type {
   TableauPresence,
   TableauPresenceStatut
 } from '@/features/tableau-presence/tableau-presence-listing';
+import PageContainer from '@/components/layout/page-container';
+import { useRef } from 'react';
 
 interface EmployeeRow {
   id: number;
@@ -97,6 +98,8 @@ export default function TableauPresenceDetailPage() {
 
   const [selectedEmployee, setSelectedEmployee] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
+  const SELECT_ALL = '__ALL__';
+  const SELECT_NONE = '__NONE__';
   const [sortColumn, setSortColumn] = useState<string>('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
@@ -116,6 +119,23 @@ export default function TableauPresenceDetailPage() {
     if (!tableau) return 31;
     return getDaysInMonth(new Date(tableau.annee, tableau.mois - 1));
   }, [tableau]);
+
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateScrollShadows = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 0);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+  }, []);
+
+  const scrollByAmount = (amount: number) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollBy({ left: amount, behavior: 'smooth' });
+  };
 
   const loadData = useCallback(async () => {
     try {
@@ -352,7 +372,6 @@ export default function TableauPresenceDetailPage() {
       });
     }
 
-    // Tri
     if (sortColumn) {
       filtered.sort((a, b) => {
         const aVal = a[sortColumn] || 0;
@@ -368,6 +387,20 @@ export default function TableauPresenceDetailPage() {
     return filtered;
   }, [employeesData, selectedEmployee, selectedStatus, numDays, sortColumn, sortDirection]);
 
+  useEffect(() => {
+    // Initial shadows + listener
+    const el = scrollRef.current;
+    updateScrollShadows();
+    if (!el) return;
+    const onScroll = () => updateScrollShadows();
+    el.addEventListener('scroll', onScroll);
+    const ro = new ResizeObserver(() => updateScrollShadows());
+    ro.observe(el);
+    return () => {
+      el.removeEventListener('scroll', onScroll);
+      ro.disconnect();
+    };
+  }, [updateScrollShadows]);
 
   if (loading) {
     return (
@@ -396,401 +429,447 @@ export default function TableauPresenceDetailPage() {
 
   return (
     <div className="space-y-6 pb-8">
-      {/* Header moderne avec gradient */}
-      <div className="relative overflow-hidden rounded-xl border bg-gradient-to-br from-blue-50 via-white to-purple-50 p-6 dark:from-blue-950 dark:via-slate-900 dark:to-purple-950">
-        <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-blue-100 opacity-20 blur-3xl dark:bg-blue-900" />
-        <div className="absolute bottom-0 left-0 h-24 w-24 rounded-full bg-purple-100 opacity-20 blur-3xl dark:bg-purple-900" />
-
-        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex items-start gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => router.push('/admin/tableau-presence')}
-              className="mt-1"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div className="flex-1">
+      <PageContainer scrollable={true}>
+        <div className="space-y-4 pb-8 max-w-[68%]">
+          {/* Header compact */}
+          <div className="relative overflow-hidden rounded-lg border bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4 dark:from-blue-950 dark:via-slate-900 dark:to-purple-950">
+            <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
-                <Calendar className="h-6 w-6 text-primary" />
-                <h1 className="text-2xl font-bold tracking-tight">
-                  Tableau de Présence
-                </h1>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => router.push('/admin/tableau-presence')}
+                  className="h-9 w-9"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5 text-primary" />
+                    <h1 className="text-xl font-bold tracking-tight">
+                      {format(new Date(tableau.annee, tableau.mois - 1), 'MMMM yyyy', { locale: fr })}
+                    </h1>
+                  </div>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                    {getStatusBadge(tableau.statut)}
+                    {tableau.locked && (
+                      <Badge variant="destructive" className="gap-1">
+                        <Lock className="h-3 w-3" />
+                        Verrouillé
+                      </Badge>
+                    )}
+                  </div>
+                </div>
               </div>
-              <p className="mt-1 text-lg text-muted-foreground">
-                {format(new Date(tableau.annee, tableau.mois - 1), 'MMMM yyyy', { locale: fr })}
-              </p>
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                {getStatusBadge(tableau.statut)}
-                {tableau.locked && (
-                  <Badge variant="destructive" className="gap-1">
-                    <Lock className="h-3 w-3" />
-                    Verrouillé
-                  </Badge>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <Button variant="outline" size="sm" onClick={handleExportExcel}>
+                  <Download className="mr-2 h-3.5 w-3.5" />
+                  Exporter
+                </Button>
+
+                {!tableau.locked && tableau.statut !== 'CLOTURE' && (
+                  <>
+                    {tableau.statut === 'EN_COURS' && (
+                      <Button
+                        size="sm"
+                        onClick={() =>
+                          openConfirmDialog(
+                            'validate-manager',
+                            'Valider Manager',
+                            'Valider le tableau par le manager.'
+                          )
+                        }
+                      >
+                        <CheckCircle className="mr-2 h-3.5 w-3.5" />
+                        Valider Manager
+                      </Button>
+                    )}
+
+                    {(tableau.statut === 'VALIDE_MANAGER' || tableau.statut === 'EN_COURS') && (
+                      <Button
+                        size="sm"
+                        onClick={() =>
+                          openConfirmDialog(
+                            'validate-rh',
+                            'Valider RH',
+                            'Valider le tableau par RH.'
+                          )
+                        }
+                      >
+                        <UserCheck className="mr-2 h-3.5 w-3.5" />
+                        Valider RH
+                      </Button>
+                    )}
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        openConfirmDialog(
+                          'regenerate',
+                          'Régénérer',
+                          'Recalculer toutes les données.'
+                        )
+                      }
+                    >
+                      <RefreshCw className="mr-2 h-3.5 w-3.5" />
+                      Régénérer
+                    </Button>
+
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() =>
+                        openConfirmDialog(
+                          'close',
+                          'Clôturer',
+                          'Action irréversible.'
+                        )
+                      }
+                    >
+                      <Lock className="mr-2 h-3.5 w-3.5" />
+                      Clôturer
+                    </Button>
+                  </>
                 )}
               </div>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleExportExcel}>
-              <Download className="mr-2 h-4 w-4" />
-              Exporter
-            </Button>
-
-            {!tableau.locked && tableau.statut !== 'CLOTURE' && (
-              <>
-                {tableau.statut === 'EN_COURS' && (
-                  <Button
-                    size="sm"
-                    onClick={() =>
-                      openConfirmDialog(
-                        'validate-manager',
-                        'Valider Manager',
-                        'Valider le tableau par le manager.'
-                      )
-                    }
+          {/* Légende compacte */}
+          <Card className="border-l-4 border-l-primary py-0">
+            <CardContent className="py-1.5">
+              <div className="flex flex-wrap gap-1.5">
+                {STATUS_CODES.filter(s => s.value).map(status => (
+                  <span
+                    key={status.value}
+                    className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-medium ${status.color}`}
                   >
-                    <CheckCircle className="mr-2 h-4 w-4" />
-                    Valider Manager
-                  </Button>
+                    <span className="font-bold">{status.value}</span>
+                    <span className="mx-1">—</span>
+                    <span>{status.label}</span>
+                  </span>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Tableau avec filtres intégrés */}
+          <Card className="py-0">
+            <CardContent className="p-0">
+              {/* Barre de filtres au-dessus du tableau */}
+              <div className="border-b bg-muted/30 px-4 py-3">
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <Filter className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">Filtres:</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Label className="text-xs text-muted-foreground whitespace-nowrap">Employé:</Label>
+                    <Select
+                      value={selectedEmployee === '' ? SELECT_ALL : selectedEmployee}
+                      onValueChange={(val) => setSelectedEmployee(val === SELECT_ALL ? '' : val)}
+                    >
+                      <SelectTrigger className="h-8 w-[180px] text-xs">
+                        <SelectValue placeholder="Tous" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={SELECT_ALL}>Tous les employés</SelectItem>
+                        {employeesData.map((e) => (
+                          <SelectItem key={e.employeeId} value={String(e.employeeId)}>
+                            {`${e.employee?.first_name || ''} ${e.employee?.last_name || ''}`.trim()}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Label className="text-xs text-muted-foreground whitespace-nowrap">Statut:</Label>
+                    <Select
+                      value={selectedStatus === '' ? SELECT_ALL : selectedStatus}
+                      onValueChange={(val) => setSelectedStatus(val === SELECT_ALL ? '' : val)}
+                    >
+                      <SelectTrigger className="h-8 w-[140px] text-xs">
+                        <SelectValue placeholder="Tous" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={SELECT_ALL}>Tous les statuts</SelectItem>
+                        {STATUS_CODES.filter((s) => s.value).map((s) => (
+                          <SelectItem key={s.value} value={s.value}>
+                            {s.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {(selectedEmployee || selectedStatus) && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedEmployee('');
+                        setSelectedStatus('');
+                      }}
+                      className="h-8 text-xs"
+                    >
+                      <X className="mr-1 h-3 w-3" />
+                      Réinitialiser
+                    </Button>
+                  )}
+                </div>
+              </div>
+
+              {/* Tableau scrollable avec largeur fixe */}
+              <div className="relative">
+                {/* Boutons de scroll horizontaux */}
+                {canScrollLeft && (
+                  <div className="pointer-events-none absolute left-0 top-0 z-20 h-full w-8 bg-gradient-to-r from-background to-transparent" />
+                )}
+                {canScrollRight && (
+                  <div className="pointer-events-none absolute right-0 top-0 z-20 h-full w-8 bg-gradient-to-l from-background to-transparent" />
                 )}
 
-                {(tableau.statut === 'VALIDE_MANAGER' || tableau.statut === 'EN_COURS') && (
-                  <Button
-                    size="sm"
-                    onClick={() =>
-                      openConfirmDialog(
-                        'validate-rh',
-                        'Valider RH',
-                        'Valider le tableau par RH.'
-                      )
-                    }
-                  >
-                    <UserCheck className="mr-2 h-4 w-4" />
-                    Valider RH
-                  </Button>
-                )}
+                <button
+                  type="button"
+                  aria-label="Défiler à gauche"
+                  onClick={() => scrollByAmount(-320)}
+                  className={`absolute left-2 top-1/2 z-30 -translate-y-1/2 rounded-full border bg-background/90 p-2 shadow transition-opacity ${canScrollLeft ? 'opacity-100' : 'opacity-0'} hover:bg-background`}
+                >
+                  ‹
+                </button>
+                <button
+                  type="button"
+                  aria-label="Défiler à droite"
+                  onClick={() => scrollByAmount(320)}
+                  className={`absolute right-2 top-1/2 z-30 -translate-y-1/2 rounded-full border bg-background/90 p-2 shadow transition-opacity ${canScrollRight ? 'opacity-100' : 'opacity-0'} hover:bg-background`}
+                >
+                  ›
+                </button>
 
+                <div ref={scrollRef} className="overflow-x-auto">
+                  <Table className="whitespace-nowrap">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="sticky left-0 z-10 bg-background min-w-[200px]">
+                          Employé
+                        </TableHead>
+                        {Array.from({ length: numDays }, (_, i) => i + 1).map(day => (
+                          <TableHead key={day} className="text-center min-w-[50px]">
+                            {String(day).padStart(2, '0')}
+                          </TableHead>
+                        ))}
+                        <TableHead
+                          className="text-center min-w-[80px] cursor-pointer hover:bg-muted/50"
+                          onClick={() => handleSort('totalHours')}
+                        >
+                          <div className="flex items-center justify-center gap-1">
+                            Total H
+                            {sortColumn === 'totalHours' && (
+                              <span className="text-xs">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                            )}
+                          </div>
+                        </TableHead>
+                        <TableHead
+                          className="text-center min-w-[70px] cursor-pointer hover:bg-muted/50"
+                          onClick={() => handleSort('overtimeHours')}
+                        >
+                          <div className="flex items-center justify-center gap-1">
+                            HS
+                            {sortColumn === 'overtimeHours' && (
+                              <span className="text-xs">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                            )}
+                          </div>
+                        </TableHead>
+                        <TableHead
+                          className="text-center min-w-[70px] cursor-pointer hover:bg-muted/50"
+                          onClick={() => handleSort('absenceDays')}
+                        >
+                          <div className="flex items-center justify-center gap-1">
+                            Abs
+                            {sortColumn === 'absenceDays' && (
+                              <span className="text-xs">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                            )}
+                          </div>
+                        </TableHead>
+                        <TableHead className="sticky right-0 z-10 bg-background text-center min-w-[120px]">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredData.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={numDays + 5} className="h-24 text-center text-muted-foreground">
+                            Aucun employé trouvé
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        filteredData.map(row => (
+                          <TableRow key={row.id}>
+                            <TableCell className="sticky left-0 z-10 bg-background">
+                              <div className="flex flex-col">
+                                <span className="font-semibold text-sm">
+                                  {row.employee?.first_name} {row.employee?.last_name}
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                  {row.employee?.matricule}
+                                </span>
+                              </div>
+                            </TableCell>
+                            {Array.from({ length: numDays }, (_, i) => i + 1).map(day => {
+                              const code = row[`day_${day}`] as string;
+                              return (
+                                <TableCell key={day} className="text-center p-2">
+                                  {code ? (
+                                    <span className={`inline-flex items-center justify-center rounded px-1.5 py-0.5 text-xs font-medium ${getStatusColor(code)}`}>
+                                      {code}
+                                    </span>
+                                  ) : (
+                                    <span className="text-slate-300">—</span>
+                                  )}
+                                </TableCell>
+                              );
+                            })}
+                            <TableCell className="text-center">
+                              <span className="font-semibold text-blue-600">{row.totalHours || 0}h</span>
+                            </TableCell>
+                            <TableCell className="text-center">
+                              <span className="font-semibold text-orange-600">{row.overtimeHours || 0}h</span>
+                            </TableCell>
+                            <TableCell className="text-center">
+                              <span className="font-semibold text-red-600">{row.absenceDays || 0}j</span>
+                            </TableCell>
+                            <TableCell className="sticky right-0 z-10 bg-background text-center">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleEdit(row)}
+                                disabled={tableau?.locked}
+                                className="h-8"
+                              >
+                                <Edit className="mr-1 h-3 w-3" />
+                                Modifier
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Modal d'édition */}
+          <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Modifier les présences - {editData?.employeeName}</DialogTitle>
+                <DialogDescription>
+                  Modifiez le statut pour chaque jour du mois
+                </DialogDescription>
+              </DialogHeader>
+
+              {editData && (
+                <div className="grid grid-cols-7 gap-2">
+                  {Array.from({ length: numDays }, (_, i) => i + 1).map(day => (
+                    <div key={day} className="space-y-1">
+                      <Label className="text-xs font-medium text-muted-foreground">
+                        {String(day).padStart(2, '0')}
+                      </Label>
+                      <Select
+                        value={(editData.days[day] || '') === '' ? SELECT_NONE : editData.days[day]}
+                        onValueChange={(val) => {
+                          const mapped = val === SELECT_NONE ? '' : val;
+                          setEditData({
+                            ...editData,
+                            days: { ...editData.days, [day]: mapped }
+                          });
+                        }}
+                      >
+                        <SelectTrigger className="h-9 text-xs">
+                          <SelectValue placeholder="—" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={SELECT_NONE} className="text-xs">—</SelectItem>
+                          {STATUS_CODES.filter(s => s.value).map(s => (
+                            <SelectItem key={s.value} value={s.value} className="text-xs">
+                              {s.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <DialogFooter>
                 <Button
                   variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    openConfirmDialog(
-                      'regenerate',
-                      'Régénérer',
-                      'Recalculer toutes les données.'
-                    )
-                  }
+                  onClick={() => {
+                    setShowEditModal(false);
+                    setEditData(null);
+                  }}
+                  disabled={editLoading}
                 >
-                  <RefreshCw className="mr-2 h-4 w-4" />
-                  Régénérer
+                  <X className="mr-2 h-4 w-4" />
+                  Annuler
                 </Button>
+                <Button onClick={handleSaveEdit} disabled={editLoading}>
+                  {editLoading ? (
+                    <>
+                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                      Enregistrement...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="mr-2 h-4 w-4" />
+                      Enregistrer
+                    </>
+                  )}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
+          {/* Dialog de confirmation */}
+          <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{confirmAction?.title}</DialogTitle>
+                <DialogDescription>{confirmAction?.description}</DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
                 <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() =>
-                    openConfirmDialog(
-                      'close',
-                      'Clôturer',
-                      'Action irréversible.'
-                    )
-                  }
+                  variant="outline"
+                  onClick={() => {
+                    setShowConfirmDialog(false);
+                    setConfirmAction(null);
+                  }}
+                  disabled={actionLoading}
                 >
-                  <Lock className="mr-2 h-4 w-4" />
-                  Clôturer
+                  Annuler
                 </Button>
-              </>
-            )}
-          </div>
+                <Button onClick={handleAction} disabled={actionLoading}>
+                  {actionLoading ? (
+                    <>
+                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                      En cours...
+                    </>
+                  ) : (
+                    'Confirmer'
+                  )}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
-      </div>
-
-      {/* Filtres */}
-      <Card className="border-l-4 border-l-primary">
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Filter className="h-5 w-5 text-primary" />
-            Filtres
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-2">
-            <SelectField
-              label="Employé"
-              value={selectedEmployee}
-              onChange={setSelectedEmployee}
-              options={[
-                { label: 'Tous les employés', value: '' },
-                ...employeesData.map(e => ({
-                  label: `${e.employee?.first_name || ''} ${e.employee?.last_name || ''} ${e.employee?.matricule ? `(${e.employee.matricule})` : ''}`.trim(),
-                  value: String(e.employeeId)
-                }))
-              ]}
-            />
-
-            <SelectField
-              label="Statut"
-              value={selectedStatus}
-              onChange={setSelectedStatus}
-              options={[
-                { label: 'Tous les statuts', value: '' },
-                ...STATUS_CODES.filter(s => s.value).map(s => ({
-                  label: s.label,
-                  value: s.value
-                }))
-              ]}
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Légende */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-sm">
-            <Sparkles className="h-4 w-4 text-primary" />
-            Légende des statuts
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            {STATUS_CODES.filter(s => s.value).map(status => (
-              <span
-                key={status.value}
-                className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium ${status.color}`}
-              >
-                <span className="font-bold">{status.value}</span>
-                <span className="mx-1">—</span>
-                <span>{status.label}</span>
-              </span>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Tableau HTML natif */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Détails mensuel</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="sticky left-0 z-10 bg-background min-w-[200px]">
-                    Employé
-                  </TableHead>
-                  {Array.from({ length: numDays }, (_, i) => i + 1).map(day => (
-                    <TableHead key={day} className="text-center min-w-[50px]">
-                      {String(day).padStart(2, '0')}
-                    </TableHead>
-                  ))}
-                  <TableHead
-                    className="text-center min-w-[80px] cursor-pointer hover:bg-muted/50"
-                    onClick={() => handleSort('totalHours')}
-                  >
-                    <div className="flex items-center justify-center gap-1">
-                      Total H
-                      {sortColumn === 'totalHours' && (
-                        <span className="text-xs">{sortDirection === 'asc' ? '↑' : '↓'}</span>
-                      )}
-                    </div>
-                  </TableHead>
-                  <TableHead
-                    className="text-center min-w-[70px] cursor-pointer hover:bg-muted/50"
-                    onClick={() => handleSort('overtimeHours')}
-                  >
-                    <div className="flex items-center justify-center gap-1">
-                      HS
-                      {sortColumn === 'overtimeHours' && (
-                        <span className="text-xs">{sortDirection === 'asc' ? '↑' : '↓'}</span>
-                      )}
-                    </div>
-                  </TableHead>
-                  <TableHead
-                    className="text-center min-w-[70px] cursor-pointer hover:bg-muted/50"
-                    onClick={() => handleSort('absenceDays')}
-                  >
-                    <div className="flex items-center justify-center gap-1">
-                      Abs
-                      {sortColumn === 'absenceDays' && (
-                        <span className="text-xs">{sortDirection === 'asc' ? '↑' : '↓'}</span>
-                      )}
-                    </div>
-                  </TableHead>
-                  <TableHead className="text-center min-w-[100px]">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredData.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={numDays + 5} className="h-24 text-center text-muted-foreground">
-                      Aucun employé trouvé
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredData.map(row => (
-                    <TableRow key={row.id}>
-                      <TableCell className="sticky left-0 z-10 bg-background">
-                        <div className="flex flex-col">
-                          <span className="font-semibold text-sm">
-                            {row.employee?.first_name} {row.employee?.last_name}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {row.employee?.matricule}
-                          </span>
-                        </div>
-                      </TableCell>
-                      {Array.from({ length: numDays }, (_, i) => i + 1).map(day => {
-                        const code = row[`day_${day}`] as string;
-                        return (
-                          <TableCell key={day} className="text-center p-2">
-                            {code ? (
-                              <span className={`inline-flex items-center justify-center rounded px-1.5 py-0.5 text-xs font-medium ${getStatusColor(code)}`}>
-                                {code}
-                              </span>
-                            ) : (
-                              <span className="text-slate-300">—</span>
-                            )}
-                          </TableCell>
-                        );
-                      })}
-                      <TableCell className="text-center">
-                        <span className="font-semibold text-blue-600">{row.totalHours || 0}h</span>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <span className="font-semibold text-orange-600">{row.overtimeHours || 0}h</span>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <span className="font-semibold text-red-600">{row.absenceDays || 0}j</span>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEdit(row)}
-                          disabled={tableau?.locked}
-                          className="h-8"
-                        >
-                          <Edit className="mr-1 h-3 w-3" />
-                          Modifier
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Modal d'édition */}
-      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Modifier les présences - {editData?.employeeName}</DialogTitle>
-            <DialogDescription>
-              Modifiez le statut pour chaque jour du mois
-            </DialogDescription>
-          </DialogHeader>
-
-          {editData && (
-            <div className="grid grid-cols-7 gap-2">
-              {Array.from({ length: numDays }, (_, i) => i + 1).map(day => (
-                <div key={day} className="space-y-1">
-                  <Label className="text-xs font-medium text-muted-foreground">
-                    {String(day).padStart(2, '0')}
-                  </Label>
-                  <Select
-                    value={editData.days[day] || ''}
-                    onValueChange={(val) => {
-                      setEditData({
-                        ...editData,
-                        days: { ...editData.days, [day]: val }
-                      });
-                    }}
-                  >
-                    <SelectTrigger className="h-9 text-xs">
-                      <SelectValue placeholder="—" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {STATUS_CODES.map(s => (
-                        <SelectItem key={s.value} value={s.value} className="text-xs">
-                          {s.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setShowEditModal(false);
-                setEditData(null);
-              }}
-              disabled={editLoading}
-            >
-              <X className="mr-2 h-4 w-4" />
-              Annuler
-            </Button>
-            <Button onClick={handleSaveEdit} disabled={editLoading}>
-              {editLoading ? (
-                <>
-                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                  Enregistrement...
-                </>
-              ) : (
-                <>
-                  <Save className="mr-2 h-4 w-4" />
-                  Enregistrer
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Dialog de confirmation */}
-      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{confirmAction?.title}</DialogTitle>
-            <DialogDescription>{confirmAction?.description}</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setShowConfirmDialog(false);
-                setConfirmAction(null);
-              }}
-              disabled={actionLoading}
-            >
-              Annuler
-            </Button>
-            <Button onClick={handleAction} disabled={actionLoading}>
-              {actionLoading ? (
-                <>
-                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                  En cours...
-                </>
-              ) : (
-                'Confirmer'
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      </PageContainer>
     </div>
   );
 }
+

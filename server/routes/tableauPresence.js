@@ -87,6 +87,46 @@ module.exports = function registerTableauPresenceRoutes(server, db) {
     return res.status(201).json({ status: 'success', data: tp });
   });
 
+  // Import d'un fichier (mock) – crée le tableau s'il n'existe pas
+  server.post('/tableau-presence/import', (req, res) => {
+    const mois = req.body?.mois || req.query?.mois;
+    const annee = req.body?.annee || req.query?.annee;
+    if (!mois || !annee) {
+      return res.status(400).json({ status: 'error', message: 'Paramètres mois/année requis', data: null });
+    }
+    const id = Number(annee) * 100 + Number(mois);
+    const now = new Date().toISOString();
+    const exists = db.get('tableauPresence').find({ id }).value();
+    if (!exists) {
+      db.get('tableauPresence').push({
+        id,
+        mois: Number(mois),
+        annee: Number(annee),
+        statut: 'EN_COURS',
+        generatedAt: now,
+        generatedBy: 'import',
+        locked: false
+      }).write();
+    } else {
+      db.get('tableauPresence').find({ id }).assign({ generatedAt: now }).write();
+    }
+
+    return res.status(200).json({ status: 'success', message: 'Fichier importé (mock)', data: { id } });
+  });
+
+  // Modèle d'export (mock)
+  server.get('/tableau-presence/export-model', (req, res) => {
+    const lines = [
+      'Matricule;Date;Code;Heures',
+      'EMP-0001;2025-01-02;P;8',
+      'EMP-0002;2025-01-03;HS;10'
+    ];
+    const csv = lines.join('\n');
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename=modele-tableau-presence.csv');
+    return res.status(200).send(csv);
+  });
+
   // Valider manager
   server.patch('/tableau-presence/:id/validate-manager', (req, res) => {
     const id = isNaN(+req.params.id) ? req.params.id : +req.params.id;
@@ -212,6 +252,31 @@ module.exports = function registerTableauPresenceRoutes(server, db) {
     const csv = lines.join('\n');
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', `attachment; filename=tableau-presence-${id}.csv`);
+    return res.status(200).send(csv);
+  });
+
+  // Alias attendu par le front: /:id/export-excel
+  server.get('/tableau-presence/:id/export-excel', (req, res) => {
+    const id = isNaN(+req.params.id) ? req.params.id : +req.params.id;
+    const rows = (db.get('tableauPresenceEmployees').value() || []).filter(
+      (r) => String(r.tableauPresenceId) === String(id)
+    );
+    const hrIndex = Object.fromEntries(
+      (db.get('hrEmployees').value() || []).map((e) => [String(e.id), e])
+    );
+    const lines = [
+      'Matricule;Nom;Prénom;Heures;HS;Absences;Résumé',
+      ...rows.map((r) => {
+        const hr = hrIndex[String(r.employeeId)];
+        const matricule = hr?.matricule || '';
+        const nom = hr?.lastName || '';
+        const prenom = hr?.firstName || '';
+        return [matricule, nom, prenom, r.totalHours, r.overtimeHours, r.absenceDays, r.statusSummary].join(';');
+      })
+    ];
+    const csv = lines.join('\n');
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename=tableau-presence-${id}.xlsx`);
     return res.status(200).send(csv);
   });
 

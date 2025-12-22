@@ -25,7 +25,9 @@ import {
   UserCheck,
   Lock,
   Plus,
-  Download
+  Download,
+  RefreshCw,
+  Trash
 } from 'lucide-react';
 import {
   Tooltip,
@@ -34,10 +36,6 @@ import {
 } from '@/components/ui/tooltip';
 import { StatusBadge } from '@/components/custom/status-badge';
 import { useRouter } from 'next/navigation';
-import {
-  GenerateTableauPresenceInput,
-  generateTableauPresenceSchema
-} from '@/validations/tableau-presence.schema';
 
 /* ======================================================
    TYPES MÉTIER – TABLEAU DE PRÉSENCE
@@ -62,22 +60,6 @@ export interface TableauPresence {
   locked: boolean;
 }
 
-export interface TableauPresenceEmployeeRow {
-  id: number;
-  tableauPresenceId: number;
-  employeeId: number;
-  employee?: {
-    id: number | string;
-    first_name?: string;
-    last_name?: string;
-    matricule?: string;
-  } | null;
-  totalHours: number;
-  overtimeHours: number;
-  absenceDays: number;
-  statusSummary: string;
-}
-
 /* ======================================================
    COMPONENT
    ====================================================== */
@@ -91,11 +73,12 @@ export default function TableauPresenceListing() {
 
   const [mois, setMois] = useState<number | undefined>(undefined);
   const [annee, setAnnee] = useState<number | undefined>(undefined);
-  const [generationMode, setGenerationMode] = useState<'automatique' | 'import'>('automatique');
-  const [importFiles, setImportFiles] = useState<File[]>([]);
-  const [errors, setErrors] = useState<Partial<Record<keyof GenerateTableauPresenceInput, string>>>({});
 
   const [confirmCloseId, setConfirmCloseId] = useState<number | null>(null);
+  const [confirmRegenerateId, setConfirmRegenerateId] = useState<number | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+  const [confirmValidateManagerId, setConfirmValidateManagerId] = useState<number | null>(null);
+  const [confirmValidateRhId, setConfirmValidateRhId] = useState<number | null>(null);
   const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [generateLoading, setGenerateLoading] = useState(false);
 
@@ -106,57 +89,20 @@ export default function TableauPresenceListing() {
   }, []);
 
   const onGenerate = async () => {
-    // Validation avec Zod
-    const result = generateTableauPresenceSchema.safeParse({
-      mois,
-      annee,
-      mode: generationMode
-    });
-
-    if (!result.success) {
-      const fieldErrors: Partial<Record<keyof GenerateTableauPresenceInput, string>> = {};
-      result.error.errors.forEach((err) => {
-        if (err.path[0]) {
-          fieldErrors[err.path[0] as keyof GenerateTableauPresenceInput] = err.message;
-        }
-      });
-      setErrors(fieldErrors);
-      toast.error('Veuillez corriger les erreurs');
-      return;
-    }
-
-    // Validation supplémentaire pour le mode import
-    if (generationMode === 'import' && importFiles.length === 0) {
-      toast.error('Veuillez sélectionner un fichier Excel');
+    if (!mois || !annee) {
+      toast.error('Veuillez sélectionner mois et année');
       return;
     }
 
     setGenerateLoading(true);
-    setErrors({});
-
     try {
-      if (generationMode === 'automatique') {
-        await apiClient.post(apiRoutes.admin.tableauPresence.generate, {
-          mois,
-          annee
-        });
-        toast.success('Tableau généré automatiquement');
-      } else {
-        // Mode import
-        const formData = new FormData();
-        formData.append('file', importFiles[0]);
-        formData.append('mois', String(mois));
-        formData.append('annee', String(annee));
-
-        await apiClient.post(apiRoutes.admin.tableauPresence.import, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        toast.success('Tableau importé avec succès');
-      }
-
+      await apiClient.post(apiRoutes.admin.tableauPresence.generate, {
+        mois,
+        annee
+      });
+      toast.success('Tableau généré');
       tableInstance?.refresh?.();
       setShowGenerateModal(false);
-      setImportFiles([]);
     } catch (e: any) {
       toast.error(e?.response?.data?.message || 'Erreur de génération');
     } finally {
@@ -194,10 +140,10 @@ export default function TableauPresenceListing() {
     if (typeof window !== 'undefined') window.open(url, '_blank');
   };
 
-  const onValidateManager = async (row: TableauPresence) => {
+  const onValidateManager = async (id: number) => {
     try {
       await apiClient.patch(
-        apiRoutes.admin.tableauPresence.validateManager(row.id)
+        apiRoutes.admin.tableauPresence.validateManager(id)
       );
       toast.success('Validé manager');
       tableInstance?.refresh?.();
@@ -206,9 +152,29 @@ export default function TableauPresenceListing() {
     }
   };
 
-  const onValidateRh = async (row: TableauPresence) => {
+  const onRegenerate = async (id: number) => {
     try {
-      await apiClient.patch(apiRoutes.admin.tableauPresence.validateRh(row.id));
+      await apiClient.post(apiRoutes.admin.tableauPresence.regenerate(id));
+      toast.success('Régénéré avec succès');
+      tableInstance?.refresh?.();
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message || 'Erreur régénération');
+    }
+  };
+
+  const onDelete = async (id: number) => {
+    try {
+      await apiClient.delete(apiRoutes.admin.tableauPresence.delete(id));
+      toast.success('Supprimé');
+      tableInstance?.refresh?.();
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message || 'Erreur suppression');
+    }
+  };
+
+  const onValidateRh = async (id: number) => {
+    try {
+      await apiClient.patch(apiRoutes.admin.tableauPresence.validateRh(id));
       toast.success('Validé RH');
       tableInstance?.refresh?.();
     } catch (e: any) {
@@ -216,7 +182,6 @@ export default function TableauPresenceListing() {
     }
   };
 
-  const onAskClose = (row: TableauPresence) => setConfirmCloseId(row.id);
   const onConfirmClose = async () => {
     if (!confirmCloseId) return;
     try {
@@ -310,7 +275,7 @@ export default function TableauPresenceListing() {
               <Button
                 variant='outline'
                 className='h-8 w-8 p-1.5'
-                onClick={() => onValidateManager(row)}
+                onClick={() => setConfirmValidateManagerId(row.id)}
                 title='Valider manager'
                 disabled={row.locked || row.statut !== 'EN_COURS'}
               >
@@ -324,7 +289,7 @@ export default function TableauPresenceListing() {
               <Button
                 variant='outline'
                 className='h-8 w-8 p-1.5'
-                onClick={() => onValidateRh(row)}
+                onClick={() => setConfirmValidateRhId(row.id)}
                 title='Valider RH'
                 disabled={
                   row.locked ||
@@ -339,9 +304,23 @@ export default function TableauPresenceListing() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
+                variant='outline'
+                className='h-8 w-8 p-1.5'
+                onClick={() => setConfirmRegenerateId(row.id)}
+                title='Régénérer'
+                disabled={row.locked || row.statut === 'CLOTURE'}
+              >
+                <RefreshCw className='h-4 w-4 text-purple-600' />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Régénérer</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
                 variant='destructive'
                 className='h-8 w-8 p-1.5'
-                onClick={() => onAskClose(row)}
+                onClick={() => setConfirmCloseId(row.id)}
                 title='Clôturer'
                 disabled={row.locked || row.statut === 'CLOTURE'}
               >
@@ -350,6 +329,21 @@ export default function TableauPresenceListing() {
             </TooltipTrigger>
             <TooltipContent>Clôturer</TooltipContent>
           </Tooltip>
+          {row.statut === 'BROUILLON' && !row.locked && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant='destructive'
+                  className='h-8 w-8 p-1.5'
+                  onClick={() => setConfirmDeleteId(row.id)}
+                  title='Supprimer'
+                >
+                  <Trash className='h-4 w-4' />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Supprimer</TooltipContent>
+            </Tooltip>
+          )}
         </div>
       )
     }
@@ -439,13 +433,18 @@ export default function TableauPresenceListing() {
                 </select>
               </div>
             </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setShowGenerateModal(false)}>
-                Annuler
+            <DialogFooter className='flex items-center justify-between gap-2'>
+              <Button type='button' variant='ghost' onClick={onDownloadModel}>
+                Télécharger le modèle
               </Button>
-              <Button onClick={onGenerate} disabled={generateLoading}>
-                {generateLoading ? 'Génération...' : 'Générer'}
-              </Button>
+              <div className='ml-auto flex items-center gap-2'>
+                <Button variant="outline" onClick={() => setShowGenerateModal(false)}>
+                  Annuler
+                </Button>
+                <Button onClick={onGenerate} disabled={generateLoading}>
+                  {generateLoading ? 'Génération...' : 'Générer'}
+                </Button>
+              </div>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -463,6 +462,68 @@ export default function TableauPresenceListing() {
                 Annuler
               </Button>
               <Button onClick={onConfirmClose}>Confirmer</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={!!confirmRegenerateId} onOpenChange={(o) => !o && setConfirmRegenerateId(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Régénérer le tableau ?</DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground">
+              Cette action recalculera les données.
+            </p>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setConfirmRegenerateId(null)}>
+                Annuler
+              </Button>
+              <Button onClick={() => { if (confirmRegenerateId) { onRegenerate(confirmRegenerateId); setConfirmRegenerateId(null); } }}>Confirmer</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={!!confirmDeleteId} onOpenChange={(o) => !o && setConfirmDeleteId(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Supprimer le tableau (brouillon) ?</DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground">
+              Cette action est irréversible.
+            </p>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setConfirmDeleteId(null)}>
+                Annuler
+              </Button>
+              <Button variant='destructive' onClick={() => { if (confirmDeleteId) { onDelete(confirmDeleteId); setConfirmDeleteId(null); } }}>Supprimer</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={!!confirmValidateManagerId} onOpenChange={(o) => !o && setConfirmValidateManagerId(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Valider par le manager ?</DialogTitle>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setConfirmValidateManagerId(null)}>
+                Annuler
+              </Button>
+              <Button onClick={() => { if (confirmValidateManagerId) { onValidateManager(confirmValidateManagerId); setConfirmValidateManagerId(null); } }}>Confirmer</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={!!confirmValidateRhId} onOpenChange={(o) => !o && setConfirmValidateRhId(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Valider par RH ?</DialogTitle>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setConfirmValidateRhId(null)}>
+                Annuler
+              </Button>
+              <Button onClick={() => { if (confirmValidateRhId) { onValidateRh(confirmValidateRhId); setConfirmValidateRhId(null); } }}>Confirmer</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
