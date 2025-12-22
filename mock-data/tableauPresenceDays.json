@@ -1,0 +1,113 @@
+[
+  {
+    "id": 10001,
+    "employeeId": 101,
+    "date": "2025-01-02",
+    "statusCode": "P",
+    "hoursWorked": 8,
+    "source": "POINTAGE",
+    "isOvertime": false
+  },
+  {
+    "id": 10002,
+    "employeeId": 101,
+    "date": "2025-01-03",
+    "statusCode": "HS",
+    "hoursWorked": 10,
+    "source": "POINTAGE",
+    "isOvertime": true
+  },
+  {
+    "id": 10003,
+    "employeeId": 102,
+    "date": "2025-01-02",
+    "statusCode": "CP",
+    "hoursWorked": 0,
+    "source": "MANUEL",
+    "isOvertime": false
+  },
+  {
+    "id": 10004,
+    "employeeId": 101,
+    "date": "2025-01-06",
+    "statusCode": "P",
+    "hoursWorked": 8,
+    "source": "POINTAGE",
+    "isOvertime": false
+  },
+  {
+    "id": 10005,
+    "employeeId": 101,
+    "date": "2025-01-07",
+    "statusCode": "P",
+    "hoursWorked": 8,
+    "source": "POINTAGE",
+    "isOvertime": false
+  },
+  {
+    "id": 10006,
+    "employeeId": 101,
+    "date": "2025-01-08",
+    "statusCode": "CM",
+    "hoursWorked": 0,
+    "source": "MANUEL",
+    "isOvertime": false
+  },
+  {
+    "id": 10007,
+    "employeeId": 102,
+    "date": "2025-01-03",
+    "statusCode": "P",
+    "hoursWorked": 8,
+    "source": "POINTAGE",
+    "isOvertime": false
+  },
+  {
+    "id": 10008,
+    "employeeId": 102,
+    "date": "2025-01-06",
+    "statusCode": "P",
+    "hoursWorked": 8,
+    "source": "POINTAGE",
+    "isOvertime": false
+  },
+  {
+    "id": 10009,
+    "employeeId": 102,
+    "date": "2025-01-07",
+    "statusCode": "HS",
+    "hoursWorked": 9,
+    "source": "POINTAGE",
+    "isOvertime": true
+  },
+  {
+    "id": 10010,
+    "employeeId": 103,
+    "date": "2025-01-02",
+    "statusCode": "P",
+    "hoursWorked": 8,
+    "source": "POINTAGE",
+    "isOvertime": false
+  },
+  {
+    "id": 10011,
+    "employeeId": 103,
+    "date": "2025-01-03",
+    "statusCode": "P",
+    "hoursWorked": 8,
+    "source": "POINTAGE",
+    "isOvertime": false
+  },
+  {
+    "id": 10012,
+    "employeeId": 103,
+    "date": "2025-01-06",
+    "statusCode": "A",
+    "hoursWorked": 0,
+    "source": "MANUEL",
+    "isOvertime": false
+  }
+]
+
+
+

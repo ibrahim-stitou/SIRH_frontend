@@ -109,6 +109,13 @@ export const useNavItems = (): NavItem[] => {
           icon: 'briefcase',
           shortcut: ['a', 'c'],
           description: 'US-EMP-013'
+        },
+        {
+          title:t('sidebar.tableauPresence'),
+          url: '/admin/tableau-presence',
+          icon: 'IconTablePlus',
+          shortcut: ['t', 'p'],
+          description: 'US-EMP-014'
         }
       ]
     }

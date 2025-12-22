@@ -89,7 +89,7 @@ interface Employee {
   };
 }
 
-interface AbsenceType {
+export interface AbsenceType {
   id: number;
   code: string;
   libelle: string;

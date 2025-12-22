@@ -65,6 +65,7 @@ require('./server/routes/departments')(server, db);
 require('./server/routes/absences')(server, db);
 require('./server/routes/conges')(server, db);
 require('./server/routes/pointage')(server, db);
+require('./server/routes/tableauPresence')(server, db);
 require('./server/routes/generic')(server, db, data);
 
 server.use(router);
