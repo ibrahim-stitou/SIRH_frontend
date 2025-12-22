@@ -6,14 +6,23 @@ import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem
+} from '@/components/ui/select';
 import { apiRoutes } from '@/config/apiRoutes';
 import apiClient from '@/lib/api';
 import { toast } from 'sonner';
 import { ArrowLeft, Save, Clock } from 'lucide-react';
 import { DatePickerField } from '@/components/custom/DatePickerField';
 
-interface EmployeeOption { label: string | undefined; value: string | undefined; }
+interface EmployeeOption {
+  label: string | undefined;
+  value: string | undefined;
+}
 
 interface PointageForm {
   employeeId: number | string | null;
@@ -82,11 +91,16 @@ export default function ModifierPointagePage() {
     const time = parts[1] || '';
     return time.length >= 5 ? time.slice(0, 5) : null;
   }
-  function combineDateTime(date: string | null, time: string | null): string | null {
+  function combineDateTime(
+    date: string | null,
+    time: string | null
+  ): string | null {
     if (!date || !time) return null;
     return `${date}T${time}`;
   }
-  function pad2(n: number) { return n.toString().padStart(2, '0'); }
+  function pad2(n: number) {
+    return n.toString().padStart(2, '0');
+  }
   function parseTime(value?: string | null): { h: number; m: number } {
     if (!value) return { h: 9, m: 0 };
     const [hh, mm] = String(value).split(':');
@@ -97,28 +111,44 @@ export default function ModifierPointagePage() {
   const HOURS = Array.from({ length: 24 }, (_, i) => i);
   const MINUTES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
 
-  function TimePicker({ value, onChange }: { value?: string | null; onChange: (val: string) => void }) {
+  function TimePicker({
+    value,
+    onChange
+  }: {
+    value?: string | null;
+    onChange: (val: string) => void;
+  }) {
     const { h, m } = parseTime(value);
     return (
       <div className='flex items-center gap-2'>
-        <Select value={pad2(h)} onValueChange={(v: string) => onChange(`${v}:${pad2(m)}`)}>
+        <Select
+          value={pad2(h)}
+          onValueChange={(v: string) => onChange(`${v}:${pad2(m)}`)}
+        >
           <SelectTrigger className='w-24'>
             <SelectValue placeholder='HH' />
           </SelectTrigger>
           <SelectContent className='max-h-64'>
             {HOURS.map((hh) => (
-              <SelectItem key={hh} value={pad2(hh)}>{pad2(hh)}</SelectItem>
+              <SelectItem key={hh} value={pad2(hh)}>
+                {pad2(hh)}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
         <span className='text-muted-foreground'>:</span>
-        <Select value={pad2(m)} onValueChange={(v: string) => onChange(`${pad2(h)}:${v}`)}>
+        <Select
+          value={pad2(m)}
+          onValueChange={(v: string) => onChange(`${pad2(h)}:${v}`)}
+        >
           <SelectTrigger className='w-24'>
             <SelectValue placeholder='MM' />
           </SelectTrigger>
           <SelectContent className='max-h-64'>
             {MINUTES.map((mm) => (
-              <SelectItem key={mm} value={pad2(mm)}>{pad2(mm)}</SelectItem>
+              <SelectItem key={mm} value={pad2(mm)}>
+                {pad2(mm)}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -126,7 +156,13 @@ export default function ModifierPointagePage() {
     );
   }
 
-  function DateTimePicker({ value, onChange }: { value?: string | null; onChange: (val: string | null) => void }) {
+  function DateTimePicker({
+    value,
+    onChange
+  }: {
+    value?: string | null;
+    onChange: (val: string | null) => void;
+  }) {
     const date = parseDatePart(value);
     const time = parseTimePart(value) || '09:00';
     return (
@@ -185,16 +221,24 @@ export default function ModifierPointagePage() {
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-3'>
             <div>
-              <h1 className='text-2xl font-bold tracking-tight'>Modifier le pointage</h1>
-              <p className='text-muted-foreground text-sm'>MAJ des informations d&apos;un pointage</p>
+              <h1 className='text-2xl font-bold tracking-tight'>
+                Modifier le pointage
+              </h1>
+              <p className='text-muted-foreground text-sm'>
+                MAJ des informations d&apos;un pointage
+              </p>
             </div>
           </div>
           <div className='flex items-center gap-2'>
-            <Button variant='secondary' onClick={()=> router.push('/admin/pointages')}>
+            <Button
+              variant='secondary'
+              onClick={() => router.push('/admin/pointages')}
+            >
               <ArrowLeft /> Retour aux pointages
             </Button>
             <Button onClick={onSave} disabled={!isValid || saving}>
-              <Save className='mr-2 h-4 w-4' /> {saving ? 'Enregistrement…' : 'Enregistrer'}
+              <Save className='mr-2 h-4 w-4' />{' '}
+              {saving ? 'Enregistrement…' : 'Enregistrer'}
             </Button>
           </div>
         </div>
@@ -206,72 +250,89 @@ export default function ModifierPointagePage() {
           <CardContent className=''>
             {loading ? (
               <div className='space-y-4'>
-                <div className='grid grid-cols-1 gap-3 md:grid-cols-2 animate-pulse'>
+                <div className='grid animate-pulse grid-cols-1 gap-3 md:grid-cols-2'>
                   <div>
-                    <div className='h-4 w-40 bg-muted rounded mb-2'></div>
-                    <div className='h-10 bg-muted rounded'></div>
+                    <div className='bg-muted mb-2 h-4 w-40 rounded'></div>
+                    <div className='bg-muted h-10 rounded'></div>
                   </div>
                   <div>
-                    <div className='h-4 w-32 bg-muted rounded mb-2'></div>
-                    <div className='h-10 bg-muted rounded'></div>
+                    <div className='bg-muted mb-2 h-4 w-32 rounded'></div>
+                    <div className='bg-muted h-10 rounded'></div>
                   </div>
                   <div>
-                    <div className='h-4 w-56 bg-muted rounded mb-2'></div>
+                    <div className='bg-muted mb-2 h-4 w-56 rounded'></div>
                     <div className='grid grid-cols-1 gap-2 md:grid-cols-2'>
-                      <div className='h-10 bg-muted rounded'></div>
-                      <div className='h-10 bg-muted rounded'></div>
+                      <div className='bg-muted h-10 rounded'></div>
+                      <div className='bg-muted h-10 rounded'></div>
                     </div>
                   </div>
                   <div>
-                    <div className='h-4 w-56 bg-muted rounded mb-2'></div>
+                    <div className='bg-muted mb-2 h-4 w-56 rounded'></div>
                     <div className='grid grid-cols-1 gap-2 md:grid-cols-2'>
-                      <div className='h-10 bg-muted rounded'></div>
-                      <div className='h-10 bg-muted rounded'></div>
+                      <div className='bg-muted h-10 rounded'></div>
+                      <div className='bg-muted h-10 rounded'></div>
                     </div>
                   </div>
                   <div>
-                    <div className='h-4 w-24 bg-muted rounded mb-2'></div>
-                    <div className='h-10 bg-muted rounded'></div>
+                    <div className='bg-muted mb-2 h-4 w-24 rounded'></div>
+                    <div className='bg-muted h-10 rounded'></div>
                   </div>
                   <div className='md:col-span-2'>
-                    <div className='h-4 w-64 bg-muted rounded'></div>
+                    <div className='bg-muted h-4 w-64 rounded'></div>
                   </div>
                 </div>
               </div>
             ) : (
               <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
                 <div>
-                  <Label className='mb-1 block'>Employé <span className='text-destructive'>*</span></Label>
+                  <Label className='mb-1 block'>
+                    Employé <span className='text-destructive'>*</span>
+                  </Label>
                   <Select
-                    value={form.employeeId != null ? String(form.employeeId) : undefined}
-                    onValueChange={(v) => setForm((s) => ({ ...s, employeeId: isNaN(Number(v)) ? v : Number(v) }))}
+                    value={
+                      form.employeeId != null
+                        ? String(form.employeeId)
+                        : undefined
+                    }
+                    onValueChange={(v) =>
+                      setForm((s) => ({
+                        ...s,
+                        employeeId: isNaN(Number(v)) ? v : Number(v)
+                      }))
+                    }
                   >
                     <SelectTrigger className='w-full'>
                       <SelectValue placeholder='Choisir un employé' />
                     </SelectTrigger>
                     <SelectContent>
                       {employees.map((opt) => (
-                        <SelectItem key={String(opt.value)} value={String(opt.value)}>
+                        <SelectItem
+                          key={String(opt.value)}
+                          value={String(opt.value)}
+                        >
                           {opt.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
-                <div>
-                </div>
+                <div></div>
                 <div>
                   <Label className='mb-1 block'>Entrée (date et heure)</Label>
                   <DateTimePicker
                     value={form.check_in}
-                    onChange={(val) => setForm((s) => ({ ...s, check_in: val }))}
+                    onChange={(val) =>
+                      setForm((s) => ({ ...s, check_in: val }))
+                    }
                   />
                 </div>
                 <div>
                   <Label className='mb-1 block'>Sortie (date et heure)</Label>
                   <DateTimePicker
                     value={form.check_out}
-                    onChange={(val) => setForm((s) => ({ ...s, check_out: val }))}
+                    onChange={(val) =>
+                      setForm((s) => ({ ...s, check_out: val }))
+                    }
                   />
                 </div>
                 <div>
@@ -279,7 +340,12 @@ export default function ModifierPointagePage() {
                   <Select
                     value={form.status || 'bruillon'}
                     disabled={form.status === 'rejete'}
-                    onValueChange={(v)=> setForm((s)=> ({...s, status: v as 'bruillon' | 'valide'}))}
+                    onValueChange={(v) =>
+                      setForm((s) => ({
+                        ...s,
+                        status: v as 'bruillon' | 'valide'
+                      }))
+                    }
                   >
                     <SelectTrigger className='w-full'>
                       <SelectValue placeholder='Sélectionner un statut' />
@@ -292,9 +358,12 @@ export default function ModifierPointagePage() {
                   </Select>
                 </div>
                 {estimatedMinutes !== undefined && (
-                  <div className='md:col-span-2 flex items-center gap-2 text-sm text-muted-foreground'>
+                  <div className='text-muted-foreground flex items-center gap-2 text-sm md:col-span-2'>
                     <Clock className='h-4 w-4' /> Durée estimée :
-                    <span className='font-semibold text-foreground'>{estimatedMinutes}</span> minutes
+                    <span className='text-foreground font-semibold'>
+                      {estimatedMinutes}
+                    </span>{' '}
+                    minutes
                   </div>
                 )}
               </div>

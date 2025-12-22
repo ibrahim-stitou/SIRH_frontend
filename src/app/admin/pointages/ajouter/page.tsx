@@ -17,12 +17,21 @@ import {
   DialogTitle,
   DialogFooter
 } from '@/components/ui/dialog';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem
+} from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { FileUploader } from '@/components/file-uploader';
 import type { DropzoneProps } from 'react-dropzone';
 
-interface EmployeeOption { label: string |undefined; value: string | undefined; }
+interface EmployeeOption {
+  label: string | undefined;
+  value: string | undefined;
+}
 
 interface PointageLine {
   employeeId: number | string | null;
@@ -48,15 +57,20 @@ export default function AjouterPointagePage() {
   // Import modal
   const [showImportModal, setShowImportModal] = useState(false);
   const [importType, setImportType] = useState<'csv' | 'excel'>('csv');
-  const [importStatus, setImportStatus] = useState<'bruillon' | 'valide'>('bruillon');
+  const [importStatus, setImportStatus] = useState<'bruillon' | 'valide'>(
+    'bruillon'
+  );
   const [importFiles, setImportFiles] = useState<File[]>([]);
   const acceptMap = useMemo<DropzoneProps['accept']>(() => {
-    return (importType === 'csv'
-      ? { 'text/csv': ['.csv'] }
-      : {
-          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
-          'application/vnd.ms-excel': ['.xls']
-        }) as DropzoneProps['accept'];
+    return (
+      importType === 'csv'
+        ? { 'text/csv': ['.csv'] }
+        : {
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+              ['.xlsx'],
+            'application/vnd.ms-excel': ['.xls']
+          }
+    ) as DropzoneProps['accept'];
   }, [importType]);
 
   useEffect(() => {
@@ -71,11 +85,16 @@ export default function AjouterPointagePage() {
         if (mounted) setEmployees(opts);
       })
       .catch(() => void 0);
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const downloadModel = () => {
-    const url = importType === 'csv' ? apiRoutes.admin.pointages.export.modelCsv : apiRoutes.admin.pointages.export.modelXlsx;
+    const url =
+      importType === 'csv'
+        ? apiRoutes.admin.pointages.export.modelCsv
+        : apiRoutes.admin.pointages.export.modelXlsx;
     if (typeof window !== 'undefined') window.open(url, '_blank');
   };
 
@@ -84,7 +103,10 @@ export default function AjouterPointagePage() {
   }, [single]);
 
   // Helpers for auto-calcul
-  function computeWorkedMinutes(checkIn?: string | null, checkOut?: string | null): number | undefined {
+  function computeWorkedMinutes(
+    checkIn?: string | null,
+    checkOut?: string | null
+  ): number | undefined {
     if (!checkIn || !checkOut) return undefined;
     const di = new Date(checkIn);
     const doo = new Date(checkOut);
@@ -108,7 +130,10 @@ export default function AjouterPointagePage() {
       return;
     }
     try {
-      const workedMinutes = computeWorkedMinutes(single.check_in, single.check_out);
+      const workedMinutes = computeWorkedMinutes(
+        single.check_in,
+        single.check_out
+      );
       await apiClient.post(apiRoutes.admin.pointages.create, {
         employeeId: single.employeeId,
         check_in: single.check_in,
@@ -120,7 +145,7 @@ export default function AjouterPointagePage() {
       toast.success('Pointage ajouté');
       router.push('/admin/pointages');
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || 'Erreur lors de l\'ajout');
+      toast.error(e?.response?.data?.message || "Erreur lors de l'ajout");
     }
   };
 
@@ -134,14 +159,23 @@ export default function AjouterPointagePage() {
     if (!value) return null;
     const parts = String(value).split('T');
     const time = parts[1] || '';
-    return time.length >= 5 ? time.slice(0,5) : null;
+    return time.length >= 5 ? time.slice(0, 5) : null;
   }
-  function combineDateTime(date: string | null, time: string | null): string | null {
+  function combineDateTime(
+    date: string | null,
+    time: string | null
+  ): string | null {
     if (!date || !time) return null;
     return `${date}T${time}`;
   }
 
-  function DateTimePicker({ value, onChange }: { value?: string | null; onChange: (val: string | null) => void }) {
+  function DateTimePicker({
+    value,
+    onChange
+  }: {
+    value?: string | null;
+    onChange: (val: string | null) => void;
+  }) {
     const date = parseDatePart(value);
     const time = parseTimePart(value) || '09:00';
     return (
@@ -160,7 +194,9 @@ export default function AjouterPointagePage() {
   }
 
   // Local TimePicker component
-  function pad2(n: number) { return n.toString().padStart(2, '0'); }
+  function pad2(n: number) {
+    return n.toString().padStart(2, '0');
+  }
   function parseTime(value?: string | null): { h: number; m: number } {
     if (!value) return { h: 9, m: 0 };
     const [hh, mm] = String(value).split(':');
@@ -172,28 +208,44 @@ export default function AjouterPointagePage() {
   const HOURS = Array.from({ length: 24 }, (_, i) => i);
   const MINUTES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
 
-  function TimePicker({ value, onChange }: { value?: string | null; onChange: (val: string) => void }) {
+  function TimePicker({
+    value,
+    onChange
+  }: {
+    value?: string | null;
+    onChange: (val: string) => void;
+  }) {
     const { h, m } = parseTime(value);
     return (
       <div className='flex items-center gap-2'>
-        <Select value={pad2(h)} onValueChange={(v: string) => onChange(`${v}:${pad2(m)}`)}>
+        <Select
+          value={pad2(h)}
+          onValueChange={(v: string) => onChange(`${v}:${pad2(m)}`)}
+        >
           <SelectTrigger className='w-24'>
             <SelectValue placeholder='HH' />
           </SelectTrigger>
           <SelectContent className='max-h-64'>
             {HOURS.map((hh) => (
-              <SelectItem key={hh} value={pad2(hh)}>{pad2(hh)}</SelectItem>
+              <SelectItem key={hh} value={pad2(hh)}>
+                {pad2(hh)}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
         <span className='text-muted-foreground'>:</span>
-        <Select value={pad2(m)} onValueChange={(v: string) => onChange(`${pad2(h)}:${v}`)}>
+        <Select
+          value={pad2(m)}
+          onValueChange={(v: string) => onChange(`${pad2(h)}:${v}`)}
+        >
           <SelectTrigger className='w-24'>
             <SelectValue placeholder='MM' />
           </SelectTrigger>
           <SelectContent className='max-h-64'>
             {MINUTES.map((mm) => (
-              <SelectItem key={mm} value={pad2(mm)}>{pad2(mm)}</SelectItem>
+              <SelectItem key={mm} value={pad2(mm)}>
+                {pad2(mm)}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -214,7 +266,7 @@ export default function AjouterPointagePage() {
       setShowImportModal(false);
       router.push('/admin/pointages');
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || 'Erreur lors de l\'import');
+      toast.error(e?.response?.data?.message || "Erreur lors de l'import");
       throw e;
     }
   };
@@ -225,21 +277,25 @@ export default function AjouterPointagePage() {
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-3'>
             <div className='bg-primary/10 flex h-10 w-10 items-center justify-center rounded-xl'>
-              <UserPlus className='h-5 w-5 text-primary' />
+              <UserPlus className='text-primary h-5 w-5' />
             </div>
             <div>
-              <h1 className='text-2xl font-bold tracking-tight'>Ajouter un pointage</h1>
+              <h1 className='text-2xl font-bold tracking-tight'>
+                Ajouter un pointage
+              </h1>
               <p className='text-muted-foreground text-sm'>Création manuelle</p>
             </div>
           </div>
           <div className='flex flex-wrap items-center gap-2'>
-            <Button variant='secondary' onClick={()=> router.push('/admin/pointages')}>
+            <Button
+              variant='secondary'
+              onClick={() => router.push('/admin/pointages')}
+            >
               <ArrowLeft /> Retour aux pointages
             </Button>
             <Button variant='outline' onClick={() => setShowImportModal(true)}>
               <Upload className='mr-2 h-4 w-4' /> Importer / Exporter
             </Button>
-
           </div>
         </div>
 
@@ -250,97 +306,158 @@ export default function AjouterPointagePage() {
           <CardContent className=''>
             <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
               <div>
-                <Label className="mb-1">Employé <span className='text-destructive'>*</span></Label>
+                <Label className='mb-1'>
+                  Employé <span className='text-destructive'>*</span>
+                </Label>
                 <Select
-                  value={single.employeeId != null ? String(single.employeeId) : undefined}
-                  onValueChange={(v)=> setSingle((s)=> ({...s, employeeId: isNaN(Number(v)) ? v : Number(v)}))}
+                  value={
+                    single.employeeId != null
+                      ? String(single.employeeId)
+                      : undefined
+                  }
+                  onValueChange={(v) =>
+                    setSingle((s) => ({
+                      ...s,
+                      employeeId: isNaN(Number(v)) ? v : Number(v)
+                    }))
+                  }
                 >
                   <SelectTrigger className='w-full'>
                     <SelectValue placeholder='Choisir un employé' />
                   </SelectTrigger>
                   <SelectContent>
-                    {employees.map((opt)=> (
-                      <SelectItem key={String(opt.value)} value={String(opt.value)}>{opt.label}</SelectItem>
+                    {employees.map((opt) => (
+                      <SelectItem
+                        key={String(opt.value)}
+                        value={String(opt.value)}
+                      >
+                        {opt.label}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label className="mb-1">Entrée (date et heure)</Label>
-                <DateTimePicker value={single.check_in} onChange={(val)=> setSingle((s)=> ({...s, check_in: val}))} />
+                <Label className='mb-1'>Entrée (date et heure)</Label>
+                <DateTimePicker
+                  value={single.check_in}
+                  onChange={(val) =>
+                    setSingle((s) => ({ ...s, check_in: val }))
+                  }
+                />
               </div>
               <div>
-                <Label className="mb-1">Sortie (date et heure)</Label>
-                <DateTimePicker value={single.check_out} onChange={(val)=> setSingle((s)=> ({...s, check_out: val}))} />
+                <Label className='mb-1'>Sortie (date et heure)</Label>
+                <DateTimePicker
+                  value={single.check_out}
+                  onChange={(val) =>
+                    setSingle((s) => ({ ...s, check_out: val }))
+                  }
+                />
               </div>
-                <div>
-                  <Label className='mb-1'>Statut</Label>
-                  <Select
-                    value={single.status || 'bruillon'}
-                    onValueChange={(v)=> setSingle((s)=> ({...s, status: v as 'bruillon' | 'valide'}))}
-                  >
-                    <SelectTrigger className='w-full'>
-                      <SelectValue placeholder='Sélectionner un statut' />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value='bruillon'>Brouillon</SelectItem>
-                      <SelectItem value='valide'>Validé</SelectItem>
-                    </SelectContent>
-                  </Select>
+              <div>
+                <Label className='mb-1'>Statut</Label>
+                <Select
+                  value={single.status || 'bruillon'}
+                  onValueChange={(v) =>
+                    setSingle((s) => ({
+                      ...s,
+                      status: v as 'bruillon' | 'valide'
+                    }))
+                  }
+                >
+                  <SelectTrigger className='w-full'>
+                    <SelectValue placeholder='Sélectionner un statut' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='bruillon'>Brouillon</SelectItem>
+                    <SelectItem value='valide'>Validé</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {estimatedMinutes !== undefined && (
+                <div className='text-muted-foreground text-sm md:col-span-2'>
+                  Durée estimée:{' '}
+                  <span className='font-semibold'>{estimatedMinutes}</span>{' '}
+                  minutes
                 </div>
-                 {estimatedMinutes !== undefined && (
-                   <div className='text-muted-foreground text-sm md:col-span-2'>
-                     Durée estimée: <span className='font-semibold'>{estimatedMinutes}</span> minutes
-                   </div>
-                 )}
-                 <div className='md:col-span-2 mt-2'>
-                   <Button onClick={submitSingle} disabled={!isSingleValid}>
-                     <UserPlus className='mr-2 h-4 w-4' /> Ajouter le pointage
-                   </Button>
-                 </div>
-               </div>
-             </CardContent>
-           </Card>
+              )}
+              <div className='mt-2 md:col-span-2'>
+                <Button onClick={submitSingle} disabled={!isSingleValid}>
+                  <UserPlus className='mr-2 h-4 w-4' /> Ajouter le pointage
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-         <Dialog open={showImportModal} onOpenChange={setShowImportModal}>
-           <DialogContent className='sm:max-w-xl'>
-             <DialogHeader>
-               <DialogTitle>Importer / Exporter</DialogTitle>
-             </DialogHeader>
-             <div className='space-y-4'>
-               <div>
-                 <Label className='mb-2 block text-sm font-medium'>Type de modèle</Label>
-                 <RadioGroup value={importType} onValueChange={(v: 'csv' | 'excel') => setImportType(v)} className='grid grid-cols-2 gap-2'>
-                   <div className='flex items-center space-x-2 rounded-md border p-2'>
-                     <RadioGroupItem value='csv' id='mdl-csv' />
-                     <Label htmlFor='mdl-csv'>CSV</Label>
-                   </div>
-                   <div className='flex items-center space-x-2 rounded-md border p-2'>
-                     <RadioGroupItem value='excel' id='mdl-excel' />
-                     <Label htmlFor='mdl-excel'>Excel</Label>
-                   </div>
-                 </RadioGroup>
-               </div>
-               <div>
-                 <Label className='mb-2 block text-sm font-medium'>Statut appliqué aux pointages importés</Label>
-                 <RadioGroup value={importStatus} onValueChange={(v: 'bruillon' | 'valide') => setImportStatus(v)} className='grid grid-cols-2 gap-2'>
-                   <div className='flex items-center space-x-2 rounded-md border p-2'>
-                     <RadioGroupItem value='bruillon' id='import-status-bruillon' />
-                     <Label htmlFor='import-status-bruillon'>Brouillon</Label>
-                   </div>
-                   <div className='flex items-center space-x-2 rounded-md border p-2'>
-                     <RadioGroupItem value='valide' id='import-status-valide' />
-                     <Label htmlFor='import-status-valide'>Validé</Label>
-                   </div>
-                 </RadioGroup>
-                 <p className='mt-2 text-muted-foreground text-xs'>Tous les enregistrements importés seront créés avec le statut sélectionné: <span className='font-semibold'>{importStatus === 'valide' ? 'Validé' : 'Brouillon'}</span>.</p>
-               </div>
-               <div className='flex flex-wrap items-center gap-2'>
-                 <Button variant='outline' onClick={downloadModel}>Télécharger le modèle</Button>
-               </div>
-               <div className='space-y-2'>
-                 <Label className='text-sm font-medium'>Fichier à importer (CSV ou Excel)</Label>
-                 <FileUploader
+        <Dialog open={showImportModal} onOpenChange={setShowImportModal}>
+          <DialogContent className='sm:max-w-xl'>
+            <DialogHeader>
+              <DialogTitle>Importer / Exporter</DialogTitle>
+            </DialogHeader>
+            <div className='space-y-4'>
+              <div>
+                <Label className='mb-2 block text-sm font-medium'>
+                  Type de modèle
+                </Label>
+                <RadioGroup
+                  value={importType}
+                  onValueChange={(v: 'csv' | 'excel') => setImportType(v)}
+                  className='grid grid-cols-2 gap-2'
+                >
+                  <div className='flex items-center space-x-2 rounded-md border p-2'>
+                    <RadioGroupItem value='csv' id='mdl-csv' />
+                    <Label htmlFor='mdl-csv'>CSV</Label>
+                  </div>
+                  <div className='flex items-center space-x-2 rounded-md border p-2'>
+                    <RadioGroupItem value='excel' id='mdl-excel' />
+                    <Label htmlFor='mdl-excel'>Excel</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+              <div>
+                <Label className='mb-2 block text-sm font-medium'>
+                  Statut appliqué aux pointages importés
+                </Label>
+                <RadioGroup
+                  value={importStatus}
+                  onValueChange={(v: 'bruillon' | 'valide') =>
+                    setImportStatus(v)
+                  }
+                  className='grid grid-cols-2 gap-2'
+                >
+                  <div className='flex items-center space-x-2 rounded-md border p-2'>
+                    <RadioGroupItem
+                      value='bruillon'
+                      id='import-status-bruillon'
+                    />
+                    <Label htmlFor='import-status-bruillon'>Brouillon</Label>
+                  </div>
+                  <div className='flex items-center space-x-2 rounded-md border p-2'>
+                    <RadioGroupItem value='valide' id='import-status-valide' />
+                    <Label htmlFor='import-status-valide'>Validé</Label>
+                  </div>
+                </RadioGroup>
+                <p className='text-muted-foreground mt-2 text-xs'>
+                  Tous les enregistrements importés seront créés avec le statut
+                  sélectionné:{' '}
+                  <span className='font-semibold'>
+                    {importStatus === 'valide' ? 'Validé' : 'Brouillon'}
+                  </span>
+                  .
+                </p>
+              </div>
+              <div className='flex flex-wrap items-center gap-2'>
+                <Button variant='outline' onClick={downloadModel}>
+                  Télécharger le modèle
+                </Button>
+              </div>
+              <div className='space-y-2'>
+                <Label className='text-sm font-medium'>
+                  Fichier à importer (CSV ou Excel)
+                </Label>
+                <FileUploader
                   accept={acceptMap}
                   maxFiles={1}
                   multiple={false}
@@ -349,26 +466,57 @@ export default function AjouterPointagePage() {
                   onValueChange={setImportFiles}
                   showPreview={false}
                   variant='default'
-                 />
-               </div>
-               <div className='rounded-lg border bg-muted/30 p-3'>
-                 <div className='mb-2 text-sm font-semibold'>Format des colonnes</div>
-                 <ul className='list-inside list-disc text-sm text-muted-foreground'>
-                   <li><span className='font-medium'>employee_matricule</span> — chaîne (ex: EMP-0001)</li>
-                   <li><span className='font-medium'>check_in</span> — date et heure (AAAA-MM-JJ HH:mm)</li>
-                   <li><span className='font-medium'>check_out</span> — date et heure (AAAA-MM-JJ HH:mm)</li>
-                   <li><span className='font-medium'>worked_minutes</span> — entier (minutes travaillées)</li>
-                   <li><span className='font-medium'>source</span> — valeurs: <span className='font-mono'>manuel</span> ou <span className='font-mono'>automatique</span></li>
-                 </ul>
-               </div>
-               <p className='text-muted-foreground text-xs'>Les endpoints d&apos;import sont mock côté backend. Pour un upload réel, il faudra une API de réception de fichier.</p>
-             </div>
+                />
+              </div>
+              <div className='bg-muted/30 rounded-lg border p-3'>
+                <div className='mb-2 text-sm font-semibold'>
+                  Format des colonnes
+                </div>
+                <ul className='text-muted-foreground list-inside list-disc text-sm'>
+                  <li>
+                    <span className='font-medium'>employee_matricule</span> —
+                    chaîne (ex: EMP-0001)
+                  </li>
+                  <li>
+                    <span className='font-medium'>check_in</span> — date et
+                    heure (AAAA-MM-JJ HH:mm)
+                  </li>
+                  <li>
+                    <span className='font-medium'>check_out</span> — date et
+                    heure (AAAA-MM-JJ HH:mm)
+                  </li>
+                  <li>
+                    <span className='font-medium'>worked_minutes</span> — entier
+                    (minutes travaillées)
+                  </li>
+                  <li>
+                    <span className='font-medium'>source</span> — valeurs:{' '}
+                    <span className='font-mono'>manuel</span> ou{' '}
+                    <span className='font-mono'>automatique</span>
+                  </li>
+                </ul>
+              </div>
+              <p className='text-muted-foreground text-xs'>
+                Les endpoints d&apos;import sont mock côté backend. Pour un
+                upload réel, il faudra une API de réception de fichier.
+              </p>
+            </div>
             <DialogFooter>
-              <Button onClick={() => onImportUpload(importFiles)} disabled={importFiles.length === 0}>Importer</Button>
-              <Button variant='outline' onClick={() => setShowImportModal(false)}>Fermer</Button>
+              <Button
+                onClick={() => onImportUpload(importFiles)}
+                disabled={importFiles.length === 0}
+              >
+                Importer
+              </Button>
+              <Button
+                variant='outline'
+                onClick={() => setShowImportModal(false)}
+              >
+                Fermer
+              </Button>
             </DialogFooter>
-           </DialogContent>
-         </Dialog>
+          </DialogContent>
+        </Dialog>
       </div>
     </PageContainer>
   );

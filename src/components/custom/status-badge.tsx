@@ -28,9 +28,17 @@ const toneClasses: Record<StatusTone, string> = {
   orange: 'border-orange-500 text-orange-600'
 };
 
-export function StatusBadge({ label, tone = 'neutral', className, icon }: StatusBadgeProps) {
+export function StatusBadge({
+  label,
+  tone = 'neutral',
+  className,
+  icon
+}: StatusBadgeProps) {
   return (
-    <Badge variant='outline' className={cn('gap-1', toneClasses[tone], className)}>
+    <Badge
+      variant='outline'
+      className={cn('gap-1', toneClasses[tone], className)}
+    >
       {icon ? <span className='[&>svg]:size-3'>{icon}</span> : null}
       {label}
     </Badge>
@@ -38,4 +46,3 @@ export function StatusBadge({ label, tone = 'neutral', className, icon }: Status
 }
 
 export default StatusBadge;
-

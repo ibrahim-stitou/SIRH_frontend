@@ -92,7 +92,7 @@ export const Icons = {
   bell: IconBell,
   billing: IconCreditCard,
   file: IconFile,
-  pointage:IconClockPause,
+  pointage: IconClockPause,
   book: IconBook,
   briefcase: IconBriefcase,
   folder: IconFolders,

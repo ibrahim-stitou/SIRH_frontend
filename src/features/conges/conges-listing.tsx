@@ -65,8 +65,7 @@ export default function CongeListing() {
       years.push({ label: i.toString(), value: i });
     }
     return years;
-  }, []
-  );
+  }, []);
   useEffect(() => {
     let mounted = true;
 
@@ -177,7 +176,7 @@ export default function CongeListing() {
         options: yearsoptions
       }
     ],
-    [absenceTypes, employees,yearsoptions]
+    [absenceTypes, employees, yearsoptions]
   );
   return (
     <>

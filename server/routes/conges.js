@@ -100,10 +100,9 @@ module.exports = function registerCongeRoutes(server, db) {
       .value();
     const enrriched = congeCompteurs.map((compteur) => ({
       ...compteur,
-      type_absence: db
-        .get('absenceTypes')
-        .find({ id: compteur.type_absence_id })
-        .value() || null
+      type_absence:
+        db.get('absenceTypes').find({ id: compteur.type_absence_id }).value() ||
+        null
     }));
     return res.json({
       status: 'success',

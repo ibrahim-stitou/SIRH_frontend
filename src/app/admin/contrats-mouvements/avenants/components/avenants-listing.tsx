@@ -217,18 +217,24 @@ export function AvenantsListing() {
       label: 'Type',
       sortable: true,
       render: (v) => {
-        const typeLabels: Record<string, { label: string; tone: 'success' | 'info' | 'purple' | 'orange' | 'neutral' }> = {
+        const typeLabels: Record<
+          string,
+          {
+            label: string;
+            tone: 'success' | 'info' | 'purple' | 'orange' | 'neutral';
+          }
+        > = {
           salary: { label: 'Salaire', tone: 'success' },
           schedule: { label: 'Horaire', tone: 'info' },
           job: { label: 'Poste', tone: 'purple' },
           complete: { label: 'Complet', tone: 'orange' }
         };
 
-        const type = typeLabels[v || ''] || { label: v || 'N/A', tone: 'neutral' } as const;
+        const type =
+          typeLabels[v || ''] ||
+          ({ label: v || 'N/A', tone: 'neutral' } as const);
 
-        return (
-          <StatusBadge label={type.label} tone={type.tone} />
-        );
+        return <StatusBadge label={type.label} tone={type.tone} />;
       }
     },
     {
@@ -252,12 +258,20 @@ export function AvenantsListing() {
       render: (v) => {
         if (v === 'Valide') {
           return (
-            <StatusBadge label='Validé' tone='success' icon={<CheckCircle2 className='h-3 w-3' />} />
+            <StatusBadge
+              label='Validé'
+              tone='success'
+              icon={<CheckCircle2 className='h-3 w-3' />}
+            />
           );
         }
         if (v === 'Brouillon') {
           return (
-            <StatusBadge label='Brouillon' tone='neutral' icon={<Clock className='h-3 w-3' />} />
+            <StatusBadge
+              label='Brouillon'
+              tone='neutral'
+              icon={<Clock className='h-3 w-3' />}
+            />
           );
         }
         return <StatusBadge label={v} tone='neutral' />;
@@ -374,7 +388,9 @@ export function AvenantsListing() {
               <TooltipContent
                 className='tooltip-content rounded-md bg-green-100 px-2 py-1 text-green-600 shadow-md'
                 sideOffset={5}
-              >Valider l&apos;avenant</TooltipContent>
+              >
+                Valider l&apos;avenant
+              </TooltipContent>
             </Tooltip>
           )}
 
@@ -413,7 +429,9 @@ export function AvenantsListing() {
               <TooltipContent
                 className='tooltip-content rounded-md bg-red-100 px-2 py-1 text-red-600 shadow-md'
                 sideOffset={5}
-              >Supprimer</TooltipContent>
+              >
+                Supprimer
+              </TooltipContent>
             </Tooltip>
           )}
         </div>

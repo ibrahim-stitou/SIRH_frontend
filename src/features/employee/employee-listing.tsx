@@ -123,7 +123,10 @@ export function EmployeeListing() {
       label: t('employees.columns.status'),
       sortable: true,
       render: (value) => {
-        const map: Record<string, { label: string; tone: 'success' | 'warning' | 'danger' | 'neutral' }> = {
+        const map: Record<
+          string,
+          { label: string; tone: 'success' | 'warning' | 'danger' | 'neutral' }
+        > = {
           actif: { label: t('employees.status.actif'), tone: 'success' },
           suspendu: { label: t('employees.status.suspendu'), tone: 'warning' },
           parti: { label: t('employees.status.parti'), tone: 'danger' }

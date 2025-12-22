@@ -11,7 +11,15 @@ import {
 import { apiRoutes } from '@/config/apiRoutes';
 import apiClient from '@/lib/api';
 import { format } from 'date-fns';
-import { Upload, Trash2, Plus, Pencil, Eye, CheckCircle2, XCircle } from 'lucide-react';
+import {
+  Upload,
+  Trash2,
+  Plus,
+  Pencil,
+  Eye,
+  CheckCircle2,
+  XCircle
+} from 'lucide-react';
 import CustomAlertDialog from '@/components/custom/customAlert';
 import { toast } from 'sonner';
 import {
@@ -23,8 +31,18 @@ import {
 } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Dialog as AlertDialog, DialogContent as AlertDialogContent, DialogHeader as AlertDialogHeader, DialogTitle as AlertDialogTitle, DialogFooter as AlertDialogFooter } from '@/components/ui/dialog';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip';
+import {
+  Dialog as AlertDialog,
+  DialogContent as AlertDialogContent,
+  DialogHeader as AlertDialogHeader,
+  DialogTitle as AlertDialogTitle,
+  DialogFooter as AlertDialogFooter
+} from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { StatusBadge } from '@/components/custom/status-badge';
 import { FileUploader } from '@/components/file-uploader';
@@ -71,7 +89,9 @@ export default function PointagesListing() {
   // Import modal state
   const [showImportModal, setShowImportModal] = useState(false);
   const [importType, setImportType] = useState<'csv' | 'excel'>('csv');
-  const [importStatus, setImportStatus] = useState<'bruillon' | 'valide'>('bruillon');
+  const [importStatus, setImportStatus] = useState<'bruillon' | 'valide'>(
+    'bruillon'
+  );
   const [refuseOpen, setRefuseOpen] = useState(false);
   const [refuseLoading, setRefuseLoading] = useState(false);
   const [refuseReason, setRefuseReason] = useState('');
@@ -97,15 +117,18 @@ export default function PointagesListing() {
     };
   }, []);
 
-  const onValidate = useCallback(async (row: PointageRow) => {
-    try {
-      await apiClient.patch(apiRoutes.admin.pointages.validate(row.id));
-      toast.success('Pointage validé');
-      _tableInstance?.refresh?.();
-    } catch (e: any) {
-      toast.error(e?.response?.data?.message || 'Erreur');
-    }
-  }, [_tableInstance]);
+  const onValidate = useCallback(
+    async (row: PointageRow) => {
+      try {
+        await apiClient.patch(apiRoutes.admin.pointages.validate(row.id));
+        toast.success('Pointage validé');
+        _tableInstance?.refresh?.();
+      } catch (e: any) {
+        toast.error(e?.response?.data?.message || 'Erreur');
+      }
+    },
+    [_tableInstance]
+  );
   const onOpenRefuse = (row: PointageRow) => {
     setRowToRefuse(row);
     setRefuseReason('');
@@ -119,7 +142,9 @@ export default function PointagesListing() {
     }
     setRefuseLoading(true);
     try {
-      await apiClient.patch(apiRoutes.admin.pointages.refuse(rowToRefuse.id), { motif_rejet: refuseReason });
+      await apiClient.patch(apiRoutes.admin.pointages.refuse(rowToRefuse.id), {
+        motif_rejet: refuseReason
+      });
       toast.success('Pointage refusé');
       setRefuseOpen(false);
       setRowToRefuse(null);
@@ -148,9 +173,10 @@ export default function PointagesListing() {
   // Import actions: open modal + download model
   const onOpenImport = () => setShowImportModal(true);
   const onDownloadModel = () => {
-    const url = importType === 'csv'
-      ? apiRoutes.admin.pointages.export.modelCsv
-      : apiRoutes.admin.pointages.export.modelXlsx;
+    const url =
+      importType === 'csv'
+        ? apiRoutes.admin.pointages.export.modelCsv
+        : apiRoutes.admin.pointages.export.modelXlsx;
     if (typeof window !== 'undefined') window.open(url, '_blank');
   };
 
@@ -168,17 +194,20 @@ export default function PointagesListing() {
       setImportFiles([]);
       _tableInstance?.refresh?.();
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || 'Erreur lors de l\'import');
+      toast.error(e?.response?.data?.message || "Erreur lors de l'import");
       throw e; // let FileUploader show error toast too
     }
   };
   const acceptMap = useMemo<DropzoneProps['accept']>(() => {
-    return (importType === 'csv'
-      ? { 'text/csv': ['.csv'] }
-      : {
-          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
-          'application/vnd.ms-excel': ['.xls']
-        }) as DropzoneProps['accept'];
+    return (
+      importType === 'csv'
+        ? { 'text/csv': ['.csv'] }
+        : {
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+              ['.xlsx'],
+            'application/vnd.ms-excel': ['.xls']
+          }
+    ) as DropzoneProps['accept'];
   }, [importType]);
 
   const columns: CustomTableColumn<PointageRow>[] = useMemo(
@@ -191,7 +220,9 @@ export default function PointagesListing() {
         render: (_v, row) =>
           row.employee ? (
             <div className='flex flex-col'>
-              <span className='font-medium'>{`${row.employee.firstName ?? row.employee.first_name ?? ''} ${row.employee.lastName ?? row.employee.last_name ?? ''}`.trim()}</span>
+              <span className='font-medium'>
+                {`${row.employee.firstName ?? row.employee.first_name ?? ''} ${row.employee.lastName ?? row.employee.last_name ?? ''}`.trim()}
+              </span>
               {row.employee.matricule && (
                 <span className='text-muted-foreground text-xs'>
                   {row.employee.matricule}
@@ -206,13 +237,13 @@ export default function PointagesListing() {
         data: 'check_in',
         label: 'Entrée',
         sortable: true,
-        render: (v) => v ? format(new Date(v), 'yyyy-MM-dd HH:mm') : '—'
+        render: (v) => (v ? format(new Date(v), 'yyyy-MM-dd HH:mm') : '—')
       },
       {
         data: 'check_out',
         label: 'Sortie',
         sortable: true,
-        render: (v) => v ? format(new Date(v), 'yyyy-MM-dd HH:mm') : '—'
+        render: (v) => (v ? format(new Date(v), 'yyyy-MM-dd HH:mm') : '—')
       },
       {
         data: 'worked_minutes',
@@ -236,15 +267,16 @@ export default function PointagesListing() {
         label: 'Statut',
         sortable: true,
         render: (v: PointageRow['status']) => {
-          const map: Record<string, { text: string; tone: 'neutral' | 'success' | 'danger' } > = {
+          const map: Record<
+            string,
+            { text: string; tone: 'neutral' | 'success' | 'danger' }
+          > = {
             bruillon: { text: 'Brouillon', tone: 'neutral' },
             valide: { text: 'Validé', tone: 'success' },
             rejete: { text: 'Rejeté', tone: 'danger' }
           };
           const m = (v && map[v]) || map['bruillon'];
-          return (
-            <StatusBadge label={m.text} tone={m.tone} />
-          );
+          return <StatusBadge label={m.text} tone={m.tone} />;
         }
       },
       {
@@ -271,7 +303,9 @@ export default function PointagesListing() {
                 <Button
                   variant='outline'
                   className='h-8 w-8 p-1.5'
-                  onClick={() => router.push(`/admin/pointages/${row.id}/modifier`)}
+                  onClick={() =>
+                    router.push(`/admin/pointages/${row.id}/modifier`)
+                  }
                   title='Modifier'
                 >
                   <Pencil className='h-4 w-4' />
@@ -286,7 +320,9 @@ export default function PointagesListing() {
                   className='h-8 w-8 p-1.5'
                   onClick={() => onValidate(row)}
                   title='Valider'
-                  disabled={!(row.status === 'bruillon' || row.status === 'valide')}
+                  disabled={
+                    !(row.status === 'bruillon' || row.status === 'valide')
+                  }
                 >
                   <CheckCircle2 className='h-4 w-4 text-emerald-600' />
                 </Button>
@@ -300,7 +336,9 @@ export default function PointagesListing() {
                   className='h-8 w-8 p-1.5'
                   onClick={() => onOpenRefuse(row)}
                   title='Refuser'
-                  disabled={!(row.status === 'bruillon' || row.status === 'valide')}
+                  disabled={
+                    !(row.status === 'bruillon' || row.status === 'valide')
+                  }
                 >
                   <XCircle className='h-4 w-4' />
                 </Button>
@@ -308,7 +346,9 @@ export default function PointagesListing() {
               <TooltipContent
                 className='tooltip-content rounded-md bg-red-100 px-2 py-1 text-red-600 shadow-md'
                 sideOffset={5}
-              >Refuser</TooltipContent>
+              >
+                Refuser
+              </TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -317,7 +357,9 @@ export default function PointagesListing() {
                   className='h-8 w-8 bg-red-100 p-1.5 text-red-600 hover:bg-red-200'
                   onClick={() => onAskDelete(row)}
                   title='Supprimer'
-                  disabled={!(row.status === 'bruillon' || row.status === 'rejete')}
+                  disabled={
+                    !(row.status === 'bruillon' || row.status === 'rejete')
+                  }
                 >
                   <Trash2 className='h-4 w-4' />
                 </Button>
@@ -325,7 +367,9 @@ export default function PointagesListing() {
               <TooltipContent
                 className='tooltip-content rounded-md bg-red-100 px-2 py-1 text-red-600 shadow-md'
                 sideOffset={5}
-              >Supprimer</TooltipContent>
+              >
+                Supprimer
+              </TooltipContent>
             </Tooltip>
           </div>
         )
@@ -336,18 +380,33 @@ export default function PointagesListing() {
 
   const filters: CustomTableFilterConfig[] = useMemo(
     () => [
-      { field: 'employeeId', label: 'Employé', type: 'datatable-select', options: employees },
-      { field: 'status', label: 'Statut', type: 'datatable-select', options: [
+      {
+        field: 'employeeId',
+        label: 'Employé',
+        type: 'datatable-select',
+        options: employees
+      },
+      {
+        field: 'status',
+        label: 'Statut',
+        type: 'datatable-select',
+        options: [
           { label: 'Tous', value: '' },
           { label: 'Brouillon', value: 'bruillon' },
           { label: 'Validé', value: 'valide' },
           { label: 'Rejeté', value: 'rejete' }
-        ] },
-      { field: 'source', label: 'Source', type: 'datatable-select', options: [
+        ]
+      },
+      {
+        field: 'source',
+        label: 'Source',
+        type: 'datatable-select',
+        options: [
           { label: 'Toutes', value: '' },
           { label: 'Manuel', value: 'manuel' },
           { label: 'Automatique', value: 'automatique' }
-        ] },
+        ]
+      },
       { field: 'from', label: 'Du', type: 'date' },
       { field: 'to', label: 'Au', type: 'date' }
     ],
@@ -359,13 +418,19 @@ export default function PointagesListing() {
       <div className='mb-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
         <div>
           <h1 className='text-2xl font-semibold tracking-tight'>Pointages</h1>
-          <p className='text-muted-foreground text-sm'>Gérez vos pointages, importez un modèle et ajoutez des enregistrements manuellement</p>
+          <p className='text-muted-foreground text-sm'>
+            Gérez vos pointages, importez un modèle et ajoutez des
+            enregistrements manuellement
+          </p>
         </div>
         <div className='flex flex-wrap items-center gap-2'>
           <Button onClick={onOpenImport} title='Importer (CSV ou Excel)'>
             <Upload className='mr-2 h-4 w-4' /> Importer
           </Button>
-          <Button onClick={() => router.push('/admin/pointages/ajouter')} title='Ajouter un pointage'>
+          <Button
+            onClick={() => router.push('/admin/pointages/ajouter')}
+            title='Ajouter un pointage'
+          >
             <Plus className='mr-2 h-4 w-4' /> Ajouter un pointage
           </Button>
         </div>
@@ -393,8 +458,14 @@ export default function PointagesListing() {
             </DialogHeader>
             <div className='space-y-4'>
               <div>
-                <Label className='mb-2 block text-sm font-medium'>Type de fichier</Label>
-                <RadioGroup value={importType} onValueChange={(v) => setImportType(v as 'csv' | 'excel')} className='grid grid-cols-2 gap-2'>
+                <Label className='mb-2 block text-sm font-medium'>
+                  Type de fichier
+                </Label>
+                <RadioGroup
+                  value={importType}
+                  onValueChange={(v) => setImportType(v as 'csv' | 'excel')}
+                  className='grid grid-cols-2 gap-2'
+                >
                   <div className='flex items-center space-x-2 rounded-md border p-2'>
                     <RadioGroupItem value='csv' id='type-csv' />
                     <Label htmlFor='type-csv'>CSV</Label>
@@ -407,8 +478,16 @@ export default function PointagesListing() {
               </div>
 
               <div>
-                <Label className='mb-2 block text-sm font-medium'>Statut appliqué aux pointages importés</Label>
-                <RadioGroup value={importStatus} onValueChange={(v) => setImportStatus(v as 'bruillon' | 'valide')} className='grid grid-cols-2 gap-2'>
+                <Label className='mb-2 block text-sm font-medium'>
+                  Statut appliqué aux pointages importés
+                </Label>
+                <RadioGroup
+                  value={importStatus}
+                  onValueChange={(v) =>
+                    setImportStatus(v as 'bruillon' | 'valide')
+                  }
+                  className='grid grid-cols-2 gap-2'
+                >
                   <div className='flex items-center space-x-2 rounded-md border p-2'>
                     <RadioGroupItem value='bruillon' id='status-bruillon' />
                     <Label htmlFor='status-bruillon'>Brouillon</Label>
@@ -418,17 +497,30 @@ export default function PointagesListing() {
                     <Label htmlFor='status-valide'>Validé</Label>
                   </div>
                 </RadioGroup>
-                <p className='mt-2 text-muted-foreground text-xs'>Tous les enregistrements importés seront créés avec le statut sélectionné: <span className='font-semibold'>{importStatus === 'valide' ? 'Validé' : 'Brouillon'}</span>.</p>
+                <p className='text-muted-foreground mt-2 text-xs'>
+                  Tous les enregistrements importés seront créés avec le statut
+                  sélectionné:{' '}
+                  <span className='font-semibold'>
+                    {importStatus === 'valide' ? 'Validé' : 'Brouillon'}
+                  </span>
+                  .
+                </p>
               </div>
 
               <div className='flex flex-wrap items-center gap-2'>
-                <Button variant='outline' onClick={onDownloadModel} title='Télécharger le modèle'>
+                <Button
+                  variant='outline'
+                  onClick={onDownloadModel}
+                  title='Télécharger le modèle'
+                >
                   Télécharger le modèle {importType.toUpperCase()}
                 </Button>
               </div>
 
               <div className='space-y-2'>
-                <Label className='text-sm font-medium'>Fichier à importer (CSV ou Excel)</Label>
+                <Label className='text-sm font-medium'>
+                  Fichier à importer (CSV ou Excel)
+                </Label>
                 <FileUploader
                   accept={acceptMap}
                   maxFiles={1}
@@ -441,25 +533,52 @@ export default function PointagesListing() {
                 />
               </div>
 
-              <div className='rounded-lg border bg-muted/30 p-3'>
-                <div className='mb-2 text-sm font-semibold'>Format des colonnes</div>
-                <ul className='list-inside list-disc text-sm text-muted-foreground'>
-                  <li><span className='font-medium'>employee_matricule</span> — chaîne (ex: EMP-0001)</li>
-                  <li><span className='font-medium'>check_in</span> — date et heure (AAAA-MM-JJ HH:mm)</li>
-                  <li><span className='font-medium'>check_out</span> — date et heure (AAAA-MM-JJ HH:mm)</li>
+              <div className='bg-muted/30 rounded-lg border p-3'>
+                <div className='mb-2 text-sm font-semibold'>
+                  Format des colonnes
+                </div>
+                <ul className='text-muted-foreground list-inside list-disc text-sm'>
                   <li>
-                    <span className='font-medium'>source</span> — valeurs: <span className='font-mono'>manuel</span> ou <span className='font-mono'>automatique</span>
+                    <span className='font-medium'>employee_matricule</span> —
+                    chaîne (ex: EMP-0001)
+                  </li>
+                  <li>
+                    <span className='font-medium'>check_in</span> — date et
+                    heure (AAAA-MM-JJ HH:mm)
+                  </li>
+                  <li>
+                    <span className='font-medium'>check_out</span> — date et
+                    heure (AAAA-MM-JJ HH:mm)
+                  </li>
+                  <li>
+                    <span className='font-medium'>source</span> — valeurs:{' '}
+                    <span className='font-mono'>manuel</span> ou{' '}
+                    <span className='font-mono'>automatique</span>
                   </li>
                 </ul>
               </div>
 
               <p className='text-muted-foreground text-xs'>
-                Remplissez le fichier avec ces colonnes et importez-le via le module backend (mock endpoints prêts côté Front). Pour un import réel, un upload de fichier sera nécessaire côté API. Le statut sélectionné ci-dessus sera appliqué aux enregistrements importés.
+                Remplissez le fichier avec ces colonnes et importez-le via le
+                module backend (mock endpoints prêts côté Front). Pour un import
+                réel, un upload de fichier sera nécessaire côté API. Le statut
+                sélectionné ci-dessus sera appliqué aux enregistrements
+                importés.
               </p>
             </div>
             <DialogFooter>
-              <Button onClick={() => onImportUpload(importFiles)} disabled={importFiles.length === 0}>Importer</Button>
-              <Button variant='outline' onClick={() => setShowImportModal(false)}>Fermer</Button>
+              <Button
+                onClick={() => onImportUpload(importFiles)}
+                disabled={importFiles.length === 0}
+              >
+                Importer
+              </Button>
+              <Button
+                variant='outline'
+                onClick={() => setShowImportModal(false)}
+              >
+                Fermer
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -480,8 +599,18 @@ export default function PointagesListing() {
               />
             </div>
             <AlertDialogFooter>
-              <Button variant='outline' onClick={() => setRefuseOpen(false)} disabled={refuseLoading}>Annuler</Button>
-              <Button variant='destructive' onClick={onRefuseConfirm} disabled={refuseLoading || !refuseReason.trim()}>
+              <Button
+                variant='outline'
+                onClick={() => setRefuseOpen(false)}
+                disabled={refuseLoading}
+              >
+                Annuler
+              </Button>
+              <Button
+                variant='destructive'
+                onClick={onRefuseConfirm}
+                disabled={refuseLoading || !refuseReason.trim()}
+              >
                 {refuseLoading ? 'Refus en cours...' : 'Refuser'}
               </Button>
             </AlertDialogFooter>

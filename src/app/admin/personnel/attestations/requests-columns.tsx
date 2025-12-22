@@ -33,7 +33,10 @@ export const getRequestsColumns = (
   };
 
   const getStatusBadge = (status: AttestationRequestStatus) => {
-    const tones: Record<AttestationRequestStatus, 'warning' | 'success' | 'danger' | 'info'> = {
+    const tones: Record<
+      AttestationRequestStatus,
+      'warning' | 'success' | 'danger' | 'info'
+    > = {
       en_attente: 'warning',
       approuve: 'success',
       rejete: 'danger',

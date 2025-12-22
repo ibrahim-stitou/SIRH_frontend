@@ -120,36 +120,48 @@ export default function AbsencesListing() {
     };
   }, []);
 
-  const onView = useCallback((row: AbsenceRow) => {
-    router.push(`/admin/absences/${row.id}`);
-  }, [router]);
-  const onValidate = useCallback(async (row: AbsenceRow) => {
-    try {
-      await apiClient.patch(apiRoutes.admin.absences.validate(row.id));
-      toast.success('Absence validée');
-      _tableInstance?.refresh?.();
-    } catch (e: any) {
-      toast.error(e?.response?.data?.message || 'Erreur');
-    }
-  }, [_tableInstance]);
-  const onClose = useCallback(async (row: AbsenceRow) => {
-    try {
-      await apiClient.patch(apiRoutes.admin.absences.close(row.id));
-      toast.success('Absence clôturée');
-      _tableInstance?.refresh?.();
-    } catch (e: any) {
-      toast.error(e?.response?.data?.message || 'Erreur');
-    }
-  }, [_tableInstance]);
-  const onCancel = useCallback(async (row: AbsenceRow) => {
-    try {
-      await apiClient.patch(apiRoutes.admin.absences.cancel(row.id));
-      toast.success('Absence annulée');
-      _tableInstance?.refresh?.();
-    } catch (e: any) {
-      toast.error(e?.response?.data?.message || 'Erreur');
-    }
-  }, [_tableInstance]);
+  const onView = useCallback(
+    (row: AbsenceRow) => {
+      router.push(`/admin/absences/${row.id}`);
+    },
+    [router]
+  );
+  const onValidate = useCallback(
+    async (row: AbsenceRow) => {
+      try {
+        await apiClient.patch(apiRoutes.admin.absences.validate(row.id));
+        toast.success('Absence validée');
+        _tableInstance?.refresh?.();
+      } catch (e: any) {
+        toast.error(e?.response?.data?.message || 'Erreur');
+      }
+    },
+    [_tableInstance]
+  );
+  const onClose = useCallback(
+    async (row: AbsenceRow) => {
+      try {
+        await apiClient.patch(apiRoutes.admin.absences.close(row.id));
+        toast.success('Absence clôturée');
+        _tableInstance?.refresh?.();
+      } catch (e: any) {
+        toast.error(e?.response?.data?.message || 'Erreur');
+      }
+    },
+    [_tableInstance]
+  );
+  const onCancel = useCallback(
+    async (row: AbsenceRow) => {
+      try {
+        await apiClient.patch(apiRoutes.admin.absences.cancel(row.id));
+        toast.success('Absence annulée');
+        _tableInstance?.refresh?.();
+      } catch (e: any) {
+        toast.error(e?.response?.data?.message || 'Erreur');
+      }
+    },
+    [_tableInstance]
+  );
   const onAskDelete = (row: AbsenceRow) => setConfirmDeleteId(row.id);
   const onConfirmDelete = async () => {
     if (!confirmDeleteId) return;
@@ -260,7 +272,10 @@ export default function AbsencesListing() {
         render: (v: AbsenceRow['statut'], row) => {
           const map: Record<
             AbsenceRow['statut'],
-            { text: string; tone: 'neutral' | 'success' | 'danger' | 'warning' | 'info' }
+            {
+              text: string;
+              tone: 'neutral' | 'success' | 'danger' | 'warning' | 'info';
+            }
           > = {
             brouillon: { text: 'Brouillon', tone: 'neutral' },
             validee: { text: 'Validée', tone: 'success' },

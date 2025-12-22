@@ -93,7 +93,7 @@ export const useNavItems = (): NavItem[] => {
     {
       title: t('sidebar.tempsEtActivites'),
       icon: 'clock',
-      url:'#',
+      url: '#',
       description: 'US-EMP-011',
       items: [
         {

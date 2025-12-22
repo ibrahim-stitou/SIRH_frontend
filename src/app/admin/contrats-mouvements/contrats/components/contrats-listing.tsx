@@ -211,9 +211,7 @@ export function ContratsListing() {
       sortable: true,
       render: (_value, row) => {
         const type = row.type || row.type_contrat || 'N/A';
-        return (
-          <StatusBadge label={type} tone='neutral' />
-        );
+        return <StatusBadge label={type} tone='neutral' />;
       }
     },
     {
@@ -314,8 +312,17 @@ export function ContratsListing() {
       sortable: true,
       render: (_value, row) => {
         const status = row.status || row.statut || 'N/A';
-        const map: Record<string, { label: string; tone: 'neutral' | 'success' | 'danger' | 'warning' | 'info' }> = {
-          Brouillon: { label: t('contracts.status.BROUILLON'), tone: 'neutral' },
+        const map: Record<
+          string,
+          {
+            label: string;
+            tone: 'neutral' | 'success' | 'danger' | 'warning' | 'info';
+          }
+        > = {
+          Brouillon: {
+            label: t('contracts.status.BROUILLON'),
+            tone: 'neutral'
+          },
           Actif: { label: t('contracts.status.ACTIF'), tone: 'success' },
           Periode_essai: { label: "Période d'essai", tone: 'warning' },
           En_attente_signature: { label: 'En attente signature', tone: 'info' },
