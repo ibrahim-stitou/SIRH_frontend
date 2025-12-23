@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   ArrowLeft,
@@ -15,7 +15,6 @@ import {
   RefreshCw,
   UserCheck,
   Filter,
-  Sparkles,
   Save,
   X
 } from 'lucide-react';
@@ -54,6 +53,8 @@ import type {
 } from '@/features/tableau-presence/tableau-presence-listing';
 import PageContainer from '@/components/layout/page-container';
 import { useRef } from 'react';
+import { useSidebar } from '@/components/ui/sidebar';
+import { Input } from '@/components/ui/input';
 
 interface EmployeeRow {
   id: number;
@@ -73,6 +74,8 @@ interface EditModalData {
   employeeId: number;
   employeeName: string;
   days: { [day: number]: string };
+  totalHours: number;
+  overtimeHours: number;
 }
 
 const STATUS_CODES = [
@@ -90,7 +93,8 @@ export default function TableauPresenceDetailPage() {
   const params = useParams();
   const router = useRouter();
   const tableauId = params?.id as string;
-
+  const { state } = useSidebar();
+  const isCollapsed = state === 'collapsed';
   const [loading, setLoading] = useState(true);
   const [tableau, setTableau] = useState<TableauPresence | null>(null);
   const [employeesData, setEmployeesData] = useState<EmployeeRow[]>([]);
@@ -141,10 +145,10 @@ export default function TableauPresenceDetailPage() {
     try {
       setLoading(true);
       const [tableauRes, employeesRes, daysRes] = await Promise.all([
-        apiClient.get(apiRoutes.admin.tableauPresence.show(tableauId)),
-        apiClient.get(apiRoutes.admin.tableauPresence.employees(tableauId)),
-        apiClient.get(apiRoutes.admin.tableauPresence.days(tableauId))
-      ]);
+         apiClient.get(apiRoutes.admin.tableauPresence.show(tableauId)),
+         apiClient.get(apiRoutes.admin.tableauPresence.employees(tableauId)),
+         apiClient.get(apiRoutes.admin.tableauPresence.days(tableauId))
+       ]);
 
       const tableauData = tableauRes.data?.data || tableauRes.data;
       const employeesRaw = employeesRes.data?.data || employeesRes.data || [];
@@ -159,22 +163,15 @@ export default function TableauPresenceDetailPage() {
           id: emp.id,
           employeeId: emp.employeeId,
           employee: emp.employee,
-          totalHours: 0,
-          overtimeHours: 0,
-          absenceDays: 0
+          totalHours: emp.totalHours ?? 0,
+          overtimeHours: emp.overtimeHours ?? 0,
+          absenceDays: emp.absenceDays ?? 0
         };
 
         for (let day = 1; day <= getDaysInMonth(new Date(tableauData.annee, tableauData.mois - 1)); day++) {
           const dateStr = `${tableauData.annee}-${String(tableauData.mois).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
           const dayData = empDays.find((d: any) => d.date === dateStr);
           row[`day_${day}`] = dayData?.statusCode || '';
-
-          if (dayData?.statusCode === 'P') row.totalHours += dayData.hoursWorked || 8;
-          if (dayData?.statusCode === 'HS') {
-            row.totalHours += dayData.hoursWorked || 8;
-            row.overtimeHours += (dayData.hoursWorked || 8) - 8;
-          }
-          if (['CP', 'CM', 'A'].includes(dayData?.statusCode)) row.absenceDays += 1;
         }
 
         return row;
@@ -203,13 +200,15 @@ export default function TableauPresenceDetailPage() {
 
     const days: { [day: number]: string } = {};
     for (let day = 1; day <= numDays; day++) {
-      days[day] = row[`day_${day}`] || '';
+      days[day] = (row[`day_${day}`] as string) || '';
     }
 
     setEditData({
       employeeId: row.employeeId,
       employeeName: `${row.employee?.first_name || ''} ${row.employee?.last_name || ''}`.trim(),
-      days
+      days,
+      totalHours: Number(row.totalHours || 0),
+      overtimeHours: Number(row.overtimeHours || 0)
     });
     setShowEditModal(true);
   }, [tableau?.locked, numDays]);
@@ -219,33 +218,34 @@ export default function TableauPresenceDetailPage() {
 
     setEditLoading(true);
     try {
+      // 1) Mettre à jour les statuts jour par jour (sans heures)
       for (let day = 1; day <= numDays; day++) {
-        const statusCode = editData.days[day];
+        const statusCode = editData.days[day] || '';
         const dateStr = `${tableau.annee}-${String(tableau.mois).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-
-        const existingDay = daysData.find(d =>
-          d.employeeId === editData.employeeId && d.date === dateStr
-        );
-
+        const existingDay = daysData.find((d) => d.employeeId === editData.employeeId && d.date === dateStr);
         if (existingDay) {
           await apiClient.patch(
             apiRoutes.admin.tableauPresence.updateDay(tableau.id, existingDay.id),
-            { statusCode, hoursWorked: statusCode === 'P' ? 8 : (statusCode === 'HS' ? 10 : 0) }
+            { statusCode }
           );
         } else if (statusCode) {
           await apiClient.post(
             apiRoutes.admin.tableauPresence.createDay(tableau.id),
-            {
-              employeeId: editData.employeeId,
-              date: dateStr,
-              statusCode,
-              hoursWorked: statusCode === 'P' ? 8 : (statusCode === 'HS' ? 10 : 0)
-            }
+            { employeeId: editData.employeeId, date: dateStr, statusCode }
           );
         }
       }
 
-      toast.success('Données mises à jour');
+      // 2) Mettre à jour les totaux du mois
+      await apiClient.patch(
+        apiRoutes.admin.tableauPresence.updateEmployee(tableau.id, editData.employeeId),
+        {
+          totalHours: Number(editData.totalHours) || 0,
+          overtimeHours: Number(editData.overtimeHours) || 0
+        }
+      );
+
+      toast.success('Totaux mis à jour');
       setShowEditModal(false);
       setEditData(null);
       await loadData();
@@ -428,9 +428,9 @@ export default function TableauPresenceDetailPage() {
   }
 
   return (
-    <div className="space-y-6 pb-8">
-      <PageContainer scrollable={true}>
-        <div className="space-y-4 pb-8 max-w-[68%]">
+
+      <PageContainer scrollable={true} className="w-full ">
+        <div className="space-y-4 pb-8 w-full" style={{ minWidth: '100%', maxWidth: isCollapsed ? '90vw' : '67vw' }}>
           {/* Header compact */}
           <div className="relative overflow-hidden rounded-lg border bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4 dark:from-blue-950 dark:via-slate-900 dark:to-purple-950">
             <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -766,75 +766,102 @@ export default function TableauPresenceDetailPage() {
           {/* Modal d'édition */}
           <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
             <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Modifier les présences - {editData?.employeeName}</DialogTitle>
-                <DialogDescription>
-                  Modifiez le statut pour chaque jour du mois
-                </DialogDescription>
-              </DialogHeader>
+               <DialogHeader>
+                 <DialogTitle>Modifier les totaux - {editData?.employeeName}</DialogTitle>
+                 <DialogDescription>
+                   Saisissez le total d&apos;heures et les heures supplémentaires pour le mois.
+                 </DialogDescription>
+               </DialogHeader>
 
-              {editData && (
-                <div className="grid grid-cols-7 gap-2">
-                  {Array.from({ length: numDays }, (_, i) => i + 1).map(day => (
-                    <div key={day} className="space-y-1">
-                      <Label className="text-xs font-medium text-muted-foreground">
-                        {String(day).padStart(2, '0')}
-                      </Label>
-                      <Select
-                        value={(editData.days[day] || '') === '' ? SELECT_NONE : editData.days[day]}
-                        onValueChange={(val) => {
-                          const mapped = val === SELECT_NONE ? '' : val;
-                          setEditData({
-                            ...editData,
-                            days: { ...editData.days, [day]: mapped }
-                          });
-                        }}
-                      >
-                        <SelectTrigger className="h-9 text-xs">
-                          <SelectValue placeholder="—" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value={SELECT_NONE} className="text-xs">—</SelectItem>
-                          {STATUS_CODES.filter(s => s.value).map(s => (
-                            <SelectItem key={s.value} value={s.value} className="text-xs">
-                              {s.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+               {editData && (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-7 gap-2">
+                    {Array.from({ length: numDays }, (_, i) => i + 1).map((day) => (
+                      <div key={day} className="space-y-1">
+                        <Label className="text-xs font-medium text-muted-foreground">{String(day).padStart(2, '0')}</Label>
+                        <Select
+                          value={(editData.days[day] || '') === '' ? SELECT_NONE : editData.days[day]}
+                          onValueChange={(val) => {
+                            const mapped = val === SELECT_NONE ? '' : val;
+                            setEditData({
+                              ...editData,
+                              days: { ...editData.days, [day]: mapped }
+                            });
+                          }}
+                        >
+                          <SelectTrigger className="h-9 text-xs">
+                            <SelectValue placeholder="—" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value={SELECT_NONE} className="text-xs">—</SelectItem>
+                            {STATUS_CODES.filter((s) => s.value).map((s) => (
+                              <SelectItem key={s.value} value={s.value} className="text-xs">
+                                {s.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <Label>Heures totales (mois)</Label>
+                      <Input
+                        type="number"
+                        step="0.5"
+                        min={0}
+                        value={editData.totalHours}
+                        onChange={(e) =>
+                          setEditData({ ...editData, totalHours: Number(e.target.value) || 0 })
+                        }
+                      />
                     </div>
-                  ))}
+                    <div className="space-y-1">
+                      <Label>Heures supplémentaires (mois)</Label>
+                      <Input
+                        type="number"
+                        step="0.5"
+                        min={0}
+                        value={editData.overtimeHours}
+                        onChange={(e) =>
+                          setEditData({ ...editData, overtimeHours: Number(e.target.value) || 0 })
+                        }
+                      />
+                    </div>
+                  </div>
                 </div>
-              )}
+               )}
 
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setShowEditModal(false);
-                    setEditData(null);
-                  }}
-                  disabled={editLoading}
-                >
-                  <X className="mr-2 h-4 w-4" />
-                  Annuler
-                </Button>
-                <Button onClick={handleSaveEdit} disabled={editLoading}>
-                  {editLoading ? (
-                    <>
-                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                      Enregistrement...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="mr-2 h-4 w-4" />
-                      Enregistrer
-                    </>
-                  )}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+               <DialogFooter>
+                 <Button
+                   variant="outline"
+                   onClick={() => {
+                     setShowEditModal(false);
+                     setEditData(null);
+                   }}
+                   disabled={editLoading}
+                 >
+                   <X className="mr-2 h-4 w-4" />
+                   Annuler
+                 </Button>
+                 <Button onClick={handleSaveEdit} disabled={editLoading}>
+                   {editLoading ? (
+                     <>
+                       <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                       Enregistrement...
+                     </>
+                   ) : (
+                     <>
+                       <Save className="mr-2 h-4 w-4" />
+                       Enregistrer
+                     </>
+                   )}
+                 </Button>
+               </DialogFooter>
+             </DialogContent>
+           </Dialog>
 
           {/* Dialog de confirmation */}
           <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
@@ -869,7 +896,7 @@ export default function TableauPresenceDetailPage() {
           </Dialog>
         </div>
       </PageContainer>
-    </div>
+
   );
 }
 

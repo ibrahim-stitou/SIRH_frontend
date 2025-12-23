@@ -282,21 +282,20 @@ module.exports = function registerTableauPresenceRoutes(server, db) {
 
   // Créer un jour de présence
   server.post('/tableau-presence/:tableauId/days', (req, res) => {
-    const tableauId = isNaN(+req.params.tableauId) ? req.params.tableauId : +req.params.tableauId;
-    const { employeeId, date, statusCode, hoursWorked } = req.body;
+     const { employeeId, date, statusCode, hoursWorked } = req.body;
 
-    const days = db.get('tableauPresenceDays').value() || [];
-    const newId = days.length > 0 ? Math.max(...days.map(d => d.id)) + 1 : 10001;
+     const days = db.get('tableauPresenceDays').value() || [];
+     const newId = days.length > 0 ? Math.max(...days.map(d => d.id)) + 1 : 10001;
 
-    const newDay = {
-      id: newId,
-      employeeId: +employeeId,
-      date,
-      statusCode: statusCode || '',
-      hoursWorked: +hoursWorked || 0,
-      source: 'MANUEL',
-      isOvertime: false
-    };
+     const newDay = {
+       id: newId,
+       employeeId: +employeeId,
+       date,
+       statusCode: statusCode || '',
+       hoursWorked: +hoursWorked || 0,
+       source: 'MANUEL',
+       isOvertime: false
+     };
 
     db.get('tableauPresenceDays').push(newDay).write();
 
@@ -337,5 +336,91 @@ module.exports = function registerTableauPresenceRoutes(server, db) {
       message: 'Jour mis à jour',
       data: updated
     });
+  });
+
+  // Mettre à jour la synthèse d'un employé pour un tableau (recalcule heures/HS/absences)
+  server.patch('/tableau-presence/:tableauId/employees/:employeeId', (req, res) => {
+    const tableauId = isNaN(+req.params.tableauId) ? req.params.tableauId : +req.params.tableauId;
+    const employeeId = isNaN(+req.params.employeeId) ? req.params.employeeId : +req.params.employeeId;
+
+    const tp = db.get('tableauPresence').find({ id: tableauId }).value();
+    if (!tp) {
+      return res.status(404).json({ status: 'error', message: 'Tableau introuvable', data: null });
+    }
+
+    const body = req.body || {};
+    const hasDirectUpdate = ['totalHours', 'overtimeHours', 'absenceDays', 'statusSummary'].some(k => body[k] !== undefined);
+
+    // Upsert helper
+    const upsert = (patch) => {
+      const existing = db.get('tableauPresenceEmployees').find({ tableauPresenceId: tableauId, employeeId: employeeId }).value();
+      if (existing) {
+        const updated = { ...existing, ...patch };
+        db.get('tableauPresenceEmployees')
+          .find({ tableauPresenceId: tableauId, employeeId: employeeId })
+          .assign(updated)
+          .write();
+      } else {
+        const rows = db.get('tableauPresenceEmployees').value() || [];
+        const newId = rows.length > 0 ? Math.max(...rows.map(r => r.id || 0)) + 1 : 1;
+        db.get('tableauPresenceEmployees')
+          .push({ id: newId, tableauPresenceId: tableauId, employeeId: employeeId, totalHours: 0, overtimeHours: 0, absenceDays: 0, statusSummary: '', ...patch })
+          .write();
+      }
+      return db.get('tableauPresenceEmployees').find({ tableauPresenceId: tableauId, employeeId: employeeId }).value();
+    };
+
+    if (hasDirectUpdate) {
+      const patch = {};
+      if (body.totalHours !== undefined) patch.totalHours = Number(body.totalHours) || 0;
+      if (body.overtimeHours !== undefined) patch.overtimeHours = Number(body.overtimeHours) || 0;
+      if (body.absenceDays !== undefined) patch.absenceDays = Number(body.absenceDays) || 0;
+      if (body.statusSummary !== undefined) patch.statusSummary = String(body.statusSummary || '');
+      const updated = upsert(patch);
+      return res.status(200).json({ status: 'success', message: 'Synthèse employé mise à jour', data: updated });
+    }
+
+    // Sinon: recalcul depuis les jours du mois
+    const { mois, annee } = tp;
+    const targetPrefix = `${annee}-${String(mois).padStart(2, '0')}-`;
+
+    const days = (db.get('tableauPresenceDays').value() || []).filter(d => String(d.employeeId) === String(employeeId) && String(d.date || '').startsWith(targetPrefix));
+
+    let totalHours = 0;
+    let overtimeHours = 0;
+    let absenceDays = 0;
+    const counts = { A: 0, HS: 0, CP: 0, CM: 0 };
+
+    for (const d of days) {
+      const code = d.statusCode || '';
+      const hw = typeof d.hoursWorked === 'number' ? d.hoursWorked : 0;
+      if (code === 'P') {
+        totalHours += hw || 8;
+      } else if (code === 'HS') {
+        const worked = hw || 8;
+        totalHours += worked;
+        overtimeHours += Math.max(0, worked - 8);
+        counts.HS += 1;
+      } else if (code === 'CP') {
+        absenceDays += 1;
+        counts.CP += 1;
+      } else if (code === 'CM') {
+        absenceDays += 1;
+        counts.CM += 1;
+      } else if (code === 'A') {
+        absenceDays += 1;
+        counts.A += 1;
+      }
+    }
+
+    const parts = [];
+    if (counts.A) parts.push(`${counts.A}A`);
+    if (counts.HS) parts.push(`${counts.HS}HS`);
+    if (counts.CP) parts.push(`${counts.CP}CP`);
+    if (counts.CM) parts.push(`${counts.CM}CM`);
+    const statusSummary = parts.join(', ');
+
+    const updated = upsert({ totalHours, overtimeHours, absenceDays, statusSummary });
+    return res.status(200).json({ status: 'success', message: 'Synthèse employé recalculée', data: updated });
   });
 };
