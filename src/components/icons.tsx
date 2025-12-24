@@ -169,7 +169,7 @@ export const Icons = {
   spinner: IconLoader2,
   sun: IconSun,
   template: IconTemplate,
-  IconTablePlus:IconTablePlus,
+  IconTablePlus: IconTablePlus,
   trash: IconTrash,
   truck: IconTruck,
   twitter: IconBrandTwitter,

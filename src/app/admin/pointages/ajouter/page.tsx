@@ -27,6 +27,37 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { FileUploader } from '@/components/file-uploader';
 import type { DropzoneProps } from 'react-dropzone';
+import { useForm, Controller } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SelectField } from '@/components/custom/SelectField';
+
+// Zod schema for form validation
+const pointageSchema = z.object({
+  employeeId: z
+    .union([z.string(), z.number()])
+    .refine((v) => v !== null && v !== undefined && String(v).trim() !== '', {
+      message: "L'employé est requis"
+    }),
+  planned_check_in: z
+    .string({ required_error: "L'entrée planifiée est requise" })
+    .min(1, "L'entrée planifiée est requise"), // 'YYYY-MM-DDTHH:mm'
+  planned_check_out: z
+    .string({ required_error: 'La sortie planifiée est requise' })
+    .min(1, 'La sortie planifiée est requise'),
+  check_in: z
+    .string({ required_error: "L'entrée est requise" })
+    .min(1, "L'entrée est requise"),
+  check_out: z
+    .string({ required_error: 'La sortie est requise' })
+    .min(1, 'La sortie est requise'),
+  worked_day: z
+    .string({ required_error: 'Le jour presté est requis' })
+    .min(1, 'Le jour presté est requis'), // 'YYYY-MM-DD'
+  status: z.enum(['bruillon', 'valide']).default('bruillon')
+});
+
+type PointageForm = z.infer<typeof pointageSchema>;
 
 interface EmployeeOption {
   label: string | undefined;
@@ -37,6 +68,9 @@ interface PointageLine {
   employeeId: number | string | null;
   check_in: string | null; // YYYY-MM-DDTHH:mm
   check_out: string | null; // YYYY-MM-DDTHH:mm
+  planned_check_in?: string | null; // YYYY-MM-DDTHH:mm
+  planned_check_out?: string | null; // YYYY-MM-DDTHH:mm
+  worked_day?: string | null; // YYYY-MM-DD
   source: 'manuel' | 'automatique';
   status?: 'bruillon' | 'valide';
 }
@@ -44,15 +78,6 @@ interface PointageLine {
 export default function AjouterPointagePage() {
   const router = useRouter();
   const [employees, setEmployees] = useState<EmployeeOption[]>([]);
-
-  // Single line state
-  const [single, setSingle] = useState<PointageLine>({
-    employeeId: null,
-    check_in: null,
-    check_out: null,
-    source: 'manuel',
-    status: 'bruillon'
-  });
 
   // Import modal
   const [showImportModal, setShowImportModal] = useState(false);
@@ -98,49 +123,48 @@ export default function AjouterPointagePage() {
     if (typeof window !== 'undefined') window.open(url, '_blank');
   };
 
-  const isSingleValid = useMemo(() => {
-    return !!(single.employeeId && (single.check_in || single.check_out));
-  }, [single]);
-
-  // Helpers for auto-calcul
-  function computeWorkedMinutes(
-    checkIn?: string | null,
-    checkOut?: string | null
-  ): number | undefined {
-    if (!checkIn || !checkOut) return undefined;
-    const di = new Date(checkIn);
-    const doo = new Date(checkOut);
-    if (isNaN(di.getTime()) || isNaN(doo.getTime())) return undefined;
-    const diff = (doo.getTime() - di.getTime()) / 60000;
-    return diff >= 0 ? Math.round(diff) : undefined;
-  }
-  const estimatedMinutes = useMemo(() => {
-    // inline compute to satisfy exhaustive-deps
-    if (!single.check_in || !single.check_out) return undefined;
-    const di = new Date(single.check_in);
-    const doo = new Date(single.check_out);
-    if (isNaN(di.getTime()) || isNaN(doo.getTime())) return undefined;
-    const diff = (doo.getTime() - di.getTime()) / 60000;
-    return diff >= 0 ? Math.round(diff) : undefined;
-  }, [single.check_in, single.check_out]);
-
-  const submitSingle = async () => {
-    if (!isSingleValid) {
-      toast.error('Veuillez remplir les champs obligatoires');
-      return;
+  const form = useForm<PointageForm>({
+    resolver: zodResolver(pointageSchema),
+    defaultValues: {
+      employeeId: '' as unknown as string,
+      planned_check_in: '',
+      planned_check_out: '',
+      check_in: '',
+      check_out: '',
+      worked_day: '',
+      status: 'bruillon'
     }
+  });
+  const { control, handleSubmit, formState, watch } = form;
+  const { errors, isSubmitting } = formState;
+
+  const isSingleValid = useMemo(() => {
+    return !errors.employeeId && !errors.check_in && !errors.check_out;
+  }, [errors.employeeId, errors.check_in, errors.check_out]);
+
+  // Helpers for auto-calcul from watched values
+  const wCheckIn = watch('check_in');
+  const wCheckOut = watch('check_out');
+  const estimatedMinutes = useMemo(() => {
+    if (!wCheckIn || !wCheckOut) return undefined;
+    const di = new Date(wCheckIn);
+    const doo = new Date(wCheckOut);
+    if (isNaN(di.getTime()) || isNaN(doo.getTime())) return undefined;
+    const diff = (doo.getTime() - di.getTime()) / 60000;
+    return diff >= 0 ? Math.round(diff) : undefined;
+  }, [wCheckIn, wCheckOut]);
+
+  const onSubmit = async (data: PointageForm) => {
     try {
-      const workedMinutes = computeWorkedMinutes(
-        single.check_in,
-        single.check_out
-      );
       await apiClient.post(apiRoutes.admin.pointages.create, {
-        employeeId: single.employeeId,
-        check_in: single.check_in,
-        check_out: single.check_out,
-        source: single.source,
-        status: single.status,
-        worked_minutes: workedMinutes ?? undefined
+        employeeId: data.employeeId,
+        check_in: data.check_in,
+        check_out: data.check_out,
+        planned_check_in: data.planned_check_in ?? undefined,
+        planned_check_out: data.planned_check_out ?? undefined,
+        worked_day: data.worked_day ?? undefined,
+        source: 'manuel',
+        status: data.status
       });
       toast.success('Pointage ajouté');
       router.push('/admin/pointages');
@@ -306,74 +330,128 @@ export default function AjouterPointagePage() {
           <CardContent className=''>
             <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
               <div>
+                <SelectField
+                  name='employeeId'
+                  label={'Employé'}
+                  control={control}
+                  options={employees.map((opt) => ({
+                    id: opt.value,
+                    label: opt.label
+                  }))}
+                  required
+                  placeholder='Choisir un employé'
+                  error={errors.employeeId?.message as string | undefined}
+                />
+              </div>
+              <div>
                 <Label className='mb-1'>
-                  Employé <span className='text-destructive'>*</span>
+                  Statut <span className='text-destructive'>*</span>
                 </Label>
-                <Select
-                  value={
-                    single.employeeId != null
-                      ? String(single.employeeId)
-                      : undefined
-                  }
-                  onValueChange={(v) =>
-                    setSingle((s) => ({
-                      ...s,
-                      employeeId: isNaN(Number(v)) ? v : Number(v)
-                    }))
-                  }
-                >
-                  <SelectTrigger className='w-full'>
-                    <SelectValue placeholder='Choisir un employé' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {employees.map((opt) => (
-                      <SelectItem
-                        key={String(opt.value)}
-                        value={String(opt.value)}
-                      >
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label className='mb-1'>Entrée (date et heure)</Label>
-                <DateTimePicker
-                  value={single.check_in}
-                  onChange={(val) =>
-                    setSingle((s) => ({ ...s, check_in: val }))
-                  }
+                <Controller
+                  control={control}
+                  name='status'
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className='w-full'>
+                        <SelectValue placeholder='Sélectionner un statut' />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value='bruillon'>Brouillon</SelectItem>
+                        <SelectItem value='valide'>Validé</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
                 />
               </div>
               <div>
-                <Label className='mb-1'>Sortie (date et heure)</Label>
-                <DateTimePicker
-                  value={single.check_out}
-                  onChange={(val) =>
-                    setSingle((s) => ({ ...s, check_out: val }))
-                  }
+                <Label className='mb-1'>
+                  Entrée planifiée (date et heure){' '}
+                  <span className='text-destructive'>*</span>
+                </Label>
+                <Controller
+                  control={control}
+                  name='planned_check_in'
+                  render={({ field }) => (
+                    <DateTimePicker
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
                 />
               </div>
               <div>
-                <Label className='mb-1'>Statut</Label>
-                <Select
-                  value={single.status || 'bruillon'}
-                  onValueChange={(v) =>
-                    setSingle((s) => ({
-                      ...s,
-                      status: v as 'bruillon' | 'valide'
-                    }))
-                  }
-                >
-                  <SelectTrigger className='w-full'>
-                    <SelectValue placeholder='Sélectionner un statut' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='bruillon'>Brouillon</SelectItem>
-                    <SelectItem value='valide'>Validé</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label className='mb-1'>
+                  Sortie planifiée (date et heure){' '}
+                  <span className='text-destructive'>*</span>
+                </Label>
+                <Controller
+                  control={control}
+                  name='planned_check_out'
+                  render={({ field }) => (
+                    <DateTimePicker
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+              </div>
+              <div>
+                <Label className='mb-1'>
+                  Entrée (date et heure){' '}
+                  <span className='text-destructive'>*</span>
+                </Label>
+                <Controller
+                  control={control}
+                  name='check_in'
+                  render={({ field }) => (
+                    <DateTimePicker
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+                {errors.check_in && (
+                  <div className='text-destructive mt-1 text-xs'>
+                    {errors.check_in.message as string}
+                  </div>
+                )}
+              </div>
+              <div>
+                <Label className='mb-1'>
+                  Sortie (date et heure){' '}
+                  <span className='text-destructive'>*</span>
+                </Label>
+                <Controller
+                  control={control}
+                  name='check_out'
+                  render={({ field }) => (
+                    <DateTimePicker
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+                {errors.check_out && (
+                  <div className='text-destructive mt-1 text-xs'>
+                    {errors.check_out.message as string}
+                  </div>
+                )}
+              </div>
+              <div>
+                <Label className='mb-1'>
+                  Jour presté (date) <span className='text-destructive'>*</span>
+                </Label>
+                <Controller
+                  control={control}
+                  name='worked_day'
+                  render={({ field }) => (
+                    <DatePickerField
+                      value={field.value || ''}
+                      onChange={(d) => field.onChange(d || null)}
+                      placeholder='Sélectionner la date'
+                    />
+                  )}
+                />
               </div>
               {estimatedMinutes !== undefined && (
                 <div className='text-muted-foreground text-sm md:col-span-2'>
@@ -383,7 +461,10 @@ export default function AjouterPointagePage() {
                 </div>
               )}
               <div className='mt-2 md:col-span-2'>
-                <Button onClick={submitSingle} disabled={!isSingleValid}>
+                <Button
+                  onClick={handleSubmit(onSubmit)}
+                  disabled={isSubmitting || !isSingleValid}
+                >
                   <UserPlus className='mr-2 h-4 w-4' /> Ajouter le pointage
                 </Button>
               </div>
@@ -478,6 +559,14 @@ export default function AjouterPointagePage() {
                     chaîne (ex: EMP-0001)
                   </li>
                   <li>
+                    <span className='font-medium'>planned_check_in</span> — date
+                    et heure (AAAA-MM-JJ HH:mm)
+                  </li>
+                  <li>
+                    <span className='font-medium'>planned_check_out</span> —
+                    date et heure (AAAA-MM-JJ HH:mm)
+                  </li>
+                  <li>
                     <span className='font-medium'>check_in</span> — date et
                     heure (AAAA-MM-JJ HH:mm)
                   </li>
@@ -486,8 +575,8 @@ export default function AjouterPointagePage() {
                     heure (AAAA-MM-JJ HH:mm)
                   </li>
                   <li>
-                    <span className='font-medium'>worked_minutes</span> — entier
-                    (minutes travaillées)
+                    <span className='font-medium'>worked_day</span> — date
+                    (AAAA-MM-JJ)
                   </li>
                   <li>
                     <span className='font-medium'>source</span> — valeurs:{' '}

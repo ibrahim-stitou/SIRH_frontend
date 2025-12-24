@@ -40,7 +40,9 @@ interface PointageDetails {
   } | null;
   check_in?: string | null;
   check_out?: string | null;
-  worked_minutes?: number;
+  planned_check_in?: string | null;
+  planned_check_out?: string | null;
+  worked_day?: string | null;
   source?: 'manuel' | 'automatique' | string;
   status?: 'bruillon' | 'valide' | 'rejete' | string;
   motif_rejet?: string | null;
@@ -295,6 +297,40 @@ export default function PointageDetailsPage() {
                       ? format(new Date(data.updated_at), 'yyyy-MM-dd HH:mm')
                       : '—'}{' '}
                     par {data.updated_by || '—'}
+                  </div>
+                </div>
+                <div className='rounded-lg border p-3'>
+                  <div className='mb-1 flex items-center gap-2 text-sm font-medium'>
+                    <CalendarDays className='h-4 w-4' /> Entrée planifiée
+                  </div>
+                  <div className='text-foreground'>
+                    {data.planned_check_in
+                      ? format(
+                          new Date(data.planned_check_in),
+                          'yyyy-MM-dd HH:mm'
+                        )
+                      : '—'}
+                  </div>
+                </div>
+                <div className='rounded-lg border p-3'>
+                  <div className='mb-1 flex items-center gap-2 text-sm font-medium'>
+                    <CalendarDays className='h-4 w-4' /> Sortie planifiée
+                  </div>
+                  <div className='text-foreground'>
+                    {data.planned_check_out
+                      ? format(
+                          new Date(data.planned_check_out),
+                          'yyyy-MM-dd HH:mm'
+                        )
+                      : '—'}
+                  </div>
+                </div>
+                <div className='rounded-lg border p-3'>
+                  <div className='mb-1 flex items-center gap-2 text-sm font-medium'>
+                    <CalendarDays className='h-4 w-4' /> Jour presté
+                  </div>
+                  <div className='text-foreground'>
+                    {data.worked_day || '—'}
                   </div>
                 </div>
               </div>

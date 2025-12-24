@@ -104,14 +104,7 @@ export const useNavItems = (): NavItem[] => {
           description: 'US-EMP-012'
         },
         {
-          title: t('sidebar.activites'),
-          url: '/admin/activites',
-          icon: 'briefcase',
-          shortcut: ['a', 'c'],
-          description: 'US-EMP-013'
-        },
-        {
-          title:t('sidebar.tableauPresence'),
+          title: t('sidebar.tableauPresence'),
           url: '/admin/tableau-presence',
           icon: 'IconTablePlus',
           shortcut: ['t', 'p'],

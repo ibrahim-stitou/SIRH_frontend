@@ -63,7 +63,9 @@ export interface PointageRow {
   employee?: EmployeeLite | null;
   check_in?: string | null;
   check_out?: string | null;
-  worked_minutes?: number;
+  planned_check_in?: string | null;
+  planned_check_out?: string | null;
+  worked_day?: string | null; // YYYY-MM-DD
   source?: 'manuel' | 'automatique' | string;
   status?: 'bruillon' | 'valide' | 'rejete' | string;
   motif_rejet?: string | null;
@@ -234,6 +236,18 @@ export default function PointagesListing() {
           )
       },
       {
+        data: 'planned_check_in',
+        label: 'Entrée planifiée',
+        sortable: true,
+        render: (v) => (v ? format(new Date(v), 'yyyy-MM-dd HH:mm') : '—')
+      },
+      {
+        data: 'planned_check_out',
+        label: 'Sortie planifiée',
+        sortable: true,
+        render: (v) => (v ? format(new Date(v), 'yyyy-MM-dd HH:mm') : '—')
+      },
+      {
         data: 'check_in',
         label: 'Entrée',
         sortable: true,
@@ -246,10 +260,23 @@ export default function PointagesListing() {
         render: (v) => (v ? format(new Date(v), 'yyyy-MM-dd HH:mm') : '—')
       },
       {
-        data: 'worked_minutes',
+        data: 'duration',
         label: 'Durée (min)',
+        sortable: false,
+        render: (_v, row) => {
+          if (!row.check_in || !row.check_out) return '—';
+          const di = new Date(row.check_in);
+          const doo = new Date(row.check_out);
+          if (isNaN(di.getTime()) || isNaN(doo.getTime())) return '—';
+          const diff = Math.round((doo.getTime() - di.getTime()) / 60000);
+          return diff >= 0 ? `${diff}` : '—';
+        }
+      },
+      {
+        data: 'worked_day',
+        label: 'Jour presté',
         sortable: true,
-        render: (v) => (v != null ? `${v}` : '—')
+        render: (v) => (v ? v : '—')
       },
       {
         data: 'source',
@@ -543,12 +570,24 @@ export default function PointagesListing() {
                     chaîne (ex: EMP-0001)
                   </li>
                   <li>
+                    <span className='font-medium'>planned_check_in</span> — date
+                    et heure (AAAA-MM-JJ HH:mm)
+                  </li>
+                  <li>
+                    <span className='font-medium'>planned_check_out</span> —
+                    date et heure (AAAA-MM-JJ HH:mm)
+                  </li>
+                  <li>
                     <span className='font-medium'>check_in</span> — date et
                     heure (AAAA-MM-JJ HH:mm)
                   </li>
                   <li>
                     <span className='font-medium'>check_out</span> — date et
                     heure (AAAA-MM-JJ HH:mm)
+                  </li>
+                  <li>
+                    <span className='font-medium'>worked_day</span> — date
+                    (AAAA-MM-JJ)
                   </li>
                   <li>
                     <span className='font-medium'>source</span> — valeurs:{' '}

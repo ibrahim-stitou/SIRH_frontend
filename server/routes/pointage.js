@@ -11,6 +11,11 @@ module.exports = function registerPointageRoutes(server, db) {
     // Fallback: if date exists use date at 00:00
     return rec.date ? `${rec.date}T00:00` : undefined;
   }
+  function extractDatePart(iso) {
+    if (!iso) return null;
+    const [d] = String(iso).split('T');
+    return d || null;
+  }
 
   // Paginated pointages listing with filters
   server.get('/pointages', (req, res) => {
@@ -52,14 +57,18 @@ module.exports = function registerPointageRoutes(server, db) {
     // Sort
     if (sortBy) {
       all.sort((a, b) => {
-        const av =
-          sortBy === 'check_in' || sortBy === 'check_out'
-            ? resolveDateTime(a, sortBy) || ''
-            : a[sortBy];
-        const bv =
-          sortBy === 'check_in' || sortBy === 'check_out'
-            ? resolveDateTime(b, sortBy) || ''
-            : b[sortBy];
+        const datetimeKeys = [
+          'check_in',
+          'check_out',
+          'planned_check_in',
+          'planned_check_out'
+        ];
+        const av = datetimeKeys.includes(sortBy)
+          ? resolveDateTime(a, sortBy) || ''
+          : a[sortBy];
+        const bv = datetimeKeys.includes(sortBy)
+          ? resolveDateTime(b, sortBy) || ''
+          : b[sortBy];
         if (av === bv) return 0;
         if (av === undefined) return 1;
         if (bv === undefined) return -1;
@@ -81,6 +90,8 @@ module.exports = function registerPointageRoutes(server, db) {
     const enriched = all.map((pointage) => {
       const check_in = resolveDateTime(pointage, 'check_in');
       const check_out = resolveDateTime(pointage, 'check_out');
+      const planned_check_in = resolveDateTime(pointage, 'planned_check_in');
+      const planned_check_out = resolveDateTime(pointage, 'planned_check_out');
 
       let employee = null;
       const hr = employeesById[String(pointage.employeeId)];
@@ -101,10 +112,20 @@ module.exports = function registerPointageRoutes(server, db) {
         };
       }
 
+      // ensure worked_day exists if possible
+      const worked_day =
+        pointage.worked_day ||
+        extractDatePart(check_in) ||
+        extractDatePart(check_out) ||
+        null;
+
       return {
         ...pointage,
         check_in,
         check_out,
+        planned_check_in,
+        planned_check_out,
+        worked_day,
         employee
       };
     });
@@ -158,6 +179,13 @@ module.exports = function registerPointageRoutes(server, db) {
         ...pointage,
         check_in: resolveDateTime(pointage, 'check_in'),
         check_out: resolveDateTime(pointage, 'check_out'),
+        planned_check_in: resolveDateTime(pointage, 'planned_check_in'),
+        planned_check_out: resolveDateTime(pointage, 'planned_check_out'),
+        worked_day:
+          pointage.worked_day ||
+          extractDatePart(pointage.check_in) ||
+          extractDatePart(pointage.check_out) ||
+          null,
         employee
       }
     });
@@ -166,11 +194,19 @@ module.exports = function registerPointageRoutes(server, db) {
   // Create pointage (mock): accept combined check_in/check_out datetime strings
   server.post('/pointages', (req, res) => {
     const now = new Date().toISOString();
+    const computedWorkedDay =
+      req.body.worked_day ||
+      extractDatePart(req.body.check_in) ||
+      extractDatePart(req.body.check_out) ||
+      null;
     const newPointage = {
       id: Date.now(),
       employeeId: req.body.employeeId,
       check_in: req.body.check_in, // expect 'YYYY-MM-DDTHH:mm'
       check_out: req.body.check_out,
+      planned_check_in: req.body.planned_check_in ?? null,
+      planned_check_out: req.body.planned_check_out ?? null,
+      worked_day: computedWorkedDay,
       source: req.body.source ?? 'manuel',
       status: req.body.status ?? 'bruillon',
       created_at: now,
@@ -178,13 +214,11 @@ module.exports = function registerPointageRoutes(server, db) {
       updated_by: req.body.updated_by ?? 'system'
     };
     db.get('pointages').push(newPointage).write();
-    return res
-      .status(201)
-      .json({
-        status: 'success',
-        message: 'Pointage créé avec succès',
-        data: newPointage
-      });
+    return res.status(201).json({
+      status: 'success',
+      message: 'Pointage créé avec succès',
+      data: newPointage
+    });
   });
 
   // Update pointage (mock)
@@ -196,10 +230,22 @@ module.exports = function registerPointageRoutes(server, db) {
         .status(404)
         .json({ status: 'error', message: 'Pointage introuvable', data: null });
 
+    const nextCheckIn = req.body.check_in ?? exists.check_in;
+    const nextCheckOut = req.body.check_out ?? exists.check_out;
     const updatedPointage = {
       employeeId: req.body.employeeId ?? exists.employeeId,
-      check_in: req.body.check_in ?? exists.check_in,
-      check_out: req.body.check_out ?? exists.check_out,
+      check_in: nextCheckIn,
+      check_out: nextCheckOut,
+      planned_check_in:
+        req.body.planned_check_in ?? exists.planned_check_in ?? null,
+      planned_check_out:
+        req.body.planned_check_out ?? exists.planned_check_out ?? null,
+      worked_day:
+        req.body.worked_day ??
+        exists.worked_day ??
+        extractDatePart(nextCheckIn) ??
+        extractDatePart(nextCheckOut) ??
+        null,
       source: req.body.source ?? exists.source,
       status: req.body.status ?? exists.status,
       updated_at: new Date().toISOString(),
@@ -285,7 +331,8 @@ module.exports = function registerPointageRoutes(server, db) {
   // ===== Mock Export/Import Endpoints =====
   // Export model CSV with combined datetime fields
   server.get('/pointages/export/model.csv', (req, res) => {
-    const csvHeader = 'employeeId,check_in,check_out,source\n';
+    const csvHeader =
+      'employeeId,check_in,check_out,planned_check_in,planned_check_out,worked_day,source\n';
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader(
       'Content-Disposition',
@@ -296,13 +343,19 @@ module.exports = function registerPointageRoutes(server, db) {
 
   // Export model XLSX (mock)
   server.get('/pointages/export/model.xlsx', (req, res) => {
-    return res
-      .status(200)
-      .json({
-        status: 'success',
-        message: 'Modèle Excel (mock) généré',
-        columns: ['employeeId', 'check_in', 'check_out', 'source']
-      });
+    return res.status(200).json({
+      status: 'success',
+      message: 'Modèle Excel (mock) généré',
+      columns: [
+        'employeeId',
+        'check_in',
+        'check_out',
+        'planned_check_in',
+        'planned_check_out',
+        'worked_day',
+        'source'
+      ]
+    });
   });
 
   // Export all pointages CSV
@@ -313,6 +366,9 @@ module.exports = function registerPointageRoutes(server, db) {
       'employeeId',
       'check_in',
       'check_out',
+      'planned_check_in',
+      'planned_check_out',
+      'worked_day',
       'source',
       'status'
     ];
@@ -326,6 +382,9 @@ module.exports = function registerPointageRoutes(server, db) {
               r.employeeId,
               resolveDateTime(r, 'check_in') || '',
               resolveDateTime(r, 'check_out') || '',
+              resolveDateTime(r, 'planned_check_in') || '',
+              resolveDateTime(r, 'planned_check_out') || '',
+              r.worked_day ?? '',
               r.source ?? '',
               r.status ?? ''
             ]
@@ -344,13 +403,11 @@ module.exports = function registerPointageRoutes(server, db) {
 
   // Export all pointages XLSX (mock)
   server.get('/pointages/export.xlsx', (req, res) => {
-    return res
-      .status(200)
-      .json({
-        status: 'success',
-        message: 'Export Excel (mock) généré',
-        total: (db.get('pointages').value() || []).length
-      });
+    return res.status(200).json({
+      status: 'success',
+      message: 'Export Excel (mock) généré',
+      total: (db.get('pointages').value() || []).length
+    });
   });
 
   // Import CSV/Excel (mock) — accepts rows with combined datetime strings
@@ -365,6 +422,13 @@ module.exports = function registerPointageRoutes(server, db) {
         employeeId: r.employeeId,
         check_in: r.check_in,
         check_out: r.check_out,
+        planned_check_in: r.planned_check_in ?? null,
+        planned_check_out: r.planned_check_out ?? null,
+        worked_day:
+          r.worked_day ??
+          extractDatePart(r.check_in) ??
+          extractDatePart(r.check_out) ??
+          null,
         source: r.source ?? 'manuel',
         status: r.status ?? 'bruillon',
         created_at: now,
@@ -375,13 +439,11 @@ module.exports = function registerPointageRoutes(server, db) {
       imported += 1;
     });
 
-    return res
-      .status(200)
-      .json({
-        status: 'success',
-        message: 'Import (mock) terminé',
-        summary: { processed, imported, errors: 0 },
-        sample: rows.slice(0, 3)
-      });
+    return res.status(200).json({
+      status: 'success',
+      message: 'Import (mock) terminé',
+      summary: { processed, imported, errors: 0 },
+      sample: rows.slice(0, 3)
+    });
   });
 };

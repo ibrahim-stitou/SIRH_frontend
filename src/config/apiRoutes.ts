@@ -152,18 +152,24 @@ export const apiRoutes = {
         `${API_BASE}/tableau-presence/${tableauId}/days/${dayId}`,
       generate: `${API_BASE}/tableau-presence/generate`,
       import: `${API_BASE}/tableau-presence/import`,
-      exportExcel: (id: number | string) => `${API_BASE}/tableau-presence/${id}/export-excel`,
+      exportExcel: (id: number | string) =>
+        `${API_BASE}/tableau-presence/${id}/export-excel`,
       exportModel: `${API_BASE}/tableau-presence/export-model`,
       validateManager: (id: number | string) =>
         `${API_BASE}/tableau-presence/${id}/validate-manager`,
       validateRh: (id: number | string) =>
         `${API_BASE}/tableau-presence/${id}/validate-rh`,
-      close: (id: number | string) => `${API_BASE}/tableau-presence/${id}/close`,
-      exportXlsx: (id: number | string) => `${API_BASE}/tableau-presence/${id}/export.xlsx`,
-      regenerate: (id: number | string) => `${API_BASE}/tableau-presence/${id}/regenerate`,
+      close: (id: number | string) =>
+        `${API_BASE}/tableau-presence/${id}/close`,
+      exportXlsx: (id: number | string) =>
+        `${API_BASE}/tableau-presence/${id}/export.xlsx`,
+      regenerate: (id: number | string) =>
+        `${API_BASE}/tableau-presence/${id}/regenerate`,
       delete: (id: number | string) => `${API_BASE}/tableau-presence/${id}`,
-      updateEmployee: (tableauId: number | string, employeeId: number | string) =>
-        `${API_BASE}/tableau-presence/${tableauId}/employees/${employeeId}`,
+      updateEmployee: (
+        tableauId: number | string,
+        employeeId: number | string
+      ) => `${API_BASE}/tableau-presence/${tableauId}/employees/${employeeId}`
     },
     absences: {
       list: `${API_BASE}/absences`,

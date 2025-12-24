@@ -18,19 +18,43 @@ import apiClient from '@/lib/api';
 import { toast } from 'sonner';
 import { ArrowLeft, Save, Clock } from 'lucide-react';
 import { DatePickerField } from '@/components/custom/DatePickerField';
+import { useForm, Controller } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SelectField } from '@/components/custom/SelectField';
 
 interface EmployeeOption {
   label: string | undefined;
   value: string | undefined;
 }
 
-interface PointageForm {
-  employeeId: number | string | null;
-  check_in: string | null; // YYYY-MM-DDTHH:mm
-  check_out: string | null; // YYYY-MM-DDTHH:mm
-  source: 'manuel' | 'automatique';
-  status?: 'bruillon' | 'valide' | 'rejete';
-}
+// Validation schema for editing a pointage
+const editPointageSchema = z.object({
+  employeeId: z
+    .union([z.string(), z.number()])
+    .refine((v) => v !== null && v !== undefined && String(v).trim() !== '', {
+      message: "L'employé est requis"
+    }),
+  check_in: z
+    .string({ required_error: "L'entrée est requise" })
+    .min(1, "L'entrée est requise"),
+  check_out: z
+    .string({ required_error: 'La sortie est requise' })
+    .min(1, 'La sortie est requise'),
+  planned_check_in: z
+    .string({ required_error: "L'entrée planifiée est requise" })
+    .min(1, "L'entrée planifiée est requise"),
+  planned_check_out: z
+    .string({ required_error: 'La sortie planifiée est requise' })
+    .min(1, 'La sortie planifiée est requise'),
+  worked_day: z
+    .string({ required_error: 'Le jour presté est requis' })
+    .min(1, 'Le jour presté est requis'),
+  status: z.enum(['bruillon', 'valide', 'rejete']).default('bruillon'),
+  source: z.enum(['manuel', 'automatique']).default('manuel')
+});
+
+type EditPointageForm = z.infer<typeof editPointageSchema>;
 
 export default function ModifierPointagePage() {
   const router = useRouter();
@@ -40,13 +64,22 @@ export default function ModifierPointagePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [employees, setEmployees] = useState<EmployeeOption[]>([]);
-  const [form, setForm] = useState<PointageForm>({
-    employeeId: null,
-    check_in: null,
-    check_out: null,
-    source: 'manuel',
-    status: 'bruillon'
+
+  const form = useForm<EditPointageForm>({
+    resolver: zodResolver(editPointageSchema),
+    defaultValues: {
+      employeeId: '' as unknown as string,
+      check_in: '',
+      check_out: '',
+      planned_check_in: '',
+      planned_check_out: '',
+      worked_day: '',
+      status: 'bruillon',
+      source: 'manuel'
+    }
   });
+  const { control, handleSubmit, reset, formState, watch } = form;
+  const { errors, isSubmitting } = formState;
 
   useEffect(() => {
     let mounted = true;
@@ -62,13 +95,18 @@ export default function ModifierPointagePage() {
         }));
         setEmployees(opts);
         const row = ptgRes.data?.data;
-        setForm({
-          employeeId: row?.employeeId ?? null,
-          check_in: row?.check_in ?? null,
-          check_out: row?.check_out ?? null,
-          source: row?.source === 'automatique' ? 'automatique' : 'manuel',
-          status: row?.status || 'bruillon'
-        });
+        if (row) {
+          reset({
+            employeeId: row.employeeId ?? ('' as unknown as string),
+            check_in: row.check_in ?? '',
+            check_out: row.check_out ?? '',
+            planned_check_in: row.planned_check_in ?? null,
+            planned_check_out: row.planned_check_out ?? null,
+            worked_day: row.worked_day ?? null,
+            status: (row.status as EditPointageForm['status']) || 'bruillon',
+            source: (row.source as EditPointageForm['source']) || 'manuel'
+          });
+        }
       })
       .catch((e) => {
         toast.error(e?.response?.data?.message || 'Erreur de chargement');
@@ -77,9 +115,9 @@ export default function ModifierPointagePage() {
     return () => {
       mounted = false;
     };
-  }, [id]);
+  }, [id, reset]);
 
-  // DateTimePicker: reuse inline from add page
+  // DateTimePicker utilities (same as add page)
   function parseDatePart(value?: string | null): string | null {
     if (!value) return null;
     const [d] = String(value).split('T');
@@ -180,32 +218,29 @@ export default function ModifierPointagePage() {
     );
   }
 
+  const wCheckIn = watch('check_in');
+  const wCheckOut = watch('check_out');
   const estimatedMinutes = useMemo(() => {
-    if (!form.check_in || !form.check_out) return undefined;
-    const di = new Date(form.check_in);
-    const doo = new Date(form.check_out);
+    if (!wCheckIn || !wCheckOut) return undefined;
+    const di = new Date(wCheckIn);
+    const doo = new Date(wCheckOut);
     if (isNaN(di.getTime()) || isNaN(doo.getTime())) return undefined;
     const diff = (doo.getTime() - di.getTime()) / 60000;
     return diff >= 0 ? Math.round(diff) : undefined;
-  }, [form.check_in, form.check_out]);
+  }, [wCheckIn, wCheckOut]);
 
-  const isValid = !!(form.employeeId && (form.check_in || form.check_out));
-
-  const onSave = async () => {
-    if (!isValid) {
-      toast.error('Veuillez compléter les champs obligatoires');
-      return;
-    }
+  const onSubmit = async (data: EditPointageForm) => {
     setSaving(true);
     try {
-      const worked_minutes = estimatedMinutes ?? undefined;
       await apiClient.put(apiRoutes.admin.pointages.update(id), {
-        employeeId: form.employeeId,
-        check_in: form.check_in,
-        check_out: form.check_out,
-        source: form.source,
-        status: form.status,
-        worked_minutes
+        employeeId: data.employeeId,
+        check_in: data.check_in,
+        check_out: data.check_out,
+        planned_check_in: data.planned_check_in ?? undefined,
+        planned_check_out: data.planned_check_out ?? undefined,
+        worked_day: data.worked_day ?? undefined,
+        source: data.source,
+        status: data.status
       });
       toast.success('Pointage modifié');
       router.push('/admin/pointages');
@@ -215,6 +250,12 @@ export default function ModifierPointagePage() {
       setSaving(false);
     }
   };
+
+  const isValid = useMemo(
+    () => !errors.employeeId && !errors.check_in && !errors.check_out,
+    [errors]
+  );
+
   return (
     <PageContainer scrollable>
       <div className='flex flex-1 flex-col space-y-6'>
@@ -236,7 +277,10 @@ export default function ModifierPointagePage() {
             >
               <ArrowLeft /> Retour aux pointages
             </Button>
-            <Button onClick={onSave} disabled={!isValid || saving}>
+            <Button
+              onClick={handleSubmit(onSubmit)}
+              disabled={!isValid || saving || isSubmitting}
+            >
               <Save className='mr-2 h-4 w-4' />{' '}
               {saving ? 'Enregistrement…' : 'Enregistrer'}
             </Button>
@@ -285,77 +329,133 @@ export default function ModifierPointagePage() {
             ) : (
               <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
                 <div>
+                  <SelectField
+                    name='employeeId'
+                    label={'Employé'}
+                    control={control}
+                    options={employees.map((opt) => ({
+                      id: opt.value,
+                      label: opt.label
+                    }))}
+                    required
+                    placeholder='Choisir un employé'
+                    error={errors.employeeId?.message as string | undefined}
+                  />
+                </div>
+                <div>
                   <Label className='mb-1 block'>
-                    Employé <span className='text-destructive'>*</span>
+                    Statut <span className='text-destructive'>*</span>
                   </Label>
-                  <Select
-                    value={
-                      form.employeeId != null
-                        ? String(form.employeeId)
-                        : undefined
-                    }
-                    onValueChange={(v) =>
-                      setForm((s) => ({
-                        ...s,
-                        employeeId: isNaN(Number(v)) ? v : Number(v)
-                      }))
-                    }
-                  >
-                    <SelectTrigger className='w-full'>
-                      <SelectValue placeholder='Choisir un employé' />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {employees.map((opt) => (
-                        <SelectItem
-                          key={String(opt.value)}
-                          value={String(opt.value)}
-                        >
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div></div>
-                <div>
-                  <Label className='mb-1 block'>Entrée (date et heure)</Label>
-                  <DateTimePicker
-                    value={form.check_in}
-                    onChange={(val) =>
-                      setForm((s) => ({ ...s, check_in: val }))
-                    }
+                  <Controller
+                    control={control}
+                    name='status'
+                    render={({ field }) => (
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className='w-full'>
+                          <SelectValue placeholder='Sélectionner un statut' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='bruillon'>Brouillon</SelectItem>
+                          <SelectItem value='valide'>Validé</SelectItem>
+                          <SelectItem value='rejete'>Rejeté</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
                   />
                 </div>
                 <div>
-                  <Label className='mb-1 block'>Sortie (date et heure)</Label>
-                  <DateTimePicker
-                    value={form.check_out}
-                    onChange={(val) =>
-                      setForm((s) => ({ ...s, check_out: val }))
-                    }
+                  <Label className='mb-1 block'>
+                    Entrée (date et heure){' '}
+                    <span className='text-destructive'>*</span>
+                  </Label>
+                  <Controller
+                    control={control}
+                    name='check_in'
+                    render={({ field }) => (
+                      <DateTimePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                  {errors.check_in && (
+                    <div className='text-destructive mt-1 text-xs'>
+                      {errors.check_in.message as string}
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <Label className='mb-1 block'>
+                    Sortie (date et heure){' '}
+                    <span className='text-destructive'>*</span>
+                  </Label>
+                  <Controller
+                    control={control}
+                    name='check_out'
+                    render={({ field }) => (
+                      <DateTimePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                  {errors.check_out && (
+                    <div className='text-destructive mt-1 text-xs'>
+                      {errors.check_out.message as string}
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <Label className='mb-1 block'>
+                    Entrée planifiée (date et heure){' '}
+                    <span className='text-destructive'>*</span>
+                  </Label>
+                  <Controller
+                    control={control}
+                    name='planned_check_in'
+                    render={({ field }) => (
+                      <DateTimePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
                   />
                 </div>
                 <div>
-                  <Label className={`mb-1 block`}>Statut</Label>
-                  <Select
-                    value={form.status || 'bruillon'}
-                    disabled={form.status === 'rejete'}
-                    onValueChange={(v) =>
-                      setForm((s) => ({
-                        ...s,
-                        status: v as 'bruillon' | 'valide'
-                      }))
-                    }
-                  >
-                    <SelectTrigger className='w-full'>
-                      <SelectValue placeholder='Sélectionner un statut' />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value='bruillon'>Brouillon</SelectItem>
-                      <SelectItem value='valide'>Validé</SelectItem>
-                      <SelectItem value='rejete'>Rejeté</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label className='mb-1 block'>
+                    Sortie planifiée (date et heure){' '}
+                    <span className='text-destructive'>*</span>
+                  </Label>
+                  <Controller
+                    control={control}
+                    name='planned_check_out'
+                    render={({ field }) => (
+                      <DateTimePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                </div>
+                <div>
+                  <Label className='mb-1 block'>
+                    Jour presté (date){' '}
+                    <span className='text-destructive'>*</span>
+                  </Label>
+                  <Controller
+                    control={control}
+                    name='worked_day'
+                    render={({ field }) => (
+                      <DatePickerField
+                        value={field.value || ''}
+                        onChange={(d) => field.onChange(d || null)}
+                        placeholder='Sélectionner la date'
+                      />
+                    )}
+                  />
                 </div>
                 {estimatedMinutes !== undefined && (
                   <div className='text-muted-foreground flex items-center gap-2 text-sm md:col-span-2'>
