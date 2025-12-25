@@ -83,6 +83,7 @@ export default function AppSidebar() {
                   height={40}
                   className='h-auto max-h-10 w-auto object-contain transition-all duration-300'
                   priority
+                  unoptimized
                 />
               ) : (
                 <Image
@@ -92,6 +93,7 @@ export default function AppSidebar() {
                   height={32}
                   className='h-8 w-8 object-contain transition-all duration-300'
                   priority
+                  unoptimized
                 />
               )}
             </Link>
