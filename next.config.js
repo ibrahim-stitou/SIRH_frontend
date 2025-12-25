@@ -8,19 +8,31 @@ const nextConfig = {
   },
   images: {
     dangerouslyAllowSVG: true,
-    domains: ['localhost:3002', 'adlogistique-tms.xyz'],
+    domains: [
+      'api.sirh.dev-tarmiz.site',
+      'sirh.dev-tarmiz.site',
+      'flagcdn.com'
+    ],
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     unoptimized: process.env.NODE_ENV === 'development',
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'utfs.io',
-        port: ''
+        port: '',
+        pathname: '/**'
       },
       {
         protocol: 'https',
         hostname: 'api.slingacademy.com',
-        port: ''
+        port: '',
+        pathname: '/**'
+      },
+      {
+        protocol: 'https',
+        hostname: 'flagcdn.com',
+        port: '',
+        pathname: '/**'
       }
     ]
   },
