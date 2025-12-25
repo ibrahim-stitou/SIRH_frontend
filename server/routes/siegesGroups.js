@@ -178,4 +178,23 @@ module.exports = function registerSiegesGroupsRoutes(server, db) {
       data: { groupId: id, count: toInsert.length }
     });
   });
+
+
+  server.get('/groups/employee/:id', (req, res) => {
+    const employeeId = req.params.id;
+    // Use db.js for data access
+    const groupMembers = db.get('groupMembers').value() || [];
+    const groups = db.get('groups').value() || [];
+    // Find groupIds for this employee
+    const groupIds = groupMembers
+      .filter((m) => String(m.employeeId) === String(employeeId))
+      .map((m) => m.groupId);
+    // Find groups by id
+    const employeeGroups = groups.filter((g) => groupIds.includes(g.id));
+    res.json({
+      status: 'success',
+      message: 'Récupération réussie',
+      data: employeeGroups
+    });
+  })
 };

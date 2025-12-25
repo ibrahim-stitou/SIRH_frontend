@@ -1,5 +1,10 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SelectField } from '@/components/custom/SelectField';
+import { DatePickerField } from '@/components/custom/DatePickerField';
 import PageContainer from '@/components/layout/page-container';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
@@ -17,19 +22,13 @@ import { apiRoutes } from '@/config/apiRoutes';
 import apiClient from '@/lib/api';
 import { toast } from 'sonner';
 import { ArrowLeft, Save, Clock } from 'lucide-react';
-import { DatePickerField } from '@/components/custom/DatePickerField';
-import { useForm, Controller } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { SelectField } from '@/components/custom/SelectField';
 
 interface EmployeeOption {
   label: string | undefined;
   value: string | undefined;
 }
 
-// Validation schema for editing a pointage
-const editPointageSchema = z.object({
+const pointageSchema = z.object({
   employeeId: z
     .union([z.string(), z.number()])
     .refine((v) => v !== null && v !== undefined && String(v).trim() !== '', {
@@ -41,20 +40,12 @@ const editPointageSchema = z.object({
   check_out: z
     .string({ required_error: 'La sortie est requise' })
     .min(1, 'La sortie est requise'),
-  planned_check_in: z
-    .string({ required_error: "L'entrée planifiée est requise" })
-    .min(1, "L'entrée planifiée est requise"),
-  planned_check_out: z
-    .string({ required_error: 'La sortie planifiée est requise' })
-    .min(1, 'La sortie planifiée est requise'),
   worked_day: z
     .string({ required_error: 'Le jour presté est requis' })
-    .min(1, 'Le jour presté est requis'),
-  status: z.enum(['bruillon', 'valide', 'rejete']).default('bruillon'),
-  source: z.enum(['manuel', 'automatique']).default('manuel')
+    .min(1, 'Le jour presté est requis') // 'YYYY-MM-DD'
 });
 
-type EditPointageForm = z.infer<typeof editPointageSchema>;
+type PointageForm = z.infer<typeof pointageSchema>;
 
 export default function ModifierPointagePage() {
   const router = useRouter();
@@ -64,18 +55,15 @@ export default function ModifierPointagePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [employees, setEmployees] = useState<EmployeeOption[]>([]);
+  const [employeeGroups, setEmployeeGroups] = useState<{ id: string | number; name: string }[]>([]);
 
-  const form = useForm<EditPointageForm>({
-    resolver: zodResolver(editPointageSchema),
+  const form = useForm<PointageForm>({
+    resolver: zodResolver(pointageSchema),
     defaultValues: {
       employeeId: '' as unknown as string,
       check_in: '',
       check_out: '',
-      planned_check_in: '',
-      planned_check_out: '',
       worked_day: '',
-      status: 'bruillon',
-      source: 'manuel'
     }
   });
   const { control, handleSubmit, reset, formState, watch } = form;
@@ -100,11 +88,7 @@ export default function ModifierPointagePage() {
             employeeId: row.employeeId ?? ('' as unknown as string),
             check_in: row.check_in ?? '',
             check_out: row.check_out ?? '',
-            planned_check_in: row.planned_check_in ?? null,
-            planned_check_out: row.planned_check_out ?? null,
             worked_day: row.worked_day ?? null,
-            status: (row.status as EditPointageForm['status']) || 'bruillon',
-            source: (row.source as EditPointageForm['source']) || 'manuel'
           });
         }
       })
@@ -116,6 +100,30 @@ export default function ModifierPointagePage() {
       mounted = false;
     };
   }, [id, reset]);
+
+  // New: effect to fetch employee's groups on employee change
+  const selectedEmployeeId = form.watch('employeeId');
+  useEffect(() => {
+    if (!selectedEmployeeId) {
+      setEmployeeGroups([]);
+      return;
+    }
+    let cancelled = false;
+    apiClient
+      .get(apiRoutes.admin.groups.groupByEmployee(selectedEmployeeId))
+      .then((res) => {
+        const groups = (res.data?.data || res.data || []) as any[];
+        if (!cancelled) {
+          setEmployeeGroups(groups.map(g => ({ id: g.id, name: g.name ?? g.label ?? `Groupe ${g.id}` })));
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setEmployeeGroups([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedEmployeeId]);
 
   function parseDatePart(value?: string | null): string | null {
     if (!value) return null;
@@ -228,18 +236,14 @@ export default function ModifierPointagePage() {
     return diff >= 0 ? Math.round(diff) : undefined;
   }, [wCheckIn, wCheckOut]);
 
-  const onSubmit = async (data: EditPointageForm) => {
+  const onSubmit = async (data: PointageForm) => {
     setSaving(true);
     try {
       await apiClient.put(apiRoutes.admin.pointages.update(id), {
         employeeId: data.employeeId,
         check_in: data.check_in,
         check_out: data.check_out,
-        planned_check_in: data.planned_check_in ?? undefined,
-        planned_check_out: data.planned_check_out ?? undefined,
         worked_day: data.worked_day ?? undefined,
-        source: data.source,
-        status: data.status
       });
       toast.success('Pointage modifié');
       router.push('/admin/pointages');
@@ -328,50 +332,30 @@ export default function ModifierPointagePage() {
             ) : (
               <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
                 <div>
+                  {/* Employé + groupe(s) */}
                   <SelectField
                     name='employeeId'
                     label={'Employé'}
-                    control={control}
+                    control={form.control}
                     options={employees.map((opt) => ({
                       id: opt.value,
                       label: opt.label
                     }))}
                     required
                     placeholder='Choisir un employé'
-                    error={errors.employeeId?.message as string | undefined}
+                    error={form.formState.errors.employeeId?.message as string | undefined}
                   />
+                  <div className='text-muted-foreground mt-1 text-xs'>
+                    Groupe{employeeGroups.length > 1 ? 's' : ''}: {employeeGroups.length > 0 ? employeeGroups.map((g, i) => <span key={g.id} className='font-medium'>{g.name}{i < employeeGroups.length - 1 ? ', ' : ''}</span>) : '—'}
+                  </div>
                 </div>
                 <div>
-                  <Label className='mb-1 block'>
-                    Statut <span className='text-destructive'>*</span>
+                  {/* Entrée (date et heure) */}
+                  <Label className='mb-1'>
+                    Entrée (date et heure) <span className='text-destructive'>*</span>
                   </Label>
                   <Controller
-                    control={control}
-                    name='status'
-                    render={({ field }) => (
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger className='w-full'>
-                          <SelectValue placeholder='Sélectionner un statut' />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value='bruillon'>Brouillon</SelectItem>
-                          <SelectItem value='valide'>Validé</SelectItem>
-                          <SelectItem value='rejete'>Rejeté</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    )}
-                  />
-                </div>
-                <div>
-                  <Label className='mb-1 block'>
-                    Entrée (date et heure){' '}
-                    <span className='text-destructive'>*</span>
-                  </Label>
-                  <Controller
-                    control={control}
+                    control={form.control}
                     name='check_in'
                     render={({ field }) => (
                       <DateTimePicker
@@ -380,19 +364,19 @@ export default function ModifierPointagePage() {
                       />
                     )}
                   />
-                  {errors.check_in && (
+                  {form.formState.errors.check_in && (
                     <div className='text-destructive mt-1 text-xs'>
-                      {errors.check_in.message as string}
+                      {form.formState.errors.check_in.message as string}
                     </div>
                   )}
                 </div>
                 <div>
-                  <Label className='mb-1 block'>
-                    Sortie (date et heure){' '}
-                    <span className='text-destructive'>*</span>
+                  {/* Sortie (date et heure) */}
+                  <Label className='mb-1'>
+                    Sortie (date et heure) <span className='text-destructive'>*</span>
                   </Label>
                   <Controller
-                    control={control}
+                    control={form.control}
                     name='check_out'
                     render={({ field }) => (
                       <DateTimePicker
@@ -401,51 +385,19 @@ export default function ModifierPointagePage() {
                       />
                     )}
                   />
-                  {errors.check_out && (
+                  {form.formState.errors.check_out && (
                     <div className='text-destructive mt-1 text-xs'>
-                      {errors.check_out.message as string}
+                      {form.formState.errors.check_out.message as string}
                     </div>
                   )}
                 </div>
                 <div>
-                  <Label className='mb-1 block'>
-                    Entrée planifiée (date et heure){' '}
-                    <span className='text-destructive'>*</span>
+                  {/* Jour presté (date) */}
+                  <Label className='mb-1'>
+                    Jour presté (date) <span className='text-destructive'>*</span>
                   </Label>
                   <Controller
-                    control={control}
-                    name='planned_check_in'
-                    render={({ field }) => (
-                      <DateTimePicker
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
-                    )}
-                  />
-                </div>
-                <div>
-                  <Label className='mb-1 block'>
-                    Sortie planifiée (date et heure){' '}
-                    <span className='text-destructive'>*</span>
-                  </Label>
-                  <Controller
-                    control={control}
-                    name='planned_check_out'
-                    render={({ field }) => (
-                      <DateTimePicker
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
-                    )}
-                  />
-                </div>
-                <div>
-                  <Label className='mb-1 block'>
-                    Jour presté (date){' '}
-                    <span className='text-destructive'>*</span>
-                  </Label>
-                  <Controller
-                    control={control}
+                    control={form.control}
                     name='worked_day'
                     render={({ field }) => (
                       <DatePickerField

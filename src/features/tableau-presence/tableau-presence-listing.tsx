@@ -43,6 +43,8 @@ import {
 } from '@/components/ui/select';
 import { StatusBadge } from '@/components/custom/status-badge';
 import { useRouter } from 'next/navigation';
+import { Label } from '@/components/ui/label';
+import { FileUploader } from '@/components/file-uploader';
 
 /* ======================================================
    TYPES MÉTIER – TABLEAU DE PRÉSENCE
@@ -79,6 +81,7 @@ export default function TableauPresenceListing() {
   > | null>(null);
 
   const [mois, setMois] = useState<number | undefined>(undefined);
+  const [importFiles, setImportFiles] = useState<File[]>([]);
   const [annee, setAnnee] = useState<number | undefined>(undefined);
 
   const [confirmCloseId, setConfirmCloseId] = useState<number | null>(null);
@@ -94,7 +97,10 @@ export default function TableauPresenceListing() {
   );
   const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [generateLoading, setGenerateLoading] = useState(false);
-
+const acceptMap = {
+    '.xlsx': ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+    '.xls': ['application/vnd.ms-excel']
+  };
   useEffect(() => {
     const now = new Date();
     setMois(now.getMonth() + 1);
@@ -478,8 +484,48 @@ export default function TableauPresenceListing() {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
 
+
+            </div>
+            <div className='space-y-2'>
+              <Label className='text-sm font-medium'>
+                Fichier à importer (Excel)
+              </Label>
+              <FileUploader
+                accept={acceptMap}
+                maxFiles={1}
+                multiple={false}
+                description={`Déposez votre tableau de présence à importer.`}
+                value={importFiles}
+                onValueChange={setImportFiles}
+                showPreview={false}
+                variant='default'
+              />
+            </div>
+            <div className='bg-muted/30 rounded-lg border p-3'>
+              <div className='mb-2 text-sm font-semibold'>
+                Format des colonnes
+              </div>
+              <ul className='text-muted-foreground list-inside list-disc text-sm'>
+                <li>
+                  <span className='font-medium'>matricule</span> — matricule
+                  d&apos;employee (ex: EMP-0001)
+                </li>
+                <li>
+                  <span className='font-medium'>jour ( 1 {'-->'} 31 ) </span> — statut du jour
+                  (ex: P, AB,...)
+                </li>
+                <li>
+                  <span className='font-medium'>total_h</span> — total heures
+                  travaillées (ex: 8.5)
+                </li>
+                <li>
+                  <span className='font-medium'>hs</span> — total heures
+                  supplémentaires (ex: 2)
+                </li>
+
+              </ul>
+            </div>
             <DialogFooter className='flex items-center justify-between gap-2'>
               <div className='ml-auto flex items-center gap-2'>
                 <Button

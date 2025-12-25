@@ -24,13 +24,14 @@ import {
   SelectContent,
   SelectItem
 } from '@/components/ui/select';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { FileUploader } from '@/components/file-uploader';
 import type { DropzoneProps } from 'react-dropzone';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SelectField } from '@/components/custom/SelectField';
+import { useForm as useHookForm } from 'react-hook-form';
+import { Icons } from '@/components/icons';
 
 // Zod schema for form validation
 const pointageSchema = z.object({
@@ -39,12 +40,6 @@ const pointageSchema = z.object({
     .refine((v) => v !== null && v !== undefined && String(v).trim() !== '', {
       message: "L'employé est requis"
     }),
-  planned_check_in: z
-    .string({ required_error: "L'entrée planifiée est requise" })
-    .min(1, "L'entrée planifiée est requise"), // 'YYYY-MM-DDTHH:mm'
-  planned_check_out: z
-    .string({ required_error: 'La sortie planifiée est requise' })
-    .min(1, 'La sortie planifiée est requise'),
   check_in: z
     .string({ required_error: "L'entrée est requise" })
     .min(1, "L'entrée est requise"),
@@ -53,8 +48,7 @@ const pointageSchema = z.object({
     .min(1, 'La sortie est requise'),
   worked_day: z
     .string({ required_error: 'Le jour presté est requis' })
-    .min(1, 'Le jour presté est requis'), // 'YYYY-MM-DD'
-  status: z.enum(['bruillon', 'valide']).default('bruillon')
+    .min(1, 'Le jour presté est requis') // 'YYYY-MM-DD'
 });
 
 type PointageForm = z.infer<typeof pointageSchema>;
@@ -64,27 +58,17 @@ interface EmployeeOption {
   value: string | undefined;
 }
 
-interface PointageLine {
-  employeeId: number | string | null;
-  check_in: string | null; // YYYY-MM-DDTHH:mm
-  check_out: string | null; // YYYY-MM-DDTHH:mm
-  planned_check_in?: string | null; // YYYY-MM-DDTHH:mm
-  planned_check_out?: string | null; // YYYY-MM-DDTHH:mm
-  worked_day?: string | null; // YYYY-MM-DD
-  source: 'manuel' | 'automatique';
-  status?: 'bruillon' | 'valide';
-}
-
 export default function AjouterPointagePage() {
   const router = useRouter();
   const [employees, setEmployees] = useState<EmployeeOption[]>([]);
 
   // Import modal
   const [showImportModal, setShowImportModal] = useState(false);
-  const [importType, setImportType] = useState<'csv' | 'excel'>('csv');
-  const [importStatus, setImportStatus] = useState<'bruillon' | 'valide'>(
-    'bruillon'
-  );
+  const [importType] = useState<'csv' | 'excel'>('csv');
+  const [groups, setGroups] = useState<
+    { label: string; value: string | number }[]
+  >([]);
+  const [importStatus] = useState<'bruillon' | 'valide'>('bruillon');
   const [importFiles, setImportFiles] = useState<File[]>([]);
   const acceptMap = useMemo<DropzoneProps['accept']>(() => {
     return (
@@ -110,6 +94,18 @@ export default function AjouterPointagePage() {
         if (mounted) setEmployees(opts);
       })
       .catch(() => void 0);
+
+    apiClient
+      .get(apiRoutes.admin.groups.list)
+      .then((res) => {
+        const gopts = (res.data?.data || res.data || []).map((g: any) => ({
+          label: g.name ?? g.label ?? `Groupe ${g.id}`,
+          value: g.id
+        }));
+        if (mounted) setGroups(gopts);
+      })
+      .catch(() => void 0);
+
     return () => {
       mounted = false;
     };
@@ -123,16 +119,23 @@ export default function AjouterPointagePage() {
     if (typeof window !== 'undefined') window.open(url, '_blank');
   };
 
+  const [selectedGroupId, setSelectedGroupId] = useState<string | number | null>(null);
+  const [importWorkedDay, setImportWorkedDay] = useState<string | null>(null);
+  // form for import modal SelectField
+  const importModalForm = useHookForm<{ groupId: string }>({ defaultValues: { groupId: '' } });
+  const importGroupId = importModalForm.watch('groupId');
+  useEffect(() => {
+    setSelectedGroupId(importGroupId ? importGroupId : null);
+  }, [importGroupId]);
+
+  // Sync Sele
   const form = useForm<PointageForm>({
     resolver: zodResolver(pointageSchema),
     defaultValues: {
       employeeId: '' as unknown as string,
-      planned_check_in: '',
-      planned_check_out: '',
       check_in: '',
       check_out: '',
-      worked_day: '',
-      status: 'bruillon'
+      worked_day: ''
     }
   });
   const { control, handleSubmit, formState, watch } = form;
@@ -160,11 +163,8 @@ export default function AjouterPointagePage() {
         employeeId: data.employeeId,
         check_in: data.check_in,
         check_out: data.check_out,
-        planned_check_in: data.planned_check_in ?? undefined,
-        planned_check_out: data.planned_check_out ?? undefined,
         worked_day: data.worked_day ?? undefined,
-        source: 'manuel',
-        status: data.status
+        source: 'manuel'
       });
       toast.success('Pointage ajouté');
       router.push('/admin/pointages');
@@ -295,6 +295,31 @@ export default function AjouterPointagePage() {
     }
   };
 
+  // New: state for selected employee's group(s)
+  const [employeeGroups, setEmployeeGroups] = useState<{ id: string | number; name: string }[]>([]);
+  const selectedEmployeeId = watch('employeeId');
+  useEffect(() => {
+    if (!selectedEmployeeId) {
+      setEmployeeGroups([]);
+      return;
+    }
+    let cancelled = false;
+    apiClient
+      .get(apiRoutes.admin.groups.groupByEmployee(selectedEmployeeId))
+      .then((res) => {
+        const groups = (res.data?.data || res.data || []) as any[];
+        if (!cancelled) {
+          setEmployeeGroups(groups.map(g => ({ id: g.id, name: g.name ?? g.label ?? `Groupe ${g.id}` })));
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setEmployeeGroups([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedEmployeeId]);
+
   return (
     <PageContainer scrollable>
       <div className='flex flex-1 flex-col space-y-6'>
@@ -342,72 +367,20 @@ export default function AjouterPointagePage() {
                   placeholder='Choisir un employé'
                   error={errors.employeeId?.message as string | undefined}
                 />
+                {/* Show employee group(s) fetched from API */}
+                <div className='text-muted-foreground mt-1 text-xs'>
+                  Groupe{employeeGroups.length > 1 ? 's' : ''}: {employeeGroups.length > 0 ? employeeGroups.map((g, i) => <span key={g.id} className='font-medium'>{g.name}{i < employeeGroups.length - 1 ? ', ' : ''}</span>) : '—'}
+                </div>
               </div>
               <div>
                 <Label className='mb-1'>
-                  Statut <span className='text-destructive'>*</span>
-                </Label>
-                <Controller
-                  control={control}
-                  name='status'
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className='w-full'>
-                        <SelectValue placeholder='Sélectionner un statut' />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value='bruillon'>Brouillon</SelectItem>
-                        <SelectItem value='valide'>Validé</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
-              <div>
-                <Label className='mb-1'>
-                  Entrée planifiée (date et heure){' '}
-                  <span className='text-destructive'>*</span>
-                </Label>
-                <Controller
-                  control={control}
-                  name='planned_check_in'
-                  render={({ field }) => (
-                    <DateTimePicker
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-              </div>
-              <div>
-                <Label className='mb-1'>
-                  Sortie planifiée (date et heure){' '}
-                  <span className='text-destructive'>*</span>
-                </Label>
-                <Controller
-                  control={control}
-                  name='planned_check_out'
-                  render={({ field }) => (
-                    <DateTimePicker
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-              </div>
-              <div>
-                <Label className='mb-1'>
-                  Entrée (date et heure){' '}
-                  <span className='text-destructive'>*</span>
+                  Entrée (date et heure) <span className='text-destructive'>*</span>
                 </Label>
                 <Controller
                   control={control}
                   name='check_in'
                   render={({ field }) => (
-                    <DateTimePicker
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
+                    <DateTimePicker value={field.value} onChange={field.onChange} />
                   )}
                 />
                 {errors.check_in && (
@@ -418,17 +391,13 @@ export default function AjouterPointagePage() {
               </div>
               <div>
                 <Label className='mb-1'>
-                  Sortie (date et heure){' '}
-                  <span className='text-destructive'>*</span>
+                  Sortie (date et heure) <span className='text-destructive'>*</span>
                 </Label>
                 <Controller
                   control={control}
                   name='check_out'
                   render={({ field }) => (
-                    <DateTimePicker
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
+                    <DateTimePicker value={field.value} onChange={field.onChange} />
                   )}
                 />
                 {errors.check_out && (
@@ -475,68 +444,55 @@ export default function AjouterPointagePage() {
         <Dialog open={showImportModal} onOpenChange={setShowImportModal}>
           <DialogContent className='sm:max-w-xl'>
             <DialogHeader>
-              <DialogTitle>Importer / Exporter</DialogTitle>
+              <DialogTitle>Importer des pointages</DialogTitle>
             </DialogHeader>
             <div className='space-y-4'>
-              <div>
-                <Label className='mb-2 block text-sm font-medium'>
-                  Type de modèle
-                </Label>
-                <RadioGroup
-                  value={importType}
-                  onValueChange={(v: 'csv' | 'excel') => setImportType(v)}
-                  className='grid grid-cols-2 gap-2'
-                >
-                  <div className='flex items-center space-x-2 rounded-md border p-2'>
-                    <RadioGroupItem value='csv' id='mdl-csv' />
-                    <Label htmlFor='mdl-csv'>CSV</Label>
-                  </div>
-                  <div className='flex items-center space-x-2 rounded-md border p-2'>
-                    <RadioGroupItem value='excel' id='mdl-excel' />
-                    <Label htmlFor='mdl-excel'>Excel</Label>
-                  </div>
-                </RadioGroup>
+              <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                <div>
+                  <Label className='mb-2 block text-sm font-medium'>
+                    Groupe cible pour l&apos;import
+                  </Label>
+                  <SelectField
+                    name='groupId'
+                    label={''}
+                    control={importModalForm.control}
+                    options={groups.map((g) => ({ id: g.value, label: g.label }))}
+                    placeholder='Sélectionner un groupe'
+                    required
+                  />
+                  <p className='text-muted-foreground mt-2 text-xs'>
+                    L&apos;import sera appliqué pour tous les membres du groupe sélectionné.
+                  </p>
+                </div>
+
+                {/* New: select single worked day for import */}
+                <div>
+                  <Label className='mb-2 block text-sm font-medium'>
+                    Jour presté des pointages importés
+                  </Label>
+                  <DatePickerField
+                    value={importWorkedDay || ''}
+                    onChange={(d) => setImportWorkedDay(d || null)}
+                    placeholder='Sélectionner la date de la journée'
+                  />
+                </div>
               </div>
-              <div>
-                <Label className='mb-2 block text-sm font-medium'>
-                  Statut appliqué aux pointages importés
-                </Label>
-                <RadioGroup
-                  value={importStatus}
-                  onValueChange={(v: 'bruillon' | 'valide') =>
-                    setImportStatus(v)
-                  }
-                  className='grid grid-cols-2 gap-2'
-                >
-                  <div className='flex items-center space-x-2 rounded-md border p-2'>
-                    <RadioGroupItem
-                      value='bruillon'
-                      id='import-status-bruillon'
-                    />
-                    <Label htmlFor='import-status-bruillon'>Brouillon</Label>
-                  </div>
-                  <div className='flex items-center space-x-2 rounded-md border p-2'>
-                    <RadioGroupItem value='valide' id='import-status-valide' />
-                    <Label htmlFor='import-status-valide'>Validé</Label>
-                  </div>
-                </RadioGroup>
-                <p className='text-muted-foreground mt-2 text-xs'>
-                  Tous les enregistrements importés seront créés avec le statut
-                  sélectionné:{' '}
-                  <span className='font-semibold'>
-                    {importStatus === 'valide' ? 'Validé' : 'Brouillon'}
-                  </span>
-                  .
-                </p>
-              </div>
+              {/* New: select group for import */}
+
               <div className='flex flex-wrap items-center gap-2'>
-                <Button variant='outline' onClick={downloadModel}>
-                  Télécharger le modèle
+                <Button
+                  variant='outline'
+                  onClick={downloadModel}
+                  title='Télécharger le modèle'
+                  className="text-xs  px-1 py-1"
+                >
+                  Télécharger le modèle {importType.toUpperCase()} <Icons.import className="ml-1 h-4 w-4" />
                 </Button>
               </div>
+
               <div className='space-y-2'>
                 <Label className='text-sm font-medium'>
-                  Fichier à importer (CSV ou Excel)
+                  Fichier à importer (Excel)
                 </Label>
                 <FileUploader
                   accept={acceptMap}
@@ -549,51 +505,36 @@ export default function AjouterPointagePage() {
                   variant='default'
                 />
               </div>
+
               <div className='bg-muted/30 rounded-lg border p-3'>
                 <div className='mb-2 text-sm font-semibold'>
                   Format des colonnes
                 </div>
                 <ul className='text-muted-foreground list-inside list-disc text-sm'>
                   <li>
-                    <span className='font-medium'>employee_matricule</span> —
-                    chaîne (ex: EMP-0001)
+                    <span className='font-medium'>employee_matricule</span> — chaîne (ex: EMP-0001)
                   </li>
                   <li>
-                    <span className='font-medium'>planned_check_in</span> — date
-                    et heure (AAAA-MM-JJ HH:mm)
+                    <span className='font-medium'>check_in</span> — date et heure (AAAA-MM-JJ HH:mm)
                   </li>
                   <li>
-                    <span className='font-medium'>planned_check_out</span> —
-                    date et heure (AAAA-MM-JJ HH:mm)
-                  </li>
-                  <li>
-                    <span className='font-medium'>check_in</span> — date et
-                    heure (AAAA-MM-JJ HH:mm)
-                  </li>
-                  <li>
-                    <span className='font-medium'>check_out</span> — date et
-                    heure (AAAA-MM-JJ HH:mm)
-                  </li>
-                  <li>
-                    <span className='font-medium'>worked_day</span> — date
-                    (AAAA-MM-JJ)
-                  </li>
-                  <li>
-                    <span className='font-medium'>source</span> — valeurs:{' '}
-                    <span className='font-mono'>manuel</span> ou{' '}
-                    <span className='font-mono'>automatique</span>
+                    <span className='font-medium'>check_out</span> — date et heure (AAAA-MM-JJ HH:mm)
                   </li>
                 </ul>
+                <p className='text-muted-foreground mt-2 text-xs'>
+                  La source est automatiquement définie sur « automatique » lors
+                  de l&apos;import.
+                </p>
               </div>
-              <p className='text-muted-foreground text-xs'>
-                Les endpoints d&apos;import sont mock côté backend. Pour un
-                upload réel, il faudra une API de réception de fichier.
-              </p>
             </div>
             <DialogFooter>
               <Button
                 onClick={() => onImportUpload(importFiles)}
-                disabled={importFiles.length === 0}
+                disabled={
+                  importFiles.length === 0 ||
+                  selectedGroupId == null ||
+                  !importWorkedDay
+                }
               >
                 Importer
               </Button>

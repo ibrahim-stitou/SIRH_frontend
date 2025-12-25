@@ -121,7 +121,8 @@ export const apiRoutes = {
       update: (id: number | string) => `${API_BASE}/groups/${id}`,
       delete: (id: number | string) => `${API_BASE}/groups/${id}`,
       members: (id: number | string) => `${API_BASE}/groups/${id}/members`,
-      updateMembers: (id: number | string) => `${API_BASE}/groups/${id}/members`
+      updateMembers: (id: number | string) => `${API_BASE}/groups/${id}/members`,
+      groupByEmployee: (employeeId: number | string) =>`${API_BASE}/groups/employee/${employeeId}`
     },
     pointages: {
       list: `${API_BASE}/pointages`,

@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import CustomTable from '@/components/custom/data-table/custom-table';
+import {Icons} from '@/components/icons';
 import {
   CustomTableColumn,
   CustomTableFilterConfig,
@@ -29,7 +30,6 @@ import {
   DialogTitle,
   DialogFooter
 } from '@/components/ui/dialog';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import {
   Tooltip,
@@ -47,6 +47,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { StatusBadge } from '@/components/custom/status-badge';
 import { FileUploader } from '@/components/file-uploader';
 import type { DropzoneProps } from 'react-dropzone';
+import { DatePickerField } from '@/components/custom/DatePickerField';
+import { SelectField } from '@/components/custom/SelectField';
+import { useForm } from 'react-hook-form';
 
 interface EmployeeLite {
   id: number | string;
@@ -90,15 +93,28 @@ export default function PointagesListing() {
 
   // Import modal state
   const [showImportModal, setShowImportModal] = useState(false);
-  const [importType, setImportType] = useState<'csv' | 'excel'>('csv');
-  const [importStatus, setImportStatus] = useState<'bruillon' | 'valide'>(
-    'bruillon'
-  );
+  const importType = 'excel';
+  const importStatus = 'bruillon';
   const [refuseOpen, setRefuseOpen] = useState(false);
   const [refuseLoading, setRefuseLoading] = useState(false);
   const [refuseReason, setRefuseReason] = useState('');
   const [rowToRefuse, setRowToRefuse] = useState<PointageRow | null>(null);
   const [importFiles, setImportFiles] = useState<File[]>([]);
+  const [groups, setGroups] = useState<
+    { label: string; value: string | number }[]
+  >([]);
+  const [selectedGroupId, setSelectedGroupId] = useState<
+    string | number | null
+  >(null);
+  const [importWorkedDay, setImportWorkedDay] = useState<string | null>(null);
+
+  const importModalForm = useForm<{ groupId: string }>({
+    defaultValues: { groupId: '' }
+  });
+  const importGroupId = importModalForm.watch('groupId');
+  useEffect(() => {
+    setSelectedGroupId(importGroupId ? importGroupId : null);
+  }, [importGroupId]);
 
   useEffect(() => {
     let mounted = true;
@@ -111,6 +127,18 @@ export default function PointagesListing() {
           value: e.id
         }));
         if (mounted) setEmployees(opts);
+      })
+      .catch(() => void 0);
+
+    // Load groups for import
+    apiClient
+      .get(apiRoutes.admin.groups.list)
+      .then((res) => {
+        const gopts = (res.data?.data || res.data || []).map((g: any) => ({
+          label: g.name ?? g.label ?? `Groupe ${g.id}`,
+          value: g.id
+        }));
+        if (mounted) setGroups(gopts);
       })
       .catch(() => void 0);
 
@@ -175,10 +203,7 @@ export default function PointagesListing() {
   // Import actions: open modal + download model
   const onOpenImport = () => setShowImportModal(true);
   const onDownloadModel = () => {
-    const url =
-      importType === 'csv'
-        ? apiRoutes.admin.pointages.export.modelCsv
-        : apiRoutes.admin.pointages.export.modelXlsx;
+    const url = apiRoutes.admin.pointages.export.modelXlsx;
     if (typeof window !== 'undefined') window.open(url, '_blank');
   };
 
@@ -188,12 +213,18 @@ export default function PointagesListing() {
       const form = new FormData();
       form.append('file', file);
       form.append('status', importStatus);
+      if (selectedGroupId != null)
+        form.append('groupId', String(selectedGroupId));
+      if (importWorkedDay) form.append('worked_day', importWorkedDay);
+      form.append('source', 'automatique');
       await apiClient.post(apiRoutes.admin.pointages.import, form, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       toast.success('Import des pointages lancé');
       setShowImportModal(false);
       setImportFiles([]);
+      setSelectedGroupId(null);
+      setImportWorkedDay(null);
       _tableInstance?.refresh?.();
     } catch (e: any) {
       toast.error(e?.response?.data?.message || "Erreur lors de l'import");
@@ -201,16 +232,13 @@ export default function PointagesListing() {
     }
   };
   const acceptMap = useMemo<DropzoneProps['accept']>(() => {
-    return (
-      importType === 'csv'
-        ? { 'text/csv': ['.csv'] }
-        : {
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-              ['.xlsx'],
-            'application/vnd.ms-excel': ['.xls']
-          }
-    ) as DropzoneProps['accept'];
-  }, [importType]);
+    return {
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': [
+        '.xlsx'
+      ],
+      'application/vnd.ms-excel': ['.xls']
+    } as DropzoneProps['accept'];
+  }, []);
 
   const columns: CustomTableColumn<PointageRow>[] = useMemo(
     () => [
@@ -234,18 +262,6 @@ export default function PointagesListing() {
           ) : (
             '—'
           )
-      },
-      {
-        data: 'planned_check_in',
-        label: 'Entrée planifiée',
-        sortable: true,
-        render: (v) => (v ? format(new Date(v), 'yyyy-MM-dd HH:mm') : '—')
-      },
-      {
-        data: 'planned_check_out',
-        label: 'Sortie planifiée',
-        sortable: true,
-        render: (v) => (v ? format(new Date(v), 'yyyy-MM-dd HH:mm') : '—')
       },
       {
         data: 'check_in',
@@ -285,26 +301,9 @@ export default function PointagesListing() {
         render: (v: PointageRow['source']) => (
           <StatusBadge
             tone={v === 'automatique' ? 'info' : 'warning'}
-            label={v || '—'}
+            label={v === 'automatique' ? 'Automatique' : 'Manuel'}
           />
         )
-      },
-      {
-        data: 'status',
-        label: 'Statut',
-        sortable: true,
-        render: (v: PointageRow['status']) => {
-          const map: Record<
-            string,
-            { text: string; tone: 'neutral' | 'success' | 'danger' }
-          > = {
-            bruillon: { text: 'Brouillon', tone: 'neutral' },
-            valide: { text: 'Validé', tone: 'success' },
-            rejete: { text: 'Rejeté', tone: 'danger' }
-          };
-          const m = (v && map[v]) || map['bruillon'];
-          return <StatusBadge label={m.text} tone={m.tone} />;
-        }
       },
       {
         data: 'actions',
@@ -340,69 +339,11 @@ export default function PointagesListing() {
               </TooltipTrigger>
               <TooltipContent>Modifier</TooltipContent>
             </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant='outline'
-                  className='h-8 w-8 p-1.5'
-                  onClick={() => onValidate(row)}
-                  title='Valider'
-                  disabled={
-                    !(row.status === 'bruillon' || row.status === 'valide')
-                  }
-                >
-                  <CheckCircle2 className='h-4 w-4 text-emerald-600' />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Valider</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant='destructive'
-                  className='h-8 w-8 p-1.5'
-                  onClick={() => onOpenRefuse(row)}
-                  title='Refuser'
-                  disabled={
-                    !(row.status === 'bruillon' || row.status === 'valide')
-                  }
-                >
-                  <XCircle className='h-4 w-4' />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent
-                className='tooltip-content rounded-md bg-red-100 px-2 py-1 text-red-600 shadow-md'
-                sideOffset={5}
-              >
-                Refuser
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant='destructive'
-                  className='h-8 w-8 bg-red-100 p-1.5 text-red-600 hover:bg-red-200'
-                  onClick={() => onAskDelete(row)}
-                  title='Supprimer'
-                  disabled={
-                    !(row.status === 'bruillon' || row.status === 'rejete')
-                  }
-                >
-                  <Trash2 className='h-4 w-4' />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent
-                className='tooltip-content rounded-md bg-red-100 px-2 py-1 text-red-600 shadow-md'
-                sideOffset={5}
-              >
-                Supprimer
-              </TooltipContent>
-            </Tooltip>
           </div>
         )
       }
     ],
-    [router, onValidate]
+    [router]
   );
 
   const filters: CustomTableFilterConfig[] = useMemo(
@@ -451,7 +392,7 @@ export default function PointagesListing() {
           </p>
         </div>
         <div className='flex flex-wrap items-center gap-2'>
-          <Button onClick={onOpenImport} title='Importer (CSV ou Excel)'>
+          <Button onClick={onOpenImport} title='Importer (Excel)'>
             <Upload className='mr-2 h-4 w-4' /> Importer
           </Button>
           <Button
@@ -484,69 +425,52 @@ export default function PointagesListing() {
               <DialogTitle>Importer des pointages</DialogTitle>
             </DialogHeader>
             <div className='space-y-4'>
-              <div>
-                <Label className='mb-2 block text-sm font-medium'>
-                  Type de fichier
-                </Label>
-                <RadioGroup
-                  value={importType}
-                  onValueChange={(v) => setImportType(v as 'csv' | 'excel')}
-                  className='grid grid-cols-2 gap-2'
-                >
-                  <div className='flex items-center space-x-2 rounded-md border p-2'>
-                    <RadioGroupItem value='csv' id='type-csv' />
-                    <Label htmlFor='type-csv'>CSV</Label>
-                  </div>
-                  <div className='flex items-center space-x-2 rounded-md border p-2'>
-                    <RadioGroupItem value='excel' id='type-excel' />
-                    <Label htmlFor='type-excel'>Excel</Label>
-                  </div>
-                </RadioGroup>
-              </div>
+              <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                <div>
+                  <Label className='mb-2 block text-sm font-medium'>
+                    Groupe cible pour l&apos;import
+                  </Label>
+                  <SelectField
+                    name='groupId'
+                    label={''}
+                    control={importModalForm.control}
+                    options={groups.map((g) => ({
+                      id: g.value,
+                      label: g.label
+                    }))}
+                    placeholder='Sélectionner un groupe'
+                    required
+                  />
+                </div>
 
-              <div>
-                <Label className='mb-2 block text-sm font-medium'>
-                  Statut appliqué aux pointages importés
-                </Label>
-                <RadioGroup
-                  value={importStatus}
-                  onValueChange={(v) =>
-                    setImportStatus(v as 'bruillon' | 'valide')
-                  }
-                  className='grid grid-cols-2 gap-2'
-                >
-                  <div className='flex items-center space-x-2 rounded-md border p-2'>
-                    <RadioGroupItem value='bruillon' id='status-bruillon' />
-                    <Label htmlFor='status-bruillon'>Brouillon</Label>
-                  </div>
-                  <div className='flex items-center space-x-2 rounded-md border p-2'>
-                    <RadioGroupItem value='valide' id='status-valide' />
-                    <Label htmlFor='status-valide'>Validé</Label>
-                  </div>
-                </RadioGroup>
-                <p className='text-muted-foreground mt-2 text-xs'>
-                  Tous les enregistrements importés seront créés avec le statut
-                  sélectionné:{' '}
-                  <span className='font-semibold'>
-                    {importStatus === 'valide' ? 'Validé' : 'Brouillon'}
-                  </span>
-                  .
-                </p>
+                {/* New: select single worked day for import */}
+                <div>
+                  <Label className='mb-2 block text-sm font-medium'>
+                    Jour presté des pointages importés
+                  </Label>
+                  <DatePickerField
+                    value={importWorkedDay || ''}
+                    onChange={(d) => setImportWorkedDay(d || null)}
+                    placeholder='Sélectionner la date de la journée'
+                  />
+                </div>
               </div>
+              {/* New: select group for import */}
 
               <div className='flex flex-wrap items-center gap-2'>
                 <Button
                   variant='outline'
                   onClick={onDownloadModel}
                   title='Télécharger le modèle'
+                  className="text-xs  px-1 py-1"
                 >
-                  Télécharger le modèle {importType.toUpperCase()}
+                  Télécharger le modèle {importType.toUpperCase()} <Icons.import className="ml-1 h-4 w-4" />
                 </Button>
               </div>
 
               <div className='space-y-2'>
                 <Label className='text-sm font-medium'>
-                  Fichier à importer (CSV ou Excel)
+                  Fichier à importer (Excel)
                 </Label>
                 <FileUploader
                   accept={acceptMap}
@@ -566,49 +490,32 @@ export default function PointagesListing() {
                 </div>
                 <ul className='text-muted-foreground list-inside list-disc text-sm'>
                   <li>
-                    <span className='font-medium'>employee_matricule</span> —
-                    chaîne (ex: EMP-0001)
-                  </li>
-                  <li>
-                    <span className='font-medium'>planned_check_in</span> — date
-                    et heure (AAAA-MM-JJ HH:mm)
-                  </li>
-                  <li>
-                    <span className='font-medium'>planned_check_out</span> —
-                    date et heure (AAAA-MM-JJ HH:mm)
+                    <span className='font-medium'>matricule</span> — matricule
+                    d&apos;employee (ex: EMP-0001)
                   </li>
                   <li>
                     <span className='font-medium'>check_in</span> — date et
-                    heure (AAAA-MM-JJ HH:mm)
+                    heure d&apos;entrée (AAAA-MM-JJ HH:mm)
                   </li>
                   <li>
                     <span className='font-medium'>check_out</span> — date et
-                    heure (AAAA-MM-JJ HH:mm)
-                  </li>
-                  <li>
-                    <span className='font-medium'>worked_day</span> — date
-                    (AAAA-MM-JJ)
-                  </li>
-                  <li>
-                    <span className='font-medium'>source</span> — valeurs:{' '}
-                    <span className='font-mono'>manuel</span> ou{' '}
-                    <span className='font-mono'>automatique</span>
+                    heure de sortie (AAAA-MM-JJ HH:mm)
                   </li>
                 </ul>
+                <p className='text-muted-foreground mt-2 text-xs'>
+                  La source est automatiquement définie sur « automatique » lors
+                  de l&apos;import.
+                </p>
               </div>
-
-              <p className='text-muted-foreground text-xs'>
-                Remplissez le fichier avec ces colonnes et importez-le via le
-                module backend (mock endpoints prêts côté Front). Pour un import
-                réel, un upload de fichier sera nécessaire côté API. Le statut
-                sélectionné ci-dessus sera appliqué aux enregistrements
-                importés.
-              </p>
             </div>
             <DialogFooter>
               <Button
                 onClick={() => onImportUpload(importFiles)}
-                disabled={importFiles.length === 0}
+                disabled={
+                  importFiles.length === 0 ||
+                  selectedGroupId == null ||
+                  !importWorkedDay
+                }
               >
                 Importer
               </Button>
