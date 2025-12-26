@@ -29,7 +29,8 @@
     "absencesConges": "Absences & Congés",
     "absences": "Absences",
     "conges": "Congés",
-    "calendrier": "Calendrier"
+    "calendrier": "Calendrier",
+    "paie": "gestion du paie"
   },
   "header": {
     "language": "Langue"

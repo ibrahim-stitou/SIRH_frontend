@@ -1,0 +1,51 @@
+[
+  {
+    "id": "1",
+    "nom": "Janvier 2025",
+    "mois": 1,
+    "annee": 2025,
+    "dateDebut": "2025-01-01",
+    "dateFin": "2025-01-31",
+    "dateEcheance": "2025-02-05",
+    "statut": "en_cours",
+    "nombreEmployes": 15,
+    "montantTotal": 285000.00,
+    "dateCreation": "2025-01-01T10:00:00Z",
+    "dateModification": "2025-01-15T14:30:00Z",
+    "creePar": "user1",
+    "modifiePar": "user1"
+  },
+  {
+    "id": "2",
+    "nom": "Décembre 2024",
+    "mois": 12,
+    "annee": 2024,
+    "dateDebut": "2024-12-01",
+    "dateFin": "2024-12-31",
+    "dateEcheance": "2025-01-05",
+    "statut": "valide",
+    "nombreEmployes": 15,
+    "montantTotal": 280000.00,
+    "dateCreation": "2024-12-01T10:00:00Z",
+    "dateModification": "2024-12-28T16:00:00Z",
+    "creePar": "user1",
+    "modifiePar": "user1"
+  },
+  {
+    "id": "3",
+    "nom": "Novembre 2024",
+    "mois": 11,
+    "annee": 2024,
+    "dateDebut": "2024-11-01",
+    "dateFin": "2024-11-30",
+    "dateEcheance": "2024-12-05",
+    "statut": "paye",
+    "nombreEmployes": 14,
+    "montantTotal": 270000.00,
+    "dateCreation": "2024-11-01T10:00:00Z",
+    "dateModification": "2024-11-30T17:00:00Z",
+    "creePar": "user1",
+    "modifiePar": "user1"
+  }
+]
+

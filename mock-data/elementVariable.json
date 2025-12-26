@@ -1,0 +1,68 @@
+[
+  {
+    "id": "1",
+    "bulletinPaieId": "1",
+    "employeId": "1",
+    "rubriquePaieId": "3",
+    "libelle": "Prime de rendement",
+    "type": "gain",
+    "montant": 1500.00,
+    "base": null,
+    "taux": null,
+    "quantite": null,
+    "commentaire": "Objectifs du mois atteints"
+  },
+  {
+    "id": "2",
+    "bulletinPaieId": "1",
+    "employeId": "1",
+    "rubriquePaieId": "4",
+    "libelle": "Heures supplémentaires 125%",
+    "type": "gain",
+    "montant": 800.00,
+    "base": 80,
+    "taux": 1.25,
+    "quantite": 8,
+    "commentaire": "8 heures supplémentaires"
+  },
+  {
+    "id": "3",
+    "bulletinPaieId": "2",
+    "employeId": "2",
+    "rubriquePaieId": "3",
+    "libelle": "Prime de rendement",
+    "type": "gain",
+    "montant": 1200.00,
+    "base": null,
+    "taux": null,
+    "quantite": null,
+    "commentaire": "Performance exceptionnelle"
+  },
+  {
+    "id": "4",
+    "bulletinPaieId": "1",
+    "employeId": "1",
+    "rubriquePaieId": "12",
+    "libelle": "Avance sur salaire",
+    "type": "autre",
+    "montant": -2000.00,
+    "base": null,
+    "taux": null,
+    "quantite": null,
+    "commentaire": "Avance novembre"
+  },
+  {
+    "id": "5",
+    "bulletinPaieId": "1",
+    "employeId": "1",
+    "rubriquePaieId": "14",
+    "libelle": "Indemnité de transport",
+    "type": "autre",
+    "montant": 500.00,
+    "base": null,
+    "taux": null,
+    "quantite": null,
+    "commentaire": "Frais de déplacement"
+  }
+]
+

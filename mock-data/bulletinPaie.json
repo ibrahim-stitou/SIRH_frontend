@@ -1,0 +1,303 @@
+[
+  {
+    "id": "1",
+    "periodePaieId": "1",
+    "employeId": "1",
+    "numeroEmploye": "EMP001",
+    "nomComplet": "Ahmed Benali",
+    "poste": "Développeur Senior",
+    "departement": "IT",
+    "dateEmbauche": "2020-03-15",
+    "rib": "123456789012345678901234",
+    "cnss": "1234567890",
+    "joursTravailles": 22,
+    "joursConges": 2,
+    "joursAbsences": 0,
+    "joursRecuperationPayes": 0,
+    "heuresTravaillees": 176,
+    "salaireBase": 15000.00,
+    "tauxHoraire": 85.23,
+    "elementsVariables": [
+      {
+        "rubriquePaieId": "2",
+        "libelle": "Prime d'ancienneté",
+        "type": "gain",
+        "montant": 1500.00
+      },
+      {
+        "rubriquePaieId": "3",
+        "libelle": "Prime de rendement",
+        "type": "gain",
+        "montant": 1500.00
+      },
+      {
+        "rubriquePaieId": "4",
+        "libelle": "Heures supplémentaires 125%",
+        "type": "gain",
+        "montant": 800.00
+      }
+    ],
+    "totalGains": 18800.00,
+    "salaireBrut": 18800.00,
+    "salaireBrutImposable": 18800.00,
+    "cotisations": [
+      {
+        "rubriquePaieId": "7",
+        "libelle": "CNSS Part Salariale",
+        "type": "cotisation",
+        "montant": -268.80,
+        "base": 6000.00,
+        "taux": 4.48
+      },
+      {
+        "rubriquePaieId": "9",
+        "libelle": "AMO Part Salariale",
+        "type": "cotisation",
+        "montant": -424.88,
+        "base": 18800.00,
+        "taux": 2.26
+      },
+      {
+        "rubriquePaieId": "10",
+        "libelle": "Impôt sur le revenu",
+        "type": "cotisation",
+        "montant": -2850.00
+      },
+      {
+        "rubriquePaieId": "11",
+        "libelle": "Mutuelle",
+        "type": "cotisation",
+        "montant": -200.00
+      }
+    ],
+    "totalCotisations": -3743.68,
+    "autresElements": [
+      {
+        "rubriquePaieId": "12",
+        "libelle": "Avance sur salaire",
+        "type": "autre",
+        "montant": -2000.00
+      },
+      {
+        "rubriquePaieId": "14",
+        "libelle": "Indemnité de transport",
+        "type": "autre",
+        "montant": 500.00
+      }
+    ],
+    "totalAutres": -1500.00,
+    "salaireNet": 13556.32,
+    "cumulAnnuel": {
+      "salaireBrut": 225600.00,
+      "cotisations": 44924.16,
+      "salaireNet": 162675.84,
+      "ir": 34200.00
+    },
+    "cotisationsPatronales": [
+      {
+        "rubriquePaieId": "6",
+        "libelle": "CNSS Part Patronale",
+        "type": "cotisation",
+        "montant": 960.00,
+        "base": 6000.00,
+        "taux": 16.0
+      },
+      {
+        "rubriquePaieId": "8",
+        "libelle": "AMO Part Patronale",
+        "type": "cotisation",
+        "montant": 659.88,
+        "base": 18800.00,
+        "taux": 3.51
+      }
+    ],
+    "totalCotisationsPatronales": 1619.88,
+    "statut": "en_cours",
+    "dateCreation": "2025-01-15T10:00:00Z",
+    "dateModification": "2025-01-20T14:30:00Z"
+  },
+  {
+    "id": "2",
+    "periodePaieId": "1",
+    "employeId": "2",
+    "numeroEmploye": "EMP002",
+    "nomComplet": "Fatima Zahra El Amrani",
+    "poste": "Chef de projet",
+    "departement": "IT",
+    "dateEmbauche": "2019-06-01",
+    "rib": "234567890123456789012345",
+    "cnss": "2345678901",
+    "joursTravailles": 20,
+    "joursConges": 4,
+    "joursAbsences": 0,
+    "joursRecuperationPayes": 0,
+    "heuresTravaillees": 160,
+    "salaireBase": 18000.00,
+    "tauxHoraire": 112.50,
+    "elementsVariables": [
+      {
+        "rubriquePaieId": "2",
+        "libelle": "Prime d'ancienneté",
+        "type": "gain",
+        "montant": 1800.00
+      },
+      {
+        "rubriquePaieId": "3",
+        "libelle": "Prime de rendement",
+        "type": "gain",
+        "montant": 1200.00
+      }
+    ],
+    "totalGains": 21000.00,
+    "salaireBrut": 21000.00,
+    "salaireBrutImposable": 21000.00,
+    "cotisations": [
+      {
+        "rubriquePaieId": "7",
+        "libelle": "CNSS Part Salariale",
+        "type": "cotisation",
+        "montant": -268.80,
+        "base": 6000.00,
+        "taux": 4.48
+      },
+      {
+        "rubriquePaieId": "9",
+        "libelle": "AMO Part Salariale",
+        "type": "cotisation",
+        "montant": -474.60,
+        "base": 21000.00,
+        "taux": 2.26
+      },
+      {
+        "rubriquePaieId": "10",
+        "libelle": "Impôt sur le revenu",
+        "type": "cotisation",
+        "montant": -3500.00
+      },
+      {
+        "rubriquePaieId": "11",
+        "libelle": "Mutuelle",
+        "type": "cotisation",
+        "montant": -250.00
+      }
+    ],
+    "totalCotisations": -4493.40,
+    "autresElements": [],
+    "totalAutres": 0.00,
+    "salaireNet": 16506.60,
+    "cumulAnnuel": {
+      "salaireBrut": 252000.00,
+      "cotisations": 53920.80,
+      "salaireNet": 198079.20,
+      "ir": 42000.00
+    },
+    "cotisationsPatronales": [
+      {
+        "rubriquePaieId": "6",
+        "libelle": "CNSS Part Patronale",
+        "type": "cotisation",
+        "montant": 960.00,
+        "base": 6000.00,
+        "taux": 16.0
+      },
+      {
+        "rubriquePaieId": "8",
+        "libelle": "AMO Part Patronale",
+        "type": "cotisation",
+        "montant": 737.10,
+        "base": 21000.00,
+        "taux": 3.51
+      }
+    ],
+    "totalCotisationsPatronales": 1697.10,
+    "statut": "en_cours",
+    "dateCreation": "2025-01-15T10:00:00Z",
+    "dateModification": "2025-01-18T11:15:00Z"
+  },
+  {
+    "id": "3",
+    "periodePaieId": "1",
+    "employeId": "3",
+    "numeroEmploye": "EMP003",
+    "nomComplet": "Mohammed Tazi",
+    "poste": "Développeur Junior",
+    "departement": "IT",
+    "dateEmbauche": "2023-01-10",
+    "rib": "345678901234567890123456",
+    "cnss": "3456789012",
+    "joursTravailles": 22,
+    "joursConges": 2,
+    "joursAbsences": 0,
+    "joursRecuperationPayes": 0,
+    "heuresTravaillees": 176,
+    "salaireBase": 8000.00,
+    "tauxHoraire": 45.45,
+    "elementsVariables": [],
+    "totalGains": 8000.00,
+    "salaireBrut": 8000.00,
+    "salaireBrutImposable": 8000.00,
+    "cotisations": [
+      {
+        "rubriquePaieId": "7",
+        "libelle": "CNSS Part Salariale",
+        "type": "cotisation",
+        "montant": -268.80,
+        "base": 6000.00,
+        "taux": 4.48
+      },
+      {
+        "rubriquePaieId": "9",
+        "libelle": "AMO Part Salariale",
+        "type": "cotisation",
+        "montant": -180.80,
+        "base": 8000.00,
+        "taux": 2.26
+      },
+      {
+        "rubriquePaieId": "10",
+        "libelle": "Impôt sur le revenu",
+        "type": "cotisation",
+        "montant": -800.00
+      },
+      {
+        "rubriquePaieId": "11",
+        "libelle": "Mutuelle",
+        "type": "cotisation",
+        "montant": -150.00
+      }
+    ],
+    "totalCotisations": -1399.60,
+    "autresElements": [],
+    "totalAutres": 0.00,
+    "salaireNet": 6600.40,
+    "cumulAnnuel": {
+      "salaireBrut": 96000.00,
+      "cotisations": 16795.20,
+      "salaireNet": 79204.80,
+      "ir": 9600.00
+    },
+    "cotisationsPatronales": [
+      {
+        "rubriquePaieId": "6",
+        "libelle": "CNSS Part Patronale",
+        "type": "cotisation",
+        "montant": 960.00,
+        "base": 6000.00,
+        "taux": 16.0
+      },
+      {
+        "rubriquePaieId": "8",
+        "libelle": "AMO Part Patronale",
+        "type": "cotisation",
+        "montant": 280.80,
+        "base": 8000.00,
+        "taux": 3.51
+      }
+    ],
+    "totalCotisationsPatronales": 1240.80,
+    "statut": "en_cours",
+    "dateCreation": "2025-01-15T10:00:00Z",
+    "dateModification": "2025-01-15T10:00:00Z"
+  }
+]
+

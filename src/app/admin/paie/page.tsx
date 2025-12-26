@@ -1,12 +1,12 @@
-'use client'
-import { useParams } from 'next/navigation';
+import PaieListing from '@/features/paie/paie-listing';
+import PageContainer from '@/components/layout/page-container';
 
 export default function PaiePage() {
-  const params = useParams();
-  const id = params.id as string;
   return (
-    <div>
-      <h1>Paie du {id}</h1>
-    </div>
-  )
+    <PageContainer scrollable={false}>
+      <div className='flex flex-1 flex-col space-y-6'>
+        <PaieListing />
+      </div>
+    </PageContainer>
+  );
 }

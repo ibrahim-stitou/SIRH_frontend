@@ -36,5 +36,9 @@ module.exports = {
   pointages: require('./mock-data/pointages.json'),
   tableauPresence: require('./mock-data/tableauPresence.json'),
   tableauPresenceEmployees: require('./mock-data/tableauPresenceEmployees.json'),
-  tableauPresenceDays: require('./mock-data/tableauPresenceDays.json')
+  tableauPresenceDays: require('./mock-data/tableauPresenceDays.json'),
+  periodePaie: require('./mock-data/periodePaie.json'),
+  bulletinPaie: require('./mock-data/bulletinPaie.json'),
+  rubriquePaie: require('./mock-data/rubriquePaie.json'),
+  elementVariable: require('./mock-data/elementVariable.json')
 };

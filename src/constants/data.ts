@@ -111,6 +111,12 @@ export const useNavItems = (): NavItem[] => {
           description: 'US-EMP-014'
         }
       ]
+    },
+    {
+      title: t('sidebar.paie'),
+      url: '/admin/paie',
+      icon: 'bank',
+      description: 'US-EMP-013'
     }
   ];
 };

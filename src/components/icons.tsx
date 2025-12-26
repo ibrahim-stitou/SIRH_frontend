@@ -76,6 +76,7 @@ import {
   IconUserX,
   IconX,
   IconClockPause,
+  IconBuildingBank,
   IconZoomCheck
 } from '@tabler/icons-react';
 import { CalendarRange, UserRoundCheck } from 'lucide-react';
@@ -88,6 +89,7 @@ export const Icons = {
   administratif: IconFoldersFilled,
   affectation: IconUserPlus,
   alertTriangle: IconAlertTriangle,
+  bank:IconBuildingBank,
   arrowRight: IconArrowRight,
   clock: IconStopwatch,
   bell: IconBell,

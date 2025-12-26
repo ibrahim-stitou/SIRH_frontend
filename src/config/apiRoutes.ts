@@ -192,6 +192,38 @@ export const apiRoutes = {
         compteursByEmployee: (employeeId: number | string) =>
           `${API_BASE}/conge-compteurs/employee/${employeeId}`
       }
+    },
+    paies: {
+      periodes: {
+        list: `${API_BASE}/paies`,
+        create: `${API_BASE}/paies`,
+        show: (id: number | string) => `${API_BASE}/paies/${id}`,
+        update: (id: number | string) => `${API_BASE}/paies/${id}`,
+        delete: (id: number | string) => `${API_BASE}/paies/${id}`
+      },
+      bulletins: {
+        list: (periodeId: number | string) => `${API_BASE}/paies/${periodeId}/bulletins`,
+        show: (periodeId: number | string, employeId: number | string) =>
+          `${API_BASE}/paies/${periodeId}/bulletins/${employeId}`,
+        update: (periodeId: number | string, employeId: number | string) =>
+          `${API_BASE}/paies/${periodeId}/bulletins/${employeId}`,
+        addElement: (periodeId: number | string, employeId: number | string) =>
+          `${API_BASE}/paies/${periodeId}/bulletins/${employeId}/elements`,
+        deleteElement: (
+          periodeId: number | string,
+          employeId: number | string,
+          rubriqueId: number | string
+        ) => `${API_BASE}/paies/${periodeId}/bulletins/${employeId}/elements/${rubriqueId}`
+      },
+      rubriques: {
+        list: `${API_BASE}/paies/rubriques/all`,
+        byType: (type: string) => `${API_BASE}/paies/rubriques/type/${type}`
+      },
+      virements: {
+        list: (periodeId: number | string) => `${API_BASE}/paies/${periodeId}/virements`,
+        execute: (periodeId: number | string) =>
+          `${API_BASE}/paies/${periodeId}/virements/executer`
+      }
     }
   }
 };
