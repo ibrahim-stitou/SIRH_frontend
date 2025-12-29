@@ -37,6 +37,8 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import apiClient from '@/lib/api';
 import { apiRoutes } from '@/config/apiRoutes';
+import { useForm, useWatch } from 'react-hook-form';
+import { SelectField } from '@/components/custom/SelectField';
 
 interface ElementVariable {
   rubriquePaieId: string;
@@ -46,6 +48,9 @@ interface ElementVariable {
   base?: number;
   taux?: number;
   quantite?: number;
+  // Nouveaux champs patronaux
+  tauxPatronal?: number;
+  montantPatronal?: number;
 }
 
 interface BulletinPaie {
@@ -107,6 +112,12 @@ export default function BulletinTab({
   const [rubriques, setRubriques] = useState<RubriquePaie[]>([]);
   const [loading, setLoading] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [employeesOptions, setEmployeesOptions] = useState<Array<{ id: number | string; label: string }>>([]);
+
+  // Form for employee selector
+  const { control, setValue } = useForm<{ employeeId: string | number }>({
+    defaultValues: { employeeId: (selectedEmployeeId as any) ?? undefined },
+  });
 
   // État pour l'ajout d'un élément variable
   const [newElement, setNewElement] = useState({
@@ -131,6 +142,26 @@ export default function BulletinTab({
 
     fetchRubriques();
   }, []);
+
+  // Charger la liste simple des employés pour le sélecteur
+  useEffect(() => {
+    const fetchEmployeesSimple = async () => {
+      try {
+        const resp = await apiClient.get(apiRoutes.admin.employees.simpleList);
+        const opts = (resp.data?.data || resp.data || [])
+          .map((e: any) => ({ id: e.id, label: `${e.firstName || ''} ${e.lastName || ''}`.trim() }))
+          .filter((o: any) => o.id !== undefined && o.label);
+        setEmployeesOptions(opts);
+        // Keep form in sync with selectedEmployeeId
+        if (selectedEmployeeId) {
+          setValue('employeeId', selectedEmployeeId as any);
+        }
+      } catch (error) {
+        console.error('Erreur chargement employés:', error);
+      }
+    };
+    fetchEmployeesSimple();
+  }, [selectedEmployeeId, setValue]);
 
   // Charger le bulletin de l'employé sélectionné
   useEffect(() => {
@@ -210,6 +241,32 @@ export default function BulletinTab({
     }
   };
 
+  // Helper: render employee selector
+  const EmployeeSelector = (
+    <div className="md:w-72 w-full">
+      <SelectField<{ employeeId: string | number }, 'employeeId'>
+        name="employeeId"
+        label="Employé"
+        control={control}
+        options={employeesOptions}
+        required
+        placeholder="Sélectionner un employé"
+        onFocus={undefined}
+        className=""
+      />
+      {/* React to value changes by subscribing via setValue hook trigger */}
+      {/* Since SelectField uses react-hook-form Controller, we can listen to change via a hidden effect using control._formValues if available. */}
+    </div>
+  );
+
+  // Subscribe to form value changes to propagate selection
+  const employeeId = useWatch({ control, name: 'employeeId' });
+  useEffect(() => {
+    if (employeeId !== undefined && employeeId !== null && String(employeeId) !== String(selectedEmployeeId)) {
+      onEmployeeChange(String(employeeId));
+    }
+  }, [employeeId, onEmployeeChange, selectedEmployeeId]);
+
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
@@ -222,10 +279,15 @@ export default function BulletinTab({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Bulletin de paie</CardTitle>
-          <CardDescription>
-            Sélectionnez un employé depuis l&apos;onglet &quot;Employés&quot; pour afficher son bulletin
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Bulletin de paie</CardTitle>
+              <CardDescription>
+                Sélectionnez un employé pour afficher son bulletin
+              </CardDescription>
+            </div>
+            {EmployeeSelector}
+          </div>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8 text-muted-foreground">
@@ -240,8 +302,13 @@ export default function BulletinTab({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Bulletin de paie</CardTitle>
-          <CardDescription>Chargement du bulletin...</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Bulletin de paie</CardTitle>
+              <CardDescription>Chargement du bulletin...</CardDescription>
+            </div>
+            {EmployeeSelector}
+          </div>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
@@ -257,10 +324,15 @@ export default function BulletinTab({
       {/* Informations employé */}
       <Card>
         <CardHeader>
-          <CardTitle>{bulletin.nomComplet}</CardTitle>
-          <CardDescription>
-            {bulletin.poste} - {bulletin.departement}
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>{bulletin.nomComplet}</CardTitle>
+              <CardDescription>
+                {bulletin.poste} - {bulletin.departement}
+              </CardDescription>
+            </div>
+            {EmployeeSelector}
+          </div>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-4">
@@ -291,7 +363,7 @@ export default function BulletinTab({
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Informations de temps</CardTitle>
-            <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+            <Sheet open={sheetOpen} onOpenChange={setSheetOpen} >
               <SheetTrigger asChild>
                 <Button size="sm">
                   <Plus className="mr-2 h-4 w-4" />
@@ -305,7 +377,7 @@ export default function BulletinTab({
                     Ajoutez un nouvel élément variable au bulletin de paie
                   </SheetDescription>
                 </SheetHeader>
-                <ScrollArea className="h-[calc(100vh-200px)] pr-4">
+                <ScrollArea className="h-[calc(100vh-200px)] pr-4 p-4">
                   <div className="space-y-4 py-4">
                     <div className="space-y-2">
                       <Label htmlFor="rubrique">Rubrique *</Label>
@@ -402,10 +474,12 @@ export default function BulletinTab({
                   </div>
                 </ScrollArea>
                 <SheetFooter>
-                  <SheetClose asChild>
+                  <div className="w-full flex items-center justify-end gap-2">
+                  <SheetClose asChild className="w-1/2">
                     <Button variant="outline">Annuler</Button>
                   </SheetClose>
-                  <Button onClick={handleAddElement}>Ajouter</Button>
+                  <Button onClick={handleAddElement} className="w-1/2">Ajouter</Button>
+                  </div>
                 </SheetFooter>
               </SheetContent>
             </Sheet>
@@ -455,31 +529,45 @@ export default function BulletinTab({
                   <TableHead className="text-right">Base</TableHead>
                   <TableHead className="text-right">Taux</TableHead>
                   <TableHead className="text-right">Montant</TableHead>
+                  <TableHead className="text-right">Taux patronal</TableHead>
+                  <TableHead className="text-right">Montant patronal</TableHead>
                   <TableHead className="w-[50px]"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 <TableRow>
                   <TableCell className="font-medium">Salaire de base</TableCell>
-                  <TableCell className="text-right">{bulletin.heuresTravaillees}h</TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="">{bulletin.heuresTravaillees}h</TableCell>
+                  <TableCell className="">
                     {bulletin.tauxHoraire.toFixed(2)} MAD/h
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="">
                     {bulletin.salaireBase.toFixed(2)} MAD
                   </TableCell>
+                  <TableCell className="">-</TableCell>
+                  <TableCell className="">-</TableCell>
                   <TableCell></TableCell>
                 </TableRow>
                 {bulletin.elementsVariables?.map((ev, index) => (
                   <TableRow key={index}>
                     <TableCell className="font-medium">{ev.libelle}</TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="">
                       {ev.base ? `${ev.base.toFixed(2)}` : '-'}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="">
                       {ev.taux ? `${ev.taux.toFixed(2)}` : '-'}
                     </TableCell>
-                    <TableCell className="text-right">{ev.montant.toFixed(2)} MAD</TableCell>
+                    <TableCell className="">{ev.montant.toFixed(2)} MAD</TableCell>
+                    <TableCell className="">
+                      {ev.tauxPatronal !== undefined && ev.tauxPatronal !== null
+                        ? `${ev.tauxPatronal.toFixed(2)}`
+                        : '-'}
+                    </TableCell>
+                    <TableCell className="">
+                      {ev.montantPatronal !== undefined && ev.montantPatronal !== null
+                        ? `${ev.montantPatronal.toFixed(2)} MAD`
+                        : '-'}
+                    </TableCell>
                     <TableCell>
                       <Button
                         size="icon"
@@ -497,18 +585,22 @@ export default function BulletinTab({
                   <TableCell colSpan={3} className="font-bold">
                     Salaire brut
                   </TableCell>
-                  <TableCell className="text-right font-bold">
+                  <TableCell className=" font-bold">
                     {bulletin.salaireBrut.toFixed(2)} MAD
                   </TableCell>
+                  <TableCell></TableCell>
+                  <TableCell></TableCell>
                   <TableCell></TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell colSpan={3} className="font-bold">
                     Salaire brut imposable
                   </TableCell>
-                  <TableCell className="text-right font-bold">
+                  <TableCell className=" font-bold">
                     {bulletin.salaireBrutImposable.toFixed(2)} MAD
                   </TableCell>
+                  <TableCell></TableCell>
+                  <TableCell></TableCell>
                   <TableCell></TableCell>
                 </TableRow>
               </TableFooter>
@@ -529,6 +621,8 @@ export default function BulletinTab({
                   <TableHead className="text-right">Base</TableHead>
                   <TableHead className="text-right">Taux</TableHead>
                   <TableHead className="text-right">Montant</TableHead>
+                  <TableHead className="text-right">Taux patronal</TableHead>
+                  <TableHead className="text-right">Montant patronal</TableHead>
                   <TableHead className="w-[50px]"></TableHead>
                 </TableRow>
               </TableHeader>
@@ -536,14 +630,24 @@ export default function BulletinTab({
                 {bulletin.cotisations?.map((cot, index) => (
                   <TableRow key={index}>
                     <TableCell className="font-medium">{cot.libelle}</TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="">
                       {cot.base ? `${cot.base.toFixed(2)}` : '-'}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="">
                       {cot.taux ? `${cot.taux.toFixed(2)}%` : '-'}
                     </TableCell>
-                    <TableCell className="text-right text-red-600">
+                    <TableCell className=" text-red-600">
                       {cot.montant.toFixed(2)} MAD
+                    </TableCell>
+                    <TableCell className="">
+                      {cot.tauxPatronal !== undefined && cot.tauxPatronal !== null
+                        ? `${cot.tauxPatronal.toFixed(2)}%`
+                        : '-'}
+                    </TableCell>
+                    <TableCell className="text-red-600">
+                      {cot.montantPatronal !== undefined && cot.montantPatronal !== null
+                        ? `${cot.montantPatronal.toFixed(2)} MAD`
+                        : '-'}
                     </TableCell>
                     <TableCell></TableCell>
                   </TableRow>
@@ -554,9 +658,11 @@ export default function BulletinTab({
                   <TableCell colSpan={3} className="font-bold">
                     Total cotisations
                   </TableCell>
-                  <TableCell className="text-right font-bold text-red-600">
+                  <TableCell className=" font-bold text-red-600">
                     {bulletin.totalCotisations.toFixed(2)} MAD
                   </TableCell>
+                  <TableCell></TableCell>
+                  <TableCell></TableCell>
                   <TableCell></TableCell>
                 </TableRow>
               </TableFooter>
@@ -576,6 +682,8 @@ export default function BulletinTab({
                   <TableRow>
                     <TableHead>Libellé</TableHead>
                     <TableHead className="text-right">Montant</TableHead>
+                    <TableHead className="text-right">Taux patronal</TableHead>
+                    <TableHead className="text-right">Montant patronal</TableHead>
                     <TableHead className="w-[50px]"></TableHead>
                   </TableRow>
                 </TableHeader>
@@ -584,11 +692,21 @@ export default function BulletinTab({
                     <TableRow key={index}>
                       <TableCell className="font-medium">{autre.libelle}</TableCell>
                       <TableCell
-                        className={`text-right ${
+                        className={` ${
                           autre.montant < 0 ? 'text-red-600' : 'text-green-600'
                         }`}
                       >
                         {autre.montant.toFixed(2)} MAD
+                      </TableCell>
+                      <TableCell className="">
+                        {autre.tauxPatronal !== undefined && autre.tauxPatronal !== null
+                          ? `${autre.tauxPatronal.toFixed(2)}`
+                          : '-'}
+                      </TableCell>
+                      <TableCell className="">
+                        {autre.montantPatronal !== undefined && autre.montantPatronal !== null
+                          ? `${autre.montantPatronal.toFixed(2)} MAD`
+                          : '-'}
                       </TableCell>
                       <TableCell>
                         <Button
@@ -656,4 +774,3 @@ export default function BulletinTab({
     </div>
   );
 }
-

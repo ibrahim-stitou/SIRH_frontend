@@ -2,7 +2,7 @@
   {
     "id": "1",
     "bulletinPaieId": "1",
-    "employeId": "1",
+    "employeId": "1000",
     "rubriquePaieId": "3",
     "libelle": "Prime de rendement",
     "type": "gain",
@@ -10,12 +10,14 @@
     "base": null,
     "taux": null,
     "quantite": null,
-    "commentaire": "Objectifs du mois atteints"
+    "commentaire": "Objectifs du mois atteints",
+    "tauxPatronal": 0,
+    "montantPatronal": 0
   },
   {
     "id": "2",
     "bulletinPaieId": "1",
-    "employeId": "1",
+    "employeId": "1000",
     "rubriquePaieId": "4",
     "libelle": "Heures supplémentaires 125%",
     "type": "gain",
@@ -23,12 +25,14 @@
     "base": 80,
     "taux": 1.25,
     "quantite": 8,
-    "commentaire": "8 heures supplémentaires"
+    "commentaire": "8 heures supplémentaires",
+    "tauxPatronal": 0,
+    "montantPatronal": 0
   },
   {
     "id": "3",
     "bulletinPaieId": "2",
-    "employeId": "2",
+    "employeId": "1002",
     "rubriquePaieId": "3",
     "libelle": "Prime de rendement",
     "type": "gain",
@@ -36,12 +40,14 @@
     "base": null,
     "taux": null,
     "quantite": null,
-    "commentaire": "Performance exceptionnelle"
+    "commentaire": "Performance exceptionnelle",
+    "tauxPatronal": 0,
+    "montantPatronal": 0
   },
   {
     "id": "4",
     "bulletinPaieId": "1",
-    "employeId": "1",
+    "employeId": "1000",
     "rubriquePaieId": "12",
     "libelle": "Avance sur salaire",
     "type": "autre",
@@ -49,12 +55,14 @@
     "base": null,
     "taux": null,
     "quantite": null,
-    "commentaire": "Avance novembre"
+    "commentaire": "Avance novembre",
+    "tauxPatronal": 0,
+    "montantPatronal": 0
   },
   {
     "id": "5",
     "bulletinPaieId": "1",
-    "employeId": "1",
+    "employeId": "1000",
     "rubriquePaieId": "14",
     "libelle": "Indemnité de transport",
     "type": "autre",
@@ -62,7 +70,8 @@
     "base": null,
     "taux": null,
     "quantite": null,
-    "commentaire": "Frais de déplacement"
+    "commentaire": "Frais de déplacement",
+    "tauxPatronal": 0,
+    "montantPatronal": 0
   }
 ]
-
