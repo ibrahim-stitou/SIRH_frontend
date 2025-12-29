@@ -4,9 +4,8 @@ import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
-  CardTitle
+  // CardTitle
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,7 +38,7 @@ import {
 } from '@/components/ui/table';
 import {
   Plus,
-  Loader2,
+  // Loader2,
   Trash2,
   User,
   Calendar,
@@ -82,6 +81,12 @@ import { useForm as useFormRHF } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import PageContainer from '@/components/layout/page-container';
+import { formatNumber } from '@/features/paie/bulletin-tab/utils/format';
+import { toNullableNumber, safeNumber } from '@/features/paie/bulletin-tab/utils/numbers';
+import { createPreviewUrl, downloadUrl, printPdfUrl } from '@/features/paie/bulletin-tab/utils/doc';
+import GenerateDialog from '@/features/paie/bulletin-tab/components/GenerateDialog';
+import PreviewDialog from '@/features/paie/bulletin-tab/components/PreviewDialog';
+import ConfirmDialog from '@/features/paie/bulletin-tab/components/ConfirmDialog';
 
 interface RubriquePaie {
   id: string;
@@ -97,14 +102,14 @@ interface BulletinTabProps {
   periodeId: string;
   selectedEmployeeId: string | null;
   onEmployeeChange: (employeeId: string) => void;
-  periodeStatut?: string; // nouvelle prop pour le statut de la période
+  periodeStatut?: string;
 }
 
 export default function BulletinTab({
   periodeId,
   selectedEmployeeId,
   onEmployeeChange,
-  periodeStatut // nouvelle prop
+  periodeStatut
 }: BulletinTabProps) {
   const [bulletin, setBulletin] = useState<BulletinPaieType | null>(null);
   const [rubriques, setRubriques] = useState<RubriquePaie[]>([]);
@@ -151,7 +156,6 @@ export default function BulletinTab({
     fetchRubriques();
   }, []);
 
-  // Charger la liste simple des employés pour le sélecteur
   useEffect(() => {
     const fetchEmployeesSimple = async () => {
       try {
@@ -163,7 +167,6 @@ export default function BulletinTab({
           }))
           .filter((o: any) => o.id !== undefined && o.label);
         setEmployeesOptions(opts);
-        // Keep form in sync with selectedEmployeeId
         if (selectedEmployeeId) {
           setValue('employeeId', selectedEmployeeId as any);
         }
@@ -264,9 +267,6 @@ export default function BulletinTab({
   });
 
   // Remplacer la fonction handleAddElement pour qu'elle reçoive les données du formulaire validées par react-hook-form/zod
-  const toNullableNumber = (v?: string) =>
-    v === undefined || v === '' ? null : parseFloat(v);
-
   const handleAddElement = async (data: any) => {
     const rubrique = rubriques.find((r) => r.id === data.rubriquePaieId);
     if (!rubrique) {
@@ -380,13 +380,6 @@ export default function BulletinTab({
   };
 
   const handleSaveTempsTravail = async () => {
-    const safeNumber = (value: string, fieldLabel: string) => {
-      if (value === '' || isNaN(Number(value))) {
-        throw new Error(`Valeur invalide pour ${fieldLabel}`);
-      }
-      return parseFloat(value);
-    };
-
     try {
       const payload = {
         joursTravailles: safeNumber(
@@ -501,7 +494,7 @@ export default function BulletinTab({
             ? 'application/pdf'
             : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       });
-      const url = URL.createObjectURL(blob);
+      const url = createPreviewUrl(blob);
 
       setPreviewUrl(url);
       setShowPreviewDialog(true);
@@ -514,25 +507,16 @@ export default function BulletinTab({
   const handleDownloadBulletin = () => {
     if (!previewUrl) return;
 
-    const link = document.createElement('a');
-    link.href = previewUrl;
-    link.download = `bulletin_${bulletin?.nomComplet}_${new Date().toISOString().split('T')[0]}.${selectedFormat}`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    downloadUrl(
+      previewUrl,
+      `bulletin_${bulletin?.nomComplet}_${new Date().toISOString().split('T')[0]}.${selectedFormat}`
+    );
   };
 
   const handlePrintBulletin = () => {
     if (!previewUrl || selectedFormat !== 'pdf') return;
 
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = previewUrl;
-    document.body.appendChild(iframe);
-
-    iframe.onload = () => {
-      iframe.contentWindow?.print();
-    };
+    printPdfUrl(previewUrl);
   };
 
   const handleCloseBulletin = async () => {
@@ -590,11 +574,11 @@ export default function BulletinTab({
   }, [employeeId, onEmployeeChange, selectedEmployeeId]);
 
   // Utilitaire pour formater les nombres de façon sécurisée
-  function formatNumber(val: unknown, digits = 2, suffix = '') {
-    return typeof val === 'number' && isFinite(val)
-      ? val.toFixed(digits) + (suffix ? ` ${suffix}` : '')
-      : '-';
-  }
+  // function formatNumber(val: unknown, digits = 2, suffix = '') {
+  //   return typeof val === 'number' && isFinite(val)
+  //     ? val.toFixed(digits) + (suffix ? ` ${suffix}` : '')
+  //     : '-';
+  // }
 
   // Helper pour bloquer les actions
   const isCloture =
@@ -1590,142 +1574,35 @@ export default function BulletinTab({
         )}
 
         {/* Dialog pour choisir le format de génération */}
-        <Dialog open={showGenerateDialog} onOpenChange={setShowGenerateDialog}>
-          <DialogContent className='sm:max-w-md'>
-            <DialogHeader>
-              <DialogTitle>Générer le bulletin de paie</DialogTitle>
-              <DialogDescription>
-                Choisissez le format de génération pour le bulletin de{' '}
-                {bulletin?.nomComplet}
-              </DialogDescription>
-            </DialogHeader>
-            <div className='py-4'>
-              <RadioGroup
-                value={selectedFormat}
-                onValueChange={(value: 'pdf' | 'excel') =>
-                  setSelectedFormat(value)
-                }
-              >
-                <div className='flex cursor-pointer items-center space-x-2 rounded-lg border p-4 hover:bg-slate-50 dark:hover:bg-slate-900'>
-                  <RadioGroupItem value='pdf' id='pdf' />
-                  <Label htmlFor='pdf' className='flex-1 cursor-pointer'>
-                    <div className='flex items-center gap-3'>
-                      <FileText className='h-5 w-5 text-red-600' />
-                      <div>
-                        <div className='font-medium'>Format PDF</div>
-                        <div className='text-muted-foreground text-xs'>
-                          Document imprimable et portable
-                        </div>
-                      </div>
-                    </div>
-                  </Label>
-                </div>
-                <div className='mt-3 flex cursor-pointer items-center space-x-2 rounded-lg border p-4 hover:bg-slate-50 dark:hover:bg-slate-900'>
-                  <RadioGroupItem value='excel' id='excel' />
-                  <Label htmlFor='excel' className='flex-1 cursor-pointer'>
-                    <div className='flex items-center gap-3'>
-                      <FileText className='h-5 w-5 text-green-600' />
-                      <div>
-                        <div className='font-medium'>Format Excel</div>
-                        <div className='text-muted-foreground text-xs'>
-                          Fichier Excel modifiable
-                        </div>
-                      </div>
-                    </div>
-                  </Label>
-                </div>
-              </RadioGroup>
-            </div>
-            <DialogFooter>
-              <Button
-                variant='outline'
-                onClick={() => setShowGenerateDialog(false)}
-              >
-                Annuler
-              </Button>
-              <Button onClick={handleConfirmGenerate}>Générer</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <GenerateDialog
+          open={showGenerateDialog}
+          format={selectedFormat}
+          onChangeFormat={(value) => setSelectedFormat(value)}
+          onCancel={() => setShowGenerateDialog(false)}
+          onConfirm={handleConfirmGenerate}
+          employeeName={bulletin?.nomComplet}
+        />
 
         {/* Dialog pour prévisualiser et imprimer */}
-        <Dialog open={showPreviewDialog} onOpenChange={setShowPreviewDialog}>
-          <DialogContent className='h-[90vh] max-w-4xl'>
-            <DialogHeader>
-              <DialogTitle>Aperçu du bulletin de paie</DialogTitle>
-              <DialogDescription>
-                Bulletin de {bulletin?.nomComplet} - Format{' '}
-                {selectedFormat.toUpperCase()}
-              </DialogDescription>
-            </DialogHeader>
-            <div className='flex-1 overflow-hidden'>
-              {selectedFormat === 'pdf' && previewUrl ? (
-                <iframe
-                  src={previewUrl}
-                  className='h-[calc(90vh-200px)] w-full rounded-lg border'
-                  title='Aperçu du bulletin'
-                />
-              ) : (
-                <div className='flex h-[calc(90vh-200px)] items-center justify-center rounded-lg border bg-slate-50 dark:bg-slate-900'>
-                  <div className='text-center'>
-                    <FileText className='text-muted-foreground mx-auto mb-4 h-16 w-16' />
-                    <p className='text-muted-foreground'>
-                      {selectedFormat === 'excel'
-                        ? "L'aperçu n'est pas disponible pour les fichiers Excel. Téléchargez le fichier pour le consulter."
-                        : "Chargement de l'aperçu..."}
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-            <DialogFooter className='gap-2'>
-              <Button
-                variant='outline'
-                onClick={() => setShowPreviewDialog(false)}
-              >
-                Fermer
-              </Button>
-              <Button variant='outline' onClick={handleDownloadBulletin}>
-                <Download className='mr-2 h-4 w-4' />
-                Télécharger
-              </Button>
-              {selectedFormat === 'pdf' && (
-                <Button onClick={handlePrintBulletin}>
-                  <Printer className='mr-2 h-4 w-4' />
-                  Imprimer
-                </Button>
-              )}
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <PreviewDialog
+          open={showPreviewDialog}
+          format={selectedFormat}
+          previewUrl={previewUrl}
+          onClose={() => setShowPreviewDialog(false)}
+          onDownload={handleDownloadBulletin}
+          onPrint={handlePrintBulletin}
+          employeeName={bulletin?.nomComplet}
+        />
 
         {/* Dialog de confirmation générique */}
-        <Dialog
+        <ConfirmDialog
           open={confirmDialog.open}
-          onOpenChange={(open) => setConfirmDialog((d) => ({ ...d, open }))}
-        >
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Confirmation</DialogTitle>
-              <DialogDescription>{confirmDialog.message}</DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button
-                variant='outline'
-                onClick={() => setConfirmDialog((d) => ({ ...d, open: false }))}
-              >
-                Annuler
-              </Button>
-              <Button
-                onClick={async () => {
-                  if (confirmDialog.onConfirm) await confirmDialog.onConfirm();
-                }}
-              >
-                Confirmer
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+          message={confirmDialog.message}
+          onCancel={() => setConfirmDialog((d) => ({ ...d, open: false }))}
+          onConfirm={async () => {
+            if (confirmDialog.onConfirm) await confirmDialog.onConfirm();
+          }}
+        />
       </div>
     </PageContainer>
   );

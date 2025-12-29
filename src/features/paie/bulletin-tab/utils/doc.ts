@@ -1,4 +1,4 @@
-// Utility: blob/preview helpers for document generation
+// Document helpers: preview URL, download, and print
 export function createPreviewUrl(blob: Blob): string {
   return URL.createObjectURL(blob);
 }
@@ -22,10 +22,3 @@ export function printPdfUrl(url: string) {
   };
 }
 
-export const BlobUtils = {
-  createPreviewUrl,
-  downloadUrl,
-  printPdfUrl,
-};
-
-export {};
