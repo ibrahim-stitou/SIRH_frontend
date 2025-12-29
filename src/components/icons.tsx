@@ -89,7 +89,7 @@ export const Icons = {
   administratif: IconFoldersFilled,
   affectation: IconUserPlus,
   alertTriangle: IconAlertTriangle,
-  bank:IconBuildingBank,
+  bank: IconBuildingBank,
   arrowRight: IconArrowRight,
   clock: IconStopwatch,
   bell: IconBell,

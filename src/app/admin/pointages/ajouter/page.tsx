@@ -119,10 +119,14 @@ export default function AjouterPointagePage() {
     if (typeof window !== 'undefined') window.open(url, '_blank');
   };
 
-  const [selectedGroupId, setSelectedGroupId] = useState<string | number | null>(null);
+  const [selectedGroupId, setSelectedGroupId] = useState<
+    string | number | null
+  >(null);
   const [importWorkedDay, setImportWorkedDay] = useState<string | null>(null);
   // form for import modal SelectField
-  const importModalForm = useHookForm<{ groupId: string }>({ defaultValues: { groupId: '' } });
+  const importModalForm = useHookForm<{ groupId: string }>({
+    defaultValues: { groupId: '' }
+  });
   const importGroupId = importModalForm.watch('groupId');
   useEffect(() => {
     setSelectedGroupId(importGroupId ? importGroupId : null);
@@ -296,7 +300,9 @@ export default function AjouterPointagePage() {
   };
 
   // New: state for selected employee's group(s)
-  const [employeeGroups, setEmployeeGroups] = useState<{ id: string | number; name: string }[]>([]);
+  const [employeeGroups, setEmployeeGroups] = useState<
+    { id: string | number; name: string }[]
+  >([]);
   const selectedEmployeeId = watch('employeeId');
   useEffect(() => {
     if (!selectedEmployeeId) {
@@ -309,7 +315,12 @@ export default function AjouterPointagePage() {
       .then((res) => {
         const groups = (res.data?.data || res.data || []) as any[];
         if (!cancelled) {
-          setEmployeeGroups(groups.map(g => ({ id: g.id, name: g.name ?? g.label ?? `Groupe ${g.id}` })));
+          setEmployeeGroups(
+            groups.map((g) => ({
+              id: g.id,
+              name: g.name ?? g.label ?? `Groupe ${g.id}`
+            }))
+          );
         }
       })
       .catch(() => {
@@ -369,18 +380,30 @@ export default function AjouterPointagePage() {
                 />
                 {/* Show employee group(s) fetched from API */}
                 <div className='text-muted-foreground mt-1 text-xs'>
-                  Groupe{employeeGroups.length > 1 ? 's' : ''}: {employeeGroups.length > 0 ? employeeGroups.map((g, i) => <span key={g.id} className='font-medium'>{g.name}{i < employeeGroups.length - 1 ? ', ' : ''}</span>) : '—'}
+                  Groupe{employeeGroups.length > 1 ? 's' : ''}:{' '}
+                  {employeeGroups.length > 0
+                    ? employeeGroups.map((g, i) => (
+                        <span key={g.id} className='font-medium'>
+                          {g.name}
+                          {i < employeeGroups.length - 1 ? ', ' : ''}
+                        </span>
+                      ))
+                    : '—'}
                 </div>
               </div>
               <div>
                 <Label className='mb-1'>
-                  Entrée (date et heure) <span className='text-destructive'>*</span>
+                  Entrée (date et heure){' '}
+                  <span className='text-destructive'>*</span>
                 </Label>
                 <Controller
                   control={control}
                   name='check_in'
                   render={({ field }) => (
-                    <DateTimePicker value={field.value} onChange={field.onChange} />
+                    <DateTimePicker
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
                   )}
                 />
                 {errors.check_in && (
@@ -391,13 +414,17 @@ export default function AjouterPointagePage() {
               </div>
               <div>
                 <Label className='mb-1'>
-                  Sortie (date et heure) <span className='text-destructive'>*</span>
+                  Sortie (date et heure){' '}
+                  <span className='text-destructive'>*</span>
                 </Label>
                 <Controller
                   control={control}
                   name='check_out'
                   render={({ field }) => (
-                    <DateTimePicker value={field.value} onChange={field.onChange} />
+                    <DateTimePicker
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
                   )}
                 />
                 {errors.check_out && (
@@ -456,12 +483,16 @@ export default function AjouterPointagePage() {
                     name='groupId'
                     label={''}
                     control={importModalForm.control}
-                    options={groups.map((g) => ({ id: g.value, label: g.label }))}
+                    options={groups.map((g) => ({
+                      id: g.value,
+                      label: g.label
+                    }))}
                     placeholder='Sélectionner un groupe'
                     required
                   />
                   <p className='text-muted-foreground mt-2 text-xs'>
-                    L&apos;import sera appliqué pour tous les membres du groupe sélectionné.
+                    L&apos;import sera appliqué pour tous les membres du groupe
+                    sélectionné.
                   </p>
                 </div>
 
@@ -484,9 +515,10 @@ export default function AjouterPointagePage() {
                   variant='outline'
                   onClick={downloadModel}
                   title='Télécharger le modèle'
-                  className="text-xs  px-1 py-1"
+                  className='px-1 py-1 text-xs'
                 >
-                  Télécharger le modèle {importType.toUpperCase()} <Icons.import className="ml-1 h-4 w-4" />
+                  Télécharger le modèle {importType.toUpperCase()}{' '}
+                  <Icons.import className='ml-1 h-4 w-4' />
                 </Button>
               </div>
 
@@ -512,13 +544,16 @@ export default function AjouterPointagePage() {
                 </div>
                 <ul className='text-muted-foreground list-inside list-disc text-sm'>
                   <li>
-                    <span className='font-medium'>employee_matricule</span> — chaîne (ex: EMP-0001)
+                    <span className='font-medium'>employee_matricule</span> —
+                    chaîne (ex: EMP-0001)
                   </li>
                   <li>
-                    <span className='font-medium'>check_in</span> — date et heure (AAAA-MM-JJ HH:mm)
+                    <span className='font-medium'>check_in</span> — date et
+                    heure (AAAA-MM-JJ HH:mm)
                   </li>
                   <li>
-                    <span className='font-medium'>check_out</span> — date et heure (AAAA-MM-JJ HH:mm)
+                    <span className='font-medium'>check_out</span> — date et
+                    heure (AAAA-MM-JJ HH:mm)
                   </li>
                 </ul>
                 <p className='text-muted-foreground mt-2 text-xs'>

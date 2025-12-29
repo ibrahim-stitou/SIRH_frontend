@@ -121,8 +121,10 @@ export const apiRoutes = {
       update: (id: number | string) => `${API_BASE}/groups/${id}`,
       delete: (id: number | string) => `${API_BASE}/groups/${id}`,
       members: (id: number | string) => `${API_BASE}/groups/${id}/members`,
-      updateMembers: (id: number | string) => `${API_BASE}/groups/${id}/members`,
-      groupByEmployee: (employeeId: number | string) =>`${API_BASE}/groups/employee/${employeeId}`
+      updateMembers: (id: number | string) =>
+        `${API_BASE}/groups/${id}/members`,
+      groupByEmployee: (employeeId: number | string) =>
+        `${API_BASE}/groups/employee/${employeeId}`
     },
     pointages: {
       list: `${API_BASE}/pointages`,
@@ -199,28 +201,48 @@ export const apiRoutes = {
         create: `${API_BASE}/paies`,
         show: (id: number | string) => `${API_BASE}/paies/${id}`,
         update: (id: number | string) => `${API_BASE}/paies/${id}`,
-        delete: (id: number | string) => `${API_BASE}/paies/${id}`
+        delete: (id: number | string) => `${API_BASE}/paies/${id}`,
+        cloture: (id: number | string) => `${API_BASE}/paies/${id}/cloture`,
+        generatePDF: (id: number | string) =>
+          `${API_BASE}/paies/${id}/generate-pdf`,
+        sendEmails: (id: number | string) =>
+          `${API_BASE}/paies/${id}/send-emails`,
+        export: (id: number | string) => `${API_BASE}/paies/${id}/export`
       },
       bulletins: {
-        list: (periodeId: number | string) => `${API_BASE}/paies/${periodeId}/bulletins`,
+        list: (periodeId: number | string) =>
+          `${API_BASE}/paies/${periodeId}/bulletins`,
         show: (periodeId: number | string, employeId: number | string) =>
           `${API_BASE}/paies/${periodeId}/bulletins/${employeId}`,
         update: (periodeId: number | string, employeId: number | string) =>
           `${API_BASE}/paies/${periodeId}/bulletins/${employeId}`,
+        updateTempsTravail: (
+          periodeId: number | string,
+          employeId: number | string
+        ) =>
+          `${API_BASE}/paies/${periodeId}/bulletins/${employeId}/temps-travail`,
         addElement: (periodeId: number | string, employeId: number | string) =>
           `${API_BASE}/paies/${periodeId}/bulletins/${employeId}/elements`,
         deleteElement: (
           periodeId: number | string,
           employeId: number | string,
           rubriqueId: number | string
-        ) => `${API_BASE}/paies/${periodeId}/bulletins/${employeId}/elements/${rubriqueId}`
+        ) =>
+          `${API_BASE}/paies/${periodeId}/bulletins/${employeId}/elements/${rubriqueId}`,
+        reset: (periodeId: number | string, employeId: number | string) =>
+          `${API_BASE}/paies/${periodeId}/bulletins/${employeId}/reset`,
+        generate: (periodeId: number | string, employeId: number | string) =>
+          `${API_BASE}/paies/${periodeId}/bulletins/${employeId}/generate`,
+        close: (periodeId: number | string, employeId: number | string) =>
+          `${API_BASE}/paies/${periodeId}/bulletins/${employeId}/close`
       },
       rubriques: {
         list: `${API_BASE}/paies/rubriques/all`,
         byType: (type: string) => `${API_BASE}/paies/rubriques/type/${type}`
       },
       virements: {
-        list: (periodeId: number | string) => `${API_BASE}/paies/${periodeId}/virements`,
+        list: (periodeId: number | string) =>
+          `${API_BASE}/paies/${periodeId}/virements`,
         execute: (periodeId: number | string) =>
           `${API_BASE}/paies/${periodeId}/virements/executer`
       }

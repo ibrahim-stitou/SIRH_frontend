@@ -3,6 +3,7 @@
 ## ✅ Modifications effectuées
 
 ### 1. Liste des périodes de paie (`paie-listing.tsx`)
+
 - ✅ Utilise `CustomTable` au lieu de `DataTable`
 - ✅ Format identique à `EmployeeListing`
 - ✅ Colonnes définies avec `CustomTableColumn`
@@ -11,7 +12,9 @@
 - ✅ Statistiques en temps réel
 
 ### 2. Page de détail de période (`[id]/page.tsx`)
+
 **Onglet Employés** :
+
 - ✅ `CustomTable` pour afficher la liste des employés
 - ✅ Colonnes : N° Employé, Nom, Poste, Département, Salaire net, Statut
 - ✅ Action "Voir la paie" qui redirige vers l'onglet Bulletin
@@ -19,15 +22,18 @@
 - ✅ Pagination côté serveur
 
 **Onglet Bulletin** :
+
 - ✅ Affichage automatique de l'employé sélectionné depuis l'onglet Employés
 - ✅ Pas de `BulletinListing` séparé (supprimé)
 - ✅ Message si aucun employé sélectionné
 - ✅ SelectField possible pour changer d'employé (pas encore implémenté mais structure prête)
 
 **Onglet Virements** :
+
 - ✅ Inchangé, utilise `apiClient`
 
 ### 3. Routes serveur (`server/routes/paies.js`)
+
 - ✅ Format DataTable pour `/api/paies` (périodes)
 - ✅ Format DataTable pour `/api/paies/:id/bulletins` (employés)
 - ✅ Pagination : `start`, `length`
@@ -36,6 +42,7 @@
 - ✅ Réponse : `{ data, recordsTotal, recordsFiltered }`
 
 ### 4. Configuration API (`apiRoutes.ts`)
+
 - ✅ Routes complètes pour paies, bulletins, rubriques, virements
 - ✅ Format cohérent avec les autres modules
 
@@ -67,24 +74,28 @@ mock-data/
 ## 🎯 Workflow utilisateur
 
 ### 1. Liste des périodes
+
 1. Accéder à `/admin/paie`
 2. Voir toutes les périodes dans un `CustomTable`
 3. Rechercher, filtrer, trier
 4. Cliquer sur "Consulter" pour voir le détail
 
 ### 2. Détail d'une période - Onglet Employés
+
 1. Voir la liste des employés en `CustomTable`
 2. Rechercher un employé
 3. Cliquer sur l'icône "👁️ Voir la paie"
 4. → Redirection automatique vers l'onglet Bulletin avec l'employé sélectionné
 
 ### 3. Détail d'une période - Onglet Bulletin
+
 1. Affichage automatique du bulletin de l'employé sélectionné
 2. Si aucun employé sélectionné : message invitant à sélectionner depuis l'onglet Employés
 3. Ajouter des éléments variables via le panneau latéral
 4. Voir le bulletin complet avec gains, cotisations, autres éléments
 
 ### 4. Détail d'une période - Onglet Virements
+
 1. Voir tous les virements
 2. Sélectionner les virements à exécuter
 3. Exporter au format CSV
@@ -100,8 +111,8 @@ const columns: CustomTableColumn<PeriodePaie>[] = [
     data: 'nom',
     label: 'Période',
     sortable: true,
-    render: (value) => <div className="font-medium">{value}</div>,
-  },
+    render: (value) => <div className='font-medium'>{value}</div>
+  }
   // ... autres colonnes
 ];
 
@@ -109,7 +120,7 @@ const filters: CustomTableFilterConfig[] = [
   {
     field: 'nom',
     label: 'Période',
-    type: 'text',
+    type: 'text'
   },
   {
     field: 'statut',
@@ -117,9 +128,9 @@ const filters: CustomTableFilterConfig[] = [
     type: 'datatable-select',
     options: [
       { label: 'Tous', value: '' },
-      { label: 'En cours', value: 'en_cours' },
-    ],
-  },
+      { label: 'En cours', value: 'en_cours' }
+    ]
+  }
 ];
 
 <CustomTable<PeriodePaie>
@@ -127,7 +138,7 @@ const filters: CustomTableFilterConfig[] = [
   url={apiRoutes.admin.paies.periodes.list}
   filters={filters}
   onInit={(instance) => setTableInstance(instance)}
-/>
+/>;
 ```
 
 ### Dans `[id]/page.tsx` (onglet Employés) :
@@ -137,7 +148,7 @@ const employeesColumns: CustomTableColumn<BulletinPaie>[] = [
   {
     data: 'numeroEmploye',
     label: 'N° Employé',
-    sortable: true,
+    sortable: true
   },
   // ... autres colonnes
   {
@@ -148,8 +159,8 @@ const employeesColumns: CustomTableColumn<BulletinPaie>[] = [
       <Button onClick={() => handleViewBulletin(row.employeId)}>
         <Eye />
       </Button>
-    ),
-  },
+    )
+  }
 ];
 
 <CustomTable<BulletinPaie>
@@ -157,12 +168,13 @@ const employeesColumns: CustomTableColumn<BulletinPaie>[] = [
   url={apiRoutes.admin.paies.bulletins.list(periodeId)}
   filters={employeesFilters}
   onInit={(instance) => setTableInstance(instance)}
-/>
+/>;
 ```
 
 ## 📊 Format des données API
 
 ### Périodes (GET /api/paies)
+
 ```json
 {
   "data": [
@@ -173,7 +185,7 @@ const employeesColumns: CustomTableColumn<BulletinPaie>[] = [
       "dateFin": "2025-01-31",
       "statut": "en_cours",
       "nombreEmployes": 15,
-      "montantTotal": 285000.00
+      "montantTotal": 285000.0
     }
   ],
   "recordsTotal": 100,
@@ -182,6 +194,7 @@ const employeesColumns: CustomTableColumn<BulletinPaie>[] = [
 ```
 
 ### Bulletins (GET /api/paies/:id/bulletins)
+
 ```json
 {
   "data": [
@@ -241,4 +254,3 @@ const employeesColumns: CustomTableColumn<BulletinPaie>[] = [
 ---
 
 **Module de paie complètement fonctionnel avec CustomTable** ✅
-

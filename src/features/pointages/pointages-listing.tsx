@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import CustomTable from '@/components/custom/data-table/custom-table';
-import {Icons} from '@/components/icons';
+import { Icons } from '@/components/icons';
 import {
   CustomTableColumn,
   CustomTableFilterConfig,
@@ -462,9 +462,10 @@ export default function PointagesListing() {
                   variant='outline'
                   onClick={onDownloadModel}
                   title='Télécharger le modèle'
-                  className="text-xs  px-1 py-1"
+                  className='px-1 py-1 text-xs'
                 >
-                  Télécharger le modèle {importType.toUpperCase()} <Icons.import className="ml-1 h-4 w-4" />
+                  Télécharger le modèle {importType.toUpperCase()}{' '}
+                  <Icons.import className='ml-1 h-4 w-4' />
                 </Button>
               </div>
 

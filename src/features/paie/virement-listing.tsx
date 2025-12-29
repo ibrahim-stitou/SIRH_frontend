@@ -3,6 +3,6 @@
 interface VirementListingProps {
   id: string;
 }
-export default function VirementListing({id}:VirementListingProps) {
-  return
+export default function VirementListing({ id }: VirementListingProps) {
+  return;
 }

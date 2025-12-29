@@ -97,8 +97,10 @@ export default function TableauPresenceListing() {
   );
   const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [generateLoading, setGenerateLoading] = useState(false);
-const acceptMap = {
-    '.xlsx': ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+  const acceptMap = {
+    '.xlsx': [
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    ],
     '.xls': ['application/vnd.ms-excel']
   };
   useEffect(() => {
@@ -484,8 +486,6 @@ const acceptMap = {
                   </SelectContent>
                 </Select>
               </div>
-
-
             </div>
             <div className='space-y-2'>
               <Label className='text-sm font-medium'>
@@ -512,8 +512,8 @@ const acceptMap = {
                   d&apos;employee (ex: EMP-0001)
                 </li>
                 <li>
-                  <span className='font-medium'>jour ( 1 {'-->'} 31 ) </span> — statut du jour
-                  (ex: P, AB,...)
+                  <span className='font-medium'>jour ( 1 {'-->'} 31 ) </span> —
+                  statut du jour (ex: P, AB,...)
                 </li>
                 <li>
                   <span className='font-medium'>total_h</span> — total heures
@@ -523,7 +523,6 @@ const acceptMap = {
                   <span className='font-medium'>hs</span> — total heures
                   supplémentaires (ex: 2)
                 </li>
-
               </ul>
             </div>
             <DialogFooter className='flex items-center justify-between gap-2'>

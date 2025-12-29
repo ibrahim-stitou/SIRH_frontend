@@ -58,7 +58,7 @@
     "type": "gain",
     "categorie": "heures_sup",
     "base": "horaire",
-    "taux": 1.50,
+    "taux": 1.5,
     "plafond": null,
     "soumisImpot": true,
     "soumisSecuriteSociale": true,
@@ -182,4 +182,3 @@
     "actif": true
   }
 ]
-

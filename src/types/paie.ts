@@ -40,6 +40,8 @@ export interface ElementVariable {
   taux?: number;
   quantite?: number;
   commentaire?: string;
+  tauxPatronal?: number;
+  montantPatronal?: number;
 }
 
 export interface CumulAnnuel {
@@ -79,9 +81,10 @@ export interface BulletinPaie {
   cumulAnnuel: CumulAnnuel;
   cotisationsPatronales?: ElementVariable[];
   totalCotisationsPatronales?: number;
-  statut: 'en_cours' | 'valide' | 'paye';
+  statut: 'en_cours' | 'valide' | 'paye' | 'cloture';
   dateCreation?: string;
   dateModification?: string;
+  dateCloture?: string;
 }
 
 export interface Virement {
@@ -100,4 +103,3 @@ export interface PaieFilters {
   statut?: string;
   searchTerm?: string;
 }
-

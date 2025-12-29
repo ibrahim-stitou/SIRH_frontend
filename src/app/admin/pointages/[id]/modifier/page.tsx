@@ -55,7 +55,9 @@ export default function ModifierPointagePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [employees, setEmployees] = useState<EmployeeOption[]>([]);
-  const [employeeGroups, setEmployeeGroups] = useState<{ id: string | number; name: string }[]>([]);
+  const [employeeGroups, setEmployeeGroups] = useState<
+    { id: string | number; name: string }[]
+  >([]);
 
   const form = useForm<PointageForm>({
     resolver: zodResolver(pointageSchema),
@@ -63,7 +65,7 @@ export default function ModifierPointagePage() {
       employeeId: '' as unknown as string,
       check_in: '',
       check_out: '',
-      worked_day: '',
+      worked_day: ''
     }
   });
   const { control, handleSubmit, reset, formState, watch } = form;
@@ -88,7 +90,7 @@ export default function ModifierPointagePage() {
             employeeId: row.employeeId ?? ('' as unknown as string),
             check_in: row.check_in ?? '',
             check_out: row.check_out ?? '',
-            worked_day: row.worked_day ?? null,
+            worked_day: row.worked_day ?? null
           });
         }
       })
@@ -114,7 +116,12 @@ export default function ModifierPointagePage() {
       .then((res) => {
         const groups = (res.data?.data || res.data || []) as any[];
         if (!cancelled) {
-          setEmployeeGroups(groups.map(g => ({ id: g.id, name: g.name ?? g.label ?? `Groupe ${g.id}` })));
+          setEmployeeGroups(
+            groups.map((g) => ({
+              id: g.id,
+              name: g.name ?? g.label ?? `Groupe ${g.id}`
+            }))
+          );
         }
       })
       .catch(() => {
@@ -243,7 +250,7 @@ export default function ModifierPointagePage() {
         employeeId: data.employeeId,
         check_in: data.check_in,
         check_out: data.check_out,
-        worked_day: data.worked_day ?? undefined,
+        worked_day: data.worked_day ?? undefined
       });
       toast.success('Pointage modifié');
       router.push('/admin/pointages');
@@ -343,16 +350,29 @@ export default function ModifierPointagePage() {
                     }))}
                     required
                     placeholder='Choisir un employé'
-                    error={form.formState.errors.employeeId?.message as string | undefined}
+                    error={
+                      form.formState.errors.employeeId?.message as
+                        | string
+                        | undefined
+                    }
                   />
                   <div className='text-muted-foreground mt-1 text-xs'>
-                    Groupe{employeeGroups.length > 1 ? 's' : ''}: {employeeGroups.length > 0 ? employeeGroups.map((g, i) => <span key={g.id} className='font-medium'>{g.name}{i < employeeGroups.length - 1 ? ', ' : ''}</span>) : '—'}
+                    Groupe{employeeGroups.length > 1 ? 's' : ''}:{' '}
+                    {employeeGroups.length > 0
+                      ? employeeGroups.map((g, i) => (
+                          <span key={g.id} className='font-medium'>
+                            {g.name}
+                            {i < employeeGroups.length - 1 ? ', ' : ''}
+                          </span>
+                        ))
+                      : '—'}
                   </div>
                 </div>
                 <div>
                   {/* Entrée (date et heure) */}
                   <Label className='mb-1'>
-                    Entrée (date et heure) <span className='text-destructive'>*</span>
+                    Entrée (date et heure){' '}
+                    <span className='text-destructive'>*</span>
                   </Label>
                   <Controller
                     control={form.control}
@@ -373,7 +393,8 @@ export default function ModifierPointagePage() {
                 <div>
                   {/* Sortie (date et heure) */}
                   <Label className='mb-1'>
-                    Sortie (date et heure) <span className='text-destructive'>*</span>
+                    Sortie (date et heure){' '}
+                    <span className='text-destructive'>*</span>
                   </Label>
                   <Controller
                     control={form.control}
@@ -394,7 +415,8 @@ export default function ModifierPointagePage() {
                 <div>
                   {/* Jour presté (date) */}
                   <Label className='mb-1'>
-                    Jour presté (date) <span className='text-destructive'>*</span>
+                    Jour presté (date){' '}
+                    <span className='text-destructive'>*</span>
                   </Label>
                   <Controller
                     control={form.control}

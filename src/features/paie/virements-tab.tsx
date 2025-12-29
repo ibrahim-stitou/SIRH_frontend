@@ -1,7 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -11,7 +17,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  TableFooter,
+  TableFooter
 } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
@@ -24,13 +30,18 @@ import {
   AlertCircle,
   FileText
 } from 'lucide-react';
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import apiClient from '@/lib/api';
 import { apiRoutes } from '@/config/apiRoutes';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter
+} from '@/components/ui/dialog';
 
 interface Virement {
   id: string;
@@ -49,19 +60,28 @@ interface VirementsTabProps {
 export default function VirementsTab({ periodeId }: VirementsTabProps) {
   const [virements, setVirements] = useState<Virement[]>([]);
   const [filteredVirements, setFilteredVirements] = useState<Virement[]>([]);
-  const [selectedVirements, setSelectedVirements] = useState<Set<string>>(new Set());
+  const [selectedVirements, setSelectedVirements] = useState<Set<string>>(
+    new Set()
+  );
   const [loading, setLoading] = useState(true);
   const [executing, setExecuting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   useEffect(() => {
     const fetchVirements = async () => {
       try {
         setLoading(true);
-        const response = await apiClient.get(apiRoutes.admin.paies.virements.list(periodeId));
+        const response = await apiClient.get(
+          apiRoutes.admin.paies.virements.list(periodeId)
+        );
         const payload = response.data;
-        const list = Array.isArray(payload) ? payload : Array.isArray(payload?.data) ? payload.data : [];
+        const list = Array.isArray(payload)
+          ? payload
+          : Array.isArray(payload?.data)
+            ? payload.data
+            : [];
         setVirements(list);
         setFilteredVirements(list);
       } catch (error) {
@@ -83,7 +103,9 @@ export default function VirementsTab({ periodeId }: VirementsTabProps) {
     const filtered = virements.filter(
       (virement) =>
         virement.nomComplet.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        virement.numeroEmploye.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        virement.numeroEmploye
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
         virement.rib.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredVirements(filtered);
@@ -115,21 +137,27 @@ export default function VirementsTab({ periodeId }: VirementsTabProps) {
       alert('Veuillez sélectionner au moins un virement');
       return;
     }
+    setShowConfirmModal(true);
+  };
 
-    if (!confirm(`Voulez-vous vraiment exécuter ${selectedVirements.size} virement(s) ?`)) {
-      return;
-    }
-
+  const confirmExecuteVirements = async () => {
+    setShowConfirmModal(false);
     try {
       setExecuting(true);
       await apiClient.post(apiRoutes.admin.paies.virements.execute(periodeId), {
-        employeIds: Array.from(selectedVirements),
+        employeIds: Array.from(selectedVirements)
       });
 
       // Recharger les virements
-      const virementsResponse = await apiClient.get(apiRoutes.admin.paies.virements.list(periodeId));
+      const virementsResponse = await apiClient.get(
+        apiRoutes.admin.paies.virements.list(periodeId)
+      );
       const payload = virementsResponse.data;
-      const list = Array.isArray(payload) ? payload : Array.isArray(payload?.data) ? payload.data : [];
+      const list = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload?.data)
+          ? payload.data
+          : [];
       setVirements(list);
       setFilteredVirements(list);
       setSelectedVirements(new Set());
@@ -154,7 +182,7 @@ export default function VirementsTab({ periodeId }: VirementsTabProps) {
       ['Numéro employé', 'Nom complet', 'RIB', 'Montant'].join(';'),
       ...selectedVirementsData.map((v) =>
         [v.numeroEmploye, v.nomComplet, v.rib, v.montant.toFixed(2)].join(';')
-      ),
+      )
     ].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -168,10 +196,13 @@ export default function VirementsTab({ periodeId }: VirementsTabProps) {
     document.body.removeChild(link);
   };
 
-  const totalSelected = Array.from(selectedVirements).reduce((acc, employeId) => {
-    const virement = virements.find((v) => v.employeId === employeId);
-    return acc + (virement?.montant || 0);
-  }, 0);
+  const totalSelected = Array.from(selectedVirements).reduce(
+    (acc, employeId) => {
+      const virement = virements.find((v) => v.employeId === employeId);
+      return acc + (virement?.montant || 0);
+    },
+    0
+  );
 
   const totalVirements = Array.isArray(virements)
     ? virements.reduce((acc, v) => acc + (Number(v.montant) || 0), 0)
@@ -186,36 +217,132 @@ export default function VirementsTab({ periodeId }: VirementsTabProps) {
   const getStatutBadge = (statut: string) => {
     if (statut === 'paye') {
       return (
-        <Badge variant="outline" className="text-green-600">
-          <CheckCircle2 className="mr-1 h-3 w-3" />
+        <Badge variant='outline' className='text-green-600'>
+          <CheckCircle2 className='mr-1 h-3 w-3' />
           Payé
         </Badge>
       );
     }
     return (
-      <Badge variant="default">
-        <AlertCircle className="mr-1 h-3 w-3" />
+      <Badge variant='default'>
+        <AlertCircle className='mr-1 h-3 w-3' />
         En attente
       </Badge>
     );
   };
 
   if (loading) {
+    // Skeletons for table rows and actions
     return (
-      <div className="flex h-64 items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className='space-y-6'>
+        <Card>
+          <CardHeader>
+            <div className='flex items-center justify-between'>
+              <div>
+                <Skeleton className='mb-2 h-6 w-48' />
+                <Skeleton className='h-4 w-32' />
+              </div>
+              <div className='flex items-center gap-2'>
+                <Skeleton className='h-10 w-64' />
+                <Skeleton className='h-10 w-32' />
+                <Skeleton className='h-10 w-40' />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className='rounded-md border'>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className='w-[50px]'>
+                      <Skeleton className='h-5 w-5 rounded' />
+                    </TableHead>
+                    <TableHead>
+                      <Skeleton className='h-4 w-20' />
+                    </TableHead>
+                    <TableHead>
+                      <Skeleton className='h-4 w-32' />
+                    </TableHead>
+                    <TableHead>
+                      <Skeleton className='h-4 w-32' />
+                    </TableHead>
+                    <TableHead className='text-center'>
+                      <Skeleton className='h-4 w-20' />
+                    </TableHead>
+                    <TableHead>
+                      <Skeleton className='h-4 w-16' />
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {[...Array(5)].map((_, i) => (
+                    <TableRow key={i}>
+                      <TableCell>
+                        <Skeleton className='h-5 w-5 rounded' />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton className='h-4 w-20' />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton className='h-4 w-32' />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton className='h-4 w-32' />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton className='h-4 w-20' />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton className='h-4 w-16' />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
+      {/* Modal de confirmation d'exécution des virements */}
+      <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirmer l&apos;exécution</DialogTitle>
+            <DialogDescription>
+              Voulez-vous vraiment exécuter {selectedVirements.size} virement(s)
+              ?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant='outline'
+              onClick={() => setShowConfirmModal(false)}
+            >
+              Annuler
+            </Button>
+            <Button onClick={confirmExecuteVirements} disabled={executing}>
+              {executing ? (
+                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+              ) : null}
+              Confirmer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Message de succès */}
       {showSuccess && (
-        <Alert className="border-green-500 bg-green-50">
-          <CheckCircle2 className="h-4 w-4 text-green-600" />
-          <AlertTitle className="text-green-800">Virements exécutés avec succès</AlertTitle>
-          <AlertDescription className="text-green-700">
+        <Alert className='border-green-500 bg-green-50'>
+          <CheckCircle2 className='h-4 w-4 text-green-600' />
+          <AlertTitle className='text-green-800'>
+            Virements exécutés avec succès
+          </AlertTitle>
+          <AlertDescription className='text-green-700'>
             Les virements sélectionnés ont été marqués comme payés.
           </AlertDescription>
         </Alert>
@@ -224,37 +351,37 @@ export default function VirementsTab({ periodeId }: VirementsTabProps) {
       {/* Actions et recherche */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className='flex items-center justify-between'>
             <div>
               <CardTitle>Gestion des virements</CardTitle>
               <CardDescription>
                 {selectedVirements.size > 0 && (
-                  <span className="font-medium text-primary">
+                  <span className='text-primary font-medium'>
                     {selectedVirements.size} virement(s) sélectionné(s) -{' '}
                     {new Intl.NumberFormat('fr-MA', {
                       style: 'currency',
-                      currency: 'MAD',
+                      currency: 'MAD'
                     }).format(totalSelected)}
                   </span>
                 )}
               </CardDescription>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="relative w-64">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <div className='flex items-center gap-2'>
+              <div className='relative w-64'>
+                <Search className='text-muted-foreground absolute top-2.5 left-2 h-4 w-4' />
                 <Input
-                  placeholder="Rechercher..."
+                  placeholder='Rechercher...'
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-8"
+                  className='pl-8'
                 />
               </div>
               <Button
-                variant="outline"
+                variant='outline'
                 onClick={handleExportSEPA}
                 disabled={selectedVirements.size === 0}
               >
-                <Download className="mr-2 h-4 w-4" />
+                <Download className='mr-2 h-4 w-4' />
                 Exporter SEPA
               </Button>
               <Button
@@ -262,9 +389,9 @@ export default function VirementsTab({ periodeId }: VirementsTabProps) {
                 disabled={selectedVirements.size === 0 || executing}
               >
                 {executing ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                 ) : (
-                  <Send className="mr-2 h-4 w-4" />
+                  <Send className='mr-2 h-4 w-4' />
                 )}
                 Exécuter les virements
               </Button>
@@ -272,16 +399,17 @@ export default function VirementsTab({ periodeId }: VirementsTabProps) {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border">
+          <div className='rounded-md border'>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[50px]">
+                  <TableHead className='w-[50px]'>
                     <Checkbox
                       checked={
                         selectedVirements.size > 0 &&
                         selectedVirements.size ===
-                          filteredVirements.filter((v) => v.statut !== 'paye').length
+                          filteredVirements.filter((v) => v.statut !== 'paye')
+                            .length
                       }
                       onCheckedChange={handleSelectAll}
                     />
@@ -289,14 +417,14 @@ export default function VirementsTab({ periodeId }: VirementsTabProps) {
                   <TableHead>N° Employé</TableHead>
                   <TableHead>Nom complet</TableHead>
                   <TableHead>RIB</TableHead>
-                  <TableHead className="text-center">Montant</TableHead>
+                  <TableHead className='text-center'>Montant</TableHead>
                   <TableHead>Statut</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredVirements.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center">
+                    <TableCell colSpan={6} className='h-24 text-center'>
                       Aucun virement trouvé
                     </TableCell>
                   </TableRow>
@@ -307,18 +435,25 @@ export default function VirementsTab({ periodeId }: VirementsTabProps) {
                         <Checkbox
                           checked={selectedVirements.has(virement.employeId)}
                           onCheckedChange={(checked) =>
-                            handleSelectVirement(virement.employeId, checked as boolean)
+                            handleSelectVirement(
+                              virement.employeId,
+                              checked as boolean
+                            )
                           }
                           disabled={virement.statut === 'paye'}
                         />
                       </TableCell>
-                      <TableCell className="font-medium">{virement.numeroEmploye}</TableCell>
+                      <TableCell className='font-medium'>
+                        {virement.numeroEmploye}
+                      </TableCell>
                       <TableCell>{virement.nomComplet}</TableCell>
-                      <TableCell className="font-mono text-sm">{virement.rib}</TableCell>
-                      <TableCell className=" font-medium">
+                      <TableCell className='font-mono text-sm'>
+                        {virement.rib}
+                      </TableCell>
+                      <TableCell className='font-medium'>
                         {new Intl.NumberFormat('fr-MA', {
                           style: 'currency',
-                          currency: 'MAD',
+                          currency: 'MAD'
                         }).format(virement.montant)}
                       </TableCell>
                       <TableCell>{getStatutBadge(virement.statut)}</TableCell>
@@ -329,13 +464,13 @@ export default function VirementsTab({ periodeId }: VirementsTabProps) {
               {filteredVirements.length > 0 && (
                 <TableFooter>
                   <TableRow>
-                    <TableCell colSpan={4} className="font-bold">
+                    <TableCell colSpan={4} className='font-bold'>
                       Total
                     </TableCell>
-                    <TableCell className="text-right font-bold">
+                    <TableCell className='font-bold'>
                       {new Intl.NumberFormat('fr-MA', {
                         style: 'currency',
-                        currency: 'MAD',
+                        currency: 'MAD'
                       }).format(
                         filteredVirements.reduce((acc, v) => acc + v.montant, 0)
                       )}

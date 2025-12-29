@@ -179,7 +179,6 @@ module.exports = function registerSiegesGroupsRoutes(server, db) {
     });
   });
 
-
   server.get('/groups/employee/:id', (req, res) => {
     const employeeId = req.params.id;
     // Use db.js for data access
@@ -196,5 +195,5 @@ module.exports = function registerSiegesGroupsRoutes(server, db) {
       message: 'Récupération réussie',
       data: employeeGroups
     });
-  })
+  });
 };

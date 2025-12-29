@@ -90,13 +90,11 @@ module.exports = function registerTableauPresenceRoutes(server, db) {
     const mois = req.body?.mois || req.query?.mois;
     const annee = req.body?.annee || req.query?.annee;
     if (!mois || !annee) {
-      return res
-        .status(400)
-        .json({
-          status: 'error',
-          message: 'Paramètres mois/année requis',
-          data: null
-        });
+      return res.status(400).json({
+        status: 'error',
+        message: 'Paramètres mois/année requis',
+        data: null
+      });
     }
     const id = Number(annee) * 100 + Number(mois);
     const now = new Date().toISOString();
@@ -120,13 +118,11 @@ module.exports = function registerTableauPresenceRoutes(server, db) {
         .write();
     }
 
-    return res
-      .status(200)
-      .json({
-        status: 'success',
-        message: 'Fichier importé (mock)',
-        data: { id }
-      });
+    return res.status(200).json({
+      status: 'success',
+      message: 'Fichier importé (mock)',
+      data: { id }
+    });
   });
 
   // Modèle d'export (mock)
@@ -163,13 +159,11 @@ module.exports = function registerTableauPresenceRoutes(server, db) {
       })
       .write();
 
-    return res
-      .status(200)
-      .json({
-        status: 'success',
-        message: 'Validé manager',
-        data: db.get('tableauPresence').find({ id }).value()
-      });
+    return res.status(200).json({
+      status: 'success',
+      message: 'Validé manager',
+      data: db.get('tableauPresence').find({ id }).value()
+    });
   });
 
   // Valider RH
@@ -190,13 +184,11 @@ module.exports = function registerTableauPresenceRoutes(server, db) {
       })
       .write();
 
-    return res
-      .status(200)
-      .json({
-        status: 'success',
-        message: 'Validé RH',
-        data: db.get('tableauPresence').find({ id }).value()
-      });
+    return res.status(200).json({
+      status: 'success',
+      message: 'Validé RH',
+      data: db.get('tableauPresence').find({ id }).value()
+    });
   });
 
   // Clôturer
@@ -213,13 +205,11 @@ module.exports = function registerTableauPresenceRoutes(server, db) {
       .assign({ statut: 'CLOTURE', locked: true })
       .write();
 
-    return res
-      .status(200)
-      .json({
-        status: 'success',
-        message: 'Clôturé',
-        data: db.get('tableauPresence').find({ id }).value()
-      });
+    return res.status(200).json({
+      status: 'success',
+      message: 'Clôturé',
+      data: db.get('tableauPresence').find({ id }).value()
+    });
   });
 
   // Supprimer un tableau (autorisé uniquement si BROUILLON ou EN_COURS et non verrouillé)
@@ -231,13 +221,11 @@ module.exports = function registerTableauPresenceRoutes(server, db) {
         .status(404)
         .json({ status: 'error', message: 'Tableau introuvable', data: null });
     if (tp.locked || (tp.statut !== 'BROUILLON' && tp.statut !== 'EN_COURS')) {
-      return res
-        .status(400)
-        .json({
-          status: 'error',
-          message: 'Suppression non autorisée',
-          data: null
-        });
+      return res.status(400).json({
+        status: 'error',
+        message: 'Suppression non autorisée',
+        data: null
+      });
     }
     db.get('tableauPresence').remove({ id }).write();
     return res.status(200).json({ status: 'success', message: 'Supprimé' });
@@ -252,25 +240,21 @@ module.exports = function registerTableauPresenceRoutes(server, db) {
         .status(404)
         .json({ status: 'error', message: 'Tableau introuvable', data: null });
     if (tp.locked || tp.statut === 'CLOTURE') {
-      return res
-        .status(400)
-        .json({
-          status: 'error',
-          message: 'Régénération non autorisée',
-          data: null
-        });
+      return res.status(400).json({
+        status: 'error',
+        message: 'Régénération non autorisée',
+        data: null
+      });
     }
     db.get('tableauPresence')
       .find({ id })
       .assign({ generatedAt: new Date().toISOString(), statut: 'EN_COURS' })
       .write();
-    return res
-      .status(200)
-      .json({
-        status: 'success',
-        message: 'Régénéré',
-        data: db.get('tableauPresence').find({ id }).value()
-      });
+    return res.status(200).json({
+      status: 'success',
+      message: 'Régénéré',
+      data: db.get('tableauPresence').find({ id }).value()
+    });
   });
 
   // Export CSV (ouvrable avec Excel)
@@ -424,13 +408,11 @@ module.exports = function registerTableauPresenceRoutes(server, db) {
 
       const tp = db.get('tableauPresence').find({ id: tableauId }).value();
       if (!tp) {
-        return res
-          .status(404)
-          .json({
-            status: 'error',
-            message: 'Tableau introuvable',
-            data: null
-          });
+        return res.status(404).json({
+          status: 'error',
+          message: 'Tableau introuvable',
+          data: null
+        });
       }
 
       const body = req.body || {};
@@ -487,13 +469,11 @@ module.exports = function registerTableauPresenceRoutes(server, db) {
         if (body.statusSummary !== undefined)
           patch.statusSummary = String(body.statusSummary || '');
         const updated = upsert(patch);
-        return res
-          .status(200)
-          .json({
-            status: 'success',
-            message: 'Synthèse employé mise à jour',
-            data: updated
-          });
+        return res.status(200).json({
+          status: 'success',
+          message: 'Synthèse employé mise à jour',
+          data: updated
+        });
       }
 
       // Sinon: recalcul depuis les jours du mois
@@ -546,13 +526,11 @@ module.exports = function registerTableauPresenceRoutes(server, db) {
         absenceDays,
         statusSummary
       });
-      return res
-        .status(200)
-        .json({
-          status: 'success',
-          message: 'Synthèse employé recalculée',
-          data: updated
-        });
+      return res.status(200).json({
+        status: 'success',
+        message: 'Synthèse employé recalculée',
+        data: updated
+      });
     }
   );
 };

@@ -9,7 +9,7 @@
     "dateEcheance": "2025-02-05",
     "statut": "en_cours",
     "nombreEmployes": 15,
-    "montantTotal": 285000.00,
+    "montantTotal": 285000.0,
     "dateCreation": "2025-01-01T10:00:00Z",
     "dateModification": "2025-01-15T14:30:00Z",
     "creePar": "user1",
@@ -25,7 +25,7 @@
     "dateEcheance": "2025-01-05",
     "statut": "valide",
     "nombreEmployes": 15,
-    "montantTotal": 280000.00,
+    "montantTotal": 280000.0,
     "dateCreation": "2024-12-01T10:00:00Z",
     "dateModification": "2024-12-28T16:00:00Z",
     "creePar": "user1",
@@ -41,11 +41,10 @@
     "dateEcheance": "2024-12-05",
     "statut": "paye",
     "nombreEmployes": 14,
-    "montantTotal": 270000.00,
+    "montantTotal": 270000.0,
     "dateCreation": "2024-11-01T10:00:00Z",
     "dateModification": "2024-11-30T17:00:00Z",
     "creePar": "user1",
     "modifiePar": "user1"
   }
 ]
-

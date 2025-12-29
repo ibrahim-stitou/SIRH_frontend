@@ -3,6 +3,6 @@
 interface EvListingProps {
   id: string;
 }
-export default function EvListing({id}:EvListingProps) {
-  return
+export default function EvListing({ id }: EvListingProps) {
+  return;
 }

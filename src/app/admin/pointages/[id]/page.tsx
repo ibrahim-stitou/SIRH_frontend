@@ -9,7 +9,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-import { ArrowLeft, CheckCircle2, XCircle, Clock, CalendarDays, User } from 'lucide-react';
+import {
+  ArrowLeft,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  CalendarDays,
+  User
+} from 'lucide-react';
 
 interface PointageDetails {
   id: number | string;
@@ -36,7 +43,10 @@ interface PointageDetails {
 }
 
 // Ajout pour groupe(s) dynamiques
-interface EmployeeGroup { id: string | number; name: string }
+interface EmployeeGroup {
+  id: string | number;
+  name: string;
+}
 
 export default function PointageDetailsPage() {
   const router = useRouter();
@@ -57,9 +67,20 @@ export default function PointageDetailsPage() {
         setData(d);
         // Charger les groupes de l'employé
         if (d?.employeeId) {
-          apiClient.get(apiRoutes.admin.groups.groupByEmployee(d.employeeId)).then((gRes) => {
-            if (mounted) setEmployeeGroups((gRes.data?.data || []).map((g: any) => ({ id: g.id, name: g.name ?? g.label ?? `Groupe ${g.id}` })));
-          }).catch(() => { if (mounted) setEmployeeGroups([]); });
+          apiClient
+            .get(apiRoutes.admin.groups.groupByEmployee(d.employeeId))
+            .then((gRes) => {
+              if (mounted)
+                setEmployeeGroups(
+                  (gRes.data?.data || []).map((g: any) => ({
+                    id: g.id,
+                    name: g.name ?? g.label ?? `Groupe ${g.id}`
+                  }))
+                );
+            })
+            .catch(() => {
+              if (mounted) setEmployeeGroups([]);
+            });
         } else {
           setEmployeeGroups([]);
         }
@@ -166,7 +187,15 @@ export default function PointageDetailsPage() {
                   )}
                   {/* Affichage du/des groupe(s) */}
                   <div className='text-muted-foreground mt-1 text-xs'>
-                    Groupe{employeeGroups.length > 1 ? 's' : ''}: {employeeGroups.length > 0 ? employeeGroups.map((g, i) => <span key={g.id} className='font-medium'>{g.name}{i < employeeGroups.length - 1 ? ', ' : ''}</span>) : '—'}
+                    Groupe{employeeGroups.length > 1 ? 's' : ''}:{' '}
+                    {employeeGroups.length > 0
+                      ? employeeGroups.map((g, i) => (
+                          <span key={g.id} className='font-medium'>
+                            {g.name}
+                            {i < employeeGroups.length - 1 ? ', ' : ''}
+                          </span>
+                        ))
+                      : '—'}
                   </div>
                 </div>
                 <div className='rounded-lg border p-3'>
@@ -212,13 +241,19 @@ export default function PointageDetailsPage() {
                 <div className='rounded-lg border p-3'>
                   <div className='mb-1 text-sm font-medium'>Source</div>
                   {data.source ? (
-                    <span className={`inline-block rounded px-2 py-1 text-xs font-semibold ${data.source === 'automatique' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'}`}>{data.source === 'automatique' ? 'Automatique' : 'Manuel'}</span>
+                    <span
+                      className={`inline-block rounded px-2 py-1 text-xs font-semibold ${data.source === 'automatique' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'}`}
+                    >
+                      {data.source === 'automatique' ? 'Automatique' : 'Manuel'}
+                    </span>
                   ) : (
                     <span className='text-muted-foreground'>—</span>
                   )}
                 </div>
                 <div className='rounded-lg border p-3'>
-                  <div className='mb-1 text-sm font-medium'>Dernière mise à jour</div>
+                  <div className='mb-1 text-sm font-medium'>
+                    Dernière mise à jour
+                  </div>
                   <div className='text-muted-foreground text-sm'>
                     {data.updated_at
                       ? format(new Date(data.updated_at), 'yyyy-MM-dd HH:mm')

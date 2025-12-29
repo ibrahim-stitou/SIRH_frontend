@@ -15,14 +15,14 @@
     "joursAbsences": 0,
     "joursRecuperationPayes": 0,
     "heuresTravaillees": 176,
-    "salaireBase": 15000.00,
+    "salaireBase": 15000.0,
     "tauxHoraire": 85.23,
     "elementsVariables": [
       {
         "rubriquePaieId": "2",
         "libelle": "Prime d'ancienneté",
         "type": "gain",
-        "montant": 1500.00,
+        "montant": 1500.0,
         "tauxPatronal": 0,
         "montantPatronal": 0
       },
@@ -30,7 +30,7 @@
         "rubriquePaieId": "3",
         "libelle": "Prime de rendement",
         "type": "gain",
-        "montant": 1500.00,
+        "montant": 1500.0,
         "tauxPatronal": 0,
         "montantPatronal": 0
       },
@@ -38,33 +38,33 @@
         "rubriquePaieId": "4",
         "libelle": "Heures supplémentaires 125%",
         "type": "gain",
-        "montant": 800.00,
+        "montant": 800.0,
         "base": 80,
         "taux": 1.25,
         "tauxPatronal": 0,
         "montantPatronal": 0
       }
     ],
-    "totalGains": 18800.00,
-    "salaireBrut": 18800.00,
-    "salaireBrutImposable": 18800.00,
+    "totalGains": 18800.0,
+    "salaireBrut": 18800.0,
+    "salaireBrutImposable": 18800.0,
     "cotisations": [
       {
         "rubriquePaieId": "7",
         "libelle": "CNSS Part Salariale",
         "type": "cotisation",
-        "montant": -268.80,
-        "base": 6000.00,
+        "montant": -268.8,
+        "base": 6000.0,
         "taux": 4.48,
         "tauxPatronal": 16.0,
-        "montantPatronal": 960.00
+        "montantPatronal": 960.0
       },
       {
         "rubriquePaieId": "9",
         "libelle": "AMO Part Salariale",
         "type": "cotisation",
         "montant": -424.88,
-        "base": 18800.00,
+        "base": 18800.0,
         "taux": 2.26,
         "tauxPatronal": 3.51,
         "montantPatronal": 659.88
@@ -73,7 +73,7 @@
         "rubriquePaieId": "10",
         "libelle": "Impôt sur le revenu",
         "type": "cotisation",
-        "montant": -2850.00,
+        "montant": -2850.0,
         "tauxPatronal": 0,
         "montantPatronal": 0
       },
@@ -81,7 +81,7 @@
         "rubriquePaieId": "11",
         "libelle": "Mutuelle",
         "type": "cotisation",
-        "montant": -200.00,
+        "montant": -200.0,
         "tauxPatronal": 0,
         "montantPatronal": 0
       }
@@ -92,7 +92,7 @@
         "rubriquePaieId": "12",
         "libelle": "Avance sur salaire",
         "type": "autre",
-        "montant": -2000.00,
+        "montant": -2000.0,
         "tauxPatronal": 0,
         "montantPatronal": 0
       },
@@ -100,26 +100,26 @@
         "rubriquePaieId": "14",
         "libelle": "Indemnité de transport",
         "type": "autre",
-        "montant": 500.00,
+        "montant": 500.0,
         "tauxPatronal": 0,
         "montantPatronal": 0
       }
     ],
-    "totalAutres": -1500.00,
+    "totalAutres": -1500.0,
     "salaireNet": 13556.32,
     "cumulAnnuel": {
-      "salaireBrut": 225600.00,
+      "salaireBrut": 225600.0,
       "cotisations": 44924.16,
       "salaireNet": 162675.84,
-      "ir": 34200.00
+      "ir": 34200.0
     },
     "cotisationsPatronales": [
       {
         "rubriquePaieId": "6",
         "libelle": "CNSS Part Patronale",
         "type": "cotisation",
-        "montant": 960.00,
-        "base": 6000.00,
+        "montant": 960.0,
+        "base": 6000.0,
         "taux": 16.0
       },
       {
@@ -127,7 +127,7 @@
         "libelle": "AMO Part Patronale",
         "type": "cotisation",
         "montant": 659.88,
-        "base": 18800.00,
+        "base": 18800.0,
         "taux": 3.51
       }
     ],
@@ -152,14 +152,14 @@
     "joursAbsences": 0,
     "joursRecuperationPayes": 0,
     "heuresTravaillees": 160,
-    "salaireBase": 18000.00,
-    "tauxHoraire": 112.50,
+    "salaireBase": 18000.0,
+    "tauxHoraire": 112.5,
     "elementsVariables": [
       {
         "rubriquePaieId": "2",
         "libelle": "Prime d'ancienneté",
         "type": "gain",
-        "montant": 1800.00,
+        "montant": 1800.0,
         "tauxPatronal": 0,
         "montantPatronal": 0
       },
@@ -167,40 +167,40 @@
         "rubriquePaieId": "3",
         "libelle": "Prime de rendement",
         "type": "gain",
-        "montant": 1200.00,
+        "montant": 1200.0,
         "tauxPatronal": 0,
         "montantPatronal": 0
       }
     ],
-    "totalGains": 21000.00,
-    "salaireBrut": 21000.00,
-    "salaireBrutImposable": 21000.00,
+    "totalGains": 21000.0,
+    "salaireBrut": 21000.0,
+    "salaireBrutImposable": 21000.0,
     "cotisations": [
       {
         "rubriquePaieId": "7",
         "libelle": "CNSS Part Salariale",
         "type": "cotisation",
-        "montant": -268.80,
-        "base": 6000.00,
+        "montant": -268.8,
+        "base": 6000.0,
         "taux": 4.48,
         "tauxPatronal": 16.0,
-        "montantPatronal": 960.00
+        "montantPatronal": 960.0
       },
       {
         "rubriquePaieId": "9",
         "libelle": "AMO Part Salariale",
         "type": "cotisation",
-        "montant": -474.60,
-        "base": 21000.00,
+        "montant": -474.6,
+        "base": 21000.0,
         "taux": 2.26,
         "tauxPatronal": 3.51,
-        "montantPatronal": 737.10
+        "montantPatronal": 737.1
       },
       {
         "rubriquePaieId": "10",
         "libelle": "Impôt sur le revenu",
         "type": "cotisation",
-        "montant": -3500.00,
+        "montant": -3500.0,
         "tauxPatronal": 0,
         "montantPatronal": 0
       },
@@ -208,40 +208,40 @@
         "rubriquePaieId": "11",
         "libelle": "Mutuelle",
         "type": "cotisation",
-        "montant": -250.00,
+        "montant": -250.0,
         "tauxPatronal": 0,
         "montantPatronal": 0
       }
     ],
-    "totalCotisations": -4493.40,
+    "totalCotisations": -4493.4,
     "autresElements": [],
-    "totalAutres": 0.00,
-    "salaireNet": 16506.60,
+    "totalAutres": 0.0,
+    "salaireNet": 16506.6,
     "cumulAnnuel": {
-      "salaireBrut": 252000.00,
-      "cotisations": 53920.80,
-      "salaireNet": 198079.20,
-      "ir": 42000.00
+      "salaireBrut": 252000.0,
+      "cotisations": 53920.8,
+      "salaireNet": 198079.2,
+      "ir": 42000.0
     },
     "cotisationsPatronales": [
       {
         "rubriquePaieId": "6",
         "libelle": "CNSS Part Patronale",
         "type": "cotisation",
-        "montant": 960.00,
-        "base": 6000.00,
+        "montant": 960.0,
+        "base": 6000.0,
         "taux": 16.0
       },
       {
         "rubriquePaieId": "8",
         "libelle": "AMO Part Patronale",
         "type": "cotisation",
-        "montant": 737.10,
-        "base": 21000.00,
+        "montant": 737.1,
+        "base": 21000.0,
         "taux": 3.51
       }
     ],
-    "totalCotisationsPatronales": 1697.10,
+    "totalCotisationsPatronales": 1697.1,
     "statut": "en_cours",
     "dateCreation": "2025-01-15T10:00:00Z",
     "dateModification": "2025-01-18T11:15:00Z"
@@ -262,38 +262,38 @@
     "joursAbsences": 0,
     "joursRecuperationPayes": 0,
     "heuresTravaillees": 176,
-    "salaireBase": 8000.00,
+    "salaireBase": 8000.0,
     "tauxHoraire": 45.45,
     "elementsVariables": [],
-    "totalGains": 8000.00,
-    "salaireBrut": 8000.00,
-    "salaireBrutImposable": 8000.00,
+    "totalGains": 8000.0,
+    "salaireBrut": 8000.0,
+    "salaireBrutImposable": 8000.0,
     "cotisations": [
       {
         "rubriquePaieId": "7",
         "libelle": "CNSS Part Salariale",
         "type": "cotisation",
-        "montant": -268.80,
-        "base": 6000.00,
+        "montant": -268.8,
+        "base": 6000.0,
         "taux": 4.48,
         "tauxPatronal": 16.0,
-        "montantPatronal": 960.00
+        "montantPatronal": 960.0
       },
       {
         "rubriquePaieId": "9",
         "libelle": "AMO Part Salariale",
         "type": "cotisation",
-        "montant": -180.80,
-        "base": 8000.00,
+        "montant": -180.8,
+        "base": 8000.0,
         "taux": 2.26,
         "tauxPatronal": 3.51,
-        "montantPatronal": 280.80
+        "montantPatronal": 280.8
       },
       {
         "rubriquePaieId": "10",
         "libelle": "Impôt sur le revenu",
         "type": "cotisation",
-        "montant": -800.00,
+        "montant": -800.0,
         "tauxPatronal": 0,
         "montantPatronal": 0
       },
@@ -301,40 +301,40 @@
         "rubriquePaieId": "11",
         "libelle": "Mutuelle",
         "type": "cotisation",
-        "montant": -150.00,
+        "montant": -150.0,
         "tauxPatronal": 0,
         "montantPatronal": 0
       }
     ],
-    "totalCotisations": -1399.60,
+    "totalCotisations": -1399.6,
     "autresElements": [],
-    "totalAutres": 0.00,
-    "salaireNet": 6600.40,
+    "totalAutres": 0.0,
+    "salaireNet": 6600.4,
     "cumulAnnuel": {
-      "salaireBrut": 96000.00,
-      "cotisations": 16795.20,
-      "salaireNet": 79204.80,
-      "ir": 9600.00
+      "salaireBrut": 96000.0,
+      "cotisations": 16795.2,
+      "salaireNet": 79204.8,
+      "ir": 9600.0
     },
     "cotisationsPatronales": [
       {
         "rubriquePaieId": "6",
         "libelle": "CNSS Part Patronale",
         "type": "cotisation",
-        "montant": 960.00,
-        "base": 6000.00,
+        "montant": 960.0,
+        "base": 6000.0,
         "taux": 16.0
       },
       {
         "rubriquePaieId": "8",
         "libelle": "AMO Part Patronale",
         "type": "cotisation",
-        "montant": 280.80,
-        "base": 8000.00,
+        "montant": 280.8,
+        "base": 8000.0,
         "taux": 3.51
       }
     ],
-    "totalCotisationsPatronales": 1240.80,
+    "totalCotisationsPatronales": 1240.8,
     "statut": "en_cours",
     "dateCreation": "2025-01-15T10:00:00Z",
     "dateModification": "2025-01-15T10:00:00Z"

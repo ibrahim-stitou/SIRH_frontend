@@ -52,6 +52,7 @@ Affiche la liste de tous les employés rattachés à une période de paie :
 Interface détaillée du bulletin de paie d'un employé :
 
 #### Zone supérieure - Informations de temps
+
 - Jours travaillés
 - Nombre de jours de congé
 - Nombre de jours d'absence
@@ -59,6 +60,7 @@ Interface détaillée du bulletin de paie d'un employé :
 - Heures travaillées
 
 #### Panneau latéral - Éléments variables (Sheet)
+
 - Formulaire d'ajout d'éléments variables
 - Sélection de rubrique
 - Saisie du montant, base, taux, quantité
@@ -67,6 +69,7 @@ Interface détaillée du bulletin de paie d'un employé :
 #### Zone centrale - Bulletin détaillé
 
 **Section 1 : Gains (Badge vert)**
+
 - Salaire de base
 - Heures travaillées × Taux horaire
 - Éléments variables de type "Gain"
@@ -79,6 +82,7 @@ Interface détaillée du bulletin de paie d'un employé :
   - Salaire brut imposable
 
 **Section 2 : Cotisations (Badge rouge)**
+
 - CNSS Part Salariale
 - AMO Part Salariale
 - Impôt sur le revenu
@@ -86,12 +90,14 @@ Interface détaillée du bulletin de paie d'un employé :
 - **Total cotisations** (valeur négative)
 
 **Section 3 : Autres éléments (Badge bleu)**
+
 - Avance sur salaire (négatif)
 - Remboursement prêt (négatif)
 - Indemnité de transport (positif)
 - Autres déductions/additions
 
 **Totaux finaux**
+
 - **Salaire net à payer** (encadré principal)
 - Cumuls annuels :
   - Salaire brut cumulé
@@ -104,11 +110,13 @@ Interface détaillée du bulletin de paie d'un employé :
 Gestion des virements bancaires de la période :
 
 #### Statistiques
+
 - Total des virements
 - Virements en attente
 - Virements payés
 
 #### Fonctionnalités
+
 - Sélection multiple des virements à exécuter
 - Export au format SEPA/CSV
 - Exécution groupée des virements
@@ -123,12 +131,14 @@ Gestion des virements bancaires de la période :
 ## API Endpoints
 
 ### Périodes de paie
+
 ```
 GET    /api/paies                     # Liste des périodes
 GET    /api/paies/:id                 # Détail d'une période
 ```
 
 ### Bulletins de paie
+
 ```
 GET    /api/paies/:id/bulletins                    # Bulletins d'une période
 GET    /api/paies/:periodeId/bulletins/:employeId  # Bulletin d'un employé
@@ -136,18 +146,21 @@ PUT    /api/paies/:periodeId/bulletins/:employeId  # Mise à jour bulletin
 ```
 
 ### Éléments variables
+
 ```
 POST   /api/paies/:periodeId/bulletins/:employeId/elements            # Ajouter élément
 DELETE /api/paies/:periodeId/bulletins/:employeId/elements/:rubriqueId # Supprimer élément
 ```
 
 ### Rubriques
+
 ```
 GET    /api/paies/rubriques/all          # Toutes les rubriques
 GET    /api/paies/rubriques/type/:type   # Rubriques par type
 ```
 
 ### Virements
+
 ```
 GET    /api/paies/:id/virements          # Liste des virements
 POST   /api/paies/:id/virements/executer # Exécuter les virements
@@ -156,11 +169,13 @@ POST   /api/paies/:id/virements/executer # Exécuter les virements
 ## Workflow d'utilisation
 
 ### 1. Création d'une période
+
 1. Accéder à `/admin/paie`
 2. Cliquer sur "Nouvelle période"
 3. Définir le mois, l'année, les dates
 
 ### 2. Saisie des bulletins
+
 1. Sélectionner une période
 2. Onglet "Employés" : voir la liste
 3. Cliquer sur "Voir la paie" pour un employé
@@ -171,6 +186,7 @@ POST   /api/paies/:id/virements/executer # Exécuter les virements
    - Les totaux se calculent automatiquement
 
 ### 3. Validation et virements
+
 1. Vérifier tous les bulletins
 2. Passer à l'onglet "Virements"
 3. Sélectionner les virements à exécuter
@@ -180,6 +196,7 @@ POST   /api/paies/:id/virements/executer # Exécuter les virements
 ## Types de rubriques de paie
 
 ### Gains (type: 'gain')
+
 - `SAL_BASE` - Salaire de base
 - `PRIME_ANCIE` - Prime d'ancienneté
 - `PRIME_REND` - Prime de rendement
@@ -187,6 +204,7 @@ POST   /api/paies/:id/virements/executer # Exécuter les virements
 - `HS_150` - Heures supplémentaires 150%
 
 ### Cotisations (type: 'cotisation')
+
 - `CNSS_PAT` - CNSS Part Patronale (16%)
 - `CNSS_SAL` - CNSS Part Salariale (4.48%)
 - `AMO_PAT` - AMO Part Patronale (3.51%)
@@ -195,6 +213,7 @@ POST   /api/paies/:id/virements/executer # Exécuter les virements
 - `MUTUELLE` - Mutuelle
 
 ### Autres (type: 'autre')
+
 - `AVANCE` - Avance sur salaire
 - `PRET` - Remboursement prêt
 - `INDEM_TRANS` - Indemnité de transport
@@ -202,16 +221,19 @@ POST   /api/paies/:id/virements/executer # Exécuter les virements
 ## Calculs automatiques
 
 ### Salaire brut
+
 ```
 Salaire brut = Salaire de base + Σ(Éléments variables de type "gain")
 ```
 
 ### Cotisations
+
 - CNSS : Plafonnée à 6000 MAD
 - AMO : Sans plafond
 - IR : Selon barème progressif marocain
 
 ### Salaire net
+
 ```
 Salaire net = Salaire brut + Total cotisations (négatif) + Total autres éléments
 ```
@@ -239,4 +261,3 @@ Salaire net = Salaire brut + Total cotisations (négatif) + Total autres éléme
 ## Support
 
 Pour toute question sur le module de paie, consultez la documentation complète ou contactez l'équipe de développement.
-

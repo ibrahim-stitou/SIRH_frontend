@@ -5,6 +5,7 @@
 ### BulletinTab (`src/features/paie/bulletin-tab.tsx`)
 
 #### Avant :
+
 - ❌ Utilise `fetch` au lieu d'`apiClient`
 - ❌ Charge toute la liste des bulletins inutilement
 - ❌ Imports manquants (`apiClient`, `apiRoutes`)
@@ -14,6 +15,7 @@
 - ❌ Apostrophes non échappées dans JSX
 
 #### Après :
+
 - ✅ Utilise `apiClient` partout
 - ✅ Ne charge que les rubriques (pas la liste des bulletins)
 - ✅ Tous les imports nécessaires présents
@@ -62,9 +64,11 @@ const response = await apiClient.post(
 ### PaieListing (`src/features/paie/paie-listing.tsx`)
 
 #### Avant :
+
 - ❌ Erreur TypeScript : `totalRecords` n'existe pas sur `UseTableReturn`
 
 #### Après :
+
 - ✅ Utilise `data.length` au lieu de `totalRecords`
 
 #### Changement :
@@ -72,13 +76,13 @@ const response = await apiClient.post(
 ```typescript
 // ❌ AVANT
 const stats = {
-  totalPeriodes: tableInstance?.totalRecords || 0,
+  totalPeriodes: tableInstance?.totalRecords || 0
   // ...
 };
 
 // ✅ APRÈS
 const stats = {
-  totalPeriodes: (tableInstance?.data?.length as number) || 0,
+  totalPeriodes: (tableInstance?.data?.length as number) || 0
   // ...
 };
 ```
@@ -86,6 +90,7 @@ const stats = {
 ## 📋 Structure finale propre
 
 ### BulletinTab
+
 ```
 État :
 - ✅ bulletin (BulletinPaie | null)
@@ -118,6 +123,7 @@ Rendu:
 ```
 
 ### PaieListing
+
 ```
 État :
 - ✅ tableInstance (CustomTable instance)
@@ -176,19 +182,22 @@ GET /api/paies/:periodeId/bulletins (avec pagination DataTable)
 ## 🎯 Workflow utilisateur amélioré
 
 ### 1. Liste des périodes (`/admin/paie`)
+
 1. CustomTable affiche toutes les périodes
 2. Filtrer par nom, année, statut
 3. Trier par n'importe quelle colonne
 4. Cliquer sur 👁️ "Consulter" → Détail de la période
 
 ### 2. Détail période - Onglet Employés
+
 1. CustomTable affiche les employés de la période
 2. Filtrer par nom, numéro, statut
 3. Cliquer sur 👁️ "Voir la paie" → Onglet Bulletin avec employé sélectionné
 
 ### 3. Détail période - Onglet Bulletin
+
 1. **Si aucun employé sélectionné** : Message "Sélectionnez depuis l'onglet Employés"
-2. **Si employé sélectionné** : 
+2. **Si employé sélectionné** :
    - Affichage automatique du bulletin
    - Bouton "Ajouter rubrique" → Sheet latéral
    - Formulaire d'ajout d'élément variable
@@ -196,6 +205,7 @@ GET /api/paies/:periodeId/bulletins (avec pagination DataTable)
    - Calculs automatiques des totaux
 
 ### 4. Détail période - Onglet Virements
+
 1. Liste des virements
 2. Sélection multiple
 3. Export CSV
@@ -242,4 +252,3 @@ GET /api/paies/:periodeId/bulletins (avec pagination DataTable)
 ---
 
 **Module de paie complètement fonctionnel et optimisé** 🎉
-
