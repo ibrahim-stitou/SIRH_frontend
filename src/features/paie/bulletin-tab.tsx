@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
-  CardHeader,
+  CardHeader
   // CardTitle
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -82,8 +82,15 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import PageContainer from '@/components/layout/page-container';
 import { formatNumber } from '@/features/paie/bulletin-tab/utils/format';
-import { toNullableNumber, safeNumber } from '@/features/paie/bulletin-tab/utils/numbers';
-import { createPreviewUrl, downloadUrl, printPdfUrl } from '@/features/paie/bulletin-tab/utils/doc';
+import {
+  toNullableNumber,
+  safeNumber
+} from '@/features/paie/bulletin-tab/utils/numbers';
+import {
+  createPreviewUrl,
+  downloadUrl,
+  printPdfUrl
+} from '@/features/paie/bulletin-tab/utils/doc';
 import GenerateDialog from '@/features/paie/bulletin-tab/components/GenerateDialog';
 import PreviewDialog from '@/features/paie/bulletin-tab/components/PreviewDialog';
 import ConfirmDialog from '@/features/paie/bulletin-tab/components/ConfirmDialog';

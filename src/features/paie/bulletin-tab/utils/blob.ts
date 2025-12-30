@@ -25,7 +25,7 @@ export function printPdfUrl(url: string) {
 export const BlobUtils = {
   createPreviewUrl,
   downloadUrl,
-  printPdfUrl,
+  printPdfUrl
 };
 
 export {};

@@ -21,4 +21,3 @@ export function printPdfUrl(url: string) {
     iframe.contentWindow?.print();
   };
 }
-

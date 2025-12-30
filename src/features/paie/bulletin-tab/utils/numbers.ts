@@ -12,4 +12,3 @@ export function safeNumber(value: string, fieldLabel: string): number {
 }
 
 export {};
-

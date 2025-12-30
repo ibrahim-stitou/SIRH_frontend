@@ -1,4 +1,11 @@
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
 export interface ConfirmDialogProps {
@@ -8,7 +15,12 @@ export interface ConfirmDialogProps {
   onConfirm: () => void | Promise<void>;
 }
 
-export function ConfirmDialog({ open, message, onCancel, onConfirm }: ConfirmDialogProps) {
+export function ConfirmDialog({
+  open,
+  message,
+  onCancel,
+  onConfirm
+}: ConfirmDialogProps) {
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onCancel()}>
       <DialogContent>
@@ -17,7 +29,9 @@ export function ConfirmDialog({ open, message, onCancel, onConfirm }: ConfirmDia
           <DialogDescription>{message}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={onCancel}>Annuler</Button>
+          <Button variant='outline' onClick={onCancel}>
+            Annuler
+          </Button>
           <Button onClick={onConfirm}>Confirmer</Button>
         </DialogFooter>
       </DialogContent>
@@ -26,4 +40,3 @@ export function ConfirmDialog({ open, message, onCancel, onConfirm }: ConfirmDia
 }
 
 export default ConfirmDialog;
-

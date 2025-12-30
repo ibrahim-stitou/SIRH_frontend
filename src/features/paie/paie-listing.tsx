@@ -43,7 +43,6 @@ interface PeriodePaie {
   annee: number;
   dateDebut: string;
   dateFin: string;
-  dateEcheance: string;
   statut: string;
   nombreEmployes: number;
   montantTotal: number;
@@ -93,12 +92,6 @@ export default function PaieListing() {
     {
       data: 'dateFin',
       label: 'Date fin',
-      sortable: true,
-      render: (value) => format(new Date(value), 'dd MMM yyyy', { locale: fr })
-    },
-    {
-      data: 'dateEcheance',
-      label: 'Échéance',
       sortable: true,
       render: (value) => format(new Date(value), 'dd MMM yyyy', { locale: fr })
     },

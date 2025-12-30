@@ -864,9 +864,6 @@ module.exports = function registerPaiesRoutes(server, db) {
       const dateDebut = `${annee}-${String(mois).padStart(2, '0')}-01`;
       const dateFin = new Date(annee, mois, 0); // dernier jour du mois
       const dateFinStr = `${annee}-${String(mois).padStart(2, '0')}-${String(dateFin.getDate()).padStart(2, '0')}`;
-      const dateEcheance = new Date(dateFin);
-      dateEcheance.setDate(dateEcheance.getDate() + 5);
-      const dateEcheanceStr = dateEcheance.toISOString().slice(0, 10);
       // Créer la période
       const periode = {
         id: newId,
@@ -875,7 +872,6 @@ module.exports = function registerPaiesRoutes(server, db) {
         annee,
         dateDebut,
         dateFin: dateFinStr,
-        dateEcheance: dateEcheanceStr,
         statut: 'en_cours',
         nombreEmployes: 0,
         montantTotal: 0,
