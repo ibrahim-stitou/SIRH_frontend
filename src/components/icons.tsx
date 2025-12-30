@@ -75,9 +75,12 @@ import {
   IconStopwatch,
   IconUserX,
   IconX,
+  IconTicket,
+  IconCashRegister,
   IconClockPause,
   IconBuildingBank,
-  IconZoomCheck
+  IconZoomCheck,
+  IconCashPlus
 } from '@tabler/icons-react';
 import { CalendarRange, UserRoundCheck } from 'lucide-react';
 
@@ -87,14 +90,17 @@ export const Icons = {
   actions: IconAdjustmentsExclamation,
   add: IconPlus,
   administratif: IconFoldersFilled,
+  cashPlus:IconCashPlus,
   affectation: IconUserPlus,
   alertTriangle: IconAlertTriangle,
   bank: IconBuildingBank,
   arrowRight: IconArrowRight,
   clock: IconStopwatch,
+  iconcCashRegister: IconCashRegister,
   bell: IconBell,
   billing: IconCreditCard,
   file: IconFile,
+  iconTicket: IconTicket,
   pointage: IconClockPause,
   book: IconBook,
   briefcase: IconBriefcase,

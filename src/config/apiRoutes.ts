@@ -246,6 +246,15 @@ export const apiRoutes = {
         execute: (periodeId: number | string) =>
           `${API_BASE}/paies/${periodeId}/virements/executer`
       }
+    },
+    avances: {
+      list: `${API_BASE}/avances`,
+      show: (id: number | string) => `${API_BASE}/avances/${id}`,
+      create: `${API_BASE}/avances`,
+      update: (id: number | string) => `${API_BASE}/avances/${id}`,
+      delete: (id: number | string) => `${API_BASE}/avances/${id}`,
+      validate: (id: number | string) => `${API_BASE}/avances/${id}/valider`,
+      refuse: (id: number | string) => `${API_BASE}/avances/${id}/refuse`
     }
   }
 };

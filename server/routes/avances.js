@@ -1,0 +1,135 @@
+const express = require('express');
+const router = express.Router();
+
+module.exports = function registerAvancesRoutes(server, db) {
+  // GET /avances - DataTable listing
+  server.get('/avances', (req, res) => {
+    const start = parseInt(req.query.start || '0', 10);
+    const length = parseInt(req.query.length || '10', 10);
+    const sortBy = req.query.sortBy;
+    const sortDir = req.query.sortDir === 'desc' ? 'desc' : 'asc';
+    let all = db.get('avances').value() || [];
+    // Filtrage
+    const excludedKeys = new Set(['start', 'length', 'sortBy', 'sortDir']);
+    Object.entries(req.query).forEach(([key, value]) => {
+      if (excludedKeys.has(key) || value === undefined || value === '') return;
+      all = all.filter((avance) => {
+        const fieldVal = avance[key];
+        if (fieldVal === undefined || fieldVal === null) return false;
+        return String(fieldVal).toLowerCase().includes(String(value).toLowerCase());
+      });
+    });
+    const recordsFiltered = all.length;
+    // Tri
+    if (sortBy) {
+      all.sort((a, b) => {
+        const av = a[sortBy];
+        const bv = b[sortBy];
+        if (av === bv) return 0;
+        if (av === undefined) return 1;
+        if (bv === undefined) return -1;
+        if (typeof av === 'number' && typeof bv === 'number') {
+          return sortDir === 'asc' ? av - bv : bv - av;
+        }
+        return sortDir === 'asc' ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
+      });
+    }
+    const recordsTotal = db.get('avances').value()?.length || 0;
+    const employeesById = Object.fromEntries(
+      (db.get('hrEmployees').value() || []).map((e) => [String(e.id), e])
+    );
+    const allWithEmployee = all.map((avance) => {
+      const emp = employeesById[String(avance.employe_id)] || null;
+      const employee = emp ? {
+        matricule: emp.matricule,
+        fullName: `${emp.firstName || ''} ${emp.lastName || ''}`.trim()
+      } : null;
+      return { ...avance, employee };
+    });
+    all = allWithEmployee;
+
+    const sliced = all.slice(start, start + length);
+    return res.json({
+      status: 'success',
+      message: 'Liste des avances récupérée avec succès',
+      data: sliced,
+      recordsTotal,
+      recordsFiltered
+    });
+  });
+
+  // GET /avances/:id - Détail avance
+  server.get('/avances/:id', (req, res) => {
+    const avance = db.get('avances').find({ id: parseInt(req.params.id) }).value();
+    if (!avance) {
+      return res.status(404).json({ status: 'error', message: 'Avance non trouvée' });
+    }
+    return res.json({ status: 'success', data: avance });
+  });
+
+  // POST /avances - Soumettre une avance
+  server.post('/avances', (req, res) => {
+    const newAvance = {
+      ...req.body,
+      id: Date.now(),
+      statut: 'EN_ATTENTE',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    db.get('avances').push(newAvance).write();
+    return res.status(201).json({ status: 'success', data: newAvance });
+  });
+
+  // PUT /avances/:id - Modifier une avance
+  server.put('/avances/:id', (req, res) => {
+    const avance = db.get('avances').find({ id: parseInt(req.params.id) }).value();
+    if (!avance) {
+      return res.status(404).json({ status: 'error', message: 'Avance non trouvée' });
+    }
+    const updatedAvance = { ...avance, ...req.body, updated_at: new Date().toISOString() };
+    db.get('avances').find({ id: parseInt(req.params.id) }).assign(updatedAvance).write();
+    return res.json({ status: 'success', data: updatedAvance });
+  });
+
+  // DELETE /avances/:id - Supprimer une avance
+  server.delete('/avances/:id', (req, res) => {
+    const avance = db.get('avances').find({ id: parseInt(req.params.id) }).value();
+    if (!avance) {
+      return res.status(404).json({ status: 'error', message: 'Avance non trouvée' });
+    }
+    db.get('avances').remove({ id: parseInt(req.params.id) }).write();
+    return res.status(204).end();
+  });
+
+  // POST /avances/:id/valider - Valider une avance
+  server.post('/avances/:id/valider', (req, res) => {
+    const avance = db.get('avances').find({ id: parseInt(req.params.id) }).value();
+    if (!avance) {
+      return res.status(404).json({ status: 'error', message: 'Avance non trouvée' });
+    }
+    db.get('avances').find({ id: parseInt(req.params.id) }).assign({
+      statut: 'VALIDE',
+      valide_par: req.body.valide_par || 'system',
+      date_validation: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }).write();
+    return res.json({ status: 'success', message: 'Avance validée' });
+  });
+
+  // POST /avances/:id/refuse - Refuser une avance
+  server.post('/avances/:id/refuse', (req, res) => {
+    const avance = db.get('avances').find({ id: parseInt(req.params.id) }).value();
+    if (!avance) {
+      return res.status(404).json({ status: 'error', message: 'Avance non trouvée' });
+    }
+    db.get('avances').find({ id: parseInt(req.params.id) }).assign({
+      statut: 'REFUSE',
+      motif_refus: req.body.motif_refus || '',
+      valide_par: req.body.valide_par || 'system',
+      date_validation: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }).write();
+    return res.json({ status: 'success', message: 'Avance refusée' });
+  });
+};
+

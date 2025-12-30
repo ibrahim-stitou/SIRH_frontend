@@ -40,5 +40,6 @@ module.exports = {
   periodePaie: require('./mock-data/periodePaie.json'),
   bulletinPaie: require('./mock-data/bulletinPaie.json'),
   rubriquePaie: require('./mock-data/rubriquePaie.json'),
-  elementVariable: require('./mock-data/elementVariable.json')
+  elementVariable: require('./mock-data/elementVariable.json'),
+  avances: require('./mock-data/avances.json')
 };

@@ -144,7 +144,7 @@ export default function PeriodePaiePage() {
     setSelectedEmployeeId(employeeId);
     setActiveTab('bulletin');
     router.push(
-      `/admin/paie/${periodeId}?tab=bulletin&employeeId=${employeeId}`
+      `/admin/paie/periode/${periodeId}?tab=bulletin&employeeId=${employeeId}`
     );
   };
 
@@ -431,7 +431,7 @@ export default function PeriodePaiePage() {
           </CardHeader>
           <CardContent>
             <Button
-              onClick={() => router.push('/admin/paie')}
+              onClick={() => router.push('/admin/paie/periode')}
               className='w-full'
               size='lg'
             >
@@ -453,7 +453,7 @@ export default function PeriodePaiePage() {
             <Button
               variant='ghost'
               size='icon'
-              onClick={() => router.push('/admin/paie')}
+              onClick={() => router.push('/admin/paie/periode')}
               className='rounded-lg hover:bg-gray-100'
             >
               <ArrowLeft className='h-5 w-5' />

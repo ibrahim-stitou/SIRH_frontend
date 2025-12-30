@@ -132,7 +132,7 @@ export default function PaieListing() {
               <Button
                 variant='outline'
                 className='h-8 w-8 p-1.5'
-                onClick={() => router.push(`/admin/paie/${row.id}`)}
+                onClick={() => router.push(`/admin/paie/periode/${row.id}`)}
               >
                 <Eye className='h-4 w-4' />
               </Button>

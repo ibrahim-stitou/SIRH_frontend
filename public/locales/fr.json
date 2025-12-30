@@ -30,7 +30,10 @@
     "absences": "Absences",
     "conges": "Congés",
     "calendrier": "Calendrier",
-    "paie": "gestion du paie"
+    "paie": "gestion du paie",
+    "periodesPaie": "Périodes de paie",
+    "avances": "Avances",
+    "prets": "Prêts"
   },
   "header": {
     "language": "Langue"

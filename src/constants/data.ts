@@ -114,9 +114,33 @@ export const useNavItems = (): NavItem[] => {
     },
     {
       title: t('sidebar.paie'),
-      url: '/admin/paie',
+      url: '#',
       icon: 'bank',
-      description: 'US-EMP-013'
+      description: 'US-EMP-013',
+      items:[
+        {
+          title: t('sidebar.periodesPaie'),
+          url: '/admin/paie/periode',
+          icon: 'iconcCashRegister',
+          shortcut: ['p', 'p'],
+          description: 'US-EMP-015'
+        },
+        {
+          title: t('sidebar.avances'),
+          url: '/admin/paie/avance',
+          icon: 'iconTicket',
+          shortcut: ['p', 'p'],
+          description: 'US-EMP-016'
+        },
+        {
+          title: t('sidebar.prets'),
+          url: '/admin/paie/pret',
+          icon: 'cashPlus',
+          shortcut: ['p', 'p'],
+          description: 'US-EMP-015'
+        },
+
+      ]
     }
   ];
 };
