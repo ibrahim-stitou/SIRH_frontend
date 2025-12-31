@@ -64,7 +64,38 @@ module.exports = function registerAvancesRoutes(server, db) {
     if (!avance) {
       return res.status(404).json({ status: 'error', message: 'Avance non trouvée' });
     }
-    return res.json({ status: 'success', data: avance });
+    // Utiliser la table users pour les infos utilisateur
+    const usersById = Object.fromEntries(
+      (db.get('users').value() || []).map((u) => [String(u.id), u])
+    );
+    const creerParUser = avance.creer_par ? usersById[String(avance.creer_par)] : null;
+    const valideParUser = avance.valide_par ? usersById[String(avance.valide_par)] : null;
+    // Enrichir avec infos employé (comme dans le listing)
+    const employeesById = Object.fromEntries(
+      (db.get('hrEmployees').value() || []).map((e) => [String(e.id), e])
+    );
+    const emp = employeesById[String(avance.employe_id)] || null;
+    const employee = emp
+      ? {
+          matricule: emp.matricule,
+          fullName: `${emp.firstName || ''} ${emp.lastName || ''}`.trim()
+        }
+      : null;
+    return res.json({
+      status: 'success',
+      data: {
+        ...avance,
+        employee,
+        creer_par_user: creerParUser ? {
+          id: creerParUser.id,
+          fullName: creerParUser.full_name || ''
+        } : null,
+        valide_par_user: valideParUser ? {
+          id: valideParUser.id,
+          fullName: valideParUser.full_name || ''
+        } : null
+      }
+    });
   });
 
   // POST /avances - Soumettre une avance
@@ -72,7 +103,8 @@ module.exports = function registerAvancesRoutes(server, db) {
     const newAvance = {
       ...req.body,
       id: Date.now(),
-      statut: 'EN_ATTENTE',
+      // Statut unifié
+      statut: 'En_attente',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
@@ -108,7 +140,8 @@ module.exports = function registerAvancesRoutes(server, db) {
       return res.status(404).json({ status: 'error', message: 'Avance non trouvée' });
     }
     db.get('avances').find({ id: parseInt(req.params.id) }).assign({
-      statut: 'VALIDE',
+      // Statut unifié
+      statut: 'Valide',
       valide_par: req.body.valide_par || 'system',
       date_validation: new Date().toISOString(),
       updated_at: new Date().toISOString()
@@ -123,7 +156,8 @@ module.exports = function registerAvancesRoutes(server, db) {
       return res.status(404).json({ status: 'error', message: 'Avance non trouvée' });
     }
     db.get('avances').find({ id: parseInt(req.params.id) }).assign({
-      statut: 'REFUSE',
+      // Statut unifié
+      statut: 'Refuse',
       motif_refus: req.body.motif_refus || '',
       valide_par: req.body.valide_par || 'system',
       date_validation: new Date().toISOString(),
@@ -132,4 +166,3 @@ module.exports = function registerAvancesRoutes(server, db) {
     return res.json({ status: 'success', message: 'Avance refusée' });
   });
 };
-

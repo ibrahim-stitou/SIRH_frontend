@@ -1,7 +1,7 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Eye, Trash2, Plus } from 'lucide-react';
+import { Eye, Trash2, Plus, Edit2, Pencil } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import CustomTable from '@/components/custom/data-table/custom-table';
@@ -20,13 +20,14 @@ import {
   DialogTitle,
   DialogFooter
 } from '@/components/ui/dialog';
+import { Heading } from '@/components/ui/heading';
 
 interface Avance {
   id: number;
   employe_id: number;
   date_demande: string;
   statut: string;
-  montant_total: number;
+  montant_avance?: number;
   cree_par: string;
   valide_par?: string | null;
   date_validation?: string | null;
@@ -41,15 +42,36 @@ export default function AvancesListing() {
   const [tableInstance, setTableInstance] = useState<Partial<UseTableReturn<Avance>> | null>(null);
   const [loadingDelete, setLoadingDelete] = useState<number | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+  const [employees, setEmployees] = useState<
+    { label: string; value: string | number }[]
+  >([]);
 
-  const getStatutBadge = (statut: string) => {
-    const variants: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline'; }> = {
-      BROUILLON: { label: 'Brouillon', variant: 'outline' },
-      EN_ATTENTE: { label: 'En attente', variant: 'default' },
-      VALIDE: { label: 'Validé', variant: 'secondary' },
-      REFUSE: { label: 'Refusé', variant: 'destructive' }
+  useEffect(() => {
+    let mounted = true;
+    apiClient
+      .get(apiRoutes.admin.employees.simpleList)
+      .then((res) => {
+        const opts = (res.data?.data || []).map((e: any) => ({
+          label: `${e.firstName} ${e.lastName}${e.matricule ? ' — ' + e.matricule : ''}`,
+          value: e.id
+        }));
+        if (mounted) setEmployees(opts);
+      })
+      .catch(() => void 0);
+
+    return () => {
+      mounted = false;
     };
-    const config = variants[statut] || { label: statut, variant: 'outline' };
+  }, []);
+  const getStatutBadge = (statut: string) => {
+    // Statuts unifiés: "Brouillon" | "En_attente" | "Valide" | "Refuse"
+    const map: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
+      Brouillon: { label: 'Brouillon', variant: 'outline' },
+      En_attente: { label: 'En attente', variant: 'default' },
+      Valide: { label: 'Valide', variant: 'secondary' },
+      Refuse: { label: 'Refusé', variant: 'destructive' }
+    };
+    const config = map[statut] || { label: statut, variant: 'outline' };
     return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
@@ -59,7 +81,7 @@ export default function AvancesListing() {
     try {
       await apiClient.delete(apiRoutes.admin.avances.delete(id));
       // Rafraîchir la table
-      tableInstance?.reload?.();
+      tableInstance?.refresh?.();
     } catch (e) {
       alert('Erreur lors de la suppression.');
     } finally {
@@ -91,8 +113,8 @@ export default function AvancesListing() {
       sortable: true
     },
     {
-      data: 'montant_total',
-      label: 'Montant',
+      data: 'montant_avance',
+      label: 'Montant avance',
       sortable: true,
       render: (value) => (
         <div className='font-medium'>
@@ -100,10 +122,11 @@ export default function AvancesListing() {
             style: 'currency',
             currency: 'MAD',
             maximumFractionDigits: 0
-          }).format(value)}
+          }).format(value ?? 0)}
         </div>
       )
     },
+    // colonne « Montant total » supprimée (seul montant_avance est conservé)
     {
       data: 'statut',
       label: 'Statut',
@@ -127,14 +150,34 @@ export default function AvancesListing() {
               <Button
                 variant='outline'
                 className='h-8 w-8 p-1.5'
-                onClick={() => router.push(`/admin/paie/avance/${row.id}`)}
+                onClick={() => router.push(`/admin/paie/avance/${row.id}/details`)}
               >
                 <Eye className='h-4 w-4' />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Consulter</TooltipContent>
           </Tooltip>
-          {row.statut === 'BROUILLON' && (
+          {(() => {
+            const s = row.statut || '';
+            return s === 'Brouillon';
+          })() && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant='outline'
+                  className='h-8 w-8 p-1.5'
+                  onClick={() => router.push(`/admin/paie/avance/${row.id}/modifier`)}
+                >
+                  <Pencil className='h-4 w-4' />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Modifier</TooltipContent>
+            </Tooltip>
+          )}
+          {(() => {
+            const s = row.statut || '';
+            return s === 'Brouillon';
+          })() && (
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -146,7 +189,10 @@ export default function AvancesListing() {
                   <Trash2 className='h-4 w-4' />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Supprimer</TooltipContent>
+              <TooltipContent
+                className='tooltip-content rounded-md bg-red-100 px-2 py-1 text-red-600 shadow-md'
+                sideOffset={5}
+              >Supprimer</TooltipContent>
             </Tooltip>
           )}
         </div>
@@ -155,20 +201,29 @@ export default function AvancesListing() {
   ];
 
   const filters: CustomTableFilterConfig[] = [
-    { field: 'employe_id', label: 'Employé', type: 'text' },
-    { field: 'statut', label: 'Statut', type: 'datatable-select', options: [
-      { label: 'Tous', value: '' },
-      { label: 'Brouillon', value: 'BROUILLON' },
-      { label: 'En attente', value: 'EN_ATTENTE' },
-      { label: 'Validé', value: 'VALIDE' },
-      { label: 'Refusé', value: 'REFUSE' }
-    ] }
+    { field: 'employe_id',    label: 'Employé',
+      type: 'datatable-select',
+      options: employees },
+    {
+      field: 'statut',
+      label: 'Statut',
+      type: 'datatable-select',
+      options: [
+        { label: 'Tous', value: '' },
+        // Valeurs unifiées
+        { label: 'Brouillon', value: 'Brouillon' },
+        { label: 'En attente', value: 'En_attente' },
+        { label: 'Valide', value: 'Valide' },
+        { label: 'Refusé', value: 'Refuse' }
+      ]
+    }
   ];
 
   return (
     <div className='flex flex-1 flex-col space-y-4'>
-      <div className='flex justify-end mb-2'>
-        <Button onClick={() => router.push('/admin/paie/avance/new')}>
+      <div className='flex justify-between mb-6'>
+        <Heading title={'Gestion des avances'} description={'Liste des demandes d\'avance en cours.'}/>
+        <Button onClick={() => router.push('/admin/paie/avance/ajouter')}>
           <Plus className='mr-2 h-4 w-4' />
           Ajouter une nouvelle demande d&apos;avance
         </Button>
