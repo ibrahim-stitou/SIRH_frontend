@@ -236,6 +236,8 @@ export default function AvancesListing() {
       />
       <Dialog open={!!confirmDeleteId} onOpenChange={(o) => !o && setConfirmDeleteId(null)}>
         <DialogContent>
+
+
           <DialogHeader>
             <DialogTitle>Supprimer l&apos;avance (brouillon)&nbsp;?</DialogTitle>
           </DialogHeader>
