@@ -255,6 +255,17 @@ export const apiRoutes = {
       delete: (id: number | string) => `${API_BASE}/avances/${id}`,
       validate: (id: number | string) => `${API_BASE}/avances/${id}/valider`,
       refuse: (id: number | string) => `${API_BASE}/avances/${id}/refuse`
+    },
+    prets: {
+      list: `${API_BASE}/prets`,
+      show: (id: number | string) => `${API_BASE}/prets/${id}`,
+      create: `${API_BASE}/prets`,
+      update: (id: number | string) => `${API_BASE}/prets/${id}`,
+      delete: (id: number | string) => `${API_BASE}/prets/${id}`,
+      validate: (id: number | string) => `${API_BASE}/prets/${id}/valider`,
+      refuse: (id: number | string) => `${API_BASE}/prets/${id}/refuse`,
+      start: (id: number | string) => `${API_BASE}/prets/${id}/demarrer`,
+      settle: (id: number | string) => `${API_BASE}/prets/${id}/solde`
     }
   }
 };
