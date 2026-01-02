@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "noteId": 1,
+    "date": "2026-01-01",
+    "category": "Transport",
+    "transportMode": "Train",
+    "route": { "from": "Rabat", "to": "Casablanca" },
+    "amount": 120,
+    "vatRecoverable": 0,
+    "currency": "MAD",
+    "attachments": [],
+    "comment": "Aller",
+    "kilometers": 0,
+    "vehicleType": null,
+    "approvedAmount": 120,
+    "managerComment": ""
+  }
+]
+

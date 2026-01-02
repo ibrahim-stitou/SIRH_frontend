@@ -33,7 +33,8 @@
     "paie": "gestion du paie",
     "periodesPaie": "Périodes de paie",
     "avances": "Avances",
-    "prets": "Prêts"
+    "prets": "Prêts",
+    "fraisDeplacements": "Frais & Déplacements"
   },
   "header": {
     "language": "Langue"
@@ -832,6 +833,28 @@
       "soldeRestant": "Solde restant",
       "soldeReport": "Solde reporté",
       "actions": "Actions"
+    }
+  },
+  "frais": {
+    "title": "Frais & Déplacements",
+    "list": {
+      "number": "Numéro",
+      "employee": "Employé",
+      "subject": "Objet",
+      "period": "Période",
+      "status": "Statut",
+      "total": "Total"
+    },
+    "form": {
+      "new": "Nouvelle note de frais",
+      "save": "Sauvegarder",
+      "addLine": "Ajouter ligne",
+      "dates": "Dates",
+      "currency": "Devise",
+      "object": "Objet"
+    },
+    "details": {
+      "approveTotal": "Approuver total"
     }
   }
 }

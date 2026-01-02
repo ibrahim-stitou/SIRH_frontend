@@ -139,6 +139,13 @@ export const useNavItems = (): NavItem[] => {
           shortcut: ['p', 'p'],
           description: 'US-EMP-015'
         },
+        {
+          title: t('sidebar.fraisDeplacements'),
+          url: '/admin/paie/frais',
+          icon: 'car',
+          shortcut: ['f', 'd'],
+          description: 'US-FRA-001'
+        },
 
       ]
     }

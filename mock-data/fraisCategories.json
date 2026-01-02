@@ -1,0 +1,18 @@
+{
+  "categories": [
+    { "name": "Transport", "ceiling": 1000 },
+    { "name": "Restauration", "ceiling": 300 },
+    { "name": "Hôtel", "ceiling": 1500 },
+    { "name": "Autre", "ceiling": 500 }
+  ],
+  "kilometerRates": [
+    { "vehicle": "car", "ratePerKm": 2.0 },
+    { "vehicle": "motorcycle", "ratePerKm": 1.0 }
+  ],
+  "currencies": [
+    { "code": "MAD", "rateToMAD": 1 },
+    { "code": "EUR", "rateToMAD": 10.9 },
+    { "code": "USD", "rateToMAD": 10.0 }
+  ]
+}
+

@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "number": "NDF-2026-EMP001-001",
+    "employeeId": 1,
+    "matricule": "EMP001",
+    "status": "draft",
+    "subject": "Mission Casablanca",
+    "startDate": "2026-01-01",
+    "endDate": "2026-01-03",
+    "currency": "MAD",
+    "total": 120,
+    "lines": [],
+    "history": [],
+    "createdAt": "2026-01-01T10:00:00Z",
+    "updatedAt": "2026-01-01T10:00:00Z"
+  }
+]

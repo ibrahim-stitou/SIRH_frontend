@@ -266,7 +266,15 @@ export const apiRoutes = {
       refuse: (id: number | string) => `${API_BASE}/prets/${id}/refuse`,
       start: (id: number | string) => `${API_BASE}/prets/${id}/demarrer`,
       settle: (id: number | string) => `${API_BASE}/prets/${id}/solde`
-    }
+    },
+    frais: {
+      list: `${API_BASE}/api/admin/frais`,
+      get: (id: string | number) => `${API_BASE}/api/admin/frais/${id}`,
+      create: `${API_BASE}/api/admin/frais`,
+      update: (id: string | number) => `${API_BASE}/api/admin/frais/${id}`,
+      delete: (id: string | number) => `${API_BASE}/api/admin/frais/${id}`,
+      validate: (id: string | number) => `${API_BASE}/api/admin/frais/${id}/validate`,
+    },
   }
 };
 

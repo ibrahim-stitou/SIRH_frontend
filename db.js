@@ -42,5 +42,7 @@ module.exports = {
   rubriquePaie: require('./mock-data/rubriquePaie.json'),
   elementVariable: require('./mock-data/elementVariable.json'),
   avances: require('./mock-data/avances.json'),
-  prets: require('./mock-data/prets.json')
+  prets: require('./mock-data/prets.json'),
+  notesFrais: require('./mock-data/notesFrais.json'),
+  lignesFrais: require('./mock-data/lignesFrais.json')
 };
