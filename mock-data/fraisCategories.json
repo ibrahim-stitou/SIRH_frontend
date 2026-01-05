@@ -3,7 +3,9 @@
     { "name": "Transport", "ceiling": 1000 },
     { "name": "Restauration", "ceiling": 300 },
     { "name": "Hôtel", "ceiling": 1500 },
-    { "name": "Autre", "ceiling": 500 }
+    { "name": "Autre", "ceiling": 500 },
+    { "name": "Kilométrage", "ceiling": 5000 },
+    { "name": "Per Diem", "ceiling": 600 }
   ],
   "kilometerRates": [
     { "vehicle": "car", "ratePerKm": 2.0 },
@@ -15,4 +17,3 @@
     { "code": "USD", "rateToMAD": 10.0 }
   ]
 }
-

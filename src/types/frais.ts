@@ -6,7 +6,6 @@ export type FraisLine = {
   route?: { from: string; to: string } | null;
   amount: number;
   vatRecoverable?: number;
-  currency: string; // e.g., MAD
   attachments: string[]; // urls/paths
   comment?: string;
   kilometers?: number;
@@ -24,8 +23,7 @@ export type NoteDeFrais = {
   subject: string;
   startDate: string; // ISO date
   endDate: string; // ISO date
-  currency: string;
-  total: number; // total in base currency (MAD)
+  total: number; // total in MAD
   lines: FraisLine[];
   history: Array<{ at: string; action: string; by: string | number; comment?: string }>;
   createdAt: string;

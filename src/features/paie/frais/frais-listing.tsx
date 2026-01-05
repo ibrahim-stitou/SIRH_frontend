@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Eye, Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -133,20 +133,21 @@ export default function FraisListing() {
   ];
 
   return (
-    <div className='flex flex-1 flex-col space-y-4'>
-      <div className='flex justify-between mb-6'>
-        <Heading title={'Frais & Déplacements'} description={'Notes de frais et déplacements.'} />
-        <Button onClick={() => router.push('/admin/paie/frais/ajouter')}>
-          <Plus className='mr-2 h-4 w-4' />
-          Ajouter une note de frais
-        </Button>
+      <div className='flex flex-1 flex-col space-y-4'>
+        <div className='flex justify-between mb-6'>
+          <Heading title={'Frais & Déplacements'} description={'Notes de frais et déplacements.'} />
+          <Button onClick={() => router.push('/admin/paie/frais/ajouter')}>
+            <Plus className='mr-2 h-4 w-4' />
+            Ajouter une note de frais
+          </Button>
+        </div>
+        <CustomTable<NoteDeFraisRow>
+          columns={columns}
+          url={apiRoutes.admin.frais.list}
+          filters={filters}
+          onInit={(instance) => setTableInstance(instance)}
+        />
       </div>
-      <CustomTable<NoteDeFraisRow>
-        columns={columns}
-        url={apiRoutes.admin.frais.list}
-        filters={filters}
-        onInit={(instance) => setTableInstance(instance)}
-      />
-    </div>
+
   );
 }

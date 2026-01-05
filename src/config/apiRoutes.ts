@@ -274,6 +274,7 @@ export const apiRoutes = {
       update: (id: string | number) => `${API_BASE}/api/admin/frais/${id}`,
       delete: (id: string | number) => `${API_BASE}/api/admin/frais/${id}`,
       validate: (id: string | number) => `${API_BASE}/api/admin/frais/${id}/validate`,
+      submit: (id: string | number) => `${API_BASE}/api/admin/frais/${id}/submit`,
     },
   }
 };

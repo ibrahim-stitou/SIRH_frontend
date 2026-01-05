@@ -1,5 +1,5 @@
-import { apiRoutes } from '@/src/config/apiRoutes';
-import type { NoteDeFrais } from '@/src/types/frais';
+import { apiRoutes } from '@/config/apiRoutes';
+import { NoteDeFrais } from '@/types/frais';
 
 export async function listFrais(): Promise<NoteDeFrais[]> {
   const res = await fetch(apiRoutes.admin.frais.list);
@@ -46,5 +46,11 @@ export async function validateFrais(id: number | string, payload: { action: 'app
     body: JSON.stringify(payload),
   });
   if (!res.ok) throw new Error('Failed to validate frais');
+  return res.json();
+}
+
+export async function submitFrais(id: number | string): Promise<NoteDeFrais> {
+  const res = await fetch(apiRoutes.admin.frais.submit(id), { method: 'POST' });
+  if (!res.ok) throw new Error('Failed to submit frais');
   return res.json();
 }

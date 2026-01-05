@@ -1,5 +1,5 @@
 // src/components/custom/SelectField.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Controller, Control } from 'react-hook-form';
 import { FormFieldCustom } from '@/components/custom/FormFieldCustom';
 import {
