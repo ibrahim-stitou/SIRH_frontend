@@ -51,6 +51,8 @@ if (!db.get('users').value()) {
   ]).write();
 }
 
+
+
 if (!db.get('sessions').value()) {
   db.set('sessions', []).write();
 }

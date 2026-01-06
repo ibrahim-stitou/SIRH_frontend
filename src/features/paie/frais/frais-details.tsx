@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { getFrais, validateFrais, submitFrais } from '@/services/frais';
+import { getFrais, validateFrais, submitFrais, deleteFrais } from '@/services/frais';
 import { NoteDeFrais } from '@/types/frais';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -44,6 +44,7 @@ import {
   CheckCheck,
   Ban,
   AlertTriangle,
+  Trash2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -100,6 +101,7 @@ export default function FraisDetails({ id }: FraisDetailsProps) {
   const [showRefuseDialog, setShowRefuseDialog] = useState(false);
   const [showPartialDialog, setShowPartialDialog] = useState(false);
   const [showComplementDialog, setShowComplementDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   // Form states
   const [refuseReason, setRefuseReason] = useState('');
@@ -114,7 +116,7 @@ export default function FraisDetails({ id }: FraisDetailsProps) {
 
       // Initialize line adjustments
       const initialAdjustments: Record<number, { approvedAmount: number; comment: string }> = {};
-      data.lines.forEach((line) => {
+      (data.lines || []).forEach((line) => {
         initialAdjustments[line.id] = {
           approvedAmount: line.approvedAmount ?? line.amount,
           comment: line.managerComment || '',
@@ -249,12 +251,6 @@ export default function FraisDetails({ id }: FraisDetailsProps) {
     }
   };
 
-  const config = statusConfig[note.status as keyof typeof statusConfig] || statusConfig.draft;
-  const StatusIcon = config.icon;
-  const totalApproved = note.lines.reduce((sum, line) => sum + (lineAdjustments[line.id]?.approvedAmount ?? line.approvedAmount ?? line.amount), 0);
-  const canValidate = note.status === 'submitted';
-  const canSubmit = note.status === 'draft' || note.status === 'needs_complement' || note.status === 'refused';
-
   if (loading) {
     return (
       <div className='flex items-center justify-center py-12'>
@@ -287,18 +283,107 @@ export default function FraisDetails({ id }: FraisDetailsProps) {
     );
   }
 
+  // Safe to compute derived values now that 'note' is ensured non-null
+  const config = statusConfig[note.status as keyof typeof statusConfig] || statusConfig.draft;
+  const StatusIcon = config.icon;
+  const lines = Array.isArray(note.lines) ? note.lines : [];
+  const totalApproved = lines.reduce(
+    (sum, line) => sum + (lineAdjustments[line.id]?.approvedAmount ?? line.approvedAmount ?? line.amount),
+    0
+  );
+  const canValidate = note.status === 'submitted';
+  const canSubmit = note.status === 'draft' || note.status === 'needs_complement' || note.status === 'refused';
+
   return (
     <PageContainer>
       <div className="flex flex-1 flex-col space-y-6">
+      {/* Manager feedback callouts */}
+      {note.status === 'needs_complement' && note.managerComment && (
+        <div className='border border-orange-200 bg-orange-50 text-orange-800 rounded-md p-3'>
+          <div className='font-semibold mb-1'>Complément requis</div>
+          <div className='text-sm'>{note.managerComment}</div>
+        </div>
+      )}
+      {note.status === 'refused' && note.refuseReason && (
+        <div className='border border-red-200 bg-red-50 text-red-800 rounded-md p-3'>
+          <div className='font-semibold mb-1'>Raison du refus</div>
+          <div className='text-sm'>{note.refuseReason}</div>
+        </div>
+      )}
       <div className='flex items-center justify-between mb-6'>
         <Heading
           title='Détail de la note de frais'
           description='Visualisation et validation de la note de frais'
         />
-        <Button variant='outline' onClick={() => router.push('/admin/paie/frais')}>
-          <ArrowLeft className='mr-2 h-4 w-4' />
-          Retour à la liste
-        </Button>
+        <div className='flex items-center gap-2'>
+          <Button variant='outline' onClick={() => router.push('/admin/paie/frais')}>
+            <ArrowLeft className='mr-2 h-4 w-4' />
+            Retour
+          </Button>
+
+          {/* Action buttons for submitted status */}
+          {canValidate && (
+            <>
+              <Button
+                onClick={() => setShowApproveDialog(true)}
+                variant='default'
+                disabled={actionLoading}
+              >
+                <CheckCheck className='mr-2 h-4 w-4' />
+                Approuver tout
+              </Button>
+              <Button
+                onClick={() => setShowPartialDialog(true)}
+                variant='secondary'
+                disabled={actionLoading}
+              >
+                <AlertCircle className='mr-2 h-4 w-4' />
+                Approuver partiellement
+              </Button>
+              <Button
+                onClick={() => setShowComplementDialog(true)}
+                variant='outline'
+                disabled={actionLoading}
+              >
+                <MessageSquare className='mr-2 h-4 w-4' />
+                Demander complément
+              </Button>
+              <Button
+                onClick={() => setShowRefuseDialog(true)}
+                variant='destructive'
+                disabled={actionLoading}
+              >
+                <Ban className='mr-2 h-4 w-4' />
+                Refuser
+              </Button>
+            </>
+          )}
+
+          {/* Submit button for draft/refused/needs_complement */}
+          {canSubmit && (
+            <Button onClick={handleSubmitNote} disabled={actionLoading}>
+              {note.status === 'refused' || note.status === 'needs_complement' ? 'Renvoyer' : 'Soumettre'}
+            </Button>
+          )}
+
+          {/* Edit button for draft status */}
+          {note.status === 'draft' && (
+            <>
+              <Button onClick={() => router.push(`/admin/paie/frais/${note.id}/modifier`)}>
+                <Edit className='mr-2 h-4 w-4' />
+                Modifier
+              </Button>
+              <Button
+                onClick={() => setShowDeleteDialog(true)}
+                variant='destructive'
+                disabled={actionLoading}
+              >
+                <Trash2 className='mr-2 h-4 w-4' />
+                Supprimer
+              </Button>
+            </>
+          )}
+        </div>
       </div>
       <Card>
         <CardHeader>
@@ -357,7 +442,7 @@ export default function FraisDetails({ id }: FraisDetailsProps) {
         <CardHeader>
           <CardTitle className='text-lg flex items-center gap-2'>
             <Edit className='h-5 w-5' />
-            Lignes de frais ({note.lines.length})
+            Lignes de frais ({lines.length})
           </CardTitle>
           <CardDescription>Détail et validation des dépenses</CardDescription>
         </CardHeader>
@@ -374,7 +459,7 @@ export default function FraisDetails({ id }: FraisDetailsProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {note.lines.map((line) => (
+              {lines.map((line) => (
                 <TableRow key={line.id}>
                   <TableCell className='font-medium'>{formatDate(line.date)}</TableCell>
                   <TableCell>
@@ -436,7 +521,7 @@ export default function FraisDetails({ id }: FraisDetailsProps) {
 
           <div className='flex justify-between items-center'>
             <p className='text-sm text-muted-foreground'>
-              {note.lines.length} ligne{note.lines.length > 1 ? 's' : ''}
+              {lines.length} ligne{lines.length > 1 ? 's' : ''}
             </p>
             <div className='text-right'>
               <p className='text-sm text-muted-foreground'>Total à approuver</p>
@@ -445,66 +530,6 @@ export default function FraisDetails({ id }: FraisDetailsProps) {
           </div>
         </CardContent>
       </Card>
-
-      {/* Action Buttons */}
-      {canValidate && (
-        <Card>
-          <CardHeader>
-            <CardTitle className='text-lg'>Actions de validation</CardTitle>
-            <CardDescription>Choisissez une action pour traiter cette note de frais</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3'>
-              <Button
-                onClick={() => setShowApproveDialog(true)}
-                className='w-full'
-                variant='default'
-              >
-                <CheckCheck className='mr-2 h-4 w-4' />
-                Approuver tout
-              </Button>
-              <Button
-                onClick={() => setShowPartialDialog(true)}
-                className='w-full'
-                variant='secondary'
-              >
-                <AlertCircle className='mr-2 h-4 w-4' />
-                Approuver partiellement
-              </Button>
-              <Button
-                onClick={() => setShowComplementDialog(true)}
-                className='w-full'
-                variant='outline'
-              >
-                <MessageSquare className='mr-2 h-4 w-4' />
-                Demander complément
-              </Button>
-              <Button
-                onClick={() => setShowRefuseDialog(true)}
-                className='w-full'
-                variant='destructive'
-              >
-                <Ban className='mr-2 h-4 w-4' />
-                Refuser
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {canSubmit && (
-        <Card>
-          <CardHeader>
-            <CardTitle className='text-lg'>Soumettre la note</CardTitle>
-            <CardDescription>Envoyez la note pour validation</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={handleSubmitNote} disabled={actionLoading} className='w-full'>
-              {note.status === 'refused' || note.status === 'needs_complement' ? 'Renvoyer' : 'Soumettre'}
-            </Button>
-          </CardContent>
-        </Card>
-      )}
 
       {/* History */}
       {note.history && note.history.length > 0 && (

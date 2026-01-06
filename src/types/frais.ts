@@ -1,7 +1,7 @@
 export type FraisLine = {
   id: number;
   date: string; // ISO date
-  category: 'Transport' | 'Restauration' | 'Hôtel' | 'Autre';
+  category: 'Transport' | 'Restauration' | 'Hôtel' | 'Autre'|'Per Diem'|'Kilométrage';
   transportMode?: string | null;
   route?: { from: string; to: string } | null;
   amount: number;

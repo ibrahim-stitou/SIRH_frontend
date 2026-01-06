@@ -269,7 +269,7 @@ export const apiRoutes = {
     },
     frais: {
       list: `${API_BASE}/api/admin/frais`,
-      get: (id: string | number) => `${API_BASE}/api/admin/frais/${id}`,
+      get: (id: string | number|undefined) => `${API_BASE}/api/admin/frais/${id}`,
       create: `${API_BASE}/api/admin/frais`,
       update: (id: string | number) => `${API_BASE}/api/admin/frais/${id}`,
       delete: (id: string | number) => `${API_BASE}/api/admin/frais/${id}`,

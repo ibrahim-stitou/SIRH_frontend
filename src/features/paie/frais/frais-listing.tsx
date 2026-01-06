@@ -1,15 +1,27 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Eye, Plus } from 'lucide-react';
+import { Eye, Plus, Edit as EditIcon, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import CustomTable from '@/components/custom/data-table/custom-table';
-import { CustomTableColumn, CustomTableFilterConfig, UseTableReturn } from '@/components/custom/data-table/types';
+import { CustomTableColumn, CustomTableFilterConfig } from '@/components/custom/data-table/types';
 import { apiRoutes } from '@/config/apiRoutes';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Heading } from '@/components/ui/heading';
 import apiClient from '@/lib/api';
+import { deleteFrais } from '@/services/frais';
+import { toast } from 'sonner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface NoteDeFraisRow {
   id: number;
@@ -26,8 +38,11 @@ interface NoteDeFraisRow {
 
 export default function FraisListing() {
   const router = useRouter();
-  const [tableInstance, setTableInstance] = useState<Partial<UseTableReturn<NoteDeFraisRow>> | null>(null);
   const [employees, setEmployees] = useState<{ label: string; value: string | number }[]>([]);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [noteToDelete, setNoteToDelete] = useState<number | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     let mounted = true;
@@ -52,12 +67,35 @@ export default function FraisListing() {
       draft: { label: 'Brouillon', variant: 'outline' },
       submitted: { label: 'En attente', variant: 'default' },
       approved: { label: 'Approuvée', variant: 'secondary' },
-      approved_partial: { label: 'Approuvée partielle', variant: 'secondary' },
+      approved_partial: { label: 'Approuvée partiellement', variant: 'secondary' },
       refused: { label: 'Refusée', variant: 'destructive' },
       needs_complement: { label: 'Complément requis', variant: 'outline' }
     };
     const cfg = map[status] || { label: status, variant: 'outline' };
     return <Badge variant={cfg.variant}>{cfg.label}</Badge>;
+  };
+
+  const handleDeleteClick = (id: number) => {
+    setNoteToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!noteToDelete) return;
+
+    setDeleting(true);
+    try {
+      await deleteFrais(noteToDelete);
+      toast.success('Note de frais supprimée avec succès');
+      setDeleteDialogOpen(false);
+      setNoteToDelete(null);
+      // Trigger table refresh
+      setRefreshKey(prev => prev + 1);
+    } catch (e: any) {
+      toast.error(e.message || 'Erreur lors de la suppression');
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const columns: CustomTableColumn<NoteDeFraisRow>[] = [
@@ -109,6 +147,30 @@ export default function FraisListing() {
             </TooltipTrigger>
             <TooltipContent>Consulter</TooltipContent>
           </Tooltip>
+          {row.status === 'draft' && (
+            <>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant='secondary' className='h-8 w-8 p-1.5' onClick={() => router.push(`/admin/paie/frais/${row.id}/modifier`)}>
+                    <EditIcon className='h-4 w-4' />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Modifier</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant='destructive'
+                    className='h-8 w-8 p-1.5'
+                    onClick={() => handleDeleteClick(row.id)}
+                  >
+                    <Trash2 className='h-4 w-4' />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className='bg-red-100 text-red-500'>Supprimer</TooltipContent>
+              </Tooltip>
+            </>
+          )}
         </div>
       )
     }
@@ -125,7 +187,7 @@ export default function FraisListing() {
         { label: 'Brouillon', value: 'draft' },
         { label: 'En attente', value: 'submitted' },
         { label: 'Approuvée', value: 'approved' },
-        { label: 'Approuvée partielle', value: 'approved_partial' },
+        { label: 'Approuvée partiellement', value: 'approved_partial' },
         { label: 'Refusée', value: 'refused' },
         { label: 'Complément requis', value: 'needs_complement' }
       ]
@@ -142,11 +204,37 @@ export default function FraisListing() {
           </Button>
         </div>
         <CustomTable<NoteDeFraisRow>
+          key={refreshKey}
           columns={columns}
           url={apiRoutes.admin.frais.list}
           filters={filters}
-          onInit={(instance) => setTableInstance(instance)}
         />
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className='flex items-center gap-2'>
+                <Trash2 className='h-5 w-5 text-destructive' />
+                Supprimer la note de frais
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Êtes-vous sûr de vouloir supprimer définitivement cette note de frais ?
+                Cette action est irréversible et toutes les données associées seront perdues.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={deleting}>Annuler</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteConfirm}
+                disabled={deleting}
+                className='bg-destructive hover:bg-destructive/90'
+              >
+                {deleting ? 'Suppression...' : 'Supprimer définitivement'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
 
   );
