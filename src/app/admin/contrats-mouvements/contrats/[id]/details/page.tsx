@@ -111,6 +111,12 @@ const normalizeContractStatus = (data: any): Contract => {
         deontologie: true
       }
     },
+    // Map conditions from API (pivot-resolved)
+    conditions: data.conditions?.selected
+      ? { selected: data.conditions.selected }
+      : data.conditions
+      ? data.conditions
+      : { selected: [] },
     documents: data.documents,
     historique: data.historique || {
       created_at: data.created_at || new Date().toISOString(),
@@ -170,12 +176,30 @@ export default function ContractDetailsPage() {
   const handleSave = async (updatedData: Partial<Contract>) => {
     try {
       setIsSaving(true);
+      // Persist base contract fields
       const response = await apiClient.put(
         apiRoutes.admin.contratsEtMovements.contrats.update(contractId),
         updatedData
       );
 
+      // If conditions were updated, persist via pivot route
+      if (updatedData.conditions && Array.isArray(updatedData.conditions.selected)) {
+        await apiClient.put(
+          apiRoutes.admin.contratsEtMovements.contrats.updateConditions(contractId),
+          { selected: updatedData.conditions.selected }
+        );
+      }
+
       const normalizedContract = normalizeContractStatus(response.data.data);
+      // Refresh conditions from pivot endpoint to avoid drift
+      try {
+        const condRes = await apiClient.get(
+          apiRoutes.admin.contratsEtMovements.contrats.conditionsByContract(contractId)
+        );
+        const selected = Array.isArray(condRes.data?.data) ? condRes.data.data : [];
+        normalizedContract.conditions = { selected } as any;
+      } catch {}
+
       setContract(normalizedContract);
       setIsEditing(false);
       toast.success('Contrat mis à jour avec succès');

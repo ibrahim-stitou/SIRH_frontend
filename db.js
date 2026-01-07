@@ -44,5 +44,14 @@ module.exports = {
   avances: require('./mock-data/avances.json'),
   prets: require('./mock-data/prets.json'),
   notesFrais: require('./mock-data/notesFrais.json'),
-  lignesFrais: require('./mock-data/lignesFrais.json')
+  lignesFrais: require('./mock-data/lignesFrais.json'),
+  // Catalog des conditions de contrat
+  contractConditionsCatalog: require('./mock-data/contract-conditions.json'),
+  // Pivot many-to-many entre contrats et conditions
+  contractConditions: require('./mock-data/contractConditions.json'),
+  // Trial period acceptance criteria
+  trialCriteriaCatalog: require('./mock-data/trial-criteria.json'),
+  contractTrialCriteria: require('./mock-data/contractTrialCriteria.json'),
+  // Nouveau: paramètres max généraux
+  parametreMaxGeneral: require('./mock-data/parametreMaxGeneral.json'),
 };

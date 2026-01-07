@@ -70,6 +70,24 @@ module.exports = function registerAvenantRoutes(server, db) {
 
   server.post('/avenants', (req, res) => {
     const body = req.body || {};
+    const contractId = body.contract_id;
+    // Check limit from parametreMaxGeneral
+    try {
+      const paramsList = db.get('parametreMaxGeneral').value() || [];
+      const cfg = Array.isArray(paramsList) && paramsList.length > 0 ? paramsList[0] : null;
+      const maxAvenants = cfg?.max_avenants_par_contrat;
+      if (contractId != null && typeof maxAvenants === 'number') {
+        const existingCount = (db.get('avenants').value() || []).filter((a) => String(a.contract_id) === String(contractId)).length;
+        if (existingCount >= maxAvenants) {
+          return res.status(400).json({
+            status: 'error',
+            message: `Nombre maximum d’avenants (${maxAvenants}) atteint pour ce contrat`,
+            data: null
+          });
+        }
+      }
+    } catch (_) {}
+
     const newItem = { id: body.id || `AVN-${Date.now()}`, ...body };
     db.get('avenants').push(newItem).write();
     return res

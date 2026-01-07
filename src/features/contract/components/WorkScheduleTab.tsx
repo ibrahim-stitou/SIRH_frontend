@@ -18,23 +18,48 @@ import {
   FormDescription
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { apiRoutes } from '@/config/apiRoutes';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DatePickerField } from '@/components/custom/DatePickerField';
 import { SelectField } from '@/components/custom/SelectField';
 import type { SimplifiedContractInput } from '@/validations/contract-simplified.schema';
 import { Timer } from 'lucide-react';
 
-interface WorkScheduleTabProps {
-  form: UseFormReturn<SimplifiedContractInput>;
-}
-
-export function WorkScheduleTab({ form }: WorkScheduleTabProps) {
+export function WorkScheduleTab({ form }: { form: UseFormReturn<SimplifiedContractInput> }) {
   const hasTrialPeriod = form.watch('dates')?.trial_period?.enabled || false;
+
+  const [criteriaCatalog, setCriteriaCatalog] = React.useState<any[]>([]);
+  const [criteriaError, setCriteriaError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    fetch(apiRoutes.admin.contratsEtMovements.contrats.trialCriteriaCatalog)
+      .then((r) => r.json())
+      .then((json) => {
+        const data = Array.isArray(json?.data) ? json.data : Array.isArray(json) ? json : [];
+        if (!cancelled) setCriteriaCatalog(data);
+      })
+      .catch((e) => !cancelled && setCriteriaError(e?.message || 'Erreur chargement critères'));
+    return () => { cancelled = true; };
+  }, []);
+
+  const dates = form.watch('dates');
+  const trial: any = dates?.trial_period || {};
+  const selected: string[] = (trial.acceptance_criteria as any) || [];
+  const toggleCriteria = (id: string, checked: boolean) => {
+    const next = checked ? Array.from(new Set([...(selected || []), id])) : (selected || []).filter((x) => x !== id);
+    const nextDates = {
+      ...(dates || {}),
+      trial_period: {
+        ...((dates?.trial_period) || {}),
+        acceptance_criteria: next
+      }
+    };
+    form.setValue('dates', nextDates as any, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
+  };
 
   return (
     <div className='space-y-4'>
-      {/* Horaires et Congés */}
       <Card>
         <CardHeader className='pb-3'>
           <CardTitle className='flex items-center gap-2 text-base'>
@@ -220,25 +245,6 @@ export function WorkScheduleTab({ form }: WorkScheduleTabProps) {
                     )}
                   />
                 </div>
-
-                {/* Conditions */}
-                <FormField
-                  control={form.control}
-                  name='dates.trial_period.conditions'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className='text-xs'>Conditions</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Conditions spécifiques de la période d'essai..."
-                          className='min-h-[50px]'
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </>
             )}
           </div>
@@ -291,6 +297,53 @@ export function WorkScheduleTab({ form }: WorkScheduleTabProps) {
               />
             </div>
           </div>
+
+          {/* Critères d'acceptation (Période d'essai) - afficher uniquement si période d'essai activée */}
+          {hasTrialPeriod && (
+            <div className='border-t pt-4'>
+              <h3 className='mb-3 text-sm font-bold text-amber-700 dark:text-amber-400'>
+                Critères d&apos;acceptation (Période d&apos;essai)
+              </h3>
+              {criteriaError && (
+                <p className='text-red-600 text-sm'>Impossible de charger les critères: {criteriaError}</p>
+              )}
+              {!criteriaError && criteriaCatalog.length === 0 && (
+                <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className='animate-pulse rounded-lg border p-3'>
+                      <div className='mb-2 h-4 w-1/3 rounded bg-muted' />
+                      <div className='h-3 w-2/3 rounded bg-muted' />
+                    </div>
+                  ))}
+                </div>
+              )}
+              {criteriaCatalog.length > 0 && (
+                <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
+                  {criteriaCatalog.map((crit: any) => {
+                    const isSelected = (selected || []).includes(crit.id);
+                    return (
+                      <div key={crit.id} className='group hover:bg-accent/50 space-y-1.5 rounded-lg p-3 transition-all duration-200'>
+                        <div className='flex items-center justify-between'>
+                          <div className='flex items-center space-x-2'>
+                            <Checkbox
+                              checked={isSelected}
+                              onCheckedChange={(checked) => toggleCriteria(crit.id, !!checked)}
+                              aria-label={`Sélectionner ${crit.label}`}
+                            />
+                            <span className='text-sm font-semibold'>{crit.label}</span>
+                          </div>
+                        </div>
+                        <p className='text-muted-foreground text-xs'>{crit.description}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              {(selected?.length || 0) === 0 && criteriaCatalog.length > 0 && (
+                <p className='text-muted-foreground text-sm'>Aucun critère sélectionné.</p>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

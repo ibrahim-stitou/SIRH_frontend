@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { Contract, ContractType, WorkMode } from '@/types/contract';
 import { formatDateLong } from '@/lib/date-utils';
+import { apiRoutes } from '@/config/apiRoutes';
 
 interface GeneralInfoDisplayProps {
   contract: Contract;
@@ -63,6 +64,24 @@ export default function GeneralInfoDisplay({
 }: GeneralInfoDisplayProps) {
   const [editedData, setEditedData] = useState(contract);
   const [activeFields, setActiveFields] = useState<Record<string, boolean>>({});
+  const [conditionsCatalog, setConditionsCatalog] = useState<any[]>([]);
+  const [conditionsError, setConditionsError] = useState<string | null>(null);
+  const [conditionsLoading, setConditionsLoading] = useState<boolean>(false);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    setConditionsLoading(true);
+    const url = apiRoutes.admin.contratsEtMovements.contrats.conditionsCatalog;
+    fetch(url)
+      .then((r) => r.json())
+      .then((json) => {
+        const data = Array.isArray(json?.data) ? json.data : Array.isArray(json) ? json : [];
+        if (!cancelled) setConditionsCatalog(data);
+      })
+      .catch((e) => !cancelled && setConditionsError(e?.message || 'Erreur chargement conditions'))
+      .finally(() => { if (!cancelled) setConditionsLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
 
   const isDraft = contract.status === 'Brouillon';
 
@@ -116,6 +135,14 @@ export default function GeneralInfoDisplay({
 
     setEditedData({ ...newData });
     setActiveFields((prev) => ({ ...prev, [field]: false }));
+  };
+
+  const toggleCondition = (id: string, checked: boolean) => {
+    const current = (editedData as any).conditions?.selected ?? [];
+    const next = checked
+      ? Array.from(new Set([...current, id]))
+      : current.filter((x: string) => x !== id);
+    handleChange('conditions.selected', next);
   };
 
   const renderField = (
@@ -572,6 +599,61 @@ export default function GeneralInfoDisplay({
                 'textarea'
               )}
             </div>
+          </div>
+        </div>
+
+        {/* Conditions du Contrat */}
+        <div className='border-t pt-4'>
+          <h3 className='mb-3 flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-400'>
+            Conditions du Contrat
+          </h3>
+          <div className='space-y-3'>
+            {conditionsLoading && (
+              <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className='animate-pulse rounded-lg border p-3'>
+                    <div className='mb-2 h-4 w-1/3 rounded bg-muted' />
+                    <div className='h-3 w-2/3 rounded bg-muted' />
+                  </div>
+                ))}
+              </div>
+            )}
+            {conditionsError && (
+              <p className='text-red-600 text-sm'>Impossible de charger le catalogue: {conditionsError}</p>
+            )}
+            {!conditionsLoading && (
+              <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
+                {conditionsCatalog.map((cond: any) => {
+                  const isSelected = ((editedData as any).conditions?.selected ?? []).includes(cond.id);
+                  const canEdit = Boolean(isEditing && isDraft);
+                  return (
+                    <div key={cond.id} className='group hover:bg-accent/50 space-y-1.5 rounded-lg p-3 transition-all duration-200'>
+                      <div className='flex items-center justify-between'>
+                        <div className='flex items-center space-x-2.5'>
+                          <div className={`flex h-5 w-5 items-center justify-center rounded-md border-2 transition-all ${isSelected ? 'bg-primary border-primary shadow-sm' : 'border-input'}`}></div>
+                          <Label className='cursor-default text-sm font-semibold'>
+                            {cond.label}
+                          </Label>
+                        </div>
+                        {canEdit && (
+                          <Checkbox
+                            checked={isSelected}
+                            onCheckedChange={(checked) => toggleCondition(cond.id, !!checked)}
+                            aria-label={`Sélectionner ${cond.label}`}
+                          />
+                        )}
+                      </div>
+                      <p className='text-muted-foreground text-xs'>
+                        {cond.description}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            {(((editedData as any).conditions?.selected?.length) ?? 0) === 0 && !conditionsLoading && (
+              <p className='text-muted-foreground text-sm'>Aucune condition sélectionnée.</p>
+            )}
           </div>
         </div>
       </CardContent>

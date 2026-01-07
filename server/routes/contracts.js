@@ -1,4 +1,17 @@
 module.exports = function registerContractRoutes(server, db) {
+  // Helper: get selected condition IDs for a contract via pivot
+  function getSelectedConditionIds(contractId) {
+    const pivot = db.get('contractConditions').value?.() || db.get('contractConditions').value() || [];
+    return pivot
+      .filter((row) => String(row.contractId) === String(contractId))
+      .map((row) => row.conditionId);
+  }
+
+  function getSelectedCriteriaIds(contractId) {
+    const pivot = db.get('contractTrialCriteria').value?.() || db.get('contractTrialCriteria').value() || [];
+    return pivot.filter((row) => String(row.contractId) === String(contractId)).map((row) => row.criteriaId);
+  }
+
   server.get('/contracts', (req, res) => {
     const start = parseInt(req.query.start || '0', 10);
     const length = parseInt(req.query.length || '10', 10);
@@ -12,6 +25,14 @@ module.exports = function registerContractRoutes(server, db) {
       const employee = hrEmployees.find((emp) => emp.id === empId);
       return {
         ...contract,
+        conditions: { selected: getSelectedConditionIds(contract.id) },
+        dates: {
+          ...(contract.dates || {}),
+          trial_period: {
+            ...((contract.dates || {}).trial_period || {}),
+            acceptance_criteria: getSelectedCriteriaIds(contract.id)
+          }
+        },
         employee_name:
           contract.employee_name ||
           (employee ? `${employee.firstName} ${employee.lastName}` : 'N/A'),
@@ -88,6 +109,14 @@ module.exports = function registerContractRoutes(server, db) {
     const employee = hrEmployees.find((emp) => emp.id === empId);
     const enriched = {
       ...contract,
+      conditions: { selected: getSelectedConditionIds(id) },
+      dates: {
+        ...(contract.dates || {}),
+        trial_period: {
+          ...((contract.dates || {}).trial_period || {}),
+          acceptance_criteria: getSelectedCriteriaIds(id)
+        }
+      },
       employee_name:
         contract.employee_name ||
         (employee ? `${employee.firstName} ${employee.lastName}` : 'N/A'),
@@ -253,5 +282,71 @@ module.exports = function registerContractRoutes(server, db) {
         .find((c) => String(c.id) === String(id))
         .value()
     });
+  });
+
+  // Catalog of contract conditions (from DB or fallback JSON)
+  server.get('/contract-conditions', (req, res) => {
+    const fromDb = db.get('contractConditionsCatalog').value?.() || db.get('contractConditionsCatalog').value();
+    if (Array.isArray(fromDb)) {
+      return res.json({ status: 'success', data: fromDb });
+    }
+    try {
+      const catalog = require('../../mock-data/contract-conditions.json');
+      return res.json({ status: 'success', data: catalog });
+    } catch (e) {
+      return res.status(500).json({ status: 'error', message: 'Conditions catalog not found' });
+    }
+  });
+
+  // Selected conditions by contract (resolved via pivot)
+  server.get('/contracts/:id/conditions', (req, res) => {
+    const id = req.params.id;
+    const selected = getSelectedConditionIds(id);
+    return res.json({ status: 'success', data: selected });
+  });
+
+  // Update selected conditions via pivot (replace all)
+  server.put('/contracts/:id/conditions', (req, res) => {
+    const id = req.params.id;
+    const selected = Array.isArray(req.body?.selected) ? req.body.selected : [];
+    // remove existing
+    const existing = db.get('contractConditions').value?.() || db.get('contractConditions').value() || [];
+    const remaining = existing.filter((row) => String(row.contractId) !== String(id));
+    const nextRows = [
+      ...remaining,
+      ...selected.map((condId) => ({ contractId: id, conditionId: condId }))
+    ];
+    db.set('contractConditions', nextRows).write();
+    return res.json({ status: 'success', data: selected });
+  });
+
+  // Catalog of trial period criteria
+  server.get('/trial-criteria', (req, res) => {
+    const fromDb = db.get('trialCriteriaCatalog').value?.() || db.get('trialCriteriaCatalog').value();
+    if (Array.isArray(fromDb)) return res.json({ status: 'success', data: fromDb });
+    try {
+      const catalog = require('../../mock-data/trial-criteria.json');
+      return res.json({ status: 'success', data: catalog });
+    } catch {
+      return res.status(500).json({ status: 'error', message: 'Trial criteria catalog not found' });
+    }
+  });
+
+  // Selected criteria by contract
+  server.get('/contracts/:id/trial-criteria', (req, res) => {
+    const id = req.params.id;
+    const selected = getSelectedCriteriaIds(id);
+    return res.json({ status: 'success', data: selected });
+  });
+
+  // Update selected criteria via pivot
+  server.put('/contracts/:id/trial-criteria', (req, res) => {
+    const id = req.params.id;
+    const selected = Array.isArray(req.body?.selected) ? req.body.selected : [];
+    const existing = db.get('contractTrialCriteria').value?.() || db.get('contractTrialCriteria').value() || [];
+    const remaining = existing.filter((row) => String(row.contractId) !== String(id));
+    const nextRows = [...remaining, ...selected.map((critId) => ({ contractId: id, criteriaId: critId }))];
+    db.set('contractTrialCriteria', nextRows).write();
+    return res.json({ status: 'success', data: selected });
   });
 };

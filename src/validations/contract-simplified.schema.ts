@@ -18,7 +18,7 @@ const simplifiedDatesSchema = z.object({
       end_date: z.string().nullable().optional(),
       renewable: z.boolean().optional(),
       max_renewals: z.number().min(0).max(3).optional(),
-      conditions: z.string().optional()
+      acceptance_criteria: z.array(z.string()).default([]).optional()
     })
     .optional()
 });
@@ -130,6 +130,11 @@ const simplifiedLegalSchema = z.object({
   cotisations: cotisationsSchema.optional()
 });
 
+// Schéma pour les conditions du contrat (sélection à partir du catalogue)
+const simplifiedConditionsSchema = z.object({
+  selected: z.array(z.string()).default([])
+});
+
 // Schéma principal simplifié (adapté aux 3 onglets du formulaire)
 export const simplifiedContractSchema = z.object({
   // Identification
@@ -165,100 +170,105 @@ export const simplifiedContractSchema = z.object({
   job: simplifiedJobSchema.optional(),
   schedule: simplifiedScheduleSchema.optional(),
   salary: simplifiedSalarySchema,
-  legal: simplifiedLegalSchema.optional()
+  legal: simplifiedLegalSchema.optional(),
+  // Conditions du contrat (catalogue sélection)
+  conditions: simplifiedConditionsSchema.optional()
 });
 
 export type SimplifiedContractInput = z.infer<typeof simplifiedContractSchema>;
 
-export const simplifiedContractDefaultValues: Partial<SimplifiedContractInput> =
-  {
-    reference: '',
-    type: 'CDI',
-    description: '',
-    employe_id: '',
+export const simplifiedContractDefaultValues: Partial<SimplifiedContractInput> = {
+  reference: '',
+  type: 'CDI',
+  description: '',
+  employe_id: '',
 
-    dates: {
-      start_date: new Date().toISOString().split('T')[0],
-      end_date: null,
-      signature_date: new Date().toISOString().split('T')[0],
-      trial_period: {
-        enabled: false,
-        duration_months: 3,
-        duration_days: 90,
-        renewable: false,
-        max_renewals: 1,
-        conditions: ''
-      }
-    },
-
-    job: {
-      metier: '',
-      emploie: '',
-      poste: '',
-      work_mode: 'Presentiel',
-      classification: '',
-      work_location: '',
-      level: '',
-      responsibilities: ''
-    },
-
-    schedule: {
-      schedule_type: 'Administratif',
-      shift_work: 'Non',
-      hours_per_day: 8,
-      days_per_week: 5,
-      hours_per_week: 40,
-      start_time: '09:00',
-      end_time: '18:00',
-      break_duration: 60,
-      annual_leave_days: 22,
-      other_leaves: ''
-    },
-
-    salary: {
-      salary_brut: 0,
-      salary_net: 0,
-      currency: 'MAD',
-      payment_method: 'Virement',
-      periodicity: 'Mensuel',
-      primes: {
-        items: []
-      },
-      avantages: {
-        voiture: false,
-        logement: false,
-        telephone: false,
-        assurance_sante: false,
-        tickets_restaurant: false
-      },
-      indemnites: ''
-    },
-
-    legal: {
-      cnss_affiliation: true,
-      amo_affiliation: true,
-      cmir_affiliation: false,
-      rcar_affiliation: false,
-      mutuelle_affiliation: false,
-      assurance_groupe: false,
-      ir_applicable: true,
-      convention_collective: 'Code du Travail',
-      clause_confidentialite: false,
-      clause_non_concurrence: false,
-      clause_mobilite: false,
-      duree_preavis_jours: 30,
-      indemnite_depart: 0,
-      conditions_speciales: '',
-      notes_legales: '',
-      cotisations: {
-        cnss_employe_pct: 4.48,
-        cnss_employeur_pct: 8.98,
-        amo_employe_pct: 2.26,
-        amo_employeur_pct: 2.26,
-        cmir_taux_pct: 6.0,
-        cmir_numero: '',
-        rcar_taux_pct: 20.0,
-        rcar_numero: ''
-      }
+  dates: {
+    start_date: new Date().toISOString().split('T')[0],
+    end_date: null,
+    signature_date: new Date().toISOString().split('T')[0],
+    trial_period: {
+      enabled: false,
+      duration_months: 3,
+      duration_days: 90,
+      renewable: false,
+      max_renewals: 1,
+      acceptance_criteria: []
     }
-  };
+  },
+
+  job: {
+    metier: '',
+    emploie: '',
+    poste: '',
+    work_mode: 'Presentiel',
+    classification: '',
+    work_location: '',
+    level: '',
+    responsibilities: ''
+  },
+
+  schedule: {
+    schedule_type: 'Administratif',
+    shift_work: 'Non',
+    hours_per_day: 8,
+    days_per_week: 5,
+    hours_per_week: 40,
+    start_time: '09:00',
+    end_time: '18:00',
+    break_duration: 60,
+    annual_leave_days: 22,
+    other_leaves: ''
+  },
+
+  salary: {
+    salary_brut: 0,
+    salary_net: 0,
+    currency: 'MAD',
+    payment_method: 'Virement',
+    periodicity: 'Mensuel',
+    primes: {
+      items: []
+    },
+    avantages: {
+      voiture: false,
+      logement: false,
+      telephone: false,
+      assurance_sante: false,
+      tickets_restaurant: false
+    },
+    indemnites: ''
+  },
+
+  legal: {
+    cnss_affiliation: true,
+    amo_affiliation: true,
+    cmir_affiliation: false,
+    rcar_affiliation: false,
+    mutuelle_affiliation: false,
+    assurance_groupe: false,
+    ir_applicable: true,
+    convention_collective: 'Code du Travail',
+    clause_confidentialite: false,
+    clause_non_concurrence: false,
+    clause_mobilite: false,
+    duree_preavis_jours: 30,
+    indemnite_depart: 0,
+    conditions_speciales: '',
+    notes_legales: '',
+    cotisations: {
+      cnss_employe_pct: 4.48,
+      cnss_employeur_pct: 8.98,
+      amo_employe_pct: 2.26,
+      amo_employeur_pct: 2.26,
+      cmir_taux_pct: 6.0,
+      cmir_numero: '',
+      rcar_taux_pct: 20.0,
+      rcar_numero: ''
+    }
+  },
+  // Conditions par défaut
+  conditions: {
+    selected: []
+  }
+};

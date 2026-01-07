@@ -14,6 +14,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Clock, Pencil, Check, X } from 'lucide-react';
 import { Contract } from '@/types/contract';
+import { apiRoutes } from '@/config/apiRoutes';
 
 interface WorkScheduleDisplayProps {
   contract: Contract;
@@ -28,11 +29,31 @@ export default function WorkScheduleDisplay({
 }: WorkScheduleDisplayProps) {
   const [editedData, setEditedData] = useState(contract);
   const [activeFields, setActiveFields] = useState<Record<string, boolean>>({});
+  const [criteriaCatalog, setCriteriaCatalog] = React.useState<any[]>([]);
+  const [criteriaError, setCriteriaError] = React.useState<string | null>(null);
   const isDraft = contract.status === 'Brouillon';
 
   const schedule =
     (contract as any).schedule ?? (contract as any).work_time ?? {};
   const trial = (contract as any).dates?.trial_period ?? {};
+
+  React.useEffect(() => {
+    let cancelled = false;
+    fetch(apiRoutes.admin.contratsEtMovements.contrats.trialCriteriaCatalog)
+      .then((r) => r.json())
+      .then((json) => {
+        const data = Array.isArray(json?.data) ? json.data : Array.isArray(json) ? json : [];
+        if (!cancelled) setCriteriaCatalog(data);
+      })
+      .catch((e) => !cancelled && setCriteriaError(e?.message || 'Erreur chargement critères'));
+    return () => { cancelled = true; };
+  }, []);
+
+  const selected = (contract?.dates?.trial_period?.acceptance_criteria ?? []) as string[];
+  const toggleCriteria = (id: string, checked: boolean) => {
+    const next = checked ? Array.from(new Set([...(selected || []), id])) : (selected || []).filter((x) => x !== id);
+    onUpdate?.({ dates: { trial_period: { acceptance_criteria: next } } } as any);
+  };
 
   const handleChange = (field: string, value: any) => {
     const keys = field.split('.');
@@ -441,18 +462,58 @@ export default function WorkScheduleDisplay({
                     'number'
                   )}
                 </div>
-
-                <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
-                  {renderField(
-                    'Conditions',
-                    trial.conditions,
-                    'dates.trial_period.conditions',
-                    'text'
-                  )}
-                </div>
               </div>
             )}
           </div>
+        </div>
+
+        <div className='border-t pt-4'>
+          <h3 className='mb-3 flex items-center gap-2 text-sm font-bold text-amber-700 dark:text-amber-400'>
+            Critères d'acceptation (Période d'essai)
+          </h3>
+          {criteriaError && (
+            <p className='text-red-600 text-sm'>Impossible de charger les critères: {criteriaError}</p>
+          )}
+          {criteriaCatalog.length === 0 && !criteriaError && (
+            <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className='animate-pulse rounded-lg border p-3'>
+                  <div className='mb-2 h-4 w-1/3 rounded bg-muted' />
+                  <div className='h-3 w-2/3 rounded bg-muted' />
+                </div>
+              ))}
+            </div>
+          )}
+          {criteriaCatalog.length > 0 && (
+            <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
+              {criteriaCatalog.map((crit: any) => {
+                const isSelected = (selected || []).includes(crit.id);
+                const canEdit = Boolean(isEditing && isDraft);
+                return (
+                  <div key={crit.id} className='group hover:bg-accent/50 space-y-1.5 rounded-lg p-3 transition-all duration-200'>
+                    <div className='flex items-center justify-between'>
+                      <div className='flex items-center space-x-2.5'>
+                        <div className={`flex h-5 w-5 items-center justify-center rounded-md border-2 transition-all ${isSelected ? 'bg-primary border-primary shadow-sm' : 'border-input'}`}></div>
+                        <span className='text-sm font-semibold'>{crit.label}</span>
+                      </div>
+                      {canEdit && (
+                        <button
+                          className='text-sm underline'
+                          onClick={() => toggleCriteria(crit.id, !isSelected)}
+                        >
+                          {isSelected ? 'Retirer' : 'Ajouter'}
+                        </button>
+                      )}
+                    </div>
+                    <p className='text-muted-foreground text-xs'>{crit.description}</p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          {(selected?.length || 0) === 0 && criteriaCatalog.length > 0 && (
+            <p className='text-muted-foreground text-sm'>Aucun critère sélectionné.</p>
+          )}
         </div>
       </CardContent>
     </Card>

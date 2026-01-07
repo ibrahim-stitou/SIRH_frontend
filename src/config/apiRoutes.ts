@@ -88,7 +88,13 @@ export const apiRoutes = {
           `${API_BASE}/contracts/${id}/validate`,
         uploadSigned: (id: number | string) =>
           `${API_BASE}/contracts/${id}/upload-signed`,
-        cancel: (id: number | string) => `${API_BASE}/contracts/${id}/cancel`
+        cancel: (id: number | string) => `${API_BASE}/contracts/${id}/cancel`,
+        conditionsCatalog: `${API_BASE}/contract-conditions`,
+        conditionsByContract: (id: number | string) => `${API_BASE}/contracts/${id}/conditions`,
+        updateConditions: (id: number | string) => `${API_BASE}/contracts/${id}/conditions`,
+        trialCriteriaCatalog: `${API_BASE}/trial-criteria`,
+        trialCriteriaByContract: (id: number | string) => `${API_BASE}/contracts/${id}/trial-criteria`,
+        updateTrialCriteria: (id: number | string) => `${API_BASE}/contracts/${id}/trial-criteria`,
       },
       avenants: {
         list: `${API_BASE}/avenants`,
@@ -275,6 +281,15 @@ export const apiRoutes = {
       delete: (id: string | number) => `${API_BASE}/api/admin/frais/${id}`,
       validate: (id: string | number) => `${API_BASE}/api/admin/frais/${id}/validate`,
       submit: (id: string | number) => `${API_BASE}/api/admin/frais/${id}/submit`,
+    },
+    parametres: {
+      parametreMaxGeneral: {
+        list: `${API_BASE}/parametre-max-general`,
+        create: `${API_BASE}/parametre-max-general`,
+        show: (id: number | string) => `${API_BASE}/parametre-max-general/${id}`,
+        update: (id: number | string) => `${API_BASE}/parametre-max-general/${id}`,
+        delete: (id: number | string) => `${API_BASE}/parametre-max-general/${id}`,
+      }
     },
   }
 };

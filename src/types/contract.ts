@@ -603,6 +603,9 @@ export interface Contract {
   // Aspects légaux
   legal: LegalInfo;
 
+  // Conditions du contrat (catalogue sélectionné)
+  conditions?: ContractConditions;
+
   // Documents
   documents?: ContractDocuments;
 
@@ -662,4 +665,19 @@ export interface ContractsResponse {
   total?: number;
   page?: number;
   pageSize?: number;
+}
+
+// ============================================
+// Conditions du contrat (catalogue sélection)
+// ============================================
+export type ContractConditionId =
+  | 'COND_CONFIDENTIALITY'
+  | 'COND_NON_COMPETE'
+  | 'COND_MOBILITY'
+  | 'COND_INTELLECTUAL_PROPERTY'
+  | 'COND_TRAINING'
+  | 'COND_TELEWORK';
+
+export interface ContractConditions {
+  selected: ContractConditionId[];
 }

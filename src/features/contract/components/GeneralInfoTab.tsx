@@ -23,6 +23,8 @@ import { DatePickerField } from '@/components/custom/DatePickerField';
 import { SelectField } from '@/components/custom/SelectField';
 import type { SimplifiedContractInput } from '@/validations/contract-simplified.schema';
 import type { Employee, Department } from '@/types/employee';
+import { apiRoutes } from '@/config/apiRoutes';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface GeneralInfoTabProps {
   form: UseFormReturn<SimplifiedContractInput>;
@@ -43,6 +45,27 @@ export function GeneralInfoTab({
   contractTypeOptions,
   workModeOptions
 }: GeneralInfoTabProps) {
+  const [conditionsCatalog, setConditionsCatalog] = React.useState<any[]>([]);
+  const [conditionsError, setConditionsError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    fetch(apiRoutes.admin.contratsEtMovements.contrats.conditionsCatalog)
+      .then((r) => r.json())
+      .then((json) => {
+        const data = Array.isArray(json?.data) ? json.data : Array.isArray(json) ? json : [];
+        if (!cancelled) setConditionsCatalog(data);
+      })
+      .catch((e) => !cancelled && setConditionsError(e?.message || 'Erreur chargement conditions'));
+    return () => { cancelled = true; };
+  }, []);
+
+  const selected: string[] = (form.watch('conditions.selected') as any) || [];
+  const toggleCondition = (id: string, checked: boolean) => {
+    const next = checked ? Array.from(new Set([...(selected || []), id])) : (selected || []).filter((x) => x !== id);
+    form.setValue('conditions.selected', next, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
+  };
+
   return (
     <div className='space-y-4'>
       {/* Informations Générales du Contrat */}
@@ -288,6 +311,42 @@ export function GeneralInfoTab({
               )}
             />
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Conditions du Contrat (sélection) */}
+      <Card>
+        <CardHeader className='pb-3'>
+          <CardTitle className='text-base'>Conditions du Contrat</CardTitle>
+          <CardDescription className='text-xs'>Sélectionner les conditions applicables</CardDescription>
+        </CardHeader>
+        <CardContent className='space-y-3'>
+          {conditionsError && (
+            <p className='text-red-600 text-sm'>Impossible de charger le catalogue: {conditionsError}</p>
+          )}
+          <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
+            {conditionsCatalog.map((cond: any) => {
+              const isSelected = (selected || []).includes(cond.id);
+              return (
+                <div key={cond.id} className='group hover:bg-accent/50 space-y-1.5 rounded-lg p-3 transition-all duration-200'>
+                  <div className='flex items-center justify-between'>
+                    <div className='flex items-center space-x-2'>
+                      <Checkbox
+                        checked={isSelected}
+                        onCheckedChange={(checked) => toggleCondition(cond.id, !!checked)}
+                        aria-label={`Sélectionner ${cond.label}`}
+                      />
+                      <span className='text-sm font-semibold'>{cond.label}</span>
+                    </div>
+                  </div>
+                  <p className='text-muted-foreground text-xs'>{cond.description}</p>
+                </div>
+              );
+            })}
+          </div>
+          {(selected?.length || 0) === 0 && (
+            <p className='text-muted-foreground text-sm'>Aucune condition sélectionnée.</p>
+          )}
         </CardContent>
       </Card>
     </div>

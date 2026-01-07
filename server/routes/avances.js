@@ -100,6 +100,29 @@ module.exports = function registerAvancesRoutes(server, db) {
 
   // POST /avances - Soumettre une avance
   server.post('/avances', (req, res) => {
+    const body = req.body || {};
+    // Validate against max avances per year if available
+    try {
+      const paramsList = db.get('parametreMaxGeneral').value() || [];
+      const cfg = Array.isArray(paramsList) && paramsList.length > 0 ? paramsList[0] : null;
+      const maxAvances = cfg?.max_avances_par_an;
+      if (typeof maxAvances === 'number' && body.employe_id && body.date_demande) {
+        const year = new Date(body.date_demande).getFullYear();
+        const countThisYear = (db.get('avances').value() || []).filter((a) => {
+          if (String(a.employe_id) !== String(body.employe_id)) return false;
+          const y = a.date_demande ? new Date(a.date_demande).getFullYear() : null;
+          return y === year;
+        }).length;
+        if (countThisYear >= maxAvances) {
+          return res.status(400).json({
+            status: 'error',
+            message: `Nombre maximum d’avances (${maxAvances}) atteint pour l’année ${year}`,
+            data: null
+          });
+        }
+      }
+    } catch (_) {}
+
     const newAvance = {
       ...req.body,
       id: Date.now(),

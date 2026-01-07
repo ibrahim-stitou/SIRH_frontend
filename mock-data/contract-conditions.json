@@ -1,0 +1,33 @@
+[
+  {
+    "id": "COND_CONFIDENTIALITY",
+    "label": "Clause de Confidentialité",
+    "description": "Engagement à ne pas divulguer d'informations sensibles ou confidentielles."
+  },
+  {
+    "id": "COND_NON_COMPETE",
+    "label": "Clause de Non-Concurrence",
+    "description": "Interdiction de travailler pour un concurrent pendant une période définie."
+  },
+  {
+    "id": "COND_MOBILITY",
+    "label": "Clause de Mobilité",
+    "description": "Possibilité d’affectation sur différents sites selon les besoins."
+  },
+  {
+    "id": "COND_INTELLECTUAL_PROPERTY",
+    "label": "Propriété Intellectuelle",
+    "description": "Les créations réalisées dans le cadre du contrat appartiennent à l’employeur."
+  },
+  {
+    "id": "COND_TRAINING",
+    "label": "Clause de Formation",
+    "description": "Engagement de l’employé à rester pour une période donnée après une formation prise en charge."
+  },
+  {
+    "id": "COND_TELEWORK",
+    "label": "Accord de Télétravail",
+    "description": "Modalités du télétravail, matériel fourni et remboursements."
+  }
+]
+

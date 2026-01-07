@@ -1,0 +1,12 @@
+[
+  { "contractId": "CTR-2024-001", "conditionId": "COND_CONFIDENTIALITY" },
+  { "contractId": "CTR-2024-001", "conditionId": "COND_INTELLECTUAL_PROPERTY" },
+  { "contractId": "CTR-2024-001", "conditionId": "COND_TELEWORK" },
+
+  { "contractId": "CTR-2024-002", "conditionId": "COND_CONFIDENTIALITY" },
+
+  { "contractId": "CTR-2024-004", "conditionId": "COND_CONFIDENTIALITY" },
+  { "contractId": "CTR-2024-004", "conditionId": "COND_NON_COMPETE" },
+  { "contractId": "CTR-2024-004", "conditionId": "COND_MOBILITY" }
+]
+
