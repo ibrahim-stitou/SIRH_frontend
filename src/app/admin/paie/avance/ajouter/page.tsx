@@ -60,6 +60,8 @@ export default function AjouterAvancePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [employees, setEmployees] = useState<EmployeeSimple[]>([]);
+  const [maxAvances, setMaxAvances] = useState<number | null>(null);
+  const [remaining, setRemaining] = useState<number | null>(null);
 
   const current = useMemo(() => new Date(), []);
 
@@ -100,16 +102,62 @@ export default function AjouterAvancePage() {
     };
   }, []);
 
-  const employeeOptions = useMemo(
-    () =>
-      employees.map((e) => ({
-        id: e.id,
-        label:
-          e.fullName || `${e.firstName ?? ''} ${e.lastName ?? ''}`.trim() || String(e.id),
-        matricule: e.matricule
-      })),
-    [employees]
-  );
+  // Charger max avances
+  useEffect(() => {
+    let cancelled = false;
+    async function loadParams() {
+      try {
+        const res = await apiClient.get(apiRoutes.admin.parametres.parametreMaxGeneral.list);
+        const rows = res.data?.data || res.data || [];
+        const first = Array.isArray(rows) && rows.length ? rows[0] : null;
+        if (!cancelled) setMaxAvances(typeof first?.max_avances_par_an === 'number' ? first.max_avances_par_an : null);
+      } catch (_) {}
+    }
+    loadParams();
+    return () => { cancelled = true; };
+  }, []);
+
+  // Recalculer le restant dès qu'un employé est choisi (année courante)
+  const watchedEmpId = form.watch('employe_id') as any;
+  useEffect(() => {
+    async function recomputeOnEmployee() {
+      const empId = watchedEmpId;
+      if (!empId || typeof maxAvances !== 'number') {
+        setRemaining(null);
+        return;
+      }
+      try {
+        const res = await apiClient.get(apiRoutes.admin.avances.countForEmployeeCurrentYear(empId));
+        const payload = res.data?.data || res.data;
+        const countThisYear = payload?.count ?? 0;
+        setRemaining(Math.max(0, maxAvances - countThisYear));
+      } catch (_) {
+        setRemaining(null);
+      }
+    }
+    recomputeOnEmployee();
+  }, [watchedEmpId, maxAvances]);
+
+  // Calculer le restant selon employé et année sélectionnés
+  const watchedDateDemande = form.watch('date_demande') as any;
+  useEffect(() => {
+    async function recompute() {
+      const empId = watchedEmpId as any;
+      const dateDemande = watchedDateDemande as any;
+      if (!empId || !dateDemande || typeof maxAvances !== 'number') {
+        return;
+      }
+      try {
+        const res = await apiClient.get(apiRoutes.admin.avances.countForEmployeeCurrentYear(empId));
+        const payload = res.data?.data || res.data;
+        const countThisYear = payload?.count ?? 0;
+        setRemaining(Math.max(0, maxAvances - countThisYear));
+      } catch (_) {}
+    }
+    recompute();
+  }, [form, watchedEmpId, watchedDateDemande, maxAvances]);
+
+  const reachedMax = typeof remaining === 'number' && remaining <= 0;
 
   const onSubmit = async (values: CreateAvanceForm) => {
     setLoading(true);
@@ -134,6 +182,18 @@ export default function AjouterAvancePage() {
       setLoading(false);
     }
   };
+
+  // Keep a stable options shape compatible with SelectField
+  const employeeOptions = useMemo(
+    () =>
+      employees.map((e) => ({
+        id: e.id,
+        label:
+          e.fullName || `${e.firstName ?? ''} ${e.lastName ?? ''}`.trim() || String(e.id),
+        matricule: e.matricule
+      })),
+    [employees]
+  );
 
   return (
     <PageContainer scrollable={true}>
@@ -175,6 +235,15 @@ export default function AjouterAvancePage() {
                     error={form.formState.errors.date_demande?.message || null}
                   />
                 </div>
+
+                {typeof maxAvances === 'number' && (
+                  <div className={`md:col-span-2 text-sm rounded-md px-3 py-2 border ${reachedMax ? 'text-red-700 border-red-300 bg-red-50' : 'text-muted-foreground bg-muted/30'}`}>
+                    <span>Nombre maximum d’avances par an: <strong>{maxAvances}</strong></span>
+                    {remaining !== null && (
+                      <span className='ml-3'>Reste à créer cette année: <strong className={`${reachedMax ? 'text-red-800' : ''}`}>{remaining}</strong></span>
+                    )}
+                  </div>
+                )}
 
                 <SelectField
                   name='periode_paie.mois'
@@ -226,7 +295,6 @@ export default function AjouterAvancePage() {
                     placeholder="Ajouter une note (facultatif)"
                     value={form.watch('description') || ''}
                     onChange={(e) => form.setValue('description', e.target.value)}
-                    rows={4}
                   />
                 </div>
               </div>

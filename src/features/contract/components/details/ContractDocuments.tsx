@@ -57,7 +57,26 @@ export default function ContractDocuments({
   const [isLoadingAvenants, setIsLoadingAvenants] = useState(false);
   const [isUploadingSignedDoc, setIsUploadingSignedDoc] = useState(false);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [maxAvenants, setMaxAvenants] = useState<number | null>(null);
   const router = useRouter();
+
+  // Load parameters (max limits)
+  useEffect(() => {
+    let cancelled = false;
+    async function loadParams() {
+      try {
+        const res = await apiClient.get(apiRoutes.admin.parametres.parametreMaxGeneral.list);
+        const rows = res.data?.data || res.data || [];
+        const first = Array.isArray(rows) && rows.length ? rows[0] : null;
+        if (!cancelled) setMaxAvenants(typeof first?.max_avenants_par_contrat === 'number' ? first.max_avenants_par_contrat : null);
+      } catch (_) {
+        // ignore
+      }
+    }
+    loadParams();
+    return () => { cancelled = true; };
+  }, []);
+
   // Load avenants for this contract
   useEffect(() => {
     const fetchAvenants = async () => {
@@ -85,6 +104,10 @@ export default function ContractDocuments({
 
     fetchAvenants();
   }, [contract.id]);
+
+  const remainingAvenants =
+    typeof maxAvenants === 'number' ? Math.max(0, maxAvenants - (avenants?.length || 0)) : null;
+  const reachedMax = typeof remainingAvenants === 'number' && remainingAvenants <= 0;
 
   const handleUploadSignedDocument = async (files: File[]) => {
     if (files.length === 0) return;
@@ -352,15 +375,30 @@ export default function ContractDocuments({
                 <Badge variant='secondary'>{avenants.length}</Badge>
               )}
             </CardTitle>
-            {contract.status !== 'Brouillon' && (
-              <Button onClick={handleAddAvenant} size='sm' variant='outline'>
-                <Plus className='mr-2 h-4 w-4' />
-                Créer un avenant
-              </Button>
-            )}
+            <div className='flex items-center gap-3'>
+              {typeof maxAvenants === 'number' && (
+                <div className={`text-xs rounded-md px-2 py-1 border ${reachedMax ? 'text-red-600 border-red-300 bg-red-50' : 'text-muted-foreground bg-muted/30'}`}>
+                  Max: <strong>{maxAvenants}</strong>
+                  {remainingAvenants !== null && (
+                    <span className='ml-2'>Restant: <strong className={`${reachedMax ? 'text-red-700' : ''}`}>{remainingAvenants}</strong></span>
+                  )}
+                </div>
+              )}
+              {contract.status !== 'Brouillon' && (
+                <Button onClick={handleAddAvenant} size='sm' variant='outline' disabled={reachedMax}>
+                  <Plus className='mr-2 h-4 w-4' />
+                  Créer un avenant
+                </Button>
+              )}
+            </div>
           </div>
         </CardHeader>
         <CardContent>
+          {reachedMax && (
+            <div className='mb-3 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700'>
+              Nombre maximum d’avenants atteint pour ce contrat.
+            </div>
+          )}
           {isLoadingAvenants ? (
             <div className='py-6 text-center'>
               <div className='border-primary mx-auto h-8 w-8 animate-spin rounded-full border-4 border-t-transparent' />

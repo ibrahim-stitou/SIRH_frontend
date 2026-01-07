@@ -188,4 +188,17 @@ module.exports = function registerAvancesRoutes(server, db) {
     }).write();
     return res.json({ status: 'success', message: 'Avance refusée' });
   });
+
+  // GET /avances/employee/:id/count-current-year
+  server.get('/avances/employee/:id/count-current-year', (req, res) => {
+    const employeeId = req.params.id;
+    const yearParam = new Date().getFullYear();
+    const list = db.get('avances').value() || [];
+    const count = list.filter((a) => {
+      if (String(a.employe_id) !== String(employeeId)) return false;
+      const y = a.date_demande ? new Date(a.date_demande).getFullYear() : null;
+      return y === yearParam;
+    }).length;
+    return res.json({ status: 'success', data: { employeeId, year: yearParam, count } });
+  });
 };

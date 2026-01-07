@@ -260,7 +260,8 @@ export const apiRoutes = {
       update: (id: number | string) => `${API_BASE}/avances/${id}`,
       delete: (id: number | string) => `${API_BASE}/avances/${id}`,
       validate: (id: number | string) => `${API_BASE}/avances/${id}/valider`,
-      refuse: (id: number | string) => `${API_BASE}/avances/${id}/refuse`
+      refuse: (id: number | string) => `${API_BASE}/avances/${id}/refuse`,
+      countForEmployeeCurrentYear: (employeeId: number | string) => `${API_BASE}/avances/employee/${employeeId}/count-current-year`,
     },
     prets: {
       list: `${API_BASE}/prets`,
