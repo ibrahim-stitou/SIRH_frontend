@@ -83,6 +83,7 @@ export default function TableauPresenceListing() {
   const [mois, setMois] = useState<number | undefined>(undefined);
   const [importFiles, setImportFiles] = useState<File[]>([]);
   const [annee, setAnnee] = useState<number | undefined>(undefined);
+  const [groups, setGroups] = useState<{ label: string; value: string | number }[]>([]);
 
   const [confirmCloseId, setConfirmCloseId] = useState<number | null>(null);
   const [confirmRegenerateId, setConfirmRegenerateId] = useState<number | null>(
@@ -107,6 +108,17 @@ export default function TableauPresenceListing() {
     const now = new Date();
     setMois(now.getMonth() + 1);
     setAnnee(now.getFullYear());
+    // Load groups list for filtering
+    apiClient
+      .get(apiRoutes.admin.groups.list)
+      .then((res) => {
+        const gopts = (res.data?.data || res.data || []).map((g: any) => ({
+          label: g.name ?? g.label ?? `Groupe ${g.id}`,
+          value: g.id
+        }));
+        setGroups(gopts);
+      })
+      .catch(() => void 0);
   }, []);
 
   const onGenerate = async () => {
@@ -388,7 +400,7 @@ export default function TableauPresenceListing() {
       {
         field: 'mois',
         label: 'Mois',
-        type: 'select',
+        type: 'datatable-select',
         options: Array.from({ length: 12 }, (_, i) => ({
           label: String(i + 1).padStart(2, '0'),
           value: i + 1
@@ -398,15 +410,21 @@ export default function TableauPresenceListing() {
       {
         field: 'annee',
         label: 'Année',
-        type: 'select',
+        type: 'datatable-select',
         options: Array.from({ length: 6 }, (_, i) => {
           const y = new Date().getFullYear() - 2 + i;
           return { label: String(y), value: y };
         }),
         onChange: (val: number) => setAnnee(Number(val))
+      },
+      {
+        field: 'groupId',
+        label: 'Groupe',
+        type: 'datatable-select',
+        options: groups
       }
     ],
-    []
+    [groups]
   );
 
   return (

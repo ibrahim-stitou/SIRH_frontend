@@ -106,6 +106,9 @@ export default function TableauPresenceDetailPage() {
   const SELECT_NONE = '__NONE__';
   const [sortColumn, setSortColumn] = useState<string>('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [groups, setGroups] = useState<{ label: string; value: string | number }[]>([]);
+  const [selectedGroupId, setSelectedGroupId] = useState<string>('');
+  const [groupMembersByGroup, setGroupMembersByGroup] = useState<Record<string, string[]>>({});
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [editData, setEditData] = useState<EditModalData | null>(null);
@@ -198,6 +201,46 @@ export default function TableauPresenceDetailPage() {
       loadData();
     }
   }, [tableauId, loadData]);
+
+  useEffect(() => {
+    // Load groups for filter and members mapping
+    apiClient
+      .get(apiRoutes.admin.groups.list)
+      .then((res) => {
+        const gopts = (res.data?.data || res.data || []).map((g: any) => ({
+          label: g.name ?? g.label ?? `Groupe ${g.id}`,
+          value: String(g.id)
+        }));
+        setGroups(gopts);
+      })
+      .catch(() => void 0);
+
+    apiClient
+      .get(apiRoutes.admin.groups.members('all'))
+      .then((res) => {
+        const data = res.data?.data || res.data || {};
+        // Expect structure: { groupId: [{ employeeId: ... }, ...], ... }
+        const map: Record<string, string[]> = {};
+        if (Array.isArray(data)) {
+          // fallback if returns flat list with groupId
+          data.forEach((m: any) => {
+            const gid = String(m.groupId);
+            const eid = String(m.employeeId ?? m.employee?.id);
+            if (!map[gid]) map[gid] = [];
+            if (eid) map[gid].push(eid);
+          });
+        } else {
+          Object.keys(data).forEach((gid) => {
+            const arr = data[gid] || [];
+            map[gid] = arr
+              .map((m: any) => String(m.employeeId ?? m.employee?.id))
+              .filter(Boolean);
+          });
+        }
+        setGroupMembersByGroup(map);
+      })
+      .catch(() => void 0);
+  }, []);
 
   const handleEdit = useCallback(
     (row: EmployeeRow) => {
@@ -391,6 +434,16 @@ export default function TableauPresenceDetailPage() {
   const filteredData = useMemo(() => {
     let filtered = [...employeesData];
 
+    if (selectedGroupId) {
+      const members = groupMembersByGroup[String(selectedGroupId)] || [];
+      if (members.length > 0) {
+        const set = new Set(members.map(String));
+        filtered = filtered.filter((e) => set.has(String(e.employeeId)));
+      } else {
+        filtered = [];
+      }
+    }
+
     if (selectedEmployee) {
       filtered = filtered.filter(
         (e) => String(e.employeeId) === selectedEmployee
@@ -421,6 +474,8 @@ export default function TableauPresenceDetailPage() {
     return filtered;
   }, [
     employeesData,
+    groupMembersByGroup,
+    selectedGroupId,
     selectedEmployee,
     selectedStatus,
     numDays,
@@ -674,13 +729,38 @@ export default function TableauPresenceDetailPage() {
                   </Select>
                 </div>
 
-                {(selectedEmployee || selectedStatus) && (
+                <div className='flex items-center gap-2'>
+                  <Label className='text-muted-foreground text-xs whitespace-nowrap'>
+                    Groupe:
+                  </Label>
+                  <Select
+                    value={selectedGroupId === '' ? SELECT_ALL : selectedGroupId}
+                    onValueChange={(val) =>
+                      setSelectedGroupId(val === SELECT_ALL ? '' : val)
+                    }
+                  >
+                    <SelectTrigger className='h-8 w-[200px] text-xs'>
+                      <SelectValue placeholder='Tous' />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={SELECT_ALL}>Tous les groupes</SelectItem>
+                      {groups.map((g) => (
+                        <SelectItem key={String(g.value)} value={String(g.value)}>
+                          {g.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {(selectedEmployee || selectedStatus || selectedGroupId) && (
                   <Button
                     variant='ghost'
                     size='sm'
                     onClick={() => {
                       setSelectedEmployee('');
                       setSelectedStatus('');
+                      setSelectedGroupId('');
                     }}
                     className='h-8 text-xs'
                   >

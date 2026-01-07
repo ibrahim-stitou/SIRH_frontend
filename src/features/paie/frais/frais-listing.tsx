@@ -64,12 +64,12 @@ export default function FraisListing() {
 
   const getStatusBadge = (status: string) => {
     const map: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' ,className:string}> = {
-      draft: { label: 'Brouillon', variant: 'outline',className: 'bg-yellow-100 text-yellow' },
-      submitted: { label: 'En attente', variant: 'default',className: 'bg-blue-100 text-blue-700' },
-      approved: { label: 'Approuvée', variant: 'secondary',className: 'bg-purple-100 text-purple-700 border border-purple-700' },
-      approved_partial: { label: 'Approuvée partiellement', variant: 'secondary',className: 'bg-green-50 text-green-700 border border-yellow-200' },
-      refused: { label: 'Refusée', variant: 'destructive',className: 'bg-red-100 text-red-500' },
-      needs_complement: { label: 'Complément requis', variant: 'outline',className: 'bg-orange-100 text-orange-700' }
+      draft: { label: 'Brouillon', variant: 'secondary',className: 'bg-yellow-100 text-yellow' },
+      submitted: { label: 'En attente', variant: 'secondary',className: 'bg-blue-100 text-blue-700' },
+      approved: { label: 'Approuvée', variant: 'secondary',className: 'bg-purple-100 text-purple-700 border' },
+      approved_partial: { label: 'Approuvée partiellement', variant: 'secondary',className: 'bg-green-50 text-green-700 border' },
+      refused: { label: 'Refusée', variant: 'secondary',className: 'bg-red-100 text-red-500' },
+      needs_complement: { label: 'Complément requis', variant: 'secondary',className: 'bg-orange-100 text-orange-700' }
     };
     const cfg = map[status] || { label: status, variant: 'outline',className: '' };
     return <Badge variant={cfg.variant} className={cfg.className}>{cfg.label}</Badge>;

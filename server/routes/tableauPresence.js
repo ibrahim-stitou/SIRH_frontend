@@ -19,9 +19,22 @@ module.exports = function registerTableauPresenceRoutes(server, db) {
   // Employés (synthèse) pour un tableau donné
   server.get('/tableau-presence/:id/employees', (req, res) => {
     const id = isNaN(+req.params.id) ? req.params.id : +req.params.id;
-    const rows = (db.get('tableauPresenceEmployees').value() || []).filter(
+    const groupId = req.query.groupId || req.query.group || req.query.groupe;
+    let rows = (db.get('tableauPresenceEmployees').value() || []).filter(
       (r) => String(r.tableauPresenceId) === String(id)
     );
+
+    // Optional filter by group membership
+    if (groupId) {
+      const gm = db.get('groupMembers').value() || [];
+      const memberIds = new Set(
+        gm
+          .filter((m) => String(m.groupId) === String(groupId))
+          .map((m) => String(m.employeeId ?? m.employee?.id))
+          .filter(Boolean)
+      );
+      rows = rows.filter((r) => memberIds.has(String(r.employeeId)));
+    }
 
     const hrIndex = Object.fromEntries(
       (db.get('hrEmployees').value() || []).map((e) => [String(e.id), e])

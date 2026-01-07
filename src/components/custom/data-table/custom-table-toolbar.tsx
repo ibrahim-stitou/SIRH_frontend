@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Icons } from '@/components/icons';
 import {
   FormControl,
   FormField,
@@ -36,7 +37,7 @@ import {
   CommandList
 } from '@/components/ui/command';
 import { CustomDataTableSelect } from '@/components/custom/data-table/custom-datatable-select';
-import { X, ArrowDownUp, Check, BadgeInfo } from 'lucide-react';
+import { X, ArrowDownUp, Check, BadgeInfo  } from 'lucide-react';
 import { CalendarIcon, Settings2 } from 'lucide-react';
 import {
   CustomTableFilterConfig,
@@ -53,7 +54,6 @@ import {
   TooltipTrigger
 } from '@/components/ui/tooltip';
 import { Modal } from '@/components/ui/modal';
-
 interface CustomTableToolbarProps<TData extends Record<string, any>>
   extends React.ComponentProps<'div'> {
   table: UseCustomTableReturnType<TData>;
@@ -322,6 +322,9 @@ export function CustomTableToolbar<TData extends Record<string, any>>({
               size='sm'
               onClick={handleApplyFilters}
             >
+              {React.createElement(Icons['iconFilter'] as React.ComponentType<any>, {
+                className: 'mr-2 h-4 w-4'
+              })}
               {t('dataTable.apply') || 'Appliquer'}
             </Button>
           )}
@@ -383,22 +386,24 @@ export function CustomTableToolbar<TData extends Record<string, any>>({
               </Command>
             </PopoverContent>
           </Popover>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                className='h-8 w-8 p-1.5 hover:bg-purple-50 hover:text-purple-700'
-                variant='outline'
-                onClick={() => setOpenInfoModal(true)}
-              >
-                <BadgeInfo />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent className='mb-2 bg-purple-100 text-purple-700'>
-              <div className='max-w-xs'>
-                <p className='font-medium'>Section d&apos;information</p>
-              </div>
-            </TooltipContent>
-          </Tooltip>
+          {infoText && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className='h-8 w-8 p-1.5 hover:bg-purple-50 hover:text-purple-700'
+                  variant='outline'
+                  onClick={() => setOpenInfoModal(true)}
+                >
+                  <BadgeInfo />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent className='mb-2 bg-purple-100 text-purple-700'>
+                <div className='max-w-xs'>
+                  <p className='font-medium'>Section d&apos;information</p>
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          )}
         </div>
       </div>
       <Modal
@@ -406,7 +411,7 @@ export function CustomTableToolbar<TData extends Record<string, any>>({
         description={infoText?.description || ''}
         isOpen={openInfoModal}
         onClose={() => setOpenInfoModal(false)}
-        icon={<BadgeInfo className="h-5 w-5" />}
+        icon={<BadgeInfo className='h-5 w-5' />}
       />
     </FormProvider>
   );

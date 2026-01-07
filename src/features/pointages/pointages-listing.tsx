@@ -355,6 +355,12 @@ export default function PointagesListing() {
         options: employees
       },
       {
+        field: 'groupId',
+        label: 'Groupe',
+        type: 'datatable-select',
+        options: groups
+      },
+      {
         field: 'status',
         label: 'Statut',
         type: 'datatable-select',
@@ -378,7 +384,7 @@ export default function PointagesListing() {
       { field: 'from', label: 'Du', type: 'date' },
       { field: 'to', label: 'Au', type: 'date' }
     ],
-    [employees]
+    [employees, groups]
   );
 
   return (

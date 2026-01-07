@@ -23,7 +23,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { PlusCircle, X } from 'lucide-react';
+import { List , X } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 interface DataTableSelectFilterProps {
   filter: CustomTableFilterConfig;
@@ -104,7 +104,7 @@ export function CustomDataTableSelect({
               <X className='h-4 w-4' />
             </div>
           ) : (
-            <PlusCircle className='h-4 w-4' />
+            <List className='h-4 w-4' />
           )}
           {label}
           {selectedValues?.size > 0 && (

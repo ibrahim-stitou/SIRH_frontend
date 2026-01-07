@@ -28,8 +28,21 @@ module.exports = function registerPointageRoutes(server, db) {
       req.query.employeeId || req.query.employee || req.query.employe;
     const from = req.query.from || req.query.startDate; // expect datetime or date
     const to = req.query.to || req.query.endDate;
+    const groupId = req.query.groupId || req.query.group || req.query.groupe;
 
     let all = db.get('pointages').value() || [];
+
+    // Filter by group membership if provided
+    if (groupId) {
+      const gm = db.get('groupMembers').value() || [];
+      const memberIds = new Set(
+        gm
+          .filter((m) => String(m.groupId) === String(groupId))
+          .map((m) => String(m.employeeId ?? m.employee?.id))
+          .filter(Boolean)
+      );
+      all = all.filter((p) => memberIds.has(String(p.employeeId)));
+    }
 
     // Filter by employee
     if (employeeId) {
