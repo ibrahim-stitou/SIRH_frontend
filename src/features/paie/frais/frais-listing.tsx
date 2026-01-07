@@ -63,16 +63,16 @@ export default function FraisListing() {
   }, []);
 
   const getStatusBadge = (status: string) => {
-    const map: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-      draft: { label: 'Brouillon', variant: 'outline' },
-      submitted: { label: 'En attente', variant: 'default' },
-      approved: { label: 'Approuvée', variant: 'secondary' },
-      approved_partial: { label: 'Approuvée partiellement', variant: 'secondary' },
-      refused: { label: 'Refusée', variant: 'destructive' },
-      needs_complement: { label: 'Complément requis', variant: 'outline' }
+    const map: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' ,className:string}> = {
+      draft: { label: 'Brouillon', variant: 'outline',className: 'bg-yellow-100 text-yellow' },
+      submitted: { label: 'En attente', variant: 'default',className: 'bg-blue-100 text-blue-700' },
+      approved: { label: 'Approuvée', variant: 'secondary',className: 'bg-purple-100 text-purple-700 border border-purple-700' },
+      approved_partial: { label: 'Approuvée partiellement', variant: 'secondary',className: 'bg-green-50 text-green-700 border border-yellow-200' },
+      refused: { label: 'Refusée', variant: 'destructive',className: 'bg-red-100 text-red-500' },
+      needs_complement: { label: 'Complément requis', variant: 'outline',className: 'bg-orange-100 text-orange-700' }
     };
-    const cfg = map[status] || { label: status, variant: 'outline' };
-    return <Badge variant={cfg.variant}>{cfg.label}</Badge>;
+    const cfg = map[status] || { label: status, variant: 'outline',className: '' };
+    return <Badge variant={cfg.variant} className={cfg.className}>{cfg.label}</Badge>;
   };
 
   const handleDeleteClick = (id: number) => {
@@ -208,6 +208,16 @@ export default function FraisListing() {
           columns={columns}
           url={apiRoutes.admin.frais.list}
           filters={filters}
+          infoText={{
+            title: 'Statuts des notes de frais',
+            description: `Les notes de frais passent par plusieurs statuts :
+- Brouillon : la note n'est pas encore soumise.
+- En attente : en cours de validation par le responsable.
+- Approuvée / Approuvée partiellement : validée totalement ou en partie.
+- Refusée : la note a été rejetée.
+
+Utilisez ces statuts pour suivre l'avancement et la gestion de vos demandes.`
+          }}
         />
 
         {/* Delete Confirmation Dialog */}

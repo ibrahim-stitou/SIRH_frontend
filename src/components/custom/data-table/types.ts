@@ -75,13 +75,17 @@ export interface CustomTableTableState<T> {
   visibleColumns: (keyof T)[];
   filters: Record<string, any>;
 }
-
+export interface infoText {
+  title: string;
+  description: string ;
+}
 export interface CustomTableProps<T> {
   url: string;
   columns: CustomTableColumn<T>[];
   bulkActions?: CustomTableBulkAction<T>[];
   toolbarActions?: ToolbarAction[];
   externalActions?: ExternalAction<T>[];
+  infoText?: infoText;
   initialState?: Partial<CustomTableTableState<T>>;
   title?: string;
   titleExtra?: React.ReactNode;

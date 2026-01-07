@@ -36,25 +36,34 @@ import {
   CommandList
 } from '@/components/ui/command';
 import { CustomDataTableSelect } from '@/components/custom/data-table/custom-datatable-select';
-import { X, ArrowDownUp, Check } from 'lucide-react';
+import { X, ArrowDownUp, Check, BadgeInfo } from 'lucide-react';
 import { CalendarIcon, Settings2 } from 'lucide-react';
 import {
   CustomTableFilterConfig,
+  infoText,
   UseCustomTableReturnType
 } from '@/components/custom/data-table/types';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useLanguage } from '@/context/LanguageContext';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip';
+import { Modal } from '@/components/ui/modal';
 
 interface CustomTableToolbarProps<TData extends Record<string, any>>
   extends React.ComponentProps<'div'> {
   table: UseCustomTableReturnType<TData>;
   filters?: CustomTableFilterConfig[];
+  infoText?: infoText;
 }
 
 export function CustomTableToolbar<TData extends Record<string, any>>({
   table,
+  infoText,
   filters = [],
   className,
   ...props
@@ -70,6 +79,7 @@ export function CustomTableToolbar<TData extends Record<string, any>>({
     }, {});
   }, [filters]);
 
+  const [openInfoModal, setOpenInfoModal] = React.useState(false);
   const filterSchema = useMemo(() => {
     const schema: Record<string, z.ZodTypeAny> = {};
     filters.forEach((filter) => {
@@ -373,8 +383,31 @@ export function CustomTableToolbar<TData extends Record<string, any>>({
               </Command>
             </PopoverContent>
           </Popover>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className='h-8 w-8 p-1.5 hover:bg-purple-50 hover:text-purple-700'
+                variant='outline'
+                onClick={() => setOpenInfoModal(true)}
+              >
+                <BadgeInfo />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className='mb-2 bg-purple-100 text-purple-700'>
+              <div className='max-w-xs'>
+                <p className='font-medium'>Section d&apos;information</p>
+              </div>
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
+      <Modal
+        title={infoText?.title || ''}
+        description={infoText?.description || ''}
+        isOpen={openInfoModal}
+        onClose={() => setOpenInfoModal(false)}
+        icon={<BadgeInfo className="h-5 w-5" />}
+      />
     </FormProvider>
   );
 }
