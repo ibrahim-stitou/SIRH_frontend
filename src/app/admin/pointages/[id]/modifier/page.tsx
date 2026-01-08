@@ -42,7 +42,7 @@ const pointageSchema = z.object({
     .min(1, 'La sortie est requise'),
   worked_day: z
     .string({ required_error: 'Le jour presté est requis' })
-    .min(1, 'Le jour presté est requis') // 'YYYY-MM-DD'
+    .min(1, 'Le jour presté est requis')
 });
 
 type PointageForm = z.infer<typeof pointageSchema>;
@@ -68,7 +68,7 @@ export default function ModifierPointagePage() {
       worked_day: ''
     }
   });
-  const { control, handleSubmit, reset, formState, watch } = form;
+  const { handleSubmit, reset, formState, watch } = form;
   const { errors, isSubmitting } = formState;
 
   useEffect(() => {
@@ -90,7 +90,7 @@ export default function ModifierPointagePage() {
             employeeId: row.employeeId ?? ('' as unknown as string),
             check_in: row.check_in ?? '',
             check_out: row.check_out ?? '',
-            worked_day: row.worked_day ?? null
+            worked_day: row.worked_day ?? ''
           });
         }
       })
@@ -132,27 +132,6 @@ export default function ModifierPointagePage() {
     };
   }, [selectedEmployeeId]);
 
-  function parseDatePart(value?: string | null): string | null {
-    if (!value) return null;
-    const [d] = String(value).split('T');
-    return d || null;
-  }
-  function parseTimePart(value?: string | null): string | null {
-    if (!value) return null;
-    const parts = String(value).split('T');
-    const time = parts[1] || '';
-    return time.length >= 5 ? time.slice(0, 5) : null;
-  }
-  function combineDateTime(
-    date: string | null,
-    time: string | null
-  ): string | null {
-    if (!date || !time) return null;
-    return `${date}T${time}`;
-  }
-  function pad2(n: number) {
-    return n.toString().padStart(2, '0');
-  }
   function parseTime(value?: string | null): { h: number; m: number } {
     if (!value) return { h: 9, m: 0 };
     const [hh, mm] = String(value).split(':');
@@ -162,6 +141,10 @@ export default function ModifierPointagePage() {
   }
   const HOURS = Array.from({ length: 24 }, (_, i) => i);
   const MINUTES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+
+  function pad2(n: number) {
+    return n.toString().padStart(2, '0');
+  }
 
   function TimePicker({
     value,
@@ -208,48 +191,25 @@ export default function ModifierPointagePage() {
     );
   }
 
-  function DateTimePicker({
-    value,
-    onChange
-  }: {
-    value?: string | null;
-    onChange: (val: string | null) => void;
-  }) {
-    const date = parseDatePart(value);
-    const time = parseTimePart(value) || '09:00';
-    return (
-      <div className='grid grid-cols-1 gap-2 md:grid-cols-2'>
-        <DatePickerField
-          value={date || ''}
-          onChange={(d) => onChange(combineDateTime(d, time))}
-          placeholder='Sélectionner la date'
-        />
-        <TimePicker
-          value={time}
-          onChange={(t) => onChange(combineDateTime(date, t))}
-        />
-      </div>
-    );
-  }
-
   const wCheckIn = watch('check_in');
   const wCheckOut = watch('check_out');
+  const wDay = watch('worked_day');
   const estimatedMinutes = useMemo(() => {
-    if (!wCheckIn || !wCheckOut) return undefined;
-    const di = new Date(wCheckIn);
-    const doo = new Date(wCheckOut);
+    if (!wDay || !wCheckIn || !wCheckOut) return undefined;
+    const di = new Date(`${wDay}T${wCheckIn}`);
+    const doo = new Date(`${wDay}T${wCheckOut}`);
     if (isNaN(di.getTime()) || isNaN(doo.getTime())) return undefined;
     const diff = (doo.getTime() - di.getTime()) / 60000;
     return diff >= 0 ? Math.round(diff) : undefined;
-  }, [wCheckIn, wCheckOut]);
+  }, [wDay, wCheckIn, wCheckOut]);
 
   const onSubmit = async (data: PointageForm) => {
     setSaving(true);
     try {
       await apiClient.put(apiRoutes.admin.pointages.update(id), {
         employeeId: data.employeeId,
-        check_in: data.check_in,
-        check_out: data.check_out,
+        check_in: data.check_in, // HH:mm
+        check_out: data.check_out, // HH:mm
         worked_day: data.worked_day ?? undefined
       });
       toast.success('Pointage modifié');
@@ -369,50 +329,6 @@ export default function ModifierPointagePage() {
                   </div>
                 </div>
                 <div>
-                  {/* Entrée (date et heure) */}
-                  <Label className='mb-1'>
-                    Entrée (date et heure){' '}
-                    <span className='text-destructive'>*</span>
-                  </Label>
-                  <Controller
-                    control={form.control}
-                    name='check_in'
-                    render={({ field }) => (
-                      <DateTimePicker
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
-                    )}
-                  />
-                  {form.formState.errors.check_in && (
-                    <div className='text-destructive mt-1 text-xs'>
-                      {form.formState.errors.check_in.message as string}
-                    </div>
-                  )}
-                </div>
-                <div>
-                  {/* Sortie (date et heure) */}
-                  <Label className='mb-1'>
-                    Sortie (date et heure){' '}
-                    <span className='text-destructive'>*</span>
-                  </Label>
-                  <Controller
-                    control={form.control}
-                    name='check_out'
-                    render={({ field }) => (
-                      <DateTimePicker
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
-                    )}
-                  />
-                  {form.formState.errors.check_out && (
-                    <div className='text-destructive mt-1 text-xs'>
-                      {form.formState.errors.check_out.message as string}
-                    </div>
-                  )}
-                </div>
-                <div>
                   {/* Jour presté (date) */}
                   <Label className='mb-1'>
                     Jour presté (date){' '}
@@ -430,6 +346,43 @@ export default function ModifierPointagePage() {
                     )}
                   />
                 </div>
+                <div>
+                  {/* Entrée (heure) */}
+                  <Label className='mb-1'>
+                    Entrée (heure) <span className='text-destructive'>*</span>
+                  </Label>
+                  <Controller
+                    control={form.control}
+                    name='check_in'
+                    render={({ field }) => (
+                      <TimePicker value={field.value} onChange={field.onChange} />
+                    )}
+                  />
+                  {form.formState.errors.check_in && (
+                    <div className='text-destructive mt-1 text-xs'>
+                      {form.formState.errors.check_in.message as string}
+                    </div>
+                  )}
+                </div>
+                <div>
+                  {/* Sortie (heure) */}
+                  <Label className='mb-1'>
+                    Sortie (heure) <span className='text-destructive'>*</span>
+                  </Label>
+                  <Controller
+                    control={form.control}
+                    name='check_out'
+                    render={({ field }) => (
+                      <TimePicker value={field.value} onChange={field.onChange} />
+                    )}
+                  />
+                  {form.formState.errors.check_out && (
+                    <div className='text-destructive mt-1 text-xs'>
+                      {form.formState.errors.check_out.message as string}
+                    </div>
+                  )}
+                </div>
+
                 {estimatedMinutes !== undefined && (
                   <div className='text-muted-foreground flex items-center gap-2 text-sm md:col-span-2'>
                     <Clock className='h-4 w-4' /> Durée estimée :

@@ -2,8 +2,8 @@
   {
     "id": 1,
     "employeeId": 1001,
-    "check_in": "2024-06-01T09:00",
-    "check_out": "2024-06-01T17:00",
+    "check_in": "09:00",
+    "check_out": "17:00",
     "worked_day": "2024-06-01",
     "source": "manuel",
     "employee": {
@@ -16,8 +16,8 @@
   {
     "id": 2,
     "employeeId": 1000,
-    "check_in": "2024-06-01T08:30",
-    "check_out": "2024-06-01T16:30",
+    "check_in": "08:30",
+    "check_out": "16:30",
     "worked_day": "2024-06-01",
     "source": "automatique",
     "employee": {
@@ -30,8 +30,8 @@
   {
     "id": 3,
     "employeeId": 1001,
-    "check_in": "2024-06-01T09:15",
-    "check_out": "2024-06-01T17:15",
+    "check_in": "09:15",
+    "check_out": "17:15",
     "worked_day": "2024-06-01",
     "source": "manuel",
     "employee": {
@@ -44,8 +44,8 @@
   {
     "id": 4,
     "employeeId": 1003,
-    "check_in": "2024-06-01T10:00",
-    "check_out": "2024-06-01T18:00",
+    "check_in": "10:00",
+    "check_out": "18:00",
     "worked_day": "2024-06-01",
     "source": "automatique",
     "employee": {
@@ -58,8 +58,8 @@
   {
     "id": 5,
     "employeeId": 1000,
-    "check_in": "2024-06-01T09:45",
-    "check_out": "2024-06-01T17:45",
+    "check_in": "09:45",
+    "check_out": "17:45",
     "worked_day": "2024-06-01",
     "source": "manuel",
     "employee": {
@@ -72,8 +72,8 @@
   {
     "id": 6,
     "employeeId": 1002,
-    "check_in": "2024-06-01T08:00",
-    "check_out": "2024-06-01T16:00",
+    "check_in": "08:00",
+    "check_out": "16:00",
     "worked_day": "2024-06-01",
     "source": "automatique",
     "employee": {
@@ -86,8 +86,8 @@
   {
     "id": 7,
     "employeeId": 1000,
-    "check_in": "2024-06-01T09:30",
-    "check_out": "2024-06-01T17:30",
+    "check_in": "09:30",
+    "check_out": "17:30",
     "worked_day": "2024-06-01",
     "source": "manuel",
     "employee": {
@@ -100,8 +100,8 @@
   {
     "id": 8,
     "employeeId": 1001,
-    "check_in": "2024-06-01T10:15",
-    "check_out": "2024-06-01T18:15",
+    "check_in": "10:15",
+    "check_out": "18:15",
     "worked_day": "2024-06-01",
     "source": "automatique",
     "employee": {
@@ -114,8 +114,8 @@
   {
     "id": 9,
     "employeeId": 1003,
-    "check_in": "2024-06-01T09:20",
-    "check_out": "2024-06-01T17:20",
+    "check_in": "09:20",
+    "check_out": "17:20",
     "worked_day": "2024-06-01",
     "source": "manuel",
     "employee": {
@@ -128,8 +128,8 @@
   {
     "id": 10,
     "employeeId": 1000,
-    "check_in": "2024-06-01T08:45",
-    "check_out": "2024-06-01T16:45",
+    "check_in": "08:45",
+    "check_out": "16:45",
     "worked_day": "2024-06-01",
     "source": "automatique",
     "employee": {

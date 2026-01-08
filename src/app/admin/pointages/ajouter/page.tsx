@@ -152,14 +152,15 @@ export default function AjouterPointagePage() {
   // Helpers for auto-calcul from watched values
   const wCheckIn = watch('check_in');
   const wCheckOut = watch('check_out');
+  const wDay = watch('worked_day');
   const estimatedMinutes = useMemo(() => {
-    if (!wCheckIn || !wCheckOut) return undefined;
-    const di = new Date(wCheckIn);
-    const doo = new Date(wCheckOut);
+    if (!wDay || !wCheckIn || !wCheckOut) return undefined;
+    const di = new Date(`${wDay}T${wCheckIn}`);
+    const doo = new Date(`${wDay}T${wCheckOut}`);
     if (isNaN(di.getTime()) || isNaN(doo.getTime())) return undefined;
     const diff = (doo.getTime() - di.getTime()) / 60000;
     return diff >= 0 ? Math.round(diff) : undefined;
-  }, [wCheckIn, wCheckOut]);
+  }, [wDay, wCheckIn, wCheckOut]);
 
   const onSubmit = async (data: PointageForm) => {
     try {
@@ -393,48 +394,6 @@ export default function AjouterPointagePage() {
               </div>
               <div>
                 <Label className='mb-1'>
-                  Entrée (date et heure){' '}
-                  <span className='text-destructive'>*</span>
-                </Label>
-                <Controller
-                  control={control}
-                  name='check_in'
-                  render={({ field }) => (
-                    <DateTimePicker
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-                {errors.check_in && (
-                  <div className='text-destructive mt-1 text-xs'>
-                    {errors.check_in.message as string}
-                  </div>
-                )}
-              </div>
-              <div>
-                <Label className='mb-1'>
-                  Sortie (date et heure){' '}
-                  <span className='text-destructive'>*</span>
-                </Label>
-                <Controller
-                  control={control}
-                  name='check_out'
-                  render={({ field }) => (
-                    <DateTimePicker
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-                {errors.check_out && (
-                  <div className='text-destructive mt-1 text-xs'>
-                    {errors.check_out.message as string}
-                  </div>
-                )}
-              </div>
-              <div>
-                <Label className='mb-1'>
                   Jour presté (date) <span className='text-destructive'>*</span>
                 </Label>
                 <Controller
@@ -448,6 +407,40 @@ export default function AjouterPointagePage() {
                     />
                   )}
                 />
+              </div>
+              <div>
+                <Label className='mb-1'>
+                  Entrée (heure) <span className='text-destructive'>*</span>
+                </Label>
+                <Controller
+                  control={control}
+                  name='check_in'
+                  render={({ field }) => (
+                    <TimePicker value={field.value} onChange={field.onChange} />
+                  )}
+                />
+                {errors.check_in && (
+                  <div className='text-destructive mt-1 text-xs'>
+                    {errors.check_in.message as string}
+                  </div>
+                )}
+              </div>
+              <div>
+                <Label className='mb-1'>
+                  Sortie (heure) <span className='text-destructive'>*</span>
+                </Label>
+                <Controller
+                  control={control}
+                  name='check_out'
+                  render={({ field }) => (
+                    <TimePicker value={field.value} onChange={field.onChange} />
+                  )}
+                />
+                {errors.check_out && (
+                  <div className='text-destructive mt-1 text-xs'>
+                    {errors.check_out.message as string}
+                  </div>
+                )}
               </div>
               {estimatedMinutes !== undefined && (
                 <div className='text-muted-foreground text-sm md:col-span-2'>
@@ -548,12 +541,13 @@ export default function AjouterPointagePage() {
                     chaîne (ex: EMP-0001)
                   </li>
                   <li>
-                    <span className='font-medium'>check_in</span> — date et
-                    heure (AAAA-MM-JJ HH:mm)
+                    <span className='font-medium'>worked_day</span> — date (AAAA-MM-JJ)
                   </li>
                   <li>
-                    <span className='font-medium'>check_out</span> — date et
-                    heure (AAAA-MM-JJ HH:mm)
+                    <span className='font-medium'>check_in</span> — heure (HH:mm)
+                  </li>
+                  <li>
+                    <span className='font-medium'>check_out</span> — heure (HH:mm)
                   </li>
                 </ul>
                 <p className='text-muted-foreground mt-2 text-xs'>

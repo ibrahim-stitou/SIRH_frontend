@@ -2,19 +2,34 @@ module.exports = function registerPointageRoutes(server, db) {
   // Helper to build datetime string from record
   function resolveDateTime(rec, key) {
     const v = rec[key];
-    if (v && /T|\d{2}:\d{2}/.test(String(v))) {
-      // If already combined like YYYY-MM-DDTHH:mm or contains time, use as-is
-      if (String(v).includes('T')) return String(v);
-      // Legacy time-only, combine with rec.date if present
-      if (rec.date) return `${rec.date}T${v}`;
+    if (!v) return undefined;
+    const s = String(v);
+    // If already combined like YYYY-MM-DDTHH:mm
+    if (s.includes('T')) return s;
+    // If value is time-only (HH:mm or HH:mm:ss), combine with worked_day (or legacy 'date')
+    if (/^\d{2}:\d{2}(:\d{2})?$/.test(s)) {
+      const day = rec.worked_day || rec.date || null;
+      if (day) return `${day}T${s.slice(0, 5)}`;
+      return undefined;
     }
-    // Fallback: if date exists use date at 00:00
-    return rec.date ? `${rec.date}T00:00` : undefined;
+    // If value is a date-only string, use 00:00 as time
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return `${s}T00:00`;
+    return undefined;
   }
   function extractDatePart(iso) {
     if (!iso) return null;
     const [d] = String(iso).split('T');
     return d || null;
+  }
+  function extractTimePart(isoOrTime) {
+    if (!isoOrTime) return null;
+    const s = String(isoOrTime);
+    if (s.includes('T')) {
+      const t = s.split('T')[1] || '';
+      return t.slice(0, 5) || null;
+    }
+    if (/^\d{2}:\d{2}(:\d{2})?$/.test(s)) return s.slice(0, 5);
+    return null;
   }
 
   // Paginated pointages listing with filters
@@ -26,7 +41,7 @@ module.exports = function registerPointageRoutes(server, db) {
 
     const employeeId =
       req.query.employeeId || req.query.employee || req.query.employe;
-    const from = req.query.from || req.query.startDate; // expect datetime or date
+    const from = req.query.from || req.query.startDate; // expect date or datetime
     const to = req.query.to || req.query.endDate;
     const groupId = req.query.groupId || req.query.group || req.query.groupe;
 
@@ -49,17 +64,14 @@ module.exports = function registerPointageRoutes(server, db) {
       all = all.filter((p) => String(p.employeeId) === String(employeeId));
     }
 
-    // Filter by datetime range (based on check_in)
+    // Filter by date range (based on combined worked_day + check_in time)
     if (from || to) {
       const fromDate = from ? new Date(from) : null;
       const toDate = to ? new Date(to) : null;
       all = all.filter((p) => {
-        const ci = resolveDateTime(p, 'check_in');
-        const dt = ci
-          ? new Date(ci)
-          : p.date
-            ? new Date(`${p.date}T00:00`)
-            : null;
+        const ci = resolveDateTime(p, 'check_in') ||
+          (p.worked_day ? `${p.worked_day}T00:00` : null);
+        const dt = ci ? new Date(ci) : null;
         if (!dt || isNaN(dt.getTime())) return false;
         if (fromDate && dt < fromDate) return false;
         if (toDate && dt > toDate) return false;
@@ -101,10 +113,16 @@ module.exports = function registerPointageRoutes(server, db) {
     );
 
     const enriched = all.map((pointage) => {
-      const check_in = resolveDateTime(pointage, 'check_in');
-      const check_out = resolveDateTime(pointage, 'check_out');
-      const planned_check_in = resolveDateTime(pointage, 'planned_check_in');
-      const planned_check_out = resolveDateTime(pointage, 'planned_check_out');
+      const check_in_dt = resolveDateTime(pointage, 'check_in');
+      const check_out_dt = resolveDateTime(pointage, 'check_out');
+      const planned_check_in_dt = resolveDateTime(
+        pointage,
+        'planned_check_in'
+      );
+      const planned_check_out_dt = resolveDateTime(
+        pointage,
+        'planned_check_out'
+      );
 
       let employee = null;
       const hr = employeesById[String(pointage.employeeId)];
@@ -128,16 +146,21 @@ module.exports = function registerPointageRoutes(server, db) {
       // ensure worked_day exists if possible
       const worked_day =
         pointage.worked_day ||
-        extractDatePart(check_in) ||
-        extractDatePart(check_out) ||
+        extractDatePart(check_in_dt) ||
+        extractDatePart(check_out_dt) ||
         null;
 
       return {
         ...pointage,
-        check_in,
-        check_out,
-        planned_check_in,
-        planned_check_out,
+        // Preserve original time-only fields if present
+        check_in: extractTimePart(pointage.check_in) || extractTimePart(check_in_dt),
+        check_out: extractTimePart(pointage.check_out) || extractTimePart(check_out_dt),
+        planned_check_in:
+          extractTimePart(pointage.planned_check_in) ||
+          extractTimePart(planned_check_in_dt),
+        planned_check_out:
+          extractTimePart(pointage.planned_check_out) ||
+          extractTimePart(planned_check_out_dt),
         worked_day,
         employee
       };
@@ -186,37 +209,42 @@ module.exports = function registerPointageRoutes(server, db) {
       };
     }
 
+    // Respond with time-only for check_in/out and worked_day as date
     return res.status(200).json({
       status: 'success',
       data: {
         ...pointage,
-        check_in: resolveDateTime(pointage, 'check_in'),
-        check_out: resolveDateTime(pointage, 'check_out'),
-        planned_check_in: resolveDateTime(pointage, 'planned_check_in'),
-        planned_check_out: resolveDateTime(pointage, 'planned_check_out'),
+        check_in: extractTimePart(pointage.check_in) ||
+          extractTimePart(resolveDateTime(pointage, 'check_in')),
+        check_out: extractTimePart(pointage.check_out) ||
+          extractTimePart(resolveDateTime(pointage, 'check_out')),
+        planned_check_in:
+          extractTimePart(pointage.planned_check_in) ||
+          extractTimePart(resolveDateTime(pointage, 'planned_check_in')),
+        planned_check_out:
+          extractTimePart(pointage.planned_check_out) ||
+          extractTimePart(resolveDateTime(pointage, 'planned_check_out')),
         worked_day:
           pointage.worked_day ||
-          extractDatePart(pointage.check_in) ||
-          extractDatePart(pointage.check_out) ||
+          extractDatePart(resolveDateTime(pointage, 'check_in')) ||
+          extractDatePart(resolveDateTime(pointage, 'check_out')) ||
           null,
         employee
       }
     });
   });
 
-  // Create pointage (mock): accept combined check_in/check_out datetime strings
+  // Create pointage (mock): accept time-only HH:mm and worked_day (YYYY-MM-DD)
   server.post('/pointages', (req, res) => {
     const now = new Date().toISOString();
     const computedWorkedDay =
       req.body.worked_day ||
-      extractDatePart(req.body.check_in) ||
-      extractDatePart(req.body.check_out) ||
-      null;
+      null; // with time-only inputs, worked_day must be provided
     const newPointage = {
       id: Date.now(),
       employeeId: req.body.employeeId,
-      check_in: req.body.check_in, // expect 'YYYY-MM-DDTHH:mm'
-      check_out: req.body.check_out,
+      check_in: req.body.check_in, // expect 'HH:mm'
+      check_out: req.body.check_out, // expect 'HH:mm'
       planned_check_in: req.body.planned_check_in ?? null,
       planned_check_out: req.body.planned_check_out ?? null,
       worked_day: computedWorkedDay,
@@ -247,8 +275,8 @@ module.exports = function registerPointageRoutes(server, db) {
     const nextCheckOut = req.body.check_out ?? exists.check_out;
     const updatedPointage = {
       employeeId: req.body.employeeId ?? exists.employeeId,
-      check_in: nextCheckIn,
-      check_out: nextCheckOut,
+      check_in: nextCheckIn, // HH:mm
+      check_out: nextCheckOut, // HH:mm
       planned_check_in:
         req.body.planned_check_in ?? exists.planned_check_in ?? null,
       planned_check_out:
@@ -256,8 +284,6 @@ module.exports = function registerPointageRoutes(server, db) {
       worked_day:
         req.body.worked_day ??
         exists.worked_day ??
-        extractDatePart(nextCheckIn) ??
-        extractDatePart(nextCheckOut) ??
         null,
       source: req.body.source ?? exists.source,
       status: req.body.status ?? exists.status,
@@ -342,7 +368,7 @@ module.exports = function registerPointageRoutes(server, db) {
   });
 
   // ===== Mock Export/Import Endpoints =====
-  // Export model CSV with combined datetime fields
+  // Export model CSV with time-only fields
   server.get('/pointages/export/model.csv', (req, res) => {
     const csvHeader =
       'employeeId,check_in,check_out,planned_check_in,planned_check_out,worked_day,source\n';
@@ -361,17 +387,17 @@ module.exports = function registerPointageRoutes(server, db) {
       message: 'Modèle Excel (mock) généré',
       columns: [
         'employeeId',
-        'check_in',
-        'check_out',
-        'planned_check_in',
-        'planned_check_out',
-        'worked_day',
+        'check_in (HH:mm)',
+        'check_out (HH:mm)',
+        'worked_day (YYYY-MM-DD)',
+        'planned_check_in (HH:mm)',
+        'planned_check_out (HH:mm)',
         'source'
       ]
     });
   });
 
-  // Export all pointages CSV
+  // Export all pointages CSV (time-only for in/out)
   server.get('/pointages/export.csv', (req, res) => {
     const rows = db.get('pointages').value() || [];
     const header = [
@@ -393,10 +419,10 @@ module.exports = function registerPointageRoutes(server, db) {
             [
               r.id,
               r.employeeId,
-              resolveDateTime(r, 'check_in') || '',
-              resolveDateTime(r, 'check_out') || '',
-              resolveDateTime(r, 'planned_check_in') || '',
-              resolveDateTime(r, 'planned_check_out') || '',
+              extractTimePart(r.check_in) || extractTimePart(resolveDateTime(r, 'check_in')) || '',
+              extractTimePart(r.check_out) || extractTimePart(resolveDateTime(r, 'check_out')) || '',
+              extractTimePart(r.planned_check_in) || extractTimePart(resolveDateTime(r, 'planned_check_in')) || '',
+              extractTimePart(r.planned_check_out) || extractTimePart(resolveDateTime(r, 'planned_check_out')) || '',
               r.worked_day ?? '',
               r.source ?? '',
               r.status ?? ''
@@ -423,7 +449,7 @@ module.exports = function registerPointageRoutes(server, db) {
     });
   });
 
-  // Import CSV/Excel (mock) — accepts rows with combined datetime strings
+  // Import CSV/Excel (mock) — accepts rows with time-only strings + worked_day
   server.post('/pointages/import', (req, res) => {
     const rows = Array.isArray(req.body?.rows) ? req.body.rows : [];
     const processed = rows.length;
@@ -433,15 +459,11 @@ module.exports = function registerPointageRoutes(server, db) {
       const rec = {
         id: Date.now() + Math.floor(Math.random() * 1000),
         employeeId: r.employeeId,
-        check_in: r.check_in,
-        check_out: r.check_out,
+        check_in: r.check_in, // HH:mm
+        check_out: r.check_out, // HH:mm
         planned_check_in: r.planned_check_in ?? null,
         planned_check_out: r.planned_check_out ?? null,
-        worked_day:
-          r.worked_day ??
-          extractDatePart(r.check_in) ??
-          extractDatePart(r.check_out) ??
-          null,
+        worked_day: r.worked_day ?? null, // required to resolve date
         source: r.source ?? 'manuel',
         status: r.status ?? 'bruillon',
         created_at: now,
@@ -459,4 +481,4 @@ module.exports = function registerPointageRoutes(server, db) {
       sample: rows.slice(0, 3)
     });
   });
-};
+}

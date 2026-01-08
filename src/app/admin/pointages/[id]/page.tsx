@@ -6,13 +6,10 @@ import apiClient from '@/lib/api';
 import { apiRoutes } from '@/config/apiRoutes';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import {
   ArrowLeft,
-  CheckCircle2,
-  XCircle,
   Clock,
   CalendarDays,
   User
@@ -54,7 +51,6 @@ export default function PointageDetailsPage() {
   const id = params?.id as string;
 
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [data, setData] = useState<PointageDetails | null>(null);
   const [employeeGroups, setEmployeeGroups] = useState<EmployeeGroup[]>([]);
 
@@ -93,13 +89,13 @@ export default function PointageDetailsPage() {
   }, [id]);
 
   const estimatedMinutes = useMemo(() => {
-    if (!data?.check_in || !data?.check_out) return undefined;
-    const di = new Date(data.check_in);
-    const doo = new Date(data.check_out);
+    if (!data?.worked_day || !data?.check_in || !data?.check_out) return undefined;
+    const di = new Date(`${data.worked_day}T${data.check_in}`);
+    const doo = new Date(`${data.worked_day}T${data.check_out}`);
     if (isNaN(di.getTime()) || isNaN(doo.getTime())) return undefined;
     const diff = (doo.getTime() - di.getTime()) / 60000;
     return diff >= 0 ? Math.round(diff) : undefined;
-  }, [data?.check_in, data?.check_out]);
+  }, [data?.worked_day, data?.check_in, data?.check_out]);
 
   return (
     <PageContainer scrollable>
@@ -203,9 +199,7 @@ export default function PointageDetailsPage() {
                     <CalendarDays className='h-4 w-4' /> Entrée
                   </div>
                   <div className='text-foreground'>
-                    {data.check_in
-                      ? format(new Date(data.check_in), 'yyyy-MM-dd HH:mm')
-                      : '—'}
+                    {data.check_in ? data.check_in : '—'}
                   </div>
                 </div>
                 <div className='rounded-lg border p-3'>
@@ -213,9 +207,7 @@ export default function PointageDetailsPage() {
                     <CalendarDays className='h-4 w-4' /> Sortie
                   </div>
                   <div className='text-foreground'>
-                    {data.check_out
-                      ? format(new Date(data.check_out), 'yyyy-MM-dd HH:mm')
-                      : '—'}
+                    {data.check_out ? data.check_out : '—'}
                   </div>
                 </div>
                 <div className='rounded-lg border p-3'>

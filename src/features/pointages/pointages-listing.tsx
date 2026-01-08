@@ -1,6 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import CustomTable from '@/components/custom/data-table/custom-table';
 import { Icons } from '@/components/icons';
@@ -11,15 +11,11 @@ import {
 } from '@/components/custom/data-table/types';
 import { apiRoutes } from '@/config/apiRoutes';
 import apiClient from '@/lib/api';
-import { format } from 'date-fns';
 import {
   Upload,
-  Trash2,
   Plus,
   Pencil,
-  Eye,
-  CheckCircle2,
-  XCircle
+  Eye
 } from 'lucide-react';
 import CustomAlertDialog from '@/components/custom/customAlert';
 import { toast } from 'sonner';
@@ -147,23 +143,6 @@ export default function PointagesListing() {
     };
   }, []);
 
-  const onValidate = useCallback(
-    async (row: PointageRow) => {
-      try {
-        await apiClient.patch(apiRoutes.admin.pointages.validate(row.id));
-        toast.success('Pointage validé');
-        _tableInstance?.refresh?.();
-      } catch (e: any) {
-        toast.error(e?.response?.data?.message || 'Erreur');
-      }
-    },
-    [_tableInstance]
-  );
-  const onOpenRefuse = (row: PointageRow) => {
-    setRowToRefuse(row);
-    setRefuseReason('');
-    setRefuseOpen(true);
-  };
   const onRefuseConfirm = async () => {
     if (!rowToRefuse) return;
     if (!refuseReason.trim()) {
@@ -187,7 +166,6 @@ export default function PointagesListing() {
     }
   };
 
-  const onAskDelete = (row: PointageRow) => setConfirmDeleteId(row.id);
   const onConfirmDelete = async () => {
     if (!confirmDeleteId) return;
     try {
@@ -267,22 +245,22 @@ export default function PointagesListing() {
         data: 'check_in',
         label: 'Entrée',
         sortable: true,
-        render: (v) => (v ? format(new Date(v), 'yyyy-MM-dd HH:mm') : '—')
+        render: (v) => (v ? String(v) : '—')
       },
       {
         data: 'check_out',
         label: 'Sortie',
         sortable: true,
-        render: (v) => (v ? format(new Date(v), 'yyyy-MM-dd HH:mm') : '—')
+        render: (v) => (v ? String(v) : '—')
       },
       {
         data: 'duration',
         label: 'Durée (min)',
         sortable: false,
         render: (_v, row) => {
-          if (!row.check_in || !row.check_out) return '—';
-          const di = new Date(row.check_in);
-          const doo = new Date(row.check_out);
+          if (!row.worked_day || !row.check_in || !row.check_out) return '—';
+          const di = new Date(`${row.worked_day}T${row.check_in}`);
+          const doo = new Date(`${row.worked_day}T${row.check_out}`);
           if (isNaN(di.getTime()) || isNaN(doo.getTime())) return '—';
           const diff = Math.round((doo.getTime() - di.getTime()) / 60000);
           return diff >= 0 ? `${diff}` : '—';
@@ -501,12 +479,13 @@ export default function PointagesListing() {
                     d&apos;employee (ex: EMP-0001)
                   </li>
                   <li>
-                    <span className='font-medium'>check_in</span> — date et
-                    heure d&apos;entrée (AAAA-MM-JJ HH:mm)
+                    <span className='font-medium'>worked_day</span> — date (AAAA-MM-JJ)
                   </li>
                   <li>
-                    <span className='font-medium'>check_out</span> — date et
-                    heure de sortie (AAAA-MM-JJ HH:mm)
+                    <span className='font-medium'>check_in</span> — heure d&apos;entrée (HH:mm)
+                  </li>
+                  <li>
+                    <span className='font-medium'>check_out</span> — heure de sortie (HH:mm)
                   </li>
                 </ul>
                 <p className='text-muted-foreground mt-2 text-xs'>
