@@ -40,24 +40,21 @@ export function Modal({
   return (
     <Dialog open={isOpen} onOpenChange={onChange}>
       <DialogContent
-        className={cn(
-          "max-w-2xl p-0 gap-0 overflow-hidden",
-          className
-        )}
+        className={cn('max-w-2xl gap-0 overflow-hidden p-0', className)}
       >
         {/* Header avec icône et fond coloré */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-5 border-b border-blue-100">
+        <div className='border-b border-blue-100 bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-5'>
           <DialogHeader>
-            <div className="flex items-start gap-3">
+            <div className='flex items-start gap-3'>
               {icon && (
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600'>
                   {icon}
                 </div>
               )}
-              <div className="flex-1 min-w-0">
+              <div className='min-w-0 flex-1'>
                 <DialogTitle
                   className={cn(
-                    "text-xl font-semibold text-gray-900 mb-1",
+                    'mb-1 text-xl font-semibold text-gray-900',
                     titleClassName
                   )}
                 >
@@ -69,18 +66,18 @@ export function Modal({
         </div>
 
         {/* Contenu du modal */}
-        <div className="px-6 py-5">
+        <div className='px-6 py-5'>
           {description && (
             <DialogDescription
               className={cn(
-                "text-sm text-gray-700 leading-relaxed whitespace-pre-line",
+                'text-sm leading-relaxed whitespace-pre-line text-gray-700',
                 descriptionClassName
               )}
             >
               {description}
             </DialogDescription>
           )}
-          {children && <div className="mt-4">{children}</div>}
+          {children && <div className='mt-4'>{children}</div>}
         </div>
       </DialogContent>
     </Dialog>

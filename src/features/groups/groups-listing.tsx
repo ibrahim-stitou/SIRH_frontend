@@ -47,7 +47,6 @@ import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Card,
-  CardContent,
   CardHeader,
   CardTitle,
   CardDescription
@@ -163,6 +162,7 @@ export default function GroupsListing({ id }: { id?: string }) {
     }
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const openGroupSheet = async (row: GroupeRow) => {
     setActiveGroup(row);
     setOpenSheet(true);
@@ -247,7 +247,7 @@ export default function GroupsListing({ id }: { id?: string }) {
           )
           .map((m) => ({
             employeeId: m.employee?.id ?? m.employeeId,
-            isManager: !!m.isManager
+            isManager: m.isManager
           }))
       };
       await apiClient.put(
@@ -319,7 +319,7 @@ export default function GroupsListing({ id }: { id?: string }) {
         )
       }
     ],
-    [router, t]
+    [openGroupSheet, t]
   );
 
   const filters: CustomTableFilterConfig[] = [

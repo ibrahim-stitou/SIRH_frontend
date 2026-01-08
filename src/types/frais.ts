@@ -1,7 +1,13 @@
 export type FraisLine = {
   id: number;
   date: string; // ISO date
-  category: 'Transport' | 'Restauration' | 'Hôtel' | 'Autre'|'Per Diem'|'Kilométrage';
+  category:
+    | 'Transport'
+    | 'Restauration'
+    | 'Hôtel'
+    | 'Autre'
+    | 'Per Diem'
+    | 'Kilométrage';
   transportMode?: string | null;
   route?: { from: string; to: string } | null;
   amount: number;
@@ -19,13 +25,24 @@ export type NoteDeFrais = {
   number: string; // NDF-[YEAR]-[MATRICULE]-[SEQ]
   employeeId: number;
   matricule: string;
-  status: 'draft' | 'submitted' | 'approved' | 'approved_partial' | 'refused' | 'needs_complement';
+  status:
+    | 'draft'
+    | 'submitted'
+    | 'approved'
+    | 'approved_partial'
+    | 'refused'
+    | 'needs_complement';
   subject: string;
   startDate: string; // ISO date
   endDate: string; // ISO date
   total: number; // total in MAD
   lines: FraisLine[];
-  history: Array<{ at: string; action: string; by: string | number; comment?: string }>;
+  history: Array<{
+    at: string;
+    action: string;
+    by: string | number;
+    comment?: string;
+  }>;
   createdAt: string;
   updatedAt: string;
   refuseReason?: string;

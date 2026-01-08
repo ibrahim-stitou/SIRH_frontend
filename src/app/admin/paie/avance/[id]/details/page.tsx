@@ -42,13 +42,40 @@ type AvanceDetails = {
 function getStatutBadge(statut?: string) {
   // Statuts unifiés: "Brouillon" | "En_attente" | "Valide" | "Refuse"
   const s = statut || '';
-  const variants: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline'; className: string }> = {
-    Brouillon: { label: 'Brouillon', variant: 'outline', className: 'bg-yellow-100 text-yellow-800' },
-    En_attente: { label: 'En attente', variant: 'default', className: 'bg-gray-100 text-gray-800' },
-    Valide: { label: 'Valide', variant: 'secondary', className: 'bg-green-100 text-green-800' },
-    Refuse: { label: 'Refusé', variant: 'destructive', className: 'bg-red-100 text-red-800' }
+  const variants: Record<
+    string,
+    {
+      label: string;
+      variant: 'default' | 'secondary' | 'destructive' | 'outline';
+      className: string;
+    }
+  > = {
+    Brouillon: {
+      label: 'Brouillon',
+      variant: 'outline',
+      className: 'bg-yellow-100 text-yellow-800'
+    },
+    En_attente: {
+      label: 'En attente',
+      variant: 'default',
+      className: 'bg-gray-100 text-gray-800'
+    },
+    Valide: {
+      label: 'Valide',
+      variant: 'secondary',
+      className: 'bg-green-100 text-green-800'
+    },
+    Refuse: {
+      label: 'Refusé',
+      variant: 'destructive',
+      className: 'bg-red-100 text-red-800'
+    }
   };
-  const cfg = variants[s] || { label: statut || 'Inconnu', variant: 'outline', className: 'bg-gray-100 text-gray-800' };
+  const cfg = variants[s] || {
+    label: statut || 'Inconnu',
+    variant: 'outline',
+    className: 'bg-gray-100 text-gray-800'
+  };
   return (
     <Badge variant={cfg.variant} className={cfg.className}>
       {cfg.label}
@@ -62,7 +89,9 @@ export default function AvanceDetailsPage() {
   const id = useMemo(() => params?.id, [params]);
   const [data, setData] = useState<AvanceDetails | null>(null);
   const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState<'validate' | 'refuse' | null>(null);
+  const [actionLoading, setActionLoading] = useState<
+    'validate' | 'refuse' | null
+  >(null);
   const [openValidate, setOpenValidate] = useState(false);
   const [openRefuse, setOpenRefuse] = useState(false);
   const [motifRefus, setMotifRefus] = useState('');
@@ -92,7 +121,9 @@ export default function AvanceDetailsPage() {
     if (!id) return;
     setActionLoading('validate');
     try {
-      await apiClient.post(apiRoutes.admin.avances.validate(id), { valide_par: 1 });
+      await apiClient.post(apiRoutes.admin.avances.validate(id), {
+        valide_par: 1
+      });
       // refresh
       const res = await apiClient.get(apiRoutes.admin.avances.show(id));
       setData(res.data?.data || res.data);
@@ -108,7 +139,9 @@ export default function AvanceDetailsPage() {
     if (!id) return;
     setActionLoading('refuse');
     try {
-      await apiClient.post(apiRoutes.admin.avances.refuse(id), { motif_refus: motifRefus || '' });
+      await apiClient.post(apiRoutes.admin.avances.refuse(id), {
+        motif_refus: motifRefus || ''
+      });
       const res = await apiClient.get(apiRoutes.admin.avances.show(id));
       setData(res.data?.data || res.data);
     } catch (e) {
@@ -126,11 +159,10 @@ export default function AvanceDetailsPage() {
         <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0'>
             <CardTitle>
-              Détails de l&apos;avance <span className="ml-2 text-xs font-medium text-gray-500">
-               {data?.statut && getStatutBadge(data.statut)}
-            </span>
-
-
+              Détails de l&apos;avance{' '}
+              <span className='ml-2 text-xs font-medium text-gray-500'>
+                {data?.statut && getStatutBadge(data.statut)}
+              </span>
             </CardTitle>
             <Button variant='ghost' size='sm' onClick={() => router.back()}>
               <ArrowLeft className='mr-2 h-4 w-4' /> Retour
@@ -143,12 +175,12 @@ export default function AvanceDetailsPage() {
                 <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
                   {Array.from({ length: 6 }).map((_, i) => (
                     <div key={i} className='rounded-md border p-3'>
-                      <Skeleton className='h-3 w-24 mb-2' />
+                      <Skeleton className='mb-2 h-3 w-24' />
                       <Skeleton className='h-5 w-40' />
                     </div>
                   ))}
                   <div className='md:col-span-2'>
-                    <Skeleton className='h-3 w-28 mb-2' />
+                    <Skeleton className='mb-2 h-3 w-28' />
                     <Skeleton className='h-12 w-full' />
                   </div>
                 </div>

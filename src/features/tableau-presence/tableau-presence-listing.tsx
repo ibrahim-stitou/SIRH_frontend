@@ -83,7 +83,9 @@ export default function TableauPresenceListing() {
   const [mois, setMois] = useState<number | undefined>(undefined);
   const [importFiles, setImportFiles] = useState<File[]>([]);
   const [annee, setAnnee] = useState<number | undefined>(undefined);
-  const [groups, setGroups] = useState<{ label: string; value: string | number }[]>([]);
+  const [groups, setGroups] = useState<
+    { label: string; value: string | number }[]
+  >([]);
 
   const [confirmCloseId, setConfirmCloseId] = useState<number | null>(null);
   const [confirmRegenerateId, setConfirmRegenerateId] = useState<number | null>(

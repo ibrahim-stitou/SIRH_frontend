@@ -117,7 +117,7 @@ export const useNavItems = (): NavItem[] => {
       url: '#',
       icon: 'bank',
       description: 'US-EMP-013',
-      items:[
+      items: [
         {
           title: t('sidebar.periodesPaie'),
           url: '/admin/paie/periode',
@@ -145,8 +145,7 @@ export const useNavItems = (): NavItem[] => {
           icon: 'car',
           shortcut: ['f', 'd'],
           description: 'US-FRA-001'
-        },
-
+        }
       ]
     }
   ];

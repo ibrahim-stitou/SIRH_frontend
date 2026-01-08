@@ -146,6 +146,7 @@ export interface TrialPeriod {
   status?: 'En_cours' | 'Validee' | 'Rompue';
   evaluation_date?: string;
   remarks?: string;
+  acceptance_criteria?: string[];
 }
 
 /**

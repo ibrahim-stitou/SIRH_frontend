@@ -11,12 +11,7 @@ import {
 } from '@/components/custom/data-table/types';
 import { apiRoutes } from '@/config/apiRoutes';
 import apiClient from '@/lib/api';
-import {
-  Upload,
-  Plus,
-  Pencil,
-  Eye
-} from 'lucide-react';
+import { Upload, Plus, Pencil, Eye } from 'lucide-react';
 import CustomAlertDialog from '@/components/custom/customAlert';
 import { toast } from 'sonner';
 import {
@@ -479,13 +474,16 @@ export default function PointagesListing() {
                     d&apos;employee (ex: EMP-0001)
                   </li>
                   <li>
-                    <span className='font-medium'>worked_day</span> — date (AAAA-MM-JJ)
+                    <span className='font-medium'>worked_day</span> — date
+                    (AAAA-MM-JJ)
                   </li>
                   <li>
-                    <span className='font-medium'>check_in</span> — heure d&apos;entrée (HH:mm)
+                    <span className='font-medium'>check_in</span> — heure
+                    d&apos;entrée (HH:mm)
                   </li>
                   <li>
-                    <span className='font-medium'>check_out</span> — heure de sortie (HH:mm)
+                    <span className='font-medium'>check_out</span> — heure de
+                    sortie (HH:mm)
                   </li>
                 </ul>
                 <p className='text-muted-foreground mt-2 text-xs'>

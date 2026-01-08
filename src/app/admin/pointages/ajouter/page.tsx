@@ -541,13 +541,16 @@ export default function AjouterPointagePage() {
                     chaîne (ex: EMP-0001)
                   </li>
                   <li>
-                    <span className='font-medium'>worked_day</span> — date (AAAA-MM-JJ)
+                    <span className='font-medium'>worked_day</span> — date
+                    (AAAA-MM-JJ)
                   </li>
                   <li>
-                    <span className='font-medium'>check_in</span> — heure (HH:mm)
+                    <span className='font-medium'>check_in</span> — heure
+                    (HH:mm)
                   </li>
                   <li>
-                    <span className='font-medium'>check_out</span> — heure (HH:mm)
+                    <span className='font-medium'>check_out</span> — heure
+                    (HH:mm)
                   </li>
                 </ul>
                 <p className='text-muted-foreground mt-2 text-xs'>

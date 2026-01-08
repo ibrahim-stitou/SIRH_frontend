@@ -65,16 +65,25 @@ export default function ContractDocuments({
     let cancelled = false;
     async function loadParams() {
       try {
-        const res = await apiClient.get(apiRoutes.admin.parametres.parametreMaxGeneral.list);
+        const res = await apiClient.get(
+          apiRoutes.admin.parametres.parametreMaxGeneral.list
+        );
         const rows = res.data?.data || res.data || [];
         const first = Array.isArray(rows) && rows.length ? rows[0] : null;
-        if (!cancelled) setMaxAvenants(typeof first?.max_avenants_par_contrat === 'number' ? first.max_avenants_par_contrat : null);
+        if (!cancelled)
+          setMaxAvenants(
+            typeof first?.max_avenants_par_contrat === 'number'
+              ? first.max_avenants_par_contrat
+              : null
+          );
       } catch (_) {
         // ignore
       }
     }
     loadParams();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Load avenants for this contract
@@ -106,8 +115,11 @@ export default function ContractDocuments({
   }, [contract.id]);
 
   const remainingAvenants =
-    typeof maxAvenants === 'number' ? Math.max(0, maxAvenants - (avenants?.length || 0)) : null;
-  const reachedMax = typeof remainingAvenants === 'number' && remainingAvenants <= 0;
+    typeof maxAvenants === 'number'
+      ? Math.max(0, maxAvenants - (avenants?.length || 0))
+      : null;
+  const reachedMax =
+    typeof remainingAvenants === 'number' && remainingAvenants <= 0;
 
   const handleUploadSignedDocument = async (files: File[]) => {
     if (files.length === 0) return;
@@ -377,15 +389,27 @@ export default function ContractDocuments({
             </CardTitle>
             <div className='flex items-center gap-3'>
               {typeof maxAvenants === 'number' && (
-                <div className={`text-xs rounded-md px-2 py-1 border ${reachedMax ? 'text-red-600 border-red-300 bg-red-50' : 'text-muted-foreground bg-muted/30'}`}>
+                <div
+                  className={`rounded-md border px-2 py-1 text-xs ${reachedMax ? 'border-red-300 bg-red-50 text-red-600' : 'text-muted-foreground bg-muted/30'}`}
+                >
                   Max: <strong>{maxAvenants}</strong>
                   {remainingAvenants !== null && (
-                    <span className='ml-2'>Restant: <strong className={`${reachedMax ? 'text-red-700' : ''}`}>{remainingAvenants}</strong></span>
+                    <span className='ml-2'>
+                      Restant:{' '}
+                      <strong className={`${reachedMax ? 'text-red-700' : ''}`}>
+                        {remainingAvenants}
+                      </strong>
+                    </span>
                   )}
                 </div>
               )}
               {contract.status !== 'Brouillon' && (
-                <Button onClick={handleAddAvenant} size='sm' variant='outline' disabled={reachedMax}>
+                <Button
+                  onClick={handleAddAvenant}
+                  size='sm'
+                  variant='outline'
+                  disabled={reachedMax}
+                >
                   <Plus className='mr-2 h-4 w-4' />
                   Créer un avenant
                 </Button>

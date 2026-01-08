@@ -84,7 +84,13 @@
       "clause_confidentialite": true,
       "clause_non_concurrence": true
     },
-    "conditions": { "selected": ["COND_CONFIDENTIALITY", "COND_INTELLECTUAL_PROPERTY", "COND_TELEWORK"] },
+    "conditions": {
+      "selected": [
+        "COND_CONFIDENTIALITY",
+        "COND_INTELLECTUAL_PROPERTY",
+        "COND_TELEWORK"
+      ]
+    },
     "signed_document": {
       "url": "/uploads/contracts/CTR-2024-001/signed.pdf",
       "name": "Contrat_CTR-2024-001_Signé.pdf",
@@ -315,7 +321,9 @@
       "clause_confidentialite": true,
       "clause_non_concurrence": true
     },
-    "conditions": { "selected": ["COND_CONFIDENTIALITY", "COND_NON_COMPETE", "COND_MOBILITY"] },
+    "conditions": {
+      "selected": ["COND_CONFIDENTIALITY", "COND_NON_COMPETE", "COND_MOBILITY"]
+    },
     "historique": {
       "created_at": "2024-10-25T10:00:00Z",
       "created_by": "USR-HR-001",

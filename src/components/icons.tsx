@@ -91,7 +91,7 @@ export const Icons = {
   actions: IconAdjustmentsExclamation,
   add: IconPlus,
   administratif: IconFoldersFilled,
-  cashPlus:IconCashPlus,
+  cashPlus: IconCashPlus,
   affectation: IconUserPlus,
   alertTriangle: IconAlertTriangle,
   bank: IconBuildingBank,

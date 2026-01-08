@@ -7,26 +7,32 @@ module.exports = (server, db) => {
       const meta = require('../../mock-data/fraisCategories.json');
       return meta;
     } catch (e) {
-      return { categories: [], kilometerRates: [], currencies: [{ code: 'MAD', rateToMAD: 1 }] };
+      return {
+        categories: [],
+        kilometerRates: [],
+        currencies: [{ code: 'MAD', rateToMAD: 1 }]
+      };
     }
   }
 
   function computeTotals(note, meta) {
     let totalMAD = 0;
-    note.lines = (note.lines || []).map(line => {
+    note.lines = (note.lines || []).map((line) => {
       let amount = Number(line.amount) || 0;
       if (line.kilometers && line.vehicleType) {
-        const kr = (meta.kilometerRates || []).find(k => k.vehicle === line.vehicleType);
+        const kr = (meta.kilometerRates || []).find(
+          (k) => k.vehicle === line.vehicleType
+        );
         if (kr) amount += kr.ratePerKm * Number(line.kilometers);
       }
-      const cat = (meta.categories || []).find(c => c.name === line.category);
+      const cat = (meta.categories || []).find((c) => c.name === line.category);
       if (cat && amount > cat.ceiling) {
         line.approvedAmount = cat.ceiling;
       } else if (typeof line.approvedAmount !== 'number') {
         line.approvedAmount = amount;
       }
       // Always MAD: no conversion
-      totalMAD += (line.approvedAmount || amount);
+      totalMAD += line.approvedAmount || amount;
       return line;
     });
     note.total = Number(totalMAD.toFixed(2));
@@ -37,18 +43,25 @@ module.exports = (server, db) => {
     const prefix = `NDF-${year}-${matricule}-`;
     const items = db.get('notesFrais').value() || [];
     const seqs = items
-      .filter(i => i.matricule === matricule && String(i.number || '').startsWith(prefix))
-      .map(i => parseInt(String(i.number).slice(prefix.length), 10))
-      .filter(n => !isNaN(n));
+      .filter(
+        (i) =>
+          i.matricule === matricule && String(i.number || '').startsWith(prefix)
+      )
+      .map((i) => parseInt(String(i.number).slice(prefix.length), 10))
+      .filter((n) => !isNaN(n));
     const next = (seqs.length ? Math.max(...seqs) : 0) + 1;
     return `${prefix}${String(next).padStart(3, '0')}`;
   }
 
   // Helpers for listing
-  const norm = (s) => String(s || '').replace(/[^A-Za-z0-9]/g, '').toLowerCase();
+  const norm = (s) =>
+    String(s || '')
+      .replace(/[^A-Za-z0-9]/g, '')
+      .toLowerCase();
 
   const resolveEmployee = (note, employeesById, employeesByMat) => {
-    const byId = note.employeeId != null ? employeesById[String(note.employeeId)] : null;
+    const byId =
+      note.employeeId != null ? employeesById[String(note.employeeId)] : null;
     if (byId) return byId;
     if (note.employee && note.employee.id != null) {
       const e = employeesById[String(note.employee.id)];
@@ -61,12 +74,20 @@ module.exports = (server, db) => {
 
   const parseSorting = (req) => {
     let sortBy = req.query.sortBy || req.query.orderBy || null;
-    let sortDir = (req.query.sortDir || req.query.orderDir || 'desc').toLowerCase() === 'desc' ? 'desc' : 'asc';
+    let sortDir =
+      (req.query.sortDir || req.query.orderDir || 'desc').toLowerCase() ===
+      'desc'
+        ? 'desc'
+        : 'asc';
 
     // DataTables style
     const colIndex = req.query['order[0][column]'];
     const dtSortDir = req.query['order[0][dir]'];
-    const candidate = colIndex != null ? (req.query[`columns[${colIndex}][data]`] || req.query[`columns[${colIndex}][name]`]) : null;
+    const candidate =
+      colIndex != null
+        ? req.query[`columns[${colIndex}][data]`] ||
+          req.query[`columns[${colIndex}][name]`]
+        : null;
     if (!sortBy && candidate) sortBy = candidate;
     if (dtSortDir) sortDir = dtSortDir === 'desc' ? 'desc' : 'asc';
 
@@ -91,7 +112,12 @@ module.exports = (server, db) => {
   const isActionAllowed = (status, action) => {
     const map = {
       draft: [], // validation not allowed
-      submitted: ['approve_total', 'approve_partial', 'refuse', 'request_complement'],
+      submitted: [
+        'approve_total',
+        'approve_partial',
+        'refuse',
+        'request_complement'
+      ],
       approved: [],
       approved_partial: [],
       refused: [],
@@ -100,7 +126,8 @@ module.exports = (server, db) => {
     return (map[status] || []).includes(action);
   };
 
-  const canSubmitFrom = (status) => ['draft', 'needs_complement', 'refused'].includes(status);
+  const canSubmitFrom = (status) =>
+    ['draft', 'needs_complement', 'refused'].includes(status);
 
   const nowIso = () => new Date().toISOString();
 
@@ -108,9 +135,11 @@ module.exports = (server, db) => {
   server.get(`/api/admin/${routerName}`, (req, res) => {
     const start = parseInt(req.query.start || '0', 10);
     const length = parseInt(req.query.length || '10', 10);
-    const q = req.query.q || req.query.search || req.query['search[value]'] || '';
+    const q =
+      req.query.q || req.query.search || req.query['search[value]'] || '';
     const status = req.query.status || req.query.statut;
-    const employeeId = req.query.employeeId || req.query.employee || req.query.employe;
+    const employeeId =
+      req.query.employeeId || req.query.employee || req.query.employe;
     const matricule = req.query.matricule;
     const from = req.query.from || req.query.periodStart || req.query.startDate;
     const to = req.query.to || req.query.periodEnd || req.query.endDate;
@@ -121,25 +150,37 @@ module.exports = (server, db) => {
 
     // Build maps for employees
     const employees = db.get('hrEmployees').value() || [];
-    const employeesById = Object.fromEntries(employees.map(e => [String(e.id), e]));
-    const employeesByMat = Object.fromEntries(employees.map(e => [norm(e.matricule), e]));
+    const employeesById = Object.fromEntries(
+      employees.map((e) => [String(e.id), e])
+    );
+    const employeesByMat = Object.fromEntries(
+      employees.map((e) => [norm(e.matricule), e])
+    );
 
     // Load notes and enrich minimally for filters
-    let all = (db.get('notesFrais').value() || []).map(n => ({ ...n }));
+    let all = (db.get('notesFrais').value() || []).map((n) => ({ ...n }));
 
     // Attach totals if missing using lignesFrais when note.lines not present
     const linesAll = db.get('lignesFrais').value() || [];
-    all = all.map(n => {
+    all = all.map((n) => {
       const note = { ...n };
       if (!Array.isArray(note.lines) || note.lines.length === 0) {
-        const lines = linesAll.filter(l => String(l.noteId) === String(note.id));
-        if (lines.length) note.lines = lines.map(l => ({ ...l }));
+        const lines = linesAll.filter(
+          (l) => String(l.noteId) === String(note.id)
+        );
+        if (lines.length) note.lines = lines.map((l) => ({ ...l }));
       }
       computeTotals(note, meta);
       // Attach employee minimal info
       const emp = resolveEmployee(note, employeesById, employeesByMat);
       note.employee = emp
-        ? { id: emp.id, firstName: emp.firstName, lastName: emp.lastName, matricule: emp.matricule, departmentId: emp.departmentId }
+        ? {
+            id: emp.id,
+            firstName: emp.firstName,
+            lastName: emp.lastName,
+            matricule: emp.matricule,
+            departmentId: emp.departmentId
+          }
         : null;
       note.linesCount = Array.isArray(note.lines) ? note.lines.length : 0;
       return note;
@@ -147,19 +188,29 @@ module.exports = (server, db) => {
 
     // Filters
     if (status) {
-      all = all.filter(n => String(n.status).toLowerCase() === String(status).toLowerCase());
+      all = all.filter(
+        (n) => String(n.status).toLowerCase() === String(status).toLowerCase()
+      );
     }
     if (employeeId) {
-      all = all.filter(n => String(n.employeeId) === String(employeeId) || (n.employee && String(n.employee.id) === String(employeeId)));
+      all = all.filter(
+        (n) =>
+          String(n.employeeId) === String(employeeId) ||
+          (n.employee && String(n.employee.id) === String(employeeId))
+      );
     }
     if (matricule) {
       const m = norm(matricule);
-      all = all.filter(n => norm(n.matricule) === m || (n.employee && norm(n.employee.matricule) === m));
+      all = all.filter(
+        (n) =>
+          norm(n.matricule) === m ||
+          (n.employee && norm(n.employee.matricule) === m)
+      );
     }
     if (from || to) {
       const fromDate = from ? new Date(from) : null;
       const toDate = to ? new Date(to) : null;
-      all = all.filter(n => {
+      all = all.filter((n) => {
         const s = n.startDate ? new Date(n.startDate) : null;
         const e = n.endDate ? new Date(n.endDate) : null;
         // Overlap logic: [s,e] overlaps [from,to]
@@ -170,8 +221,15 @@ module.exports = (server, db) => {
     }
     if (q) {
       const nq = norm(q);
-      all = all.filter(n => {
-        const hay = [n.number, n.subject, n.status, n.matricule, n.employee && n.employee.firstName, n.employee && n.employee.lastName]
+      all = all.filter((n) => {
+        const hay = [
+          n.number,
+          n.subject,
+          n.status,
+          n.matricule,
+          n.employee && n.employee.firstName,
+          n.employee && n.employee.lastName
+        ]
           .filter(Boolean)
           .map(norm)
           .join(' ');
@@ -218,7 +276,7 @@ module.exports = (server, db) => {
     const note = { ...item };
     if (!Array.isArray(note.lines) || note.lines.length === 0) {
       const lines = db.get('lignesFrais').filter({ noteId: id }).value();
-      if (lines && lines.length) note.lines = lines.map(l => ({ ...l }));
+      if (lines && lines.length) note.lines = lines.map((l) => ({ ...l }));
     }
 
     computeTotals(note, meta);
@@ -236,8 +294,10 @@ module.exports = (server, db) => {
 
     // compute totals and number
     const meta = readMeta();
-    const employee = (db.get('hrEmployees').find({ id: note.employeeId }).value()) || null;
-    const matricule = note.matricule || (employee && employee.matricule) || 'UNKNOWN';
+    const employee =
+      db.get('hrEmployees').find({ id: note.employeeId }).value() || null;
+    const matricule =
+      note.matricule || (employee && employee.matricule) || 'UNKNOWN';
 
     note.number = nextSeq(matricule, year);
     note.createdAt = now.toISOString();
@@ -287,7 +347,11 @@ module.exports = (server, db) => {
 
     const currentStatus = existing.status || 'draft';
     if (!canSubmitFrom(currentStatus)) {
-      return res.status(400).json({ message: `Impossible de soumettre depuis le statut '${currentStatus}'` });
+      return res
+        .status(400)
+        .json({
+          message: `Impossible de soumettre depuis le statut '${currentStatus}'`
+        });
     }
 
     // Ensure lines present for totals
@@ -295,14 +359,18 @@ module.exports = (server, db) => {
     const note = { ...existing };
     if (!Array.isArray(note.lines) || note.lines.length === 0) {
       const lines = db.get('lignesFrais').filter({ noteId: id }).value();
-      if (Array.isArray(lines)) note.lines = lines.map(l => ({ ...l }));
+      if (Array.isArray(lines)) note.lines = lines.map((l) => ({ ...l }));
     }
 
     // Set status to submitted
     note.status = 'submitted';
     note.updatedAt = nowIso();
     note.history = Array.isArray(note.history) ? note.history : [];
-    note.history.push({ at: note.updatedAt, action: 'SUBMITTED', by: 'system' });
+    note.history.push({
+      at: note.updatedAt,
+      action: 'SUBMITTED',
+      by: 'system'
+    });
 
     computeTotals(note, meta);
 
@@ -321,7 +389,11 @@ module.exports = (server, db) => {
 
     const status = existing.status || 'draft';
     if (!isActionAllowed(status, action)) {
-      return res.status(400).json({ message: `Action '${action}' non permise depuis le statut '${status}'` });
+      return res
+        .status(400)
+        .json({
+          message: `Action '${action}' non permise depuis le statut '${status}'`
+        });
     }
 
     const meta = readMeta();
@@ -329,7 +401,7 @@ module.exports = (server, db) => {
     // Ensure lines
     if (!Array.isArray(note.lines) || note.lines.length === 0) {
       const lines = db.get('lignesFrais').filter({ noteId: id }).value();
-      if (Array.isArray(lines)) note.lines = lines.map(l => ({ ...l }));
+      if (Array.isArray(lines)) note.lines = lines.map((l) => ({ ...l }));
     }
 
     note.history = Array.isArray(note.history) ? note.history : [];
@@ -337,15 +409,25 @@ module.exports = (server, db) => {
 
     if (action === 'approve_total') {
       // Approve all at requested amount
-      note.lines = (note.lines || []).map(l => ({ ...l, approvedAmount: Number(l.amount) || 0 }));
+      note.lines = (note.lines || []).map((l) => ({
+        ...l,
+        approvedAmount: Number(l.amount) || 0
+      }));
       note.status = 'approved';
       note.history.push({ at: ts, action: 'APPROVED', by: 'system' });
     } else if (action === 'approve_partial') {
-      const adjustments = Array.isArray(payload.adjustments) ? payload.adjustments : [];
-      const adjById = Object.fromEntries(adjustments.map(a => [String(a.id), a]));
-      note.lines = (note.lines || []).map(l => {
+      const adjustments = Array.isArray(payload.adjustments)
+        ? payload.adjustments
+        : [];
+      const adjById = Object.fromEntries(
+        adjustments.map((a) => [String(a.id), a])
+      );
+      note.lines = (note.lines || []).map((l) => {
         const a = adjById[String(l.id)];
-        const approvedAmount = a && typeof a.approvedAmount === 'number' ? a.approvedAmount : (Number(l.approvedAmount ?? l.amount) || 0);
+        const approvedAmount =
+          a && typeof a.approvedAmount === 'number'
+            ? a.approvedAmount
+            : Number(l.approvedAmount ?? l.amount) || 0;
         const managerComment = (a && a.managerComment) || l.managerComment;
         return { ...l, approvedAmount, managerComment };
       });
@@ -354,19 +436,35 @@ module.exports = (server, db) => {
     } else if (action === 'refuse') {
       const reason = String(payload.reason || '').trim();
       if (!reason) {
-        return res.status(400).json({ message: 'La raison du refus est requise' });
+        return res
+          .status(400)
+          .json({ message: 'La raison du refus est requise' });
       }
       note.refuseReason = reason;
       note.status = 'refused';
-      note.history.push({ at: ts, action: 'REFUSED', by: 'system', comment: reason });
+      note.history.push({
+        at: ts,
+        action: 'REFUSED',
+        by: 'system',
+        comment: reason
+      });
     } else if (action === 'request_complement') {
       const comment = String(payload.comment || '').trim();
       if (!comment) {
-        return res.status(400).json({ message: 'Le commentaire est requis pour la demande de complément' });
+        return res
+          .status(400)
+          .json({
+            message: 'Le commentaire est requis pour la demande de complément'
+          });
       }
       note.managerComment = comment;
       note.status = 'needs_complement';
-      note.history.push({ at: ts, action: 'NEEDS_COMPLEMENT', by: 'system', comment });
+      note.history.push({
+        at: ts,
+        action: 'NEEDS_COMPLEMENT',
+        by: 'system',
+        comment
+      });
     } else {
       return res.status(400).json({ message: 'Action inconnue' });
     }
@@ -381,10 +479,17 @@ module.exports = (server, db) => {
 
     // Also sync lignesFrais collection if exists
     try {
-      const currentLines = db.get('lignesFrais').filter({ noteId: id }).value() || [];
+      const currentLines =
+        db.get('lignesFrais').filter({ noteId: id }).value() || [];
       if (currentLines && currentLines.length) {
-        (note.lines || []).forEach(l => {
-          db.get('lignesFrais').find({ noteId: id, id: l.id }).assign({ approvedAmount: l.approvedAmount, managerComment: l.managerComment }).write();
+        (note.lines || []).forEach((l) => {
+          db.get('lignesFrais')
+            .find({ noteId: id, id: l.id })
+            .assign({
+              approvedAmount: l.approvedAmount,
+              managerComment: l.managerComment
+            })
+            .write();
         });
       }
     } catch (_) {}

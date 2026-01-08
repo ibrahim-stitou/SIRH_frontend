@@ -16,7 +16,9 @@ module.exports = function registerAvancesRoutes(server, db) {
       all = all.filter((avance) => {
         const fieldVal = avance[key];
         if (fieldVal === undefined || fieldVal === null) return false;
-        return String(fieldVal).toLowerCase().includes(String(value).toLowerCase());
+        return String(fieldVal)
+          .toLowerCase()
+          .includes(String(value).toLowerCase());
       });
     });
     const recordsFiltered = all.length;
@@ -31,7 +33,9 @@ module.exports = function registerAvancesRoutes(server, db) {
         if (typeof av === 'number' && typeof bv === 'number') {
           return sortDir === 'asc' ? av - bv : bv - av;
         }
-        return sortDir === 'asc' ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
+        return sortDir === 'asc'
+          ? String(av).localeCompare(String(bv))
+          : String(bv).localeCompare(String(av));
       });
     }
     const recordsTotal = db.get('avances').value()?.length || 0;
@@ -40,10 +44,12 @@ module.exports = function registerAvancesRoutes(server, db) {
     );
     const allWithEmployee = all.map((avance) => {
       const emp = employeesById[String(avance.employe_id)] || null;
-      const employee = emp ? {
-        matricule: emp.matricule,
-        fullName: `${emp.firstName || ''} ${emp.lastName || ''}`.trim()
-      } : null;
+      const employee = emp
+        ? {
+            matricule: emp.matricule,
+            fullName: `${emp.firstName || ''} ${emp.lastName || ''}`.trim()
+          }
+        : null;
       return { ...avance, employee };
     });
     all = allWithEmployee;
@@ -60,16 +66,25 @@ module.exports = function registerAvancesRoutes(server, db) {
 
   // GET /avances/:id - Détail avance
   server.get('/avances/:id', (req, res) => {
-    const avance = db.get('avances').find({ id: parseInt(req.params.id) }).value();
+    const avance = db
+      .get('avances')
+      .find({ id: parseInt(req.params.id) })
+      .value();
     if (!avance) {
-      return res.status(404).json({ status: 'error', message: 'Avance non trouvée' });
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Avance non trouvée' });
     }
     // Utiliser la table users pour les infos utilisateur
     const usersById = Object.fromEntries(
       (db.get('users').value() || []).map((u) => [String(u.id), u])
     );
-    const creerParUser = avance.creer_par ? usersById[String(avance.creer_par)] : null;
-    const valideParUser = avance.valide_par ? usersById[String(avance.valide_par)] : null;
+    const creerParUser = avance.creer_par
+      ? usersById[String(avance.creer_par)]
+      : null;
+    const valideParUser = avance.valide_par
+      ? usersById[String(avance.valide_par)]
+      : null;
     // Enrichir avec infos employé (comme dans le listing)
     const employeesById = Object.fromEntries(
       (db.get('hrEmployees').value() || []).map((e) => [String(e.id), e])
@@ -86,14 +101,18 @@ module.exports = function registerAvancesRoutes(server, db) {
       data: {
         ...avance,
         employee,
-        creer_par_user: creerParUser ? {
-          id: creerParUser.id,
-          fullName: creerParUser.full_name || ''
-        } : null,
-        valide_par_user: valideParUser ? {
-          id: valideParUser.id,
-          fullName: valideParUser.full_name || ''
-        } : null
+        creer_par_user: creerParUser
+          ? {
+              id: creerParUser.id,
+              fullName: creerParUser.full_name || ''
+            }
+          : null,
+        valide_par_user: valideParUser
+          ? {
+              id: valideParUser.id,
+              fullName: valideParUser.full_name || ''
+            }
+          : null
       }
     });
   });
@@ -104,13 +123,22 @@ module.exports = function registerAvancesRoutes(server, db) {
     // Validate against max avances per year if available
     try {
       const paramsList = db.get('parametreMaxGeneral').value() || [];
-      const cfg = Array.isArray(paramsList) && paramsList.length > 0 ? paramsList[0] : null;
+      const cfg =
+        Array.isArray(paramsList) && paramsList.length > 0
+          ? paramsList[0]
+          : null;
       const maxAvances = cfg?.max_avances_par_an;
-      if (typeof maxAvances === 'number' && body.employe_id && body.date_demande) {
+      if (
+        typeof maxAvances === 'number' &&
+        body.employe_id &&
+        body.date_demande
+      ) {
         const year = new Date(body.date_demande).getFullYear();
         const countThisYear = (db.get('avances').value() || []).filter((a) => {
           if (String(a.employe_id) !== String(body.employe_id)) return false;
-          const y = a.date_demande ? new Date(a.date_demande).getFullYear() : null;
+          const y = a.date_demande
+            ? new Date(a.date_demande).getFullYear()
+            : null;
           return y === year;
         }).length;
         if (countThisYear >= maxAvances) {
@@ -137,55 +165,90 @@ module.exports = function registerAvancesRoutes(server, db) {
 
   // PUT /avances/:id - Modifier une avance
   server.put('/avances/:id', (req, res) => {
-    const avance = db.get('avances').find({ id: parseInt(req.params.id) }).value();
+    const avance = db
+      .get('avances')
+      .find({ id: parseInt(req.params.id) })
+      .value();
     if (!avance) {
-      return res.status(404).json({ status: 'error', message: 'Avance non trouvée' });
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Avance non trouvée' });
     }
-    const updatedAvance = { ...avance, ...req.body, updated_at: new Date().toISOString() };
-    db.get('avances').find({ id: parseInt(req.params.id) }).assign(updatedAvance).write();
+    const updatedAvance = {
+      ...avance,
+      ...req.body,
+      updated_at: new Date().toISOString()
+    };
+    db.get('avances')
+      .find({ id: parseInt(req.params.id) })
+      .assign(updatedAvance)
+      .write();
     return res.json({ status: 'success', data: updatedAvance });
   });
 
   // DELETE /avances/:id - Supprimer une avance
   server.delete('/avances/:id', (req, res) => {
-    const avance = db.get('avances').find({ id: parseInt(req.params.id) }).value();
+    const avance = db
+      .get('avances')
+      .find({ id: parseInt(req.params.id) })
+      .value();
     if (!avance) {
-      return res.status(404).json({ status: 'error', message: 'Avance non trouvée' });
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Avance non trouvée' });
     }
-    db.get('avances').remove({ id: parseInt(req.params.id) }).write();
+    db.get('avances')
+      .remove({ id: parseInt(req.params.id) })
+      .write();
     return res.status(204).end();
   });
 
   // POST /avances/:id/valider - Valider une avance
   server.post('/avances/:id/valider', (req, res) => {
-    const avance = db.get('avances').find({ id: parseInt(req.params.id) }).value();
+    const avance = db
+      .get('avances')
+      .find({ id: parseInt(req.params.id) })
+      .value();
     if (!avance) {
-      return res.status(404).json({ status: 'error', message: 'Avance non trouvée' });
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Avance non trouvée' });
     }
-    db.get('avances').find({ id: parseInt(req.params.id) }).assign({
-      // Statut unifié
-      statut: 'Valide',
-      valide_par: req.body.valide_par || 'system',
-      date_validation: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }).write();
+    db.get('avances')
+      .find({ id: parseInt(req.params.id) })
+      .assign({
+        // Statut unifié
+        statut: 'Valide',
+        valide_par: req.body.valide_par || 'system',
+        date_validation: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .write();
     return res.json({ status: 'success', message: 'Avance validée' });
   });
 
   // POST /avances/:id/refuse - Refuser une avance
   server.post('/avances/:id/refuse', (req, res) => {
-    const avance = db.get('avances').find({ id: parseInt(req.params.id) }).value();
+    const avance = db
+      .get('avances')
+      .find({ id: parseInt(req.params.id) })
+      .value();
     if (!avance) {
-      return res.status(404).json({ status: 'error', message: 'Avance non trouvée' });
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Avance non trouvée' });
     }
-    db.get('avances').find({ id: parseInt(req.params.id) }).assign({
-      // Statut unifié
-      statut: 'Refuse',
-      motif_refus: req.body.motif_refus || '',
-      valide_par: req.body.valide_par || 'system',
-      date_validation: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }).write();
+    db.get('avances')
+      .find({ id: parseInt(req.params.id) })
+      .assign({
+        // Statut unifié
+        statut: 'Refuse',
+        motif_refus: req.body.motif_refus || '',
+        valide_par: req.body.valide_par || 'system',
+        date_validation: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .write();
     return res.json({ status: 'success', message: 'Avance refusée' });
   });
 
@@ -199,6 +262,9 @@ module.exports = function registerAvancesRoutes(server, db) {
       const y = a.date_demande ? new Date(a.date_demande).getFullYear() : null;
       return y === yearParam;
     }).length;
-    return res.json({ status: 'success', data: { employeeId, year: yearParam, count } });
+    return res.json({
+      status: 'success',
+      data: { employeeId, year: yearParam, count }
+    });
   });
 };

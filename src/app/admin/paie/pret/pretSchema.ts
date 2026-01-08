@@ -4,12 +4,14 @@ export const PretSchema = z.object({
   id: z.number().optional(),
   employe_id: z.number({ required_error: "L'employé est requis" }),
   date_demande: z.string({ required_error: 'La date de demande est requise' }),
-  statut: z.enum(
-    ['Brouillon', 'En attente', 'Validé', 'Refusé', 'En cours', 'Soldé'],
-    {
-      required_error: 'Le statut est requis'
-    }
-  ).optional(),
+  statut: z
+    .enum(
+      ['Brouillon', 'En attente', 'Validé', 'Refusé', 'En cours', 'Soldé'],
+      {
+        required_error: 'Le statut est requis'
+      }
+    )
+    .optional(),
   creer_par: z.number().optional(),
   valide_par: z.number().nullable().optional(),
   date_validation: z.string().nullable().optional(),

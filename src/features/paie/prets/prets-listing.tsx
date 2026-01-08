@@ -11,7 +11,11 @@ import {
   UseTableReturn
 } from '@/components/custom/data-table/types';
 import { apiRoutes } from '@/config/apiRoutes';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip';
 import apiClient from '@/lib/api';
 import {
   Dialog,
@@ -26,22 +30,29 @@ import type { PretInterface, PretStatut } from '@/types/pret';
 type PretRow = PretInterface;
 
 function StatutBadge({ statut }: { statut: PretStatut | string }) {
-  const map: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }>
-    = {
-      'Brouillon': { label: 'Brouillon', variant: 'outline' },
-      'En attente': { label: 'En attente', variant: 'default' },
-      'Validé': { label: 'Validé', variant: 'secondary' },
-      'Refusé': { label: 'Refusé', variant: 'destructive' },
-      'En cours': { label: 'En cours', variant: 'default' },
-      'Soldé': { label: 'Soldé', variant: 'secondary' }
-    };
+  const map: Record<
+    string,
+    {
+      label: string;
+      variant: 'default' | 'secondary' | 'destructive' | 'outline';
+    }
+  > = {
+    Brouillon: { label: 'Brouillon', variant: 'outline' },
+    'En attente': { label: 'En attente', variant: 'default' },
+    Validé: { label: 'Validé', variant: 'secondary' },
+    Refusé: { label: 'Refusé', variant: 'destructive' },
+    'En cours': { label: 'En cours', variant: 'default' },
+    Soldé: { label: 'Soldé', variant: 'secondary' }
+  };
   const cfg = map[statut] || { label: String(statut), variant: 'outline' };
   return <Badge variant={cfg.variant}>{cfg.label}</Badge>;
 }
 
 export default function PretsListing() {
   const router = useRouter();
-  const [tableInstance, setTableInstance] = useState<Partial<UseTableReturn<PretRow>> | null>(null);
+  const [tableInstance, setTableInstance] = useState<Partial<
+    UseTableReturn<PretRow>
+  > | null>(null);
   const [loadingDelete, setLoadingDelete] = useState<number | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
   const [employees, setEmployees] = useState<
@@ -54,7 +65,8 @@ export default function PretsListing() {
       .get(apiRoutes.admin.employees.simpleList)
       .then((res) => {
         const opts = (res.data?.data || res.data || []).map((e: any) => ({
-          label: `${e.firstName ?? ''} ${e.lastName ?? ''}${e.matricule ? ' — ' + e.matricule : ''}`.trim(),
+          label:
+            `${e.firstName ?? ''} ${e.lastName ?? ''}${e.matricule ? ' — ' + e.matricule : ''}`.trim(),
           value: e.id
         }));
         if (mounted) setEmployees(opts);
@@ -63,7 +75,8 @@ export default function PretsListing() {
         try {
           const res = await apiClient.get(apiRoutes.admin.employees.list);
           const opts = (res.data?.data || res.data || []).map((e: any) => ({
-            label: `${e.firstName ?? ''} ${e.lastName ?? ''}${e.matricule ? ' — ' + e.matricule : ''}`.trim(),
+            label:
+              `${e.firstName ?? ''} ${e.lastName ?? ''}${e.matricule ? ' — ' + e.matricule : ''}`.trim(),
             value: e.id
           }));
           if (mounted) setEmployees(opts);
@@ -103,7 +116,9 @@ export default function PretsListing() {
       render: (_val, row: any) => (
         <div className='flex flex-col'>
           <div className='font-medium'>{row.employee?.matricule}</div>
-          <div className='text-sm text-muted-foreground'>{row.employee?.fullName}</div>
+          <div className='text-muted-foreground text-sm'>
+            {row.employee?.fullName}
+          </div>
         </div>
       )
     },
@@ -153,7 +168,9 @@ export default function PretsListing() {
               <Button
                 variant='outline'
                 className='h-8 w-8 p-1.5'
-                onClick={() => router.push(`/admin/paie/pret/${row.id}/details`)}
+                onClick={() =>
+                  router.push(`/admin/paie/pret/${row.id}/details`)
+                }
               >
                 <Eye className='h-4 w-4' />
               </Button>
@@ -167,7 +184,9 @@ export default function PretsListing() {
                   <Button
                     variant='outline'
                     className='h-8 w-8 p-1.5'
-                    onClick={() => router.push(`/admin/paie/pret/${row.id}/modifier`)}
+                    onClick={() =>
+                      router.push(`/admin/paie/pret/${row.id}/modifier`)
+                    }
                   >
                     <Pencil className='h-4 w-4' />
                   </Button>
@@ -231,10 +250,10 @@ export default function PretsListing() {
 
   return (
     <div className='flex flex-1 flex-col space-y-4'>
-      <div className='flex justify-between mb-6'>
+      <div className='mb-6 flex justify-between'>
         <Heading
           title={'Gestion des prêts'}
-          description={"Liste des demandes de prêt en cours."}
+          description={'Liste des demandes de prêt en cours.'}
         />
         <Button onClick={() => router.push('/admin/paie/pret/ajouter')}>
           <Plus className='mr-2 h-4 w-4' />
@@ -247,12 +266,17 @@ export default function PretsListing() {
         filters={filters}
         onInit={(instance) => setTableInstance(instance)}
       />
-      <Dialog open={!!confirmDeleteId} onOpenChange={(o) => !o && setConfirmDeleteId(null)}>
+      <Dialog
+        open={!!confirmDeleteId}
+        onOpenChange={(o) => !o && setConfirmDeleteId(null)}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Supprimer le prêt (brouillon)&nbsp;?</DialogTitle>
           </DialogHeader>
-          <p className='text-muted-foreground text-sm'>Cette action est irréversible.</p>
+          <p className='text-muted-foreground text-sm'>
+            Cette action est irréversible.
+          </p>
           <DialogFooter>
             <Button variant='outline' onClick={() => setConfirmDeleteId(null)}>
               Annuler

@@ -2,11 +2,22 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { getFrais, validateFrais, submitFrais, deleteFrais } from '@/services/frais';
+import {
+  getFrais,
+  validateFrais,
+  submitFrais,
+  deleteFrais
+} from '@/services/frais';
 import { NoteDeFrais } from '@/types/frais';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -19,7 +30,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialogTitle
 } from '@/components/ui/alert-dialog';
 import {
   Table,
@@ -27,7 +38,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
+  TableRow
 } from '@/components/ui/table';
 import {
   CheckCircle2,
@@ -44,7 +55,7 @@ import {
   CheckCheck,
   Ban,
   AlertTriangle,
-  Trash2,
+  Trash2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -60,33 +71,33 @@ const statusConfig = {
   draft: {
     label: 'Brouillon',
     icon: FileText,
-    color: 'bg-gray-100 text-gray-800 border-gray-200',
+    color: 'bg-gray-100 text-gray-800 border-gray-200'
   },
   submitted: {
     label: 'En attente',
     icon: Clock,
-    color: 'bg-blue-100 text-blue-800 border-blue-200',
+    color: 'bg-blue-100 text-blue-800 border-blue-200'
   },
   approved: {
     label: 'Approuvée',
     icon: CheckCircle2,
-    color: 'bg-green-100 text-green-800 border-green-200',
+    color: 'bg-green-100 text-green-800 border-green-200'
   },
   approved_partial: {
     label: 'Approuvée partiellement',
     icon: AlertCircle,
-    color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    color: 'bg-yellow-100 text-yellow-800 border-yellow-200'
   },
   refused: {
     label: 'Refusée',
     icon: XCircle,
-    color: 'bg-red-100 text-red-800 border-red-200',
+    color: 'bg-red-100 text-red-800 border-red-200'
   },
   needs_complement: {
     label: 'Complément requis',
     icon: AlertTriangle,
-    color: 'bg-orange-100 text-orange-800 border-orange-200',
-  },
+    color: 'bg-orange-100 text-orange-800 border-orange-200'
+  }
 };
 
 export default function FraisDetails({ id }: FraisDetailsProps) {
@@ -106,7 +117,9 @@ export default function FraisDetails({ id }: FraisDetailsProps) {
   // Form states
   const [refuseReason, setRefuseReason] = useState('');
   const [complementReason, setComplementReason] = useState('');
-  const [lineAdjustments, setLineAdjustments] = useState<Record<number, { approvedAmount: number; comment: string }>>({});
+  const [lineAdjustments, setLineAdjustments] = useState<
+    Record<number, { approvedAmount: number; comment: string }>
+  >({});
 
   const loadNote = useCallback(async () => {
     try {
@@ -115,11 +128,14 @@ export default function FraisDetails({ id }: FraisDetailsProps) {
       setNote(data);
 
       // Initialize line adjustments
-      const initialAdjustments: Record<number, { approvedAmount: number; comment: string }> = {};
+      const initialAdjustments: Record<
+        number,
+        { approvedAmount: number; comment: string }
+      > = {};
       (data.lines || []).forEach((line) => {
         initialAdjustments[line.id] = {
           approvedAmount: line.approvedAmount ?? line.amount,
-          comment: line.managerComment || '',
+          comment: line.managerComment || ''
         };
       });
       setLineAdjustments(initialAdjustments);
@@ -145,7 +161,7 @@ export default function FraisDetails({ id }: FraisDetailsProps) {
       toast.success('Note de frais approuvée avec succès');
       setShowApproveDialog(false);
     } catch (e: any) {
-      toast.error(e.message || 'Erreur lors de l\'approbation');
+      toast.error(e.message || "Erreur lors de l'approbation");
     } finally {
       setActionLoading(false);
     }
@@ -157,20 +173,20 @@ export default function FraisDetails({ id }: FraisDetailsProps) {
     const adjustments = note.lines.map((line) => ({
       id: line.id,
       approvedAmount: lineAdjustments[line.id]?.approvedAmount ?? line.amount,
-      managerComment: lineAdjustments[line.id]?.comment || undefined,
+      managerComment: lineAdjustments[line.id]?.comment || undefined
     }));
 
     setActionLoading(true);
     try {
       const updated = await validateFrais(id, {
         action: 'approve_partial',
-        adjustments,
+        adjustments
       });
       setNote(updated);
       toast.success('Note de frais approuvée partiellement');
       setShowPartialDialog(false);
     } catch (e: any) {
-      toast.error(e.message || 'Erreur lors de l\'approbation partielle');
+      toast.error(e.message || "Erreur lors de l'approbation partielle");
     } finally {
       setActionLoading(false);
     }
@@ -186,7 +202,7 @@ export default function FraisDetails({ id }: FraisDetailsProps) {
     try {
       const updated = await validateFrais(id, {
         action: 'refuse',
-        reason: refuseReason,
+        reason: refuseReason
       });
       setNote(updated);
       toast.success('Note de frais refusée');
@@ -209,10 +225,10 @@ export default function FraisDetails({ id }: FraisDetailsProps) {
     try {
       const updated = await validateFrais(id, {
         action: 'request_complement',
-        comment: complementReason,
+        comment: complementReason
       });
       setNote(updated);
-      toast.success('Complément d\'information demandé');
+      toast.success("Complément d'information demandé");
       setShowComplementDialog(false);
       setComplementReason('');
     } catch (e: any) {
@@ -239,7 +255,7 @@ export default function FraisDetails({ id }: FraisDetailsProps) {
     return new Intl.NumberFormat('fr-MA', {
       style: 'currency',
       currency: 'MAD',
-      maximumFractionDigits: 2,
+      maximumFractionDigits: 2
     }).format(amount);
   };
 
@@ -254,10 +270,10 @@ export default function FraisDetails({ id }: FraisDetailsProps) {
   if (loading) {
     return (
       <div className='flex items-center justify-center py-12'>
-        <div className='animate-pulse space-y-4 w-full'>
-          <div className='h-8 bg-gray-200 rounded w-1/4'></div>
-          <div className='h-32 bg-gray-200 rounded'></div>
-          <div className='h-64 bg-gray-200 rounded'></div>
+        <div className='w-full animate-pulse space-y-4'>
+          <div className='h-8 w-1/4 rounded bg-gray-200'></div>
+          <div className='h-32 rounded bg-gray-200'></div>
+          <div className='h-64 rounded bg-gray-200'></div>
         </div>
       </div>
     );
@@ -273,8 +289,14 @@ export default function FraisDetails({ id }: FraisDetailsProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className='text-sm text-muted-foreground'>{error || 'Note de frais introuvable'}</p>
-          <Button variant='outline' className='mt-4' onClick={() => router.push('/admin/paie/frais')}>
+          <p className='text-muted-foreground text-sm'>
+            {error || 'Note de frais introuvable'}
+          </p>
+          <Button
+            variant='outline'
+            className='mt-4'
+            onClick={() => router.push('/admin/paie/frais')}
+          >
             <ArrowLeft className='mr-2 h-4 w-4' />
             Retour à la liste
           </Button>
@@ -284,392 +306,480 @@ export default function FraisDetails({ id }: FraisDetailsProps) {
   }
 
   // Safe to compute derived values now that 'note' is ensured non-null
-  const config = statusConfig[note.status as keyof typeof statusConfig] || statusConfig.draft;
+  const config =
+    statusConfig[note.status as keyof typeof statusConfig] ||
+    statusConfig.draft;
   const StatusIcon = config.icon;
   const lines = Array.isArray(note.lines) ? note.lines : [];
   const totalApproved = lines.reduce(
-    (sum, line) => sum + (lineAdjustments[line.id]?.approvedAmount ?? line.approvedAmount ?? line.amount),
+    (sum, line) =>
+      sum +
+      (lineAdjustments[line.id]?.approvedAmount ??
+        line.approvedAmount ??
+        line.amount),
     0
   );
   const canValidate = note.status === 'submitted';
-  const canSubmit = note.status === 'draft' || note.status === 'needs_complement' || note.status === 'refused';
+  const canSubmit =
+    note.status === 'draft' ||
+    note.status === 'needs_complement' ||
+    note.status === 'refused';
 
   return (
     <PageContainer>
-      <div className="flex flex-1 flex-col space-y-6">
-      {/* Manager feedback callouts */}
-      {note.status === 'needs_complement' && note.managerComment && (
-        <div className='border border-orange-200 bg-orange-50 text-orange-800 rounded-md p-3'>
-          <div className='font-semibold mb-1'>Complément requis</div>
-          <div className='text-sm'>{note.managerComment}</div>
-        </div>
-      )}
-      {note.status === 'refused' && note.refuseReason && (
-        <div className='border border-red-200 bg-red-50 text-red-800 rounded-md p-3'>
-          <div className='font-semibold mb-1'>Raison du refus</div>
-          <div className='text-sm'>{note.refuseReason}</div>
-        </div>
-      )}
-      <div className='flex items-center justify-between mb-6'>
-        <Heading
-          title='Détail de la note de frais'
-          description='Visualisation et validation de la note de frais'
-        />
-        <div className='flex items-center gap-2'>
-          <Button variant='outline' onClick={() => router.push('/admin/paie/frais')}>
-            <ArrowLeft className='mr-2 h-4 w-4' />
-            Retour
-          </Button>
-
-          {/* Action buttons for submitted status */}
-          {canValidate && (
-            <>
-              <Button
-                onClick={() => setShowApproveDialog(true)}
-                variant='default'
-                disabled={actionLoading}
-              >
-                <CheckCheck className='mr-2 h-4 w-4' />
-                Approuver tout
-              </Button>
-              <Button
-                onClick={() => setShowPartialDialog(true)}
-                variant='secondary'
-                disabled={actionLoading}
-              >
-                <AlertCircle className='mr-2 h-4 w-4' />
-                Approuver partiellement
-              </Button>
-              <Button
-                onClick={() => setShowComplementDialog(true)}
-                variant='outline'
-                disabled={actionLoading}
-              >
-                <MessageSquare className='mr-2 h-4 w-4' />
-                Demander complément
-              </Button>
-              <Button
-                onClick={() => setShowRefuseDialog(true)}
-                variant='destructive'
-                disabled={actionLoading}
-              >
-                <Ban className='mr-2 h-4 w-4' />
-                Refuser
-              </Button>
-            </>
-          )}
-
-          {/* Submit button for draft/refused/needs_complement */}
-          {canSubmit && (
-            <Button onClick={handleSubmitNote} disabled={actionLoading}>
-              {note.status === 'refused' || note.status === 'needs_complement' ? 'Renvoyer' : 'Soumettre'}
+      <div className='flex flex-1 flex-col space-y-6'>
+        {/* Manager feedback callouts */}
+        {note.status === 'needs_complement' && note.managerComment && (
+          <div className='rounded-md border border-orange-200 bg-orange-50 p-3 text-orange-800'>
+            <div className='mb-1 font-semibold'>Complément requis</div>
+            <div className='text-sm'>{note.managerComment}</div>
+          </div>
+        )}
+        {note.status === 'refused' && note.refuseReason && (
+          <div className='rounded-md border border-red-200 bg-red-50 p-3 text-red-800'>
+            <div className='mb-1 font-semibold'>Raison du refus</div>
+            <div className='text-sm'>{note.refuseReason}</div>
+          </div>
+        )}
+        <div className='mb-6 flex items-center justify-between'>
+          <Heading
+            title='Détail de la note de frais'
+            description='Visualisation et validation de la note de frais'
+          />
+          <div className='flex items-center gap-2'>
+            <Button
+              variant='outline'
+              onClick={() => router.push('/admin/paie/frais')}
+            >
+              <ArrowLeft className='mr-2 h-4 w-4' />
+              Retour
             </Button>
-          )}
 
-          {/* Edit button for draft status */}
-          {note.status === 'draft' && (
-            <>
-              <Button onClick={() => router.push(`/admin/paie/frais/${note.id}/modifier`)}>
-                <Edit className='mr-2 h-4 w-4' />
-                Modifier
+            {/* Action buttons for submitted status */}
+            {canValidate && (
+              <>
+                <Button
+                  onClick={() => setShowApproveDialog(true)}
+                  variant='default'
+                  disabled={actionLoading}
+                >
+                  <CheckCheck className='mr-2 h-4 w-4' />
+                  Approuver tout
+                </Button>
+                <Button
+                  onClick={() => setShowPartialDialog(true)}
+                  variant='secondary'
+                  disabled={actionLoading}
+                >
+                  <AlertCircle className='mr-2 h-4 w-4' />
+                  Approuver partiellement
+                </Button>
+                <Button
+                  onClick={() => setShowComplementDialog(true)}
+                  variant='outline'
+                  disabled={actionLoading}
+                >
+                  <MessageSquare className='mr-2 h-4 w-4' />
+                  Demander complément
+                </Button>
+                <Button
+                  onClick={() => setShowRefuseDialog(true)}
+                  variant='destructive'
+                  disabled={actionLoading}
+                >
+                  <Ban className='mr-2 h-4 w-4' />
+                  Refuser
+                </Button>
+              </>
+            )}
+
+            {/* Submit button for draft/refused/needs_complement */}
+            {canSubmit && (
+              <Button onClick={handleSubmitNote} disabled={actionLoading}>
+                {note.status === 'refused' || note.status === 'needs_complement'
+                  ? 'Renvoyer'
+                  : 'Soumettre'}
               </Button>
-              <Button
-                onClick={() => setShowDeleteDialog(true)}
-                variant='destructive'
-                disabled={actionLoading}
-              >
-                <Trash2 className='mr-2 h-4 w-4' />
-                Supprimer
-              </Button>
-            </>
-          )}
+            )}
+
+            {/* Edit button for draft status */}
+            {note.status === 'draft' && (
+              <>
+                <Button
+                  onClick={() =>
+                    router.push(`/admin/paie/frais/${note.id}/modifier`)
+                  }
+                >
+                  <Edit className='mr-2 h-4 w-4' />
+                  Modifier
+                </Button>
+                <Button
+                  onClick={() => setShowDeleteDialog(true)}
+                  variant='destructive'
+                  disabled={actionLoading}
+                >
+                  <Trash2 className='mr-2 h-4 w-4' />
+                  Supprimer
+                </Button>
+              </>
+            )}
+          </div>
         </div>
-      </div>
-      <Card>
-        <CardHeader>
-          <div className='flex items-start justify-between'>
-            <div className='space-y-1'>
-              <CardTitle className='text-2xl font-bold flex items-center gap-3'>
-                <FileText className='h-6 w-6 text-primary' />
-                {note.number}
-              </CardTitle>
-              <CardDescription className='text-base'>{note.subject}</CardDescription>
-            </div>
-            <Badge className={`${config.color} border px-3 py-1 text-sm font-medium flex items-center gap-2`}>
-              <StatusIcon className='h-4 w-4' />
-              {config.label}
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
-            <div className='flex items-start gap-3 p-3 rounded-lg bg-muted/50'>
-              <User className='h-5 w-5 text-muted-foreground mt-0.5' />
-              <div>
-                <p className='text-xs text-muted-foreground font-medium'>Employé</p>
-                <p className='text-sm font-semibold mt-1'>{note.matricule}</p>
-              </div>
-            </div>
-            <div className='flex items-start gap-3 p-3 rounded-lg bg-muted/50'>
-              <Calendar className='h-5 w-5 text-muted-foreground mt-0.5' />
-              <div>
-                <p className='text-xs text-muted-foreground font-medium'>Période</p>
-                <p className='text-sm font-semibold mt-1'>
-                  {formatDate(note.startDate)} - {formatDate(note.endDate)}
-                </p>
-              </div>
-            </div>
-            <div className='flex items-start gap-3 p-3 rounded-lg bg-muted/50'>
-              <DollarSign className='h-5 w-5 text-muted-foreground mt-0.5' />
-              <div>
-                <p className='text-xs text-muted-foreground font-medium'>Montant demandé</p>
-                <p className='text-sm font-semibold mt-1'>{formatCurrency(note.total ?? 0)}</p>
-              </div>
-            </div>
-            <div className='flex items-start gap-3 p-3 rounded-lg bg-primary/10'>
-              <CheckCircle2 className='h-5 w-5 text-primary mt-0.5' />
-              <div>
-                <p className='text-xs text-muted-foreground font-medium'>Montant approuvé</p>
-                <p className='text-sm font-bold text-primary mt-1'>{formatCurrency(totalApproved)}</p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Lines Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle className='text-lg flex items-center gap-2'>
-            <Edit className='h-5 w-5' />
-            Lignes de frais ({lines.length})
-          </CardTitle>
-          <CardDescription>Détail et validation des dépenses</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Catégorie</TableHead>
-                <TableHead className='text-right'>Montant demandé</TableHead>
-                <TableHead className='text-right'>Montant approuvé</TableHead>
-                <TableHead>Commentaire employé</TableHead>
-                <TableHead>Commentaire manager</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {lines.map((line) => (
-                <TableRow key={line.id}>
-                  <TableCell className='font-medium'>{formatDate(line.date)}</TableCell>
-                  <TableCell>
-                    <Badge variant='outline'>{line.category}</Badge>
-                  </TableCell>
-                  <TableCell className='text-right font-medium'>{formatCurrency(line.amount)}</TableCell>
-                  <TableCell className='text-right'>
-                    {canValidate ? (
-                      <Input
-                        type='number'
-                        value={lineAdjustments[line.id]?.approvedAmount ?? line.amount}
-                        onChange={(e) =>
-                          setLineAdjustments({
-                            ...lineAdjustments,
-                            [line.id]: {
-                              ...lineAdjustments[line.id],
-                              approvedAmount: Number(e.target.value),
-                            },
-                          })
-                        }
-                        className='w-28 text-right'
-                        step='0.01'
-                      />
-                    ) : (
-                      <span className='font-semibold text-primary'>
-                        {formatCurrency(line.approvedAmount ?? line.amount)}
-                      </span>
-                    )}
-                  </TableCell>
-                  <TableCell className='max-w-xs'>
-                    <p className='text-sm text-muted-foreground truncate'>{line.comment || '-'}</p>
-                  </TableCell>
-                  <TableCell className='max-w-xs'>
-                    {canValidate ? (
-                      <Input
-                        value={lineAdjustments[line.id]?.comment ?? ''}
-                        onChange={(e) =>
-                          setLineAdjustments({
-                            ...lineAdjustments,
-                            [line.id]: {
-                              ...lineAdjustments[line.id],
-                              comment: e.target.value,
-                            },
-                          })
-                        }
-                        placeholder='Commentaire manager'
-                        className='w-full'
-                      />
-                    ) : (
-                      <p className='text-sm'>{line.managerComment || '-'}</p>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-
-          <Separator className='my-4' />
-
-          <div className='flex justify-between items-center'>
-            <p className='text-sm text-muted-foreground'>
-              {lines.length} ligne{lines.length > 1 ? 's' : ''}
-            </p>
-            <div className='text-right'>
-              <p className='text-sm text-muted-foreground'>Total à approuver</p>
-              <p className='text-2xl font-bold text-primary'>{formatCurrency(totalApproved)}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* History */}
-      {note.history && note.history.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className='text-lg flex items-center gap-2'>
-              <Clock className='h-5 w-5' />
-              Historique
-            </CardTitle>
+            <div className='flex items-start justify-between'>
+              <div className='space-y-1'>
+                <CardTitle className='flex items-center gap-3 text-2xl font-bold'>
+                  <FileText className='text-primary h-6 w-6' />
+                  {note.number}
+                </CardTitle>
+                <CardDescription className='text-base'>
+                  {note.subject}
+                </CardDescription>
+              </div>
+              <Badge
+                className={`${config.color} flex items-center gap-2 border px-3 py-1 text-sm font-medium`}
+              >
+                <StatusIcon className='h-4 w-4' />
+                {config.label}
+              </Badge>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className='space-y-2'>
-              {note.history.map((h, idx) => (
-                <div key={idx} className='flex items-start gap-3 text-sm p-2 rounded-lg hover:bg-muted/50'>
-                  <div className='flex-1'>
-                    <p className='font-medium'>{h.action}</p>
-                    {h.comment && <p className='text-muted-foreground text-xs mt-1'>{h.comment}</p>}
-                  </div>
-                  <p className='text-xs text-muted-foreground'>{formatDate(h.at)}</p>
+            <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
+              <div className='bg-muted/50 flex items-start gap-3 rounded-lg p-3'>
+                <User className='text-muted-foreground mt-0.5 h-5 w-5' />
+                <div>
+                  <p className='text-muted-foreground text-xs font-medium'>
+                    Employé
+                  </p>
+                  <p className='mt-1 text-sm font-semibold'>{note.matricule}</p>
                 </div>
-              ))}
+              </div>
+              <div className='bg-muted/50 flex items-start gap-3 rounded-lg p-3'>
+                <Calendar className='text-muted-foreground mt-0.5 h-5 w-5' />
+                <div>
+                  <p className='text-muted-foreground text-xs font-medium'>
+                    Période
+                  </p>
+                  <p className='mt-1 text-sm font-semibold'>
+                    {formatDate(note.startDate)} - {formatDate(note.endDate)}
+                  </p>
+                </div>
+              </div>
+              <div className='bg-muted/50 flex items-start gap-3 rounded-lg p-3'>
+                <DollarSign className='text-muted-foreground mt-0.5 h-5 w-5' />
+                <div>
+                  <p className='text-muted-foreground text-xs font-medium'>
+                    Montant demandé
+                  </p>
+                  <p className='mt-1 text-sm font-semibold'>
+                    {formatCurrency(note.total ?? 0)}
+                  </p>
+                </div>
+              </div>
+              <div className='bg-primary/10 flex items-start gap-3 rounded-lg p-3'>
+                <CheckCircle2 className='text-primary mt-0.5 h-5 w-5' />
+                <div>
+                  <p className='text-muted-foreground text-xs font-medium'>
+                    Montant approuvé
+                  </p>
+                  <p className='text-primary mt-1 text-sm font-bold'>
+                    {formatCurrency(totalApproved)}
+                  </p>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
-      )}
 
-      {/* Approve Total Dialog */}
-      <AlertDialog open={showApproveDialog} onOpenChange={setShowApproveDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className='flex items-center gap-2'>
-              <CheckCircle2 className='h-5 w-5 text-green-600' />
-              Approuver la note de frais
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              Vous allez approuver l&apos;intégralité de cette note de frais pour un montant de{' '}
-              <strong>{formatCurrency(note.total ?? 0)}</strong>. Cette action est irréversible.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={actionLoading}>Annuler</AlertDialogCancel>
-            <AlertDialogAction onClick={handleApproveTotal} disabled={actionLoading}>
-              {actionLoading ? 'Traitement...' : 'Confirmer l\'approbation'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        {/* Lines Table */}
+        <Card>
+          <CardHeader>
+            <CardTitle className='flex items-center gap-2 text-lg'>
+              <Edit className='h-5 w-5' />
+              Lignes de frais ({lines.length})
+            </CardTitle>
+            <CardDescription>Détail et validation des dépenses</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Catégorie</TableHead>
+                  <TableHead className='text-right'>Montant demandé</TableHead>
+                  <TableHead className='text-right'>Montant approuvé</TableHead>
+                  <TableHead>Commentaire employé</TableHead>
+                  <TableHead>Commentaire manager</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {lines.map((line) => (
+                  <TableRow key={line.id}>
+                    <TableCell className='font-medium'>
+                      {formatDate(line.date)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant='outline'>{line.category}</Badge>
+                    </TableCell>
+                    <TableCell className='text-right font-medium'>
+                      {formatCurrency(line.amount)}
+                    </TableCell>
+                    <TableCell className='text-right'>
+                      {canValidate ? (
+                        <Input
+                          type='number'
+                          value={
+                            lineAdjustments[line.id]?.approvedAmount ??
+                            line.amount
+                          }
+                          onChange={(e) =>
+                            setLineAdjustments({
+                              ...lineAdjustments,
+                              [line.id]: {
+                                ...lineAdjustments[line.id],
+                                approvedAmount: Number(e.target.value)
+                              }
+                            })
+                          }
+                          className='w-28 text-right'
+                          step='0.01'
+                        />
+                      ) : (
+                        <span className='text-primary font-semibold'>
+                          {formatCurrency(line.approvedAmount ?? line.amount)}
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell className='max-w-xs'>
+                      <p className='text-muted-foreground truncate text-sm'>
+                        {line.comment || '-'}
+                      </p>
+                    </TableCell>
+                    <TableCell className='max-w-xs'>
+                      {canValidate ? (
+                        <Input
+                          value={lineAdjustments[line.id]?.comment ?? ''}
+                          onChange={(e) =>
+                            setLineAdjustments({
+                              ...lineAdjustments,
+                              [line.id]: {
+                                ...lineAdjustments[line.id],
+                                comment: e.target.value
+                              }
+                            })
+                          }
+                          placeholder='Commentaire manager'
+                          className='w-full'
+                        />
+                      ) : (
+                        <p className='text-sm'>{line.managerComment || '-'}</p>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
 
-      {/* Approve Partial Dialog */}
-      <AlertDialog open={showPartialDialog} onOpenChange={setShowPartialDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className='flex items-center gap-2'>
-              <AlertCircle className='h-5 w-5 text-yellow-600' />
-              Approuver partiellement
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              Vous allez approuver cette note de frais avec des ajustements pour un montant total de{' '}
-              <strong>{formatCurrency(totalApproved)}</strong>.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={actionLoading}>Annuler</AlertDialogCancel>
-            <AlertDialogAction onClick={handleApprovePartial} disabled={actionLoading}>
-              {actionLoading ? 'Traitement...' : 'Confirmer l\'approbation partielle'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            <Separator className='my-4' />
 
-      {/* Refuse Dialog */}
-      <AlertDialog open={showRefuseDialog} onOpenChange={setShowRefuseDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className='flex items-center gap-2'>
-              <XCircle className='h-5 w-5 text-red-600' />
-              Refuser la note de frais
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              Veuillez indiquer la raison du refus. L&apos;employé sera notifié.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className='py-4'>
-            <Label htmlFor='refuseReason'>Raison du refus *</Label>
-            <Textarea
-              id='refuseReason'
-              value={refuseReason}
-              onChange={(e) => setRefuseReason(e.target.value)}
-              placeholder='Ex: Justificatifs manquants, montants non conformes...'
-              className='mt-2'
-              rows={4}
-            />
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={actionLoading}>Annuler</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleRefuse}
-              disabled={actionLoading || !refuseReason.trim()}
-              className='bg-destructive hover:bg-destructive/90'
-            >
-              {actionLoading ? 'Traitement...' : 'Confirmer le refus'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            <div className='flex items-center justify-between'>
+              <p className='text-muted-foreground text-sm'>
+                {lines.length} ligne{lines.length > 1 ? 's' : ''}
+              </p>
+              <div className='text-right'>
+                <p className='text-muted-foreground text-sm'>
+                  Total à approuver
+                </p>
+                <p className='text-primary text-2xl font-bold'>
+                  {formatCurrency(totalApproved)}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* Request Complement Dialog */}
-      <AlertDialog open={showComplementDialog} onOpenChange={setShowComplementDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className='flex items-center gap-2'>
-              <MessageSquare className='h-5 w-5 text-orange-600' />
-              Demander un complément d&apos;information
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              Indiquez les informations ou justificatifs manquants. L&apos;employé devra compléter sa demande.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className='py-4'>
-            <Label htmlFor='complementReason'>Informations manquantes *</Label>
-            <Textarea
-              id='complementReason'
-              value={complementReason}
-              onChange={(e) => setComplementReason(e.target.value)}
-              placeholder="Ex: Merci d'ajouter les justificatifs pour les repas du 15/01..."
-              className='mt-2'
-              rows={4}
-            />
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={actionLoading}>Annuler</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleRequestComplement}
-              disabled={actionLoading || !complementReason.trim()}
-            >
-              {actionLoading ? 'Traitement...' : 'Envoyer la demande'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        {/* History */}
+        {note.history && note.history.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className='flex items-center gap-2 text-lg'>
+                <Clock className='h-5 w-5' />
+                Historique
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className='space-y-2'>
+                {note.history.map((h, idx) => (
+                  <div
+                    key={idx}
+                    className='hover:bg-muted/50 flex items-start gap-3 rounded-lg p-2 text-sm'
+                  >
+                    <div className='flex-1'>
+                      <p className='font-medium'>{h.action}</p>
+                      {h.comment && (
+                        <p className='text-muted-foreground mt-1 text-xs'>
+                          {h.comment}
+                        </p>
+                      )}
+                    </div>
+                    <p className='text-muted-foreground text-xs'>
+                      {formatDate(h.at)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Approve Total Dialog */}
+        <AlertDialog
+          open={showApproveDialog}
+          onOpenChange={setShowApproveDialog}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className='flex items-center gap-2'>
+                <CheckCircle2 className='h-5 w-5 text-green-600' />
+                Approuver la note de frais
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Vous allez approuver l&apos;intégralité de cette note de frais
+                pour un montant de{' '}
+                <strong>{formatCurrency(note.total ?? 0)}</strong>. Cette action
+                est irréversible.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={actionLoading}>
+                Annuler
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleApproveTotal}
+                disabled={actionLoading}
+              >
+                {actionLoading ? 'Traitement...' : "Confirmer l'approbation"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Approve Partial Dialog */}
+        <AlertDialog
+          open={showPartialDialog}
+          onOpenChange={setShowPartialDialog}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className='flex items-center gap-2'>
+                <AlertCircle className='h-5 w-5 text-yellow-600' />
+                Approuver partiellement
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Vous allez approuver cette note de frais avec des ajustements
+                pour un montant total de{' '}
+                <strong>{formatCurrency(totalApproved)}</strong>.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={actionLoading}>
+                Annuler
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleApprovePartial}
+                disabled={actionLoading}
+              >
+                {actionLoading
+                  ? 'Traitement...'
+                  : "Confirmer l'approbation partielle"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Refuse Dialog */}
+        <AlertDialog open={showRefuseDialog} onOpenChange={setShowRefuseDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className='flex items-center gap-2'>
+                <XCircle className='h-5 w-5 text-red-600' />
+                Refuser la note de frais
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Veuillez indiquer la raison du refus. L&apos;employé sera
+                notifié.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className='py-4'>
+              <Label htmlFor='refuseReason'>Raison du refus *</Label>
+              <Textarea
+                id='refuseReason'
+                value={refuseReason}
+                onChange={(e) => setRefuseReason(e.target.value)}
+                placeholder='Ex: Justificatifs manquants, montants non conformes...'
+                className='mt-2'
+                rows={4}
+              />
+            </div>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={actionLoading}>
+                Annuler
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleRefuse}
+                disabled={actionLoading || !refuseReason.trim()}
+                className='bg-destructive hover:bg-destructive/90'
+              >
+                {actionLoading ? 'Traitement...' : 'Confirmer le refus'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Request Complement Dialog */}
+        <AlertDialog
+          open={showComplementDialog}
+          onOpenChange={setShowComplementDialog}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className='flex items-center gap-2'>
+                <MessageSquare className='h-5 w-5 text-orange-600' />
+                Demander un complément d&apos;information
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Indiquez les informations ou justificatifs manquants.
+                L&apos;employé devra compléter sa demande.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className='py-4'>
+              <Label htmlFor='complementReason'>
+                Informations manquantes *
+              </Label>
+              <Textarea
+                id='complementReason'
+                value={complementReason}
+                onChange={(e) => setComplementReason(e.target.value)}
+                placeholder="Ex: Merci d'ajouter les justificatifs pour les repas du 15/01..."
+                className='mt-2'
+                rows={4}
+              />
+            </div>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={actionLoading}>
+                Annuler
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleRequestComplement}
+                disabled={actionLoading || !complementReason.trim()}
+              >
+                {actionLoading ? 'Traitement...' : 'Envoyer la demande'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </PageContainer>
   );

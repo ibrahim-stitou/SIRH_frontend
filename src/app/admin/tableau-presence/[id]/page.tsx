@@ -106,9 +106,13 @@ export default function TableauPresenceDetailPage() {
   const SELECT_NONE = '__NONE__';
   const [sortColumn, setSortColumn] = useState<string>('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-  const [groups, setGroups] = useState<{ label: string; value: string | number }[]>([]);
+  const [groups, setGroups] = useState<
+    { label: string; value: string | number }[]
+  >([]);
   const [selectedGroupId, setSelectedGroupId] = useState<string>('');
-  const [groupMembersByGroup, setGroupMembersByGroup] = useState<Record<string, string[]>>({});
+  const [groupMembersByGroup, setGroupMembersByGroup] = useState<
+    Record<string, string[]>
+  >({});
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [editData, setEditData] = useState<EditModalData | null>(null);
@@ -734,7 +738,9 @@ export default function TableauPresenceDetailPage() {
                     Groupe:
                   </Label>
                   <Select
-                    value={selectedGroupId === '' ? SELECT_ALL : selectedGroupId}
+                    value={
+                      selectedGroupId === '' ? SELECT_ALL : selectedGroupId
+                    }
                     onValueChange={(val) =>
                       setSelectedGroupId(val === SELECT_ALL ? '' : val)
                     }
@@ -743,9 +749,14 @@ export default function TableauPresenceDetailPage() {
                       <SelectValue placeholder='Tous' />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={SELECT_ALL}>Tous les groupes</SelectItem>
+                      <SelectItem value={SELECT_ALL}>
+                        Tous les groupes
+                      </SelectItem>
                       {groups.map((g) => (
-                        <SelectItem key={String(g.value)} value={String(g.value)}>
+                        <SelectItem
+                          key={String(g.value)}
+                          value={String(g.value)}
+                        >
                           {g.label}
                         </SelectItem>
                       ))}

@@ -33,7 +33,7 @@ const CustomTable = <T extends Record<string, any>>({
   bulkActions = [],
   onInit,
   clickCard,
-  infoText=undefined,
+  infoText = undefined
 }: CustomTableProps<T>) => {
   const table = useCustomTable(url, columns, bulkActions);
   const { t } = useLanguage();
@@ -144,7 +144,11 @@ const CustomTable = <T extends Record<string, any>>({
   return (
     <div className='flex flex-1 flex-col space-y-4'>
       <div className={0 ? 'hidden' : ''}>
-        <CustomTableToolbar table={table} filters={filters} infoText={infoText} />
+        <CustomTableToolbar
+          table={table}
+          filters={filters}
+          infoText={infoText}
+        />
       </div>
 
       {/* Bulk Actions Bar */}

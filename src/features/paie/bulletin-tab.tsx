@@ -52,22 +52,11 @@ import {
   X,
   RotateCcw,
   FileText,
-  Lock,
-  Download,
-  Printer
+  Lock
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle
-} from '@/components/ui/dialog';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import apiClient from '@/lib/api';
 import { apiRoutes } from '@/config/apiRoutes';
 import { useForm, useWatch } from 'react-hook-form';
@@ -1172,12 +1161,6 @@ export default function BulletinTab({
                           <TableHead className='text-right font-semibold'>
                             Montant
                           </TableHead>
-                          <TableHead className='text-right text-xs font-semibold'>
-                            Taux patronal
-                          </TableHead>
-                          <TableHead className='text-right text-xs font-semibold'>
-                            Montant patronal
-                          </TableHead>
                           <TableHead className='w-[80px]'></TableHead>
                         </TableRow>
                       </TableHeader>
@@ -1194,12 +1177,6 @@ export default function BulletinTab({
                           </TableCell>
                           <TableCell className='font-semibold'>
                             {formatNumber(bulletin.salaireBase, 2, 'MAD')}
-                          </TableCell>
-                          <TableCell className='text-muted-foreground text-sm'>
-                            -
-                          </TableCell>
-                          <TableCell className='text-muted-foreground text-sm'>
-                            -
                           </TableCell>
                           <TableCell></TableCell>
                         </TableRow>
@@ -1219,18 +1196,6 @@ export default function BulletinTab({
                             </TableCell>
                             <TableCell className='font-semibold'>
                               {formatNumber(ev.montant, 2)} MAD
-                            </TableCell>
-                            <TableCell className='text-sm'>
-                              {ev.tauxPatronal !== undefined &&
-                              ev.tauxPatronal !== null
-                                ? `${formatNumber(ev.tauxPatronal, 2)}%`
-                                : '-'}
-                            </TableCell>
-                            <TableCell className='text-sm'>
-                              {ev.montantPatronal !== undefined &&
-                              ev.montantPatronal !== null
-                                ? `${formatNumber(ev.montantPatronal, 2)} MAD`
-                                : '-'}
                             </TableCell>
                             <TableCell>
                               <div className='flex gap-1'>
@@ -1311,12 +1276,6 @@ export default function BulletinTab({
                           <TableHead className='text-right font-semibold'>
                             Montant
                           </TableHead>
-                          <TableHead className='text-right text-xs font-semibold'>
-                            Taux patronal
-                          </TableHead>
-                          <TableHead className='text-right text-xs font-semibold'>
-                            Montant patronal
-                          </TableHead>
                           <TableHead className='w-[80px]'></TableHead>
                         </TableRow>
                       </TableHeader>
@@ -1337,18 +1296,6 @@ export default function BulletinTab({
                             </TableCell>
                             <TableCell className='font-semibold text-red-600'>
                               {formatNumber(cot.montant, 2)} MAD
-                            </TableCell>
-                            <TableCell className='text-sm'>
-                              {cot.tauxPatronal !== undefined &&
-                              cot.tauxPatronal !== null
-                                ? `${formatNumber(cot.tauxPatronal, 2)}%`
-                                : '-'}
-                            </TableCell>
-                            <TableCell className='text-sm font-semibold text-red-600'>
-                              {cot.montantPatronal !== undefined &&
-                              cot.montantPatronal !== null
-                                ? `${formatNumber(cot.montantPatronal, 2)} MAD`
-                                : '-'}
                             </TableCell>
                             <TableCell>
                               <div className='flex gap-1'>
@@ -1418,12 +1365,6 @@ export default function BulletinTab({
                               <TableHead className='text-right font-semibold'>
                                 Montant
                               </TableHead>
-                              <TableHead className='text-right text-xs font-semibold'>
-                                Taux patronal
-                              </TableHead>
-                              <TableHead className='text-right text-xs font-semibold'>
-                                Montant patronal
-                              </TableHead>
                               <TableHead className='w-[80px]'></TableHead>
                             </TableRow>
                           </TableHeader>
@@ -1454,18 +1395,6 @@ export default function BulletinTab({
                                   }`}
                                 >
                                   {formatNumber(autre.montant, 2)} MAD
-                                </TableCell>
-                                <TableCell className='text-sm'>
-                                  {autre.tauxPatronal !== undefined &&
-                                  autre.tauxPatronal !== null
-                                    ? `${formatNumber(autre.tauxPatronal, 2)}%`
-                                    : '-'}
-                                </TableCell>
-                                <TableCell className='text-sm'>
-                                  {autre.montantPatronal !== undefined &&
-                                  autre.montantPatronal !== null
-                                    ? `${formatNumber(autre.montantPatronal, 2)} MAD`
-                                    : '-'}
                                 </TableCell>
                                 <TableCell>
                                   <div className='flex gap-1'>

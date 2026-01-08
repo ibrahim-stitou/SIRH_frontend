@@ -60,6 +60,14 @@
         "montantPatronal": 960.0
       },
       {
+        "rubriquePaieId": "6-employeur",
+        "libelle": "CNSS Part Patronale (Employeur)",
+        "type": "cotisation",
+        "montant": 0.0,
+        "base": 6000.0,
+        "taux": 16.0
+      },
+      {
         "rubriquePaieId": "9",
         "libelle": "AMO Part Salariale",
         "type": "cotisation",
@@ -187,6 +195,14 @@
         "montantPatronal": 960.0
       },
       {
+        "rubriquePaieId": "6-employeur",
+        "libelle": "CNSS Part Patronale (Employeur)",
+        "type": "cotisation",
+        "montant": 0.0,
+        "base": 6000.0,
+        "taux": 16.0
+      },
+      {
         "rubriquePaieId": "9",
         "libelle": "AMO Part Salariale",
         "type": "cotisation",
@@ -278,6 +294,14 @@
         "taux": 4.48,
         "tauxPatronal": 16.0,
         "montantPatronal": 960.0
+      },
+      {
+        "rubriquePaieId": "6-employeur",
+        "libelle": "CNSS Part Patronale (Employeur)",
+        "type": "cotisation",
+        "montant": 0.0,
+        "base": 6000.0,
+        "taux": 16.0
       },
       {
         "rubriquePaieId": "9",

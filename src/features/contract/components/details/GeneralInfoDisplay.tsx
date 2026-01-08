@@ -75,12 +75,24 @@ export default function GeneralInfoDisplay({
     fetch(url)
       .then((r) => r.json())
       .then((json) => {
-        const data = Array.isArray(json?.data) ? json.data : Array.isArray(json) ? json : [];
+        const data = Array.isArray(json?.data)
+          ? json.data
+          : Array.isArray(json)
+            ? json
+            : [];
         if (!cancelled) setConditionsCatalog(data);
       })
-      .catch((e) => !cancelled && setConditionsError(e?.message || 'Erreur chargement conditions'))
-      .finally(() => { if (!cancelled) setConditionsLoading(false); });
-    return () => { cancelled = true; };
+      .catch(
+        (e) =>
+          !cancelled &&
+          setConditionsError(e?.message || 'Erreur chargement conditions')
+      )
+      .finally(() => {
+        if (!cancelled) setConditionsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const isDraft = contract.status === 'Brouillon';
@@ -612,25 +624,34 @@ export default function GeneralInfoDisplay({
               <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
                 {Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className='animate-pulse rounded-lg border p-3'>
-                    <div className='mb-2 h-4 w-1/3 rounded bg-muted' />
-                    <div className='h-3 w-2/3 rounded bg-muted' />
+                    <div className='bg-muted mb-2 h-4 w-1/3 rounded' />
+                    <div className='bg-muted h-3 w-2/3 rounded' />
                   </div>
                 ))}
               </div>
             )}
             {conditionsError && (
-              <p className='text-red-600 text-sm'>Impossible de charger le catalogue: {conditionsError}</p>
+              <p className='text-sm text-red-600'>
+                Impossible de charger le catalogue: {conditionsError}
+              </p>
             )}
             {!conditionsLoading && (
               <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
                 {conditionsCatalog.map((cond: any) => {
-                  const isSelected = ((editedData as any).conditions?.selected ?? []).includes(cond.id);
+                  const isSelected = (
+                    (editedData as any).conditions?.selected ?? []
+                  ).includes(cond.id);
                   const canEdit = Boolean(isEditing && isDraft);
                   return (
-                    <div key={cond.id} className='group hover:bg-accent/50 space-y-1.5 rounded-lg p-3 transition-all duration-200'>
+                    <div
+                      key={cond.id}
+                      className='group hover:bg-accent/50 space-y-1.5 rounded-lg p-3 transition-all duration-200'
+                    >
                       <div className='flex items-center justify-between'>
                         <div className='flex items-center space-x-2.5'>
-                          <div className={`flex h-5 w-5 items-center justify-center rounded-md border-2 transition-all ${isSelected ? 'bg-primary border-primary shadow-sm' : 'border-input'}`}></div>
+                          <div
+                            className={`flex h-5 w-5 items-center justify-center rounded-md border-2 transition-all ${isSelected ? 'bg-primary border-primary shadow-sm' : 'border-input'}`}
+                          ></div>
                           <Label className='cursor-default text-sm font-semibold'>
                             {cond.label}
                           </Label>
@@ -638,7 +659,9 @@ export default function GeneralInfoDisplay({
                         {canEdit && (
                           <Checkbox
                             checked={isSelected}
-                            onCheckedChange={(checked) => toggleCondition(cond.id, !!checked)}
+                            onCheckedChange={(checked) =>
+                              toggleCondition(cond.id, !!checked)
+                            }
                             aria-label={`Sélectionner ${cond.label}`}
                           />
                         )}
@@ -651,9 +674,12 @@ export default function GeneralInfoDisplay({
                 })}
               </div>
             )}
-            {(((editedData as any).conditions?.selected?.length) ?? 0) === 0 && !conditionsLoading && (
-              <p className='text-muted-foreground text-sm'>Aucune condition sélectionnée.</p>
-            )}
+            {((editedData as any).conditions?.selected?.length ?? 0) === 0 &&
+              !conditionsLoading && (
+                <p className='text-muted-foreground text-sm'>
+                  Aucune condition sélectionnée.
+                </p>
+              )}
           </div>
         </div>
       </CardContent>

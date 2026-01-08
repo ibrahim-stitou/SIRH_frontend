@@ -66,7 +66,9 @@ module.exports = function registerPretsRoutes(server, db) {
       all = all.filter((pret) => {
         const fieldVal = pret[key];
         if (fieldVal === undefined || fieldVal === null) return false;
-        return String(fieldVal).toLowerCase().includes(String(value).toLowerCase());
+        return String(fieldVal)
+          .toLowerCase()
+          .includes(String(value).toLowerCase());
       });
     });
     const recordsFiltered = all.length;
@@ -103,9 +105,14 @@ module.exports = function registerPretsRoutes(server, db) {
 
   // SHOW
   server.get('/prets/:id', (req, res) => {
-    const pret = db.get('prets').find({ id: parseInt(req.params.id) }).value();
+    const pret = db
+      .get('prets')
+      .find({ id: parseInt(req.params.id) })
+      .value();
     if (!pret) {
-      return res.status(404).json({ status: 'error', message: 'Prêt non trouvé' });
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Prêt non trouvé' });
     }
     const enriched = enrichUsers(enrichEmployee(pret));
     return res.json({ status: 'success', data: enriched });
@@ -115,16 +122,26 @@ module.exports = function registerPretsRoutes(server, db) {
   server.post('/prets', (req, res) => {
     const nowIso = new Date().toISOString();
     const body = req.body || {};
-    const mensualite = body.montant_mensualite && Number(body.montant_mensualite) > 0
-      ? Number(body.montant_mensualite)
-      : computeMensualite(body.montant_pret, body.duree_mois, body.taux_interet);
+    const mensualite =
+      body.montant_mensualite && Number(body.montant_mensualite) > 0
+        ? Number(body.montant_mensualite)
+        : computeMensualite(
+            body.montant_pret,
+            body.duree_mois,
+            body.taux_interet
+          );
     const newPret = {
       ...body,
       id: Date.now(),
       statut: 'En attente',
       montant_mensualite: mensualite,
       montant_rembourse: body.montant_rembourse ?? 0,
-      montant_restant: body.montant_restant ?? Math.max(0, Number(body.montant_pret || 0) - Number(body.montant_rembourse || 0)),
+      montant_restant:
+        body.montant_restant ??
+        Math.max(
+          0,
+          Number(body.montant_pret || 0) - Number(body.montant_rembourse || 0)
+        ),
       created_at: nowIso,
       updated_at: nowIso
     };
@@ -134,9 +151,14 @@ module.exports = function registerPretsRoutes(server, db) {
 
   // UPDATE
   server.put('/prets/:id', (req, res) => {
-    const pret = db.get('prets').find({ id: parseInt(req.params.id) }).value();
+    const pret = db
+      .get('prets')
+      .find({ id: parseInt(req.params.id) })
+      .value();
     if (!pret) {
-      return res.status(404).json({ status: 'error', message: 'Prêt non trouvé' });
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Prêt non trouvé' });
     }
     const body = req.body || {};
     const updated = {
@@ -146,27 +168,47 @@ module.exports = function registerPretsRoutes(server, db) {
       montant_mensualite:
         body.montant_mensualite !== undefined
           ? Number(body.montant_mensualite)
-          : computeMensualite(body.montant_pret ?? pret.montant_pret, body.duree_mois ?? pret.duree_mois, body.taux_interet ?? pret.taux_interet),
+          : computeMensualite(
+              body.montant_pret ?? pret.montant_pret,
+              body.duree_mois ?? pret.duree_mois,
+              body.taux_interet ?? pret.taux_interet
+            ),
       updated_at: new Date().toISOString()
     };
-    db.get('prets').find({ id: parseInt(req.params.id) }).assign(updated).write();
+    db.get('prets')
+      .find({ id: parseInt(req.params.id) })
+      .assign(updated)
+      .write();
     return res.json({ status: 'success', data: updated });
   });
 
   // DELETE
   server.delete('/prets/:id', (req, res) => {
-    const pret = db.get('prets').find({ id: parseInt(req.params.id) }).value();
+    const pret = db
+      .get('prets')
+      .find({ id: parseInt(req.params.id) })
+      .value();
     if (!pret) {
-      return res.status(404).json({ status: 'error', message: 'Prêt non trouvé' });
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Prêt non trouvé' });
     }
-    db.get('prets').remove({ id: parseInt(req.params.id) }).write();
+    db.get('prets')
+      .remove({ id: parseInt(req.params.id) })
+      .write();
     return res.status(204).end();
   });
 
   // ACTIONS
   server.post('/prets/:id/valider', (req, res) => {
-    const pret = db.get('prets').find({ id: parseInt(req.params.id) }).value();
-    if (!pret) return res.status(404).json({ status: 'error', message: 'Prêt non trouvé' });
+    const pret = db
+      .get('prets')
+      .find({ id: parseInt(req.params.id) })
+      .value();
+    if (!pret)
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Prêt non trouvé' });
     db.get('prets')
       .find({ id: parseInt(req.params.id) })
       .assign({
@@ -180,8 +222,14 @@ module.exports = function registerPretsRoutes(server, db) {
   });
 
   server.post('/prets/:id/refuse', (req, res) => {
-    const pret = db.get('prets').find({ id: parseInt(req.params.id) }).value();
-    if (!pret) return res.status(404).json({ status: 'error', message: 'Prêt non trouvé' });
+    const pret = db
+      .get('prets')
+      .find({ id: parseInt(req.params.id) })
+      .value();
+    if (!pret)
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Prêt non trouvé' });
     db.get('prets')
       .find({ id: parseInt(req.params.id) })
       .assign({
@@ -196,9 +244,18 @@ module.exports = function registerPretsRoutes(server, db) {
   });
 
   server.post('/prets/:id/demarrer', (req, res) => {
-    const pret = db.get('prets').find({ id: parseInt(req.params.id) }).value();
-    if (!pret) return res.status(404).json({ status: 'error', message: 'Prêt non trouvé' });
-    const startDate = req.body?.date_debut_remboursement || pret.date_debut_remboursement || new Date().toISOString().slice(0, 10);
+    const pret = db
+      .get('prets')
+      .find({ id: parseInt(req.params.id) })
+      .value();
+    if (!pret)
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Prêt non trouvé' });
+    const startDate =
+      req.body?.date_debut_remboursement ||
+      pret.date_debut_remboursement ||
+      new Date().toISOString().slice(0, 10);
     // Compute date_fin_prevue by adding duree_mois months (approximate)
     const dateStart = new Date(startDate);
     const endDate = new Date(dateStart);
@@ -218,8 +275,14 @@ module.exports = function registerPretsRoutes(server, db) {
   });
 
   server.post('/prets/:id/solde', (req, res) => {
-    const pret = db.get('prets').find({ id: parseInt(req.params.id) }).value();
-    if (!pret) return res.status(404).json({ status: 'error', message: 'Prêt non trouvé' });
+    const pret = db
+      .get('prets')
+      .find({ id: parseInt(req.params.id) })
+      .value();
+    if (!pret)
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Prêt non trouvé' });
     const montant_pret = Number(pret.montant_pret || 0);
     const montant_rembourse = Number(pret.montant_rembourse || 0);
     const restant = Math.max(0, montant_pret - montant_rembourse);

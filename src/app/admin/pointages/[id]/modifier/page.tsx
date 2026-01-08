@@ -355,7 +355,10 @@ export default function ModifierPointagePage() {
                     control={form.control}
                     name='check_in'
                     render={({ field }) => (
-                      <TimePicker value={field.value} onChange={field.onChange} />
+                      <TimePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
                     )}
                   />
                   {form.formState.errors.check_in && (
@@ -373,7 +376,10 @@ export default function ModifierPointagePage() {
                     control={form.control}
                     name='check_out'
                     render={({ field }) => (
-                      <TimePicker value={field.value} onChange={field.onChange} />
+                      <TimePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
                     )}
                   />
                   {form.formState.errors.check_out && (

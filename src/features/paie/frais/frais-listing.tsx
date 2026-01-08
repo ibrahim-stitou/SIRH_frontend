@@ -5,9 +5,16 @@ import { Eye, Plus, Edit as EditIcon, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import CustomTable from '@/components/custom/data-table/custom-table';
-import { CustomTableColumn, CustomTableFilterConfig } from '@/components/custom/data-table/types';
+import {
+  CustomTableColumn,
+  CustomTableFilterConfig
+} from '@/components/custom/data-table/types';
 import { apiRoutes } from '@/config/apiRoutes';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip';
 import { Heading } from '@/components/ui/heading';
 import apiClient from '@/lib/api';
 import { deleteFrais } from '@/services/frais';
@@ -20,7 +27,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialogTitle
 } from '@/components/ui/alert-dialog';
 
 interface NoteDeFraisRow {
@@ -38,7 +45,9 @@ interface NoteDeFraisRow {
 
 export default function FraisListing() {
   const router = useRouter();
-  const [employees, setEmployees] = useState<{ label: string; value: string | number }[]>([]);
+  const [employees, setEmployees] = useState<
+    { label: string; value: string | number }[]
+  >([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState<number | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -63,16 +72,55 @@ export default function FraisListing() {
   }, []);
 
   const getStatusBadge = (status: string) => {
-    const map: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' ,className:string}> = {
-      draft: { label: 'Brouillon', variant: 'secondary',className: 'bg-yellow-100 text-yellow' },
-      submitted: { label: 'En attente', variant: 'secondary',className: 'bg-blue-100 text-blue-700' },
-      approved: { label: 'Approuvée', variant: 'secondary',className: 'bg-purple-100 text-purple-700 border' },
-      approved_partial: { label: 'Approuvée partiellement', variant: 'secondary',className: 'bg-green-50 text-green-700 border' },
-      refused: { label: 'Refusée', variant: 'secondary',className: 'bg-red-100 text-red-500' },
-      needs_complement: { label: 'Complément requis', variant: 'secondary',className: 'bg-orange-100 text-orange-700' }
+    const map: Record<
+      string,
+      {
+        label: string;
+        variant: 'default' | 'secondary' | 'destructive' | 'outline';
+        className: string;
+      }
+    > = {
+      draft: {
+        label: 'Brouillon',
+        variant: 'secondary',
+        className: 'bg-yellow-100 text-yellow'
+      },
+      submitted: {
+        label: 'En attente',
+        variant: 'secondary',
+        className: 'bg-blue-100 text-blue-700'
+      },
+      approved: {
+        label: 'Approuvée',
+        variant: 'secondary',
+        className: 'bg-purple-100 text-purple-700 border'
+      },
+      approved_partial: {
+        label: 'Approuvée partiellement',
+        variant: 'secondary',
+        className: 'bg-green-50 text-green-700 border'
+      },
+      refused: {
+        label: 'Refusée',
+        variant: 'secondary',
+        className: 'bg-red-100 text-red-500'
+      },
+      needs_complement: {
+        label: 'Complément requis',
+        variant: 'secondary',
+        className: 'bg-orange-100 text-orange-700'
+      }
     };
-    const cfg = map[status] || { label: status, variant: 'outline',className: '' };
-    return <Badge variant={cfg.variant} className={cfg.className}>{cfg.label}</Badge>;
+    const cfg = map[status] || {
+      label: status,
+      variant: 'outline',
+      className: ''
+    };
+    return (
+      <Badge variant={cfg.variant} className={cfg.className}>
+        {cfg.label}
+      </Badge>
+    );
   };
 
   const handleDeleteClick = (id: number) => {
@@ -90,7 +138,7 @@ export default function FraisListing() {
       setDeleteDialogOpen(false);
       setNoteToDelete(null);
       // Trigger table refresh
-      setRefreshKey(prev => prev + 1);
+      setRefreshKey((prev) => prev + 1);
     } catch (e: any) {
       toast.error(e.message || 'Erreur lors de la suppression');
     } finally {
@@ -106,8 +154,12 @@ export default function FraisListing() {
       sortable: true,
       render: (_value, row: any) => (
         <div className='flex flex-col'>
-          <div className='font-medium'>{row.employee?.matricule || row.matricule}</div>
-          <div className='text-sm text-muted-foreground'>{row.employee?.fullName}</div>
+          <div className='font-medium'>
+            {row.employee?.matricule || row.matricule}
+          </div>
+          <div className='text-muted-foreground text-sm'>
+            {row.employee?.fullName}
+          </div>
         </div>
       )
     },
@@ -122,14 +174,23 @@ export default function FraisListing() {
         </span>
       )
     },
-    { data: 'status', label: 'Statut', sortable: true, render: (v) => getStatusBadge(v as any) },
+    {
+      data: 'status',
+      label: 'Statut',
+      sortable: true,
+      render: (v) => getStatusBadge(v as any)
+    },
     {
       data: 'total',
       label: 'Total',
       sortable: true,
       render: (value) => (
         <div className='font-medium'>
-          {new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD', maximumFractionDigits: 0 }).format(value ?? 0)}
+          {new Intl.NumberFormat('fr-MA', {
+            style: 'currency',
+            currency: 'MAD',
+            maximumFractionDigits: 0
+          }).format(value ?? 0)}
         </div>
       )
     },
@@ -141,7 +202,13 @@ export default function FraisListing() {
         <div className='flex gap-2'>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant='outline' className='h-8 w-8 p-1.5' onClick={() => router.push(`/admin/paie/frais/${row.id}/details`)}>
+              <Button
+                variant='outline'
+                className='h-8 w-8 p-1.5'
+                onClick={() =>
+                  router.push(`/admin/paie/frais/${row.id}/details`)
+                }
+              >
                 <Eye className='h-4 w-4' />
               </Button>
             </TooltipTrigger>
@@ -151,7 +218,13 @@ export default function FraisListing() {
             <>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant='secondary' className='h-8 w-8 p-1.5' onClick={() => router.push(`/admin/paie/frais/${row.id}/modifier`)}>
+                  <Button
+                    variant='secondary'
+                    className='h-8 w-8 p-1.5'
+                    onClick={() =>
+                      router.push(`/admin/paie/frais/${row.id}/modifier`)
+                    }
+                  >
                     <EditIcon className='h-4 w-4' />
                   </Button>
                 </TooltipTrigger>
@@ -167,7 +240,9 @@ export default function FraisListing() {
                     <Trash2 className='h-4 w-4' />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent className='bg-red-100 text-red-500'>Supprimer</TooltipContent>
+                <TooltipContent className='bg-red-100 text-red-500'>
+                  Supprimer
+                </TooltipContent>
               </Tooltip>
             </>
           )}
@@ -177,7 +252,12 @@ export default function FraisListing() {
   ];
 
   const filters: CustomTableFilterConfig[] = [
-    { field: 'employe_id', label: 'Employé', type: 'datatable-select', options: employees },
+    {
+      field: 'employe_id',
+      label: 'Employé',
+      type: 'datatable-select',
+      options: employees
+    },
     {
       field: 'status',
       label: 'Statut',
@@ -195,57 +275,60 @@ export default function FraisListing() {
   ];
 
   return (
-      <div className='flex flex-1 flex-col space-y-4'>
-        <div className='flex justify-between mb-6'>
-          <Heading title={'Frais & Déplacements'} description={'Notes de frais et déplacements.'} />
-          <Button onClick={() => router.push('/admin/paie/frais/ajouter')}>
-            <Plus className='mr-2 h-4 w-4' />
-            Ajouter une note de frais
-          </Button>
-        </div>
-        <CustomTable<NoteDeFraisRow>
-          key={refreshKey}
-          columns={columns}
-          url={apiRoutes.admin.frais.list}
-          filters={filters}
-          infoText={{
-            title: 'Statuts des notes de frais',
-            description: `Les notes de frais passent par plusieurs statuts :
+    <div className='flex flex-1 flex-col space-y-4'>
+      <div className='mb-6 flex justify-between'>
+        <Heading
+          title={'Frais & Déplacements'}
+          description={'Notes de frais et déplacements.'}
+        />
+        <Button onClick={() => router.push('/admin/paie/frais/ajouter')}>
+          <Plus className='mr-2 h-4 w-4' />
+          Ajouter une note de frais
+        </Button>
+      </div>
+      <CustomTable<NoteDeFraisRow>
+        key={refreshKey}
+        columns={columns}
+        url={apiRoutes.admin.frais.list}
+        filters={filters}
+        infoText={{
+          title: 'Statuts des notes de frais',
+          description: `Les notes de frais passent par plusieurs statuts :
 - Brouillon : la note n'est pas encore soumise.
 - En attente : en cours de validation par le responsable.
 - Approuvée / Approuvée partiellement : validée totalement ou en partie.
 - Refusée : la note a été rejetée.
 
 Utilisez ces statuts pour suivre l'avancement et la gestion de vos demandes.`
-          }}
-        />
+        }}
+      />
 
-        {/* Delete Confirmation Dialog */}
-        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle className='flex items-center gap-2'>
-                <Trash2 className='h-5 w-5 text-destructive' />
-                Supprimer la note de frais
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                Êtes-vous sûr de vouloir supprimer définitivement cette note de frais ?
-                Cette action est irréversible et toutes les données associées seront perdues.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel disabled={deleting}>Annuler</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleDeleteConfirm}
-                disabled={deleting}
-                className='bg-destructive hover:bg-destructive/90'
-              >
-                {deleting ? 'Suppression...' : 'Supprimer définitivement'}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
-
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className='flex items-center gap-2'>
+              <Trash2 className='text-destructive h-5 w-5' />
+              Supprimer la note de frais
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Êtes-vous sûr de vouloir supprimer définitivement cette note de
+              frais ? Cette action est irréversible et toutes les données
+              associées seront perdues.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              disabled={deleting}
+              className='bg-destructive hover:bg-destructive/90'
+            >
+              {deleting ? 'Suppression...' : 'Supprimer définitivement'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   );
 }

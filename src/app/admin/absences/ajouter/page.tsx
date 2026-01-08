@@ -189,7 +189,7 @@ export default function AjouterAbsencePage() {
       }
     });
     return () => subscription.unsubscribe();
-  }, [form.watch]);
+  }, [form, form.watch]);
 
   // Mettre à jour le type sélectionné
   useEffect(() => {
@@ -202,7 +202,7 @@ export default function AjouterAbsencePage() {
       }
     });
     return () => subscription.unsubscribe();
-  }, [form.watch, absenceTypes]);
+  }, [form.watch, absenceTypes, form]);
 
   const onSubmit = async (data: AbsenceFormValues) => {
     setLoading(true);

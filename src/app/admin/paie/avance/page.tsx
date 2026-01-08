@@ -1,4 +1,3 @@
-
 import PageContainer from '@/components/layout/page-container';
 import AvancesListing from '@/features/paie/avances/avances-listing';
 

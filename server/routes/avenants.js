@@ -74,10 +74,15 @@ module.exports = function registerAvenantRoutes(server, db) {
     // Check limit from parametreMaxGeneral
     try {
       const paramsList = db.get('parametreMaxGeneral').value() || [];
-      const cfg = Array.isArray(paramsList) && paramsList.length > 0 ? paramsList[0] : null;
+      const cfg =
+        Array.isArray(paramsList) && paramsList.length > 0
+          ? paramsList[0]
+          : null;
       const maxAvenants = cfg?.max_avenants_par_contrat;
       if (contractId != null && typeof maxAvenants === 'number') {
-        const existingCount = (db.get('avenants').value() || []).filter((a) => String(a.contract_id) === String(contractId)).length;
+        const existingCount = (db.get('avenants').value() || []).filter(
+          (a) => String(a.contract_id) === String(contractId)
+        ).length;
         if (existingCount >= maxAvenants) {
           return res.status(400).json({
             status: 'error',

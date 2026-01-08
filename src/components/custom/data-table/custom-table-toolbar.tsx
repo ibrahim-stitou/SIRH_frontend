@@ -37,7 +37,7 @@ import {
   CommandList
 } from '@/components/ui/command';
 import { CustomDataTableSelect } from '@/components/custom/data-table/custom-datatable-select';
-import { X, ArrowDownUp, Check, BadgeInfo  } from 'lucide-react';
+import { X, ArrowDownUp, Check, BadgeInfo } from 'lucide-react';
 import { CalendarIcon, Settings2 } from 'lucide-react';
 import {
   CustomTableFilterConfig,
@@ -322,9 +322,12 @@ export function CustomTableToolbar<TData extends Record<string, any>>({
               size='sm'
               onClick={handleApplyFilters}
             >
-              {React.createElement(Icons['iconFilter'] as React.ComponentType<any>, {
-                className: 'mr-2 h-4 w-4'
-              })}
+              {React.createElement(
+                Icons['iconFilter'] as React.ComponentType<any>,
+                {
+                  className: 'mr-2 h-4 w-4'
+                }
+              )}
               {t('dataTable.apply') || 'Appliquer'}
             </Button>
           )}

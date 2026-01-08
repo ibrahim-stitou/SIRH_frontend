@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -141,14 +141,16 @@ export default function ModifierPretPage() {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [form, id]);
 
   const employeeOptions = useMemo(
     () =>
       employees.map((e) => ({
         id: e.id,
         label:
-          e.fullName || `${e.firstName ?? ''} ${e.lastName ?? ''}`.trim() || String(e.id),
+          e.fullName ||
+          `${e.firstName ?? ''} ${e.lastName ?? ''}`.trim() ||
+          String(e.id),
         matricule: e.matricule
       })),
     [employees]
@@ -169,7 +171,7 @@ export default function ModifierPretPage() {
 
   return (
     <PageContainer scrollable>
-      <div className='w-full mx-auto'>
+      <div className='mx-auto w-full'>
         <Card className='w-full'>
           <CardHeader className='flex flex-row items-center justify-between space-y-0'>
             <CardTitle>Modifier le prêt</CardTitle>
@@ -184,12 +186,12 @@ export default function ModifierPretPage() {
                 <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
                   {Array.from({ length: 8 }).map((_, i) => (
                     <div key={i} className='rounded-md border p-3'>
-                      <Skeleton className='h-3 w-24 mb-2' />
+                      <Skeleton className='mb-2 h-3 w-24' />
                       <Skeleton className='h-5 w-40' />
                     </div>
                   ))}
                   <div className='md:col-span-2'>
-                    <Skeleton className='h-3 w-28 mb-2' />
+                    <Skeleton className='mb-2 h-3 w-28' />
                     <Skeleton className='h-24 w-full' />
                   </div>
                 </div>
@@ -200,7 +202,10 @@ export default function ModifierPretPage() {
               </div>
             ) : (
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className='space-y-6'
+                >
                   <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
                     <SelectField
                       name='employe_id'
@@ -221,12 +226,16 @@ export default function ModifierPretPage() {
                         value={form.watch('date_demande') as any}
                         onChange={(d) => form.setValue('date_demande', d || '')}
                         required
-                        error={form.formState.errors.date_demande?.message || null}
+                        error={
+                          form.formState.errors.date_demande?.message || null
+                        }
                       />
                     </div>
 
                     <div className='space-y-2'>
-                      <label className='text-sm font-medium'>Montant du prêt (MAD)</label>
+                      <label className='text-sm font-medium'>
+                        Montant du prêt (MAD)
+                      </label>
                       <Input
                         type='number'
                         min={0}
@@ -237,14 +246,16 @@ export default function ModifierPretPage() {
                         }
                       />
                       {form.formState.errors.montant_pret?.message && (
-                        <p className='text-xs text-destructive'>
+                        <p className='text-destructive text-xs'>
                           {form.formState.errors.montant_pret.message}
                         </p>
                       )}
                     </div>
 
                     <div className='space-y-2'>
-                      <label className='text-sm font-medium'>Durée (mois)</label>
+                      <label className='text-sm font-medium'>
+                        Durée (mois)
+                      </label>
                       <Input
                         type='number'
                         min={1}
@@ -255,14 +266,16 @@ export default function ModifierPretPage() {
                         }
                       />
                       {form.formState.errors.duree_mois?.message && (
-                        <p className='text-xs text-destructive'>
+                        <p className='text-destructive text-xs'>
                           {form.formState.errors.duree_mois.message}
                         </p>
                       )}
                     </div>
 
                     <div className='space-y-2'>
-                      <label className='text-sm font-medium'>Taux d'intérêt (%)</label>
+                      <label className='text-sm font-medium'>
+                        Taux d&lsquo;intérêt (%)
+                      </label>
                       <Input
                         type='number'
                         min={0}
@@ -291,24 +304,34 @@ export default function ModifierPretPage() {
                       options={MONTHS.map((m) => ({ value: m, label: m }))}
                       required
                       placeholder='Sélectionner un mois'
-                      error={(form.formState.errors.periode_paie_depart as any)?.mois?.message}
+                      error={
+                        (form.formState.errors.periode_paie_depart as any)?.mois
+                          ?.message
+                      }
                     />
 
                     <div className='space-y-2'>
-                      <label className='text-sm font-medium'>Année de départ</label>
+                      <label className='text-sm font-medium'>
+                        Année de départ
+                      </label>
                       <Input
                         type='number'
                         min={2000}
                         max={2100}
                         value={form.watch('periode_paie_depart.annee') as any}
                         onChange={(e) =>
-                          form.setValue('periode_paie_depart.annee', Number(e.target.value))
+                          form.setValue(
+                            'periode_paie_depart.annee',
+                            Number(e.target.value)
+                          )
                         }
                       />
                     </div>
 
                     <div className='space-y-2'>
-                      <label className='text-sm font-medium'>Date de début de remboursement (optionnel)</label>
+                      <label className='text-sm font-medium'>
+                        Date de début de remboursement (optionnel)
+                      </label>
                       <DatePickerField
                         name='date_debut_remboursement'
                         value={form.watch('date_debut_remboursement') as any}
@@ -318,12 +341,14 @@ export default function ModifierPretPage() {
                       />
                     </div>
 
-                    <div className='md:col-span-2 space-y-2'>
+                    <div className='space-y-2 md:col-span-2'>
                       <label className='text-sm font-medium'>Description</label>
                       <Textarea
                         placeholder='Ajouter une note (facultatif)'
                         value={form.watch('description') || ''}
-                        onChange={(e) => form.setValue('description', e.target.value)}
+                        onChange={(e) =>
+                          form.setValue('description', e.target.value)
+                        }
                         rows={4}
                       />
                     </div>
@@ -333,7 +358,9 @@ export default function ModifierPretPage() {
                     <Button
                       type='button'
                       variant='outline'
-                      onClick={() => router.push(`/admin/paie/pret/${id}/details`)}
+                      onClick={() =>
+                        router.push(`/admin/paie/pret/${id}/details`)
+                      }
                     >
                       Annuler
                     </Button>

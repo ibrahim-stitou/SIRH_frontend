@@ -149,7 +149,11 @@ function useEmployees() {
       } catch (err) {
         if (err instanceof Error) {
           const errorMessage = err.message?.toLowerCase() || '';
-          if (err.name !== 'AbortError' && !errorMessage.includes('canceled') && !errorMessage.includes('abort')) {
+          if (
+            err.name !== 'AbortError' &&
+            !errorMessage.includes('canceled') &&
+            !errorMessage.includes('abort')
+          ) {
             setError(handleApiError(err));
           }
         }
@@ -188,7 +192,11 @@ function useExpenseNote(id?: number) {
         // Ignore abort/cancellation errors (normal in React strict mode or fast navigation)
         if (err instanceof Error) {
           const errorMessage = err.message?.toLowerCase() || '';
-          if (err.name !== 'AbortError' && !errorMessage.includes('canceled') && !errorMessage.includes('abort')) {
+          if (
+            err.name !== 'AbortError' &&
+            !errorMessage.includes('canceled') &&
+            !errorMessage.includes('abort')
+          ) {
             setError(handleApiError(err));
           }
         }
@@ -379,7 +387,10 @@ export default function FraisForm({ id }: { id?: number }) {
     if (employeesError) {
       // Don't show error for canceled/aborted requests (normal in React strict mode)
       const errorMessage = employeesError.message?.toLowerCase() || '';
-      if (!errorMessage.includes('canceled') && !errorMessage.includes('abort')) {
+      if (
+        !errorMessage.includes('canceled') &&
+        !errorMessage.includes('abort')
+      ) {
         toast.error(
           `Erreur de chargement des employés: ${employeesError.message}`
         );
@@ -388,7 +399,10 @@ export default function FraisForm({ id }: { id?: number }) {
     if (noteError) {
       // Don't show error for canceled/aborted requests
       const errorMessage = noteError.message?.toLowerCase() || '';
-      if (!errorMessage.includes('canceled') && !errorMessage.includes('abort')) {
+      if (
+        !errorMessage.includes('canceled') &&
+        !errorMessage.includes('abort')
+      ) {
         toast.error(`Erreur de chargement de la note: ${noteError.message}`);
       }
     }
@@ -467,7 +481,9 @@ export default function FraisForm({ id }: { id?: number }) {
                     name='employeeId'
                     render={() => (
                       <FormItem>
-                        <FormLabel>Employé <RequiredRedStar/></FormLabel>
+                        <FormLabel>
+                          Employé <RequiredRedStar />
+                        </FormLabel>
                         <FormControl>
                           <SelectField<NoteDeFrais, 'employeeId'>
                             name='employeeId'
@@ -487,7 +503,9 @@ export default function FraisForm({ id }: { id?: number }) {
                     name='subject'
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Objet <RequiredRedStar/></FormLabel>
+                        <FormLabel>
+                          Objet <RequiredRedStar />
+                        </FormLabel>
                         <FormControl>
                           <Input
                             {...field}
@@ -504,7 +522,9 @@ export default function FraisForm({ id }: { id?: number }) {
                     name='startDate'
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Date début <RequiredRedStar/></FormLabel>
+                        <FormLabel>
+                          Date début <RequiredRedStar />
+                        </FormLabel>
                         <FormControl>
                           <DatePickerField
                             name='startDate'
@@ -524,7 +544,9 @@ export default function FraisForm({ id }: { id?: number }) {
                     name='endDate'
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Date fin <RequiredRedStar/></FormLabel>
+                        <FormLabel>
+                          Date fin <RequiredRedStar />
+                        </FormLabel>
                         <FormControl>
                           <DatePickerField
                             name='endDate'
@@ -593,7 +615,9 @@ export default function FraisForm({ id }: { id?: number }) {
                           name={`lines.${index}.date`}
                           render={({ field }) => (
                             <FormItem className='md:col-span-3'>
-                              <FormLabel>Date <RequiredRedStar/></FormLabel>
+                              <FormLabel>
+                                Date <RequiredRedStar />
+                              </FormLabel>
                               <FormControl>
                                 <DatePickerField
                                   name={`lines.${index}.date`}
@@ -612,7 +636,9 @@ export default function FraisForm({ id }: { id?: number }) {
                           name={`lines.${index}.category`}
                           render={() => (
                             <FormItem className='md:col-span-3'>
-                              <FormLabel>Catégorie <RequiredRedStar/></FormLabel>
+                              <FormLabel>
+                                Catégorie <RequiredRedStar />
+                              </FormLabel>
                               <FormControl>
                                 <SelectField<Record<string, any>, string>
                                   name={`lines.${index}.category`}
@@ -632,7 +658,9 @@ export default function FraisForm({ id }: { id?: number }) {
                           name={`lines.${index}.amount`}
                           render={({ field }) => (
                             <FormItem className='md:col-span-2'>
-                              <FormLabel>Montant (MAD) <RequiredRedStar/></FormLabel>
+                              <FormLabel>
+                                Montant (MAD) <RequiredRedStar />
+                              </FormLabel>
                               <FormControl>
                                 <Input
                                   type='number'

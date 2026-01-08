@@ -25,7 +25,11 @@ import { SelectField } from '@/components/custom/SelectField';
 import type { SimplifiedContractInput } from '@/validations/contract-simplified.schema';
 import { Timer } from 'lucide-react';
 
-export function WorkScheduleTab({ form }: { form: UseFormReturn<SimplifiedContractInput> }) {
+export function WorkScheduleTab({
+  form
+}: {
+  form: UseFormReturn<SimplifiedContractInput>;
+}) {
   const hasTrialPeriod = form.watch('dates')?.trial_period?.enabled || false;
 
   const [criteriaCatalog, setCriteriaCatalog] = React.useState<any[]>([]);
@@ -36,26 +40,42 @@ export function WorkScheduleTab({ form }: { form: UseFormReturn<SimplifiedContra
     fetch(apiRoutes.admin.contratsEtMovements.contrats.trialCriteriaCatalog)
       .then((r) => r.json())
       .then((json) => {
-        const data = Array.isArray(json?.data) ? json.data : Array.isArray(json) ? json : [];
+        const data = Array.isArray(json?.data)
+          ? json.data
+          : Array.isArray(json)
+            ? json
+            : [];
         if (!cancelled) setCriteriaCatalog(data);
       })
-      .catch((e) => !cancelled && setCriteriaError(e?.message || 'Erreur chargement critères'));
-    return () => { cancelled = true; };
+      .catch(
+        (e) =>
+          !cancelled &&
+          setCriteriaError(e?.message || 'Erreur chargement critères')
+      );
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const dates = form.watch('dates');
   const trial: any = dates?.trial_period || {};
   const selected: string[] = (trial.acceptance_criteria as any) || [];
   const toggleCriteria = (id: string, checked: boolean) => {
-    const next = checked ? Array.from(new Set([...(selected || []), id])) : (selected || []).filter((x) => x !== id);
+    const next = checked
+      ? Array.from(new Set([...(selected || []), id]))
+      : (selected || []).filter((x) => x !== id);
     const nextDates = {
       ...(dates || {}),
       trial_period: {
-        ...((dates?.trial_period) || {}),
+        ...(dates?.trial_period || {}),
         acceptance_criteria: next
       }
     };
-    form.setValue('dates', nextDates as any, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
+    form.setValue('dates', nextDates as any, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true
+    });
   };
 
   return (
@@ -305,14 +325,19 @@ export function WorkScheduleTab({ form }: { form: UseFormReturn<SimplifiedContra
                 Critères d&apos;acceptation (Période d&apos;essai)
               </h3>
               {criteriaError && (
-                <p className='text-red-600 text-sm'>Impossible de charger les critères: {criteriaError}</p>
+                <p className='text-sm text-red-600'>
+                  Impossible de charger les critères: {criteriaError}
+                </p>
               )}
               {!criteriaError && criteriaCatalog.length === 0 && (
                 <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
                   {Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className='animate-pulse rounded-lg border p-3'>
-                      <div className='mb-2 h-4 w-1/3 rounded bg-muted' />
-                      <div className='h-3 w-2/3 rounded bg-muted' />
+                    <div
+                      key={i}
+                      className='animate-pulse rounded-lg border p-3'
+                    >
+                      <div className='bg-muted mb-2 h-4 w-1/3 rounded' />
+                      <div className='bg-muted h-3 w-2/3 rounded' />
                     </div>
                   ))}
                 </div>
@@ -322,25 +347,36 @@ export function WorkScheduleTab({ form }: { form: UseFormReturn<SimplifiedContra
                   {criteriaCatalog.map((crit: any) => {
                     const isSelected = (selected || []).includes(crit.id);
                     return (
-                      <div key={crit.id} className='group hover:bg-accent/50 space-y-1.5 rounded-lg p-3 transition-all duration-200'>
+                      <div
+                        key={crit.id}
+                        className='group hover:bg-accent/50 space-y-1.5 rounded-lg p-3 transition-all duration-200'
+                      >
                         <div className='flex items-center justify-between'>
                           <div className='flex items-center space-x-2'>
                             <Checkbox
                               checked={isSelected}
-                              onCheckedChange={(checked) => toggleCriteria(crit.id, !!checked)}
+                              onCheckedChange={(checked) =>
+                                toggleCriteria(crit.id, !!checked)
+                              }
                               aria-label={`Sélectionner ${crit.label}`}
                             />
-                            <span className='text-sm font-semibold'>{crit.label}</span>
+                            <span className='text-sm font-semibold'>
+                              {crit.label}
+                            </span>
                           </div>
                         </div>
-                        <p className='text-muted-foreground text-xs'>{crit.description}</p>
+                        <p className='text-muted-foreground text-xs'>
+                          {crit.description}
+                        </p>
                       </div>
                     );
                   })}
                 </div>
               )}
               {(selected?.length || 0) === 0 && criteriaCatalog.length > 0 && (
-                <p className='text-muted-foreground text-sm'>Aucun critère sélectionné.</p>
+                <p className='text-muted-foreground text-sm'>
+                  Aucun critère sélectionné.
+                </p>
               )}
             </div>
           )}

@@ -8,12 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-import {
-  ArrowLeft,
-  Clock,
-  CalendarDays,
-  User
-} from 'lucide-react';
+import { ArrowLeft, Clock, CalendarDays, User } from 'lucide-react';
 
 interface PointageDetails {
   id: number | string;
@@ -89,7 +84,8 @@ export default function PointageDetailsPage() {
   }, [id]);
 
   const estimatedMinutes = useMemo(() => {
-    if (!data?.worked_day || !data?.check_in || !data?.check_out) return undefined;
+    if (!data?.worked_day || !data?.check_in || !data?.check_out)
+      return undefined;
     const di = new Date(`${data.worked_day}T${data.check_in}`);
     const doo = new Date(`${data.worked_day}T${data.check_out}`);
     if (isNaN(di.getTime()) || isNaN(doo.getTime())) return undefined;

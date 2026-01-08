@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -127,7 +127,9 @@ export default function AjouterPretPage() {
       employees.map((e) => ({
         id: e.id,
         label:
-          e.fullName || `${e.firstName ?? ''} ${e.lastName ?? ''}`.trim() || String(e.id),
+          e.fullName ||
+          `${e.firstName ?? ''} ${e.lastName ?? ''}`.trim() ||
+          String(e.id),
         matricule: e.matricule
       })),
     [employees]
@@ -163,11 +165,11 @@ export default function AjouterPretPage() {
 
   return (
     <PageContainer scrollable={true}>
-      <div className='w-full mx-auto'>
+      <div className='mx-auto w-full'>
         <Card className='w-full'>
           <CardHeader className='flex flex-row items-center justify-between space-y-0'>
             <CardTitle className='flex items-center gap-2'>
-              <PlusCircle className='h-5 w-5 text-primary' />
+              <PlusCircle className='text-primary h-5 w-5' />
               Nouvelle demande de prêt
             </CardTitle>
             <Button variant='ghost' size='sm' onClick={() => router.back()}>
@@ -177,7 +179,10 @@ export default function AjouterPretPage() {
           <Separator />
           <CardContent className='pt-6'>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className='space-y-6'
+              >
                 <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
                   <SelectField
                     name='employe_id'
@@ -198,12 +203,16 @@ export default function AjouterPretPage() {
                       value={form.watch('date_demande') as any}
                       onChange={(d) => form.setValue('date_demande', d || '')}
                       required
-                      error={form.formState.errors.date_demande?.message || null}
+                      error={
+                        form.formState.errors.date_demande?.message || null
+                      }
                     />
                   </div>
 
                   <div className='space-y-2'>
-                    <label className='text-sm font-medium'>Montant du prêt (MAD)</label>
+                    <label className='text-sm font-medium'>
+                      Montant du prêt (MAD)
+                    </label>
                     <Input
                       type='number'
                       min={0}
@@ -214,7 +223,7 @@ export default function AjouterPretPage() {
                       }
                     />
                     {form.formState.errors.montant_pret?.message && (
-                      <p className='text-xs text-destructive'>
+                      <p className='text-destructive text-xs'>
                         {form.formState.errors.montant_pret.message}
                       </p>
                     )}
@@ -232,14 +241,16 @@ export default function AjouterPretPage() {
                       }
                     />
                     {form.formState.errors.duree_mois?.message && (
-                      <p className='text-xs text-destructive'>
+                      <p className='text-destructive text-xs'>
                         {form.formState.errors.duree_mois.message}
                       </p>
                     )}
                   </div>
 
                   <div className='space-y-2'>
-                    <label className='text-sm font-medium'>Taux d'intérêt (%)</label>
+                    <label className='text-sm font-medium'>
+                      Taux d&apos;intérêt (%)
+                    </label>
                     <Input
                       type='number'
                       min={0}
@@ -268,24 +279,34 @@ export default function AjouterPretPage() {
                     options={MONTHS.map((m) => ({ value: m, label: m }))}
                     required
                     placeholder='Sélectionner un mois'
-                    error={(form.formState.errors.periode_paie_depart as any)?.mois?.message}
+                    error={
+                      (form.formState.errors.periode_paie_depart as any)?.mois
+                        ?.message
+                    }
                   />
 
                   <div className='space-y-2'>
-                    <label className='text-sm font-medium'>Année de départ</label>
+                    <label className='text-sm font-medium'>
+                      Année de départ
+                    </label>
                     <Input
                       type='number'
                       min={2000}
                       max={2100}
                       value={form.watch('periode_paie_depart.annee') as any}
                       onChange={(e) =>
-                        form.setValue('periode_paie_depart.annee', Number(e.target.value))
+                        form.setValue(
+                          'periode_paie_depart.annee',
+                          Number(e.target.value)
+                        )
                       }
                     />
                   </div>
 
                   <div className='space-y-2'>
-                    <label className='text-sm font-medium'>Date de début de remboursement (optionnel)</label>
+                    <label className='text-sm font-medium'>
+                      Date de début de remboursement (optionnel)
+                    </label>
                     <DatePickerField
                       name='date_debut_remboursement'
                       value={form.watch('date_debut_remboursement') as any}
@@ -296,19 +317,24 @@ export default function AjouterPretPage() {
                   </div>
 
                   <div className='space-y-2'>
-                    <label className='text-sm font-medium'>Mensualité estimée</label>
+                    <label className='text-sm font-medium'>
+                      Mensualité estimée
+                    </label>
                     <Input value={mensualitePreview} readOnly />
-                    <p className='text-xs text-muted-foreground'>
-                      La mensualité est estimée et pourra être recalculée automatiquement lors de la validation.
+                    <p className='text-muted-foreground text-xs'>
+                      La mensualité est estimée et pourra être recalculée
+                      automatiquement lors de la validation.
                     </p>
                   </div>
 
-                  <div className='md:col-span-2 space-y-2'>
+                  <div className='space-y-2 md:col-span-2'>
                     <label className='text-sm font-medium'>Description</label>
                     <Textarea
-                      placeholder="Ajouter une note (facultatif)"
+                      placeholder='Ajouter une note (facultatif)'
                       value={form.watch('description') || ''}
-                      onChange={(e) => form.setValue('description', e.target.value)}
+                      onChange={(e) =>
+                        form.setValue('description', e.target.value)
+                      }
                       rows={4}
                     />
                   </div>

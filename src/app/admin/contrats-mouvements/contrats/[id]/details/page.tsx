@@ -115,8 +115,8 @@ const normalizeContractStatus = (data: any): Contract => {
     conditions: data.conditions?.selected
       ? { selected: data.conditions.selected }
       : data.conditions
-      ? data.conditions
-      : { selected: [] },
+        ? data.conditions
+        : { selected: [] },
     documents: data.documents,
     historique: data.historique || {
       created_at: data.created_at || new Date().toISOString(),
@@ -183,9 +183,14 @@ export default function ContractDetailsPage() {
       );
 
       // If conditions were updated, persist via pivot route
-      if (updatedData.conditions && Array.isArray(updatedData.conditions.selected)) {
+      if (
+        updatedData.conditions &&
+        Array.isArray(updatedData.conditions.selected)
+      ) {
         await apiClient.put(
-          apiRoutes.admin.contratsEtMovements.contrats.updateConditions(contractId),
+          apiRoutes.admin.contratsEtMovements.contrats.updateConditions(
+            contractId
+          ),
           { selected: updatedData.conditions.selected }
         );
       }
@@ -194,9 +199,13 @@ export default function ContractDetailsPage() {
       // Refresh conditions from pivot endpoint to avoid drift
       try {
         const condRes = await apiClient.get(
-          apiRoutes.admin.contratsEtMovements.contrats.conditionsByContract(contractId)
+          apiRoutes.admin.contratsEtMovements.contrats.conditionsByContract(
+            contractId
+          )
         );
-        const selected = Array.isArray(condRes.data?.data) ? condRes.data.data : [];
+        const selected = Array.isArray(condRes.data?.data)
+          ? condRes.data.data
+          : [];
         normalizedContract.conditions = { selected } as any;
       } catch {}
 

@@ -77,7 +77,7 @@ export interface CustomTableTableState<T> {
 }
 export interface infoText {
   title: string;
-  description: string ;
+  description: string;
 }
 export interface CustomTableProps<T> {
   url: string;

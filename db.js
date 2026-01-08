@@ -53,5 +53,5 @@ module.exports = {
   trialCriteriaCatalog: require('./mock-data/trial-criteria.json'),
   contractTrialCriteria: require('./mock-data/contractTrialCriteria.json'),
   // Nouveau: paramètres max généraux
-  parametreMaxGeneral: require('./mock-data/parametreMaxGeneral.json'),
+  parametreMaxGeneral: require('./mock-data/parametreMaxGeneral.json')
 };

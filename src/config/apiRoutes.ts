@@ -90,11 +90,15 @@ export const apiRoutes = {
           `${API_BASE}/contracts/${id}/upload-signed`,
         cancel: (id: number | string) => `${API_BASE}/contracts/${id}/cancel`,
         conditionsCatalog: `${API_BASE}/contract-conditions`,
-        conditionsByContract: (id: number | string) => `${API_BASE}/contracts/${id}/conditions`,
-        updateConditions: (id: number | string) => `${API_BASE}/contracts/${id}/conditions`,
+        conditionsByContract: (id: number | string) =>
+          `${API_BASE}/contracts/${id}/conditions`,
+        updateConditions: (id: number | string) =>
+          `${API_BASE}/contracts/${id}/conditions`,
         trialCriteriaCatalog: `${API_BASE}/trial-criteria`,
-        trialCriteriaByContract: (id: number | string) => `${API_BASE}/contracts/${id}/trial-criteria`,
-        updateTrialCriteria: (id: number | string) => `${API_BASE}/contracts/${id}/trial-criteria`,
+        trialCriteriaByContract: (id: number | string) =>
+          `${API_BASE}/contracts/${id}/trial-criteria`,
+        updateTrialCriteria: (id: number | string) =>
+          `${API_BASE}/contracts/${id}/trial-criteria`
       },
       avenants: {
         list: `${API_BASE}/avenants`,
@@ -261,7 +265,8 @@ export const apiRoutes = {
       delete: (id: number | string) => `${API_BASE}/avances/${id}`,
       validate: (id: number | string) => `${API_BASE}/avances/${id}/valider`,
       refuse: (id: number | string) => `${API_BASE}/avances/${id}/refuse`,
-      countForEmployeeCurrentYear: (employeeId: number | string) => `${API_BASE}/avances/employee/${employeeId}/count-current-year`,
+      countForEmployeeCurrentYear: (employeeId: number | string) =>
+        `${API_BASE}/avances/employee/${employeeId}/count-current-year`
     },
     prets: {
       list: `${API_BASE}/prets`,
@@ -276,22 +281,28 @@ export const apiRoutes = {
     },
     frais: {
       list: `${API_BASE}/api/admin/frais`,
-      get: (id: string | number|undefined) => `${API_BASE}/api/admin/frais/${id}`,
+      get: (id: string | number | undefined) =>
+        `${API_BASE}/api/admin/frais/${id}`,
       create: `${API_BASE}/api/admin/frais`,
       update: (id: string | number) => `${API_BASE}/api/admin/frais/${id}`,
       delete: (id: string | number) => `${API_BASE}/api/admin/frais/${id}`,
-      validate: (id: string | number) => `${API_BASE}/api/admin/frais/${id}/validate`,
-      submit: (id: string | number) => `${API_BASE}/api/admin/frais/${id}/submit`,
+      validate: (id: string | number) =>
+        `${API_BASE}/api/admin/frais/${id}/validate`,
+      submit: (id: string | number) =>
+        `${API_BASE}/api/admin/frais/${id}/submit`
     },
     parametres: {
       parametreMaxGeneral: {
         list: `${API_BASE}/parametre-max-general`,
         create: `${API_BASE}/parametre-max-general`,
-        show: (id: number | string) => `${API_BASE}/parametre-max-general/${id}`,
-        update: (id: number | string) => `${API_BASE}/parametre-max-general/${id}`,
-        delete: (id: number | string) => `${API_BASE}/parametre-max-general/${id}`,
+        show: (id: number | string) =>
+          `${API_BASE}/parametre-max-general/${id}`,
+        update: (id: number | string) =>
+          `${API_BASE}/parametre-max-general/${id}`,
+        delete: (id: number | string) =>
+          `${API_BASE}/parametre-max-general/${id}`
       }
-    },
+    }
   }
 };
 

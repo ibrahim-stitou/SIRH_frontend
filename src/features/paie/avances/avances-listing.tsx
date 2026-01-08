@@ -11,7 +11,11 @@ import {
   UseTableReturn
 } from '@/components/custom/data-table/types';
 import { apiRoutes } from '@/config/apiRoutes';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip';
 import apiClient from '@/lib/api';
 import {
   Dialog,
@@ -39,7 +43,9 @@ interface Avance {
 
 export default function AvancesListing() {
   const router = useRouter();
-  const [tableInstance, setTableInstance] = useState<Partial<UseTableReturn<Avance>> | null>(null);
+  const [tableInstance, setTableInstance] = useState<Partial<
+    UseTableReturn<Avance>
+  > | null>(null);
   const [loadingDelete, setLoadingDelete] = useState<number | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
   const [employees, setEmployees] = useState<
@@ -65,7 +71,13 @@ export default function AvancesListing() {
   }, []);
   const getStatutBadge = (statut: string) => {
     // Statuts unifiés: "Brouillon" | "En_attente" | "Valide" | "Refuse"
-    const map: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
+    const map: Record<
+      string,
+      {
+        label: string;
+        variant: 'default' | 'secondary' | 'destructive' | 'outline';
+      }
+    > = {
       Brouillon: { label: 'Brouillon', variant: 'outline' },
       En_attente: { label: 'En attente', variant: 'default' },
       Valide: { label: 'Valide', variant: 'secondary' },
@@ -103,7 +115,9 @@ export default function AvancesListing() {
       render: (_value, row: any) => (
         <div className='flex flex-col'>
           <div className='font-medium'>{row.employee?.matricule}</div>
-          <div className='text-sm text-muted-foreground'>{row.employee?.fullName}</div>
+          <div className='text-muted-foreground text-sm'>
+            {row.employee?.fullName}
+          </div>
         </div>
       )
     },
@@ -150,7 +164,9 @@ export default function AvancesListing() {
               <Button
                 variant='outline'
                 className='h-8 w-8 p-1.5'
-                onClick={() => router.push(`/admin/paie/avance/${row.id}/details`)}
+                onClick={() =>
+                  router.push(`/admin/paie/avance/${row.id}/details`)
+                }
               >
                 <Eye className='h-4 w-4' />
               </Button>
@@ -166,7 +182,9 @@ export default function AvancesListing() {
                 <Button
                   variant='outline'
                   className='h-8 w-8 p-1.5'
-                  onClick={() => router.push(`/admin/paie/avance/${row.id}/modifier`)}
+                  onClick={() =>
+                    router.push(`/admin/paie/avance/${row.id}/modifier`)
+                  }
                 >
                   <Pencil className='h-4 w-4' />
                 </Button>
@@ -192,7 +210,9 @@ export default function AvancesListing() {
               <TooltipContent
                 className='tooltip-content rounded-md bg-red-100 px-2 py-1 text-red-600 shadow-md'
                 sideOffset={5}
-              >Supprimer</TooltipContent>
+              >
+                Supprimer
+              </TooltipContent>
             </Tooltip>
           )}
         </div>
@@ -201,9 +221,12 @@ export default function AvancesListing() {
   ];
 
   const filters: CustomTableFilterConfig[] = [
-    { field: 'employe_id',    label: 'Employé',
+    {
+      field: 'employe_id',
+      label: 'Employé',
       type: 'datatable-select',
-      options: employees },
+      options: employees
+    },
     {
       field: 'statut',
       label: 'Statut',
@@ -221,8 +244,11 @@ export default function AvancesListing() {
 
   return (
     <div className='flex flex-1 flex-col space-y-4'>
-      <div className='flex justify-between mb-6'>
-        <Heading title={'Gestion des avances'} description={'Liste des demandes d\'avance en cours.'}/>
+      <div className='mb-6 flex justify-between'>
+        <Heading
+          title={'Gestion des avances'}
+          description={"Liste des demandes d'avance en cours."}
+        />
         <Button onClick={() => router.push('/admin/paie/avance/ajouter')}>
           <Plus className='mr-2 h-4 w-4' />
           Ajouter une nouvelle demande d&apos;avance
@@ -234,14 +260,19 @@ export default function AvancesListing() {
         filters={filters}
         onInit={(instance) => setTableInstance(instance)}
       />
-      <Dialog open={!!confirmDeleteId} onOpenChange={(o) => !o && setConfirmDeleteId(null)}>
+      <Dialog
+        open={!!confirmDeleteId}
+        onOpenChange={(o) => !o && setConfirmDeleteId(null)}
+      >
         <DialogContent>
-
-
           <DialogHeader>
-            <DialogTitle>Supprimer l&apos;avance (brouillon)&nbsp;?</DialogTitle>
+            <DialogTitle>
+              Supprimer l&apos;avance (brouillon)&nbsp;?
+            </DialogTitle>
           </DialogHeader>
-          <p className='text-muted-foreground text-sm'>Cette action est irréversible.</p>
+          <p className='text-muted-foreground text-sm'>
+            Cette action est irréversible.
+          </p>
           <DialogFooter>
             <Button variant='outline' onClick={() => setConfirmDeleteId(null)}>
               Annuler

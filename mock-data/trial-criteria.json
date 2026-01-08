@@ -1,8 +1,27 @@
 [
-  { "id": "CRIT_PERFORMANCE", "label": "Performance conforme aux objectifs", "description": "Atteinte des objectifs fixés pour la période d'essai." },
-  { "id": "CRIT_ATTENDANCE", "label": "Assiduité et ponctualité", "description": "Respect des horaires et présence régulière." },
-  { "id": "CRIT_BEHAVIOR", "label": "Comportement et intégration", "description": "Intégration dans l'équipe, respect des règles et attitude professionnelle." },
-  { "id": "CRIT_SKILLS", "label": "Compétences techniques", "description": "Maîtrise des compétences requises pour le poste." },
-  { "id": "CRIT_COMMUNICATION", "label": "Communication", "description": "Qualité de communication écrite et orale." }
+  {
+    "id": "CRIT_PERFORMANCE",
+    "label": "Performance conforme aux objectifs",
+    "description": "Atteinte des objectifs fixés pour la période d'essai."
+  },
+  {
+    "id": "CRIT_ATTENDANCE",
+    "label": "Assiduité et ponctualité",
+    "description": "Respect des horaires et présence régulière."
+  },
+  {
+    "id": "CRIT_BEHAVIOR",
+    "label": "Comportement et intégration",
+    "description": "Intégration dans l'équipe, respect des règles et attitude professionnelle."
+  },
+  {
+    "id": "CRIT_SKILLS",
+    "label": "Compétences techniques",
+    "description": "Maîtrise des compétences requises pour le poste."
+  },
+  {
+    "id": "CRIT_COMMUNICATION",
+    "label": "Communication",
+    "description": "Qualité de communication écrite et orale."
+  }
 ]
-

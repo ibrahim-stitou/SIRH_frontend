@@ -42,17 +42,32 @@ export default function WorkScheduleDisplay({
     fetch(apiRoutes.admin.contratsEtMovements.contrats.trialCriteriaCatalog)
       .then((r) => r.json())
       .then((json) => {
-        const data = Array.isArray(json?.data) ? json.data : Array.isArray(json) ? json : [];
+        const data = Array.isArray(json?.data)
+          ? json.data
+          : Array.isArray(json)
+            ? json
+            : [];
         if (!cancelled) setCriteriaCatalog(data);
       })
-      .catch((e) => !cancelled && setCriteriaError(e?.message || 'Erreur chargement critères'));
-    return () => { cancelled = true; };
+      .catch(
+        (e) =>
+          !cancelled &&
+          setCriteriaError(e?.message || 'Erreur chargement critères')
+      );
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const selected = (contract?.dates?.trial_period?.acceptance_criteria ?? []) as string[];
+  const selected = (contract?.dates?.trial_period?.acceptance_criteria ??
+    []) as string[];
   const toggleCriteria = (id: string, checked: boolean) => {
-    const next = checked ? Array.from(new Set([...(selected || []), id])) : (selected || []).filter((x) => x !== id);
-    onUpdate?.({ dates: { trial_period: { acceptance_criteria: next } } } as any);
+    const next = checked
+      ? Array.from(new Set([...(selected || []), id]))
+      : (selected || []).filter((x) => x !== id);
+    onUpdate?.({
+      dates: { trial_period: { acceptance_criteria: next } }
+    } as any);
   };
 
   const handleChange = (field: string, value: any) => {
@@ -469,17 +484,19 @@ export default function WorkScheduleDisplay({
 
         <div className='border-t pt-4'>
           <h3 className='mb-3 flex items-center gap-2 text-sm font-bold text-amber-700 dark:text-amber-400'>
-            Critères d'acceptation (Période d'essai)
+            Critères d&apos;acceptation (Période d&apos;essai)
           </h3>
           {criteriaError && (
-            <p className='text-red-600 text-sm'>Impossible de charger les critères: {criteriaError}</p>
+            <p className='text-sm text-red-600'>
+              Impossible de charger les critères: {criteriaError}
+            </p>
           )}
           {criteriaCatalog.length === 0 && !criteriaError && (
             <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
               {Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className='animate-pulse rounded-lg border p-3'>
-                  <div className='mb-2 h-4 w-1/3 rounded bg-muted' />
-                  <div className='h-3 w-2/3 rounded bg-muted' />
+                  <div className='bg-muted mb-2 h-4 w-1/3 rounded' />
+                  <div className='bg-muted h-3 w-2/3 rounded' />
                 </div>
               ))}
             </div>
@@ -490,11 +507,18 @@ export default function WorkScheduleDisplay({
                 const isSelected = (selected || []).includes(crit.id);
                 const canEdit = Boolean(isEditing && isDraft);
                 return (
-                  <div key={crit.id} className='group hover:bg-accent/50 space-y-1.5 rounded-lg p-3 transition-all duration-200'>
+                  <div
+                    key={crit.id}
+                    className='group hover:bg-accent/50 space-y-1.5 rounded-lg p-3 transition-all duration-200'
+                  >
                     <div className='flex items-center justify-between'>
                       <div className='flex items-center space-x-2.5'>
-                        <div className={`flex h-5 w-5 items-center justify-center rounded-md border-2 transition-all ${isSelected ? 'bg-primary border-primary shadow-sm' : 'border-input'}`}></div>
-                        <span className='text-sm font-semibold'>{crit.label}</span>
+                        <div
+                          className={`flex h-5 w-5 items-center justify-center rounded-md border-2 transition-all ${isSelected ? 'bg-primary border-primary shadow-sm' : 'border-input'}`}
+                        ></div>
+                        <span className='text-sm font-semibold'>
+                          {crit.label}
+                        </span>
                       </div>
                       {canEdit && (
                         <button
@@ -505,14 +529,18 @@ export default function WorkScheduleDisplay({
                         </button>
                       )}
                     </div>
-                    <p className='text-muted-foreground text-xs'>{crit.description}</p>
+                    <p className='text-muted-foreground text-xs'>
+                      {crit.description}
+                    </p>
                   </div>
                 );
               })}
             </div>
           )}
           {(selected?.length || 0) === 0 && criteriaCatalog.length > 0 && (
-            <p className='text-muted-foreground text-sm'>Aucun critère sélectionné.</p>
+            <p className='text-muted-foreground text-sm'>
+              Aucun critère sélectionné.
+            </p>
           )}
         </div>
       </CardContent>
