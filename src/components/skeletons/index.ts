@@ -1,0 +1,2 @@
+export { AccidentTravailStatistiqueSkeleton } from './AccidentTravailStatistiqueSkeleton';
+

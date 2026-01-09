@@ -32,6 +32,7 @@ import {
 import PageContainer from '@/components/layout/page-container';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { AccidentTravailStatistiqueSkeleton } from '@/components/skeletons/AccidentTravailStatistiqueSkeleton';
 
 interface StatistiquesAT {
   nombreTotal: number;
@@ -96,14 +97,7 @@ export default function StatistiquesAccidentsTravailPage() {
   if (loading) {
     return (
       <PageContainer scrollable>
-        <div className='flex items-center justify-center py-20'>
-          <div className='flex flex-col items-center gap-4'>
-            <div className='border-primary h-8 w-8 animate-spin rounded-full border-4 border-t-transparent' />
-            <p className='text-muted-foreground'>
-              Chargement des statistiques...
-            </p>
-          </div>
-        </div>
+        <AccidentTravailStatistiqueSkeleton />
       </PageContainer>
     );
   }
