@@ -69,6 +69,7 @@ export default function AjouterAvancePage() {
     resolver: zodResolver(CreateAvanceSchema),
     defaultValues: {
       employe_id: undefined as unknown as number,
+      type: 'Avance',
       date_demande: undefined as unknown as string,
       periode_paie: {
         mois: MONTHS[current.getMonth()],
@@ -217,7 +218,7 @@ export default function AjouterAvancePage() {
           <CardHeader className='flex flex-row items-center justify-between space-y-0'>
             <CardTitle className='flex items-center gap-2'>
               <PlusCircle className='text-primary h-5 w-5' />
-              Nouvelle demande d&apos;avance
+              Nouvelle demande d&apos;avance/acompte
             </CardTitle>
             <Button variant='ghost' size='sm' onClick={() => router.back()}>
               <ArrowLeft className='mr-2 h-4 w-4' /> Retour
@@ -241,6 +242,20 @@ export default function AjouterAvancePage() {
                     required
                     placeholder='Sélectionner un employé'
                     error={form.formState.errors.employe_id?.message as any}
+                  />
+
+                  <SelectField
+                    name='type'
+                    label='Type'
+                    control={form.control as any}
+                    options={[
+                      { id: 'Avance', label: 'Avance' },
+                      { id: 'Acompte', label: 'Acompte' }
+                    ]}
+                    displayField='label'
+                    required
+                    placeholder='Sélectionner le type'
+                    error={form.formState.errors.type?.message as any}
                   />
 
                   <div>

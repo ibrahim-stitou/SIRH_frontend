@@ -5,6 +5,10 @@ export const AvanceSchema = z.object({
   employe_id: z.number({
     required_error: "L'identifiant de l'employé est requis."
   }),
+  type: z.enum(['Avance', 'Acompte'], {
+    required_error: 'Le type est requis.',
+    invalid_type_error: "Le type doit être 'Avance' ou 'Acompte'."
+  }),
   statut: z.enum(['Brouillon', 'En_attente', 'Valide', 'Refuse'], {
     required_error: 'Le statut est requis.',
     invalid_type_error: "Le statut doit être l'une des valeurs autorisées."

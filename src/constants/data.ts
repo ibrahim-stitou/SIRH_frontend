@@ -126,7 +126,7 @@ export const useNavItems = (): NavItem[] => {
           description: 'US-EMP-015'
         },
         {
-          title: t('sidebar.avances'),
+          title: t('sidebar.avancesAcomptes'),
           url: '/admin/paie/avance',
           icon: 'iconTicket',
           shortcut: ['p', 'p'],

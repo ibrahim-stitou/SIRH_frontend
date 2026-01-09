@@ -32,6 +32,7 @@ type AvanceDetails = {
   date_validation?: string | null;
   created_at?: string;
   updated_at?: string;
+  type: 'Avance' | 'Acompte';
   periode_paie: { mois: string; annee: number };
   motif_refus?: string | null;
   description?: string | null;
@@ -159,7 +160,7 @@ export default function AvanceDetailsPage() {
         <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0'>
             <CardTitle>
-              Détails de l&apos;avance{' '}
+              Détails de la demande{' '}
               <span className='ml-2 text-xs font-medium text-gray-500'>
                 {data?.statut && getStatutBadge(data.statut)}
               </span>
@@ -197,6 +198,14 @@ export default function AvanceDetailsPage() {
                     <div className='text-muted-foreground text-sm'>Employé</div>
                     <div className='font-medium'>
                       {data.employee?.matricule} {data.employee?.fullName}
+                    </div>
+                  </div>
+                  <div className='rounded-md border p-3'>
+                    <div className='text-muted-foreground text-sm'>Type</div>
+                    <div className='font-medium'>
+                      <Badge variant={data.type === 'Avance' ? 'default' : 'outline'}>
+                        {data.type || 'Avance'}
+                      </Badge>
                     </div>
                   </div>
                   <div className='rounded-md border p-3'>

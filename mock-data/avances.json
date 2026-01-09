@@ -2,6 +2,7 @@
   {
     "id": 1,
     "employe_id": 1000,
+    "type": "Avance",
     "date_demande": "2025-01-10",
     "statut": "Brouillon",
     "creer_par": 1,
@@ -17,6 +18,7 @@
   {
     "id": 2,
     "employe_id": 1001,
+    "type": "Acompte",
     "date_demande": "2025-01-15",
     "statut": "En_attente",
     "creer_par": 1,
@@ -32,6 +34,7 @@
   {
     "id": 3,
     "employe_id": 1002,
+    "type": "Avance",
     "date_demande": "2025-01-20",
     "statut": "Valide",
     "creer_par": 1,
@@ -47,6 +50,7 @@
   {
     "id": 4,
     "employe_id": 1003,
+    "type": "Acompte",
     "date_demande": "2025-01-22",
     "statut": "Refuse",
     "motif_refus": "Montant trop élevé",

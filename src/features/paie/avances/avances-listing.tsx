@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Eye, Trash2, Plus, Edit2, Pencil } from 'lucide-react';
+import { Eye, Trash2, Plus, Pencil } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import CustomTable from '@/components/custom/data-table/custom-table';
@@ -29,6 +29,7 @@ import { Heading } from '@/components/ui/heading';
 interface Avance {
   id: number;
   employe_id: number;
+  type: 'Avance' | 'Acompte';
   date_demande: string;
   statut: string;
   montant_avance?: number;
@@ -122,13 +123,23 @@ export default function AvancesListing() {
       )
     },
     {
+      data: 'type',
+      label: 'Type',
+      sortable: true,
+      render: (value) => (
+        <Badge variant={value === 'Avance' ? 'default' : 'outline'}>
+          {value}
+        </Badge>
+      )
+    },
+    {
       data: 'date_demande',
       label: 'Date demande',
       sortable: true
     },
     {
       data: 'montant_avance',
-      label: 'Montant avance',
+      label: 'Montant',
       sortable: true,
       render: (value) => (
         <div className='font-medium'>
@@ -228,6 +239,16 @@ export default function AvancesListing() {
       options: employees
     },
     {
+      field: 'type',
+      label: 'Type',
+      type: 'datatable-select',
+      options: [
+        { label: 'Tous', value: '' },
+        { label: 'Avance', value: 'Avance' },
+        { label: 'Acompte', value: 'Acompte' }
+      ]
+    },
+    {
       field: 'statut',
       label: 'Statut',
       type: 'datatable-select',
@@ -246,12 +267,12 @@ export default function AvancesListing() {
     <div className='flex flex-1 flex-col space-y-4'>
       <div className='mb-6 flex justify-between'>
         <Heading
-          title={'Gestion des avances'}
-          description={"Liste des demandes d'avance en cours."}
+          title={'Gestion des avances et acomptes'}
+          description={"Liste des demandes d'avance et d'acompte en cours."}
         />
         <Button onClick={() => router.push('/admin/paie/avance/ajouter')}>
           <Plus className='mr-2 h-4 w-4' />
-          Ajouter une nouvelle demande d&apos;avance
+          Ajouter une nouvelle demande
         </Button>
       </div>
       <CustomTable<Avance>
@@ -267,7 +288,7 @@ export default function AvancesListing() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              Supprimer l&apos;avance (brouillon)&nbsp;?
+              Supprimer la demande (brouillon)&nbsp;?
             </DialogTitle>
           </DialogHeader>
           <p className='text-muted-foreground text-sm'>

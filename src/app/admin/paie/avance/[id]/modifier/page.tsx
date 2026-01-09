@@ -30,6 +30,7 @@ type EmployeeSimple = {
 
 const EditAvanceSchema = AvanceSchema.pick({
   employe_id: true,
+  type: true,
   date_demande: true,
   periode_paie: true,
   description: true
@@ -111,6 +112,7 @@ export default function ModifierAvancePage() {
         if (!cancelled && d) {
           form.reset({
             employe_id: d.employe_id,
+            type: d.type || 'Avance',
             date_demande: d.date_demande,
             periode_paie: d.periode_paie,
             description: d.description || '',
@@ -212,7 +214,7 @@ export default function ModifierAvancePage() {
       <div className='mx-auto w-full'>
         <Card className='w-full'>
           <CardHeader className='flex flex-row items-center justify-between space-y-0'>
-            <CardTitle>Modifier l&apos;avance</CardTitle>
+            <CardTitle>Modifier la demande</CardTitle>
             <Button variant='ghost' size='sm' onClick={() => router.back()}>
               <ArrowLeft className='mr-2 h-4 w-4' /> Retour
             </Button>
@@ -255,6 +257,20 @@ export default function ModifierAvancePage() {
                       required
                       placeholder='Sélectionner un employé'
                       error={form.formState.errors.employe_id?.message as any}
+                    />
+
+                    <SelectField
+                      name='type'
+                      label='Type'
+                      control={form.control as any}
+                      options={[
+                        { id: 'Avance', label: 'Avance' },
+                        { id: 'Acompte', label: 'Acompte' }
+                      ]}
+                      displayField='label'
+                      required
+                      placeholder='Sélectionner le type'
+                      error={form.formState.errors.type?.message as any}
                     />
 
                     <div>

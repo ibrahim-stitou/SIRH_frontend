@@ -1,6 +1,7 @@
 export interface AvanceInterface {
   id: number;
   employe_id: number;
+  type: 'Avance' | 'Acompte';
   statut: 'Brouillon' | 'En_attente' | 'Valide' | 'Refuse';
   date_demande: string;
   creer_par?: number;
@@ -9,7 +10,7 @@ export interface AvanceInterface {
   created_at: string;
   updated_at: string;
   periode_paie: {
-    mois: 'string';
+    mois: string;
     annee: number;
   };
   motif_refus?: string;
