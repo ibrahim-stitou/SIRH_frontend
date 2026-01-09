@@ -1,0 +1,216 @@
+{
+  "departements": [
+    {
+      "id": "1",
+      "code": "01",
+      "libelle": "Ressources Humaines",
+      "createdAt": "2024-01-15T10:00:00Z",
+      "updatedAt": "2024-01-15T10:00:00Z"
+    },
+    {
+      "id": "2",
+      "code": "02",
+      "libelle": "Informatique",
+      "createdAt": "2024-01-15T10:00:00Z",
+      "updatedAt": "2024-01-15T10:00:00Z"
+    },
+    {
+      "id": "3",
+      "code": "03",
+      "libelle": "Commercial",
+      "createdAt": "2024-01-15T10:00:00Z",
+      "updatedAt": "2024-01-15T10:00:00Z"
+    },
+    {
+      "id": "4",
+      "code": "04",
+      "libelle": "Finance et Comptabilité",
+      "createdAt": "2024-01-15T10:00:00Z",
+      "updatedAt": "2024-01-15T10:00:00Z"
+    },
+    {
+      "id": "5",
+      "code": "05",
+      "libelle": "Production",
+      "createdAt": "2024-01-15T10:00:00Z",
+      "updatedAt": "2024-01-15T10:00:00Z"
+    },
+    {
+      "id": "6",
+      "code": "06",
+      "libelle": "Logistique",
+      "createdAt": "2024-01-15T10:00:00Z",
+      "updatedAt": "2024-01-15T10:00:00Z"
+    },
+    {
+      "id": "7",
+      "code": "07",
+      "libelle": "Marketing",
+      "createdAt": "2024-01-15T10:00:00Z",
+      "updatedAt": "2024-01-15T10:00:00Z"
+    },
+    {
+      "id": "8",
+      "code": "08",
+      "libelle": "Recherche et Développement",
+      "createdAt": "2024-01-15T10:00:00Z",
+      "updatedAt": "2024-01-15T10:00:00Z"
+    }
+  ],
+  "postes": [
+    {
+      "id": "1",
+      "code": "DEV01",
+      "libelle": "Développeur Fullstack",
+      "departement": "02"
+    },
+    {
+      "id": "2",
+      "code": "HR01",
+      "libelle": "Responsable RH",
+      "departement": "01"
+    },
+    {
+      "id": "3",
+      "code": "COM01",
+      "libelle": "Commercial Senior",
+      "departement": "03"
+    }
+  ],
+  "emplois": [
+    {
+      "id": "1",
+      "code": "EMP001",
+      "libelle": "Temps plein",
+      "type_contrat": "CDI"
+    },
+    {
+      "id": "2",
+      "code": "EMP002",
+      "libelle": "Temps partiel",
+      "type_contrat": "CDI"
+    },
+    {
+      "id": "3",
+      "code": "EMP003",
+      "libelle": "Saisonnier",
+      "type_contrat": "CDD"
+    }
+  ],
+  "metiers": [
+    {
+      "id": "1",
+      "code": "MT001",
+      "libelle": "Ingénieur logiciel",
+      "domaine": "Informatique"
+    },
+    {
+      "id": "2",
+      "code": "MT002",
+      "libelle": "Gestionnaire RH",
+      "domaine": "Ressources Humaines"
+    },
+    {
+      "id": "3",
+      "code": "MT003",
+      "libelle": "Chargé de clientèle",
+      "domaine": "Commercial"
+    }
+  ],
+  "lieuxTravail": [
+    {
+      "id": "1",
+      "code": "LT01",
+      "libelle": "Siège Casablanca",
+      "adresse": "123 Boulevard Mohammed V, Casablanca 20000"
+    },
+    {
+      "id": "2",
+      "code": "LT02",
+      "libelle": "Agence Rabat",
+      "adresse": "45 Avenue Hassan II, Rabat 10000"
+    },
+    {
+      "id": "3",
+      "code": "LT03",
+      "libelle": "Bureau Marrakech",
+      "adresse": "78 Rue de la Liberté, Marrakech 40000"
+    }
+  ],
+  "primes": [
+    {
+      "id": "1",
+      "code": "PR001",
+      "libelle": "Prime de présentation",
+      "exonere": true,
+      "montant": 1000
+    },
+    {
+      "id": "2",
+      "code": "PR002",
+      "libelle": "Prime d'ancienneté",
+      "exonere": false,
+      "montant": 500
+    },
+    {
+      "id": "3",
+      "code": "PR003",
+      "libelle": "Prime de rendement",
+      "exonere": false,
+      "montant": 1500
+    }
+  ],
+  "indemnites": [
+    {
+      "id": "1",
+      "code": "IND001",
+      "libelle": "Voiture de service",
+      "type": "avantage"
+    },
+    {
+      "id": "2",
+      "code": "IND002",
+      "libelle": "Indemnité de déplacement",
+      "type": "remboursement"
+    },
+    {
+      "id": "3",
+      "code": "IND003",
+      "libelle": "Téléphone professionnel",
+      "type": "avantage"
+    }
+  ],
+  "managers": [
+    {
+      "id": "1",
+      "code": "MGR001",
+      "nom": "El Fassi",
+      "prenom": "Ahmed",
+      "relation_employees": "supervise 10 employés"
+    },
+    {
+      "id": "2",
+      "code": "MGR002",
+      "nom": "Bennani",
+      "prenom": "Fatima",
+      "relation_employees": "supervise 8 employés"
+    }
+  ],
+  "mutuelles": [
+    {
+      "id": "1",
+      "code": "MA001",
+      "libelle": "RCAR",
+      "cotisation_employeur": 9.0,
+      "cotisation_employe": 4.5
+    },
+    {
+      "id": "2",
+      "code": "MA002",
+      "libelle": "CNSS",
+      "cotisation_employeur": 20.0,
+      "cotisation_employe": 4.29
+    }
+  ]
+}
+

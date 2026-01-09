@@ -154,6 +154,12 @@ export const useNavItems = (): NavItem[] => {
       icon: 'ambulance',
       shortcut: ['a', 't'],
       description: 'US-AT-001'
+    },
+    {
+      title: t('sidebar.parametres'),
+      url: '/admin/parametres',
+      icon: 'settings',
+      description: 'US-PRO-004'
     }
   ];
 };
