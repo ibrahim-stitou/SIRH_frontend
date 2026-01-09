@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { SelectField } from '@/components/custom/SelectField';
 import { DatePickerField } from '@/components/custom/DatePickerField';
+import { FileUploader } from '@/components/file-uploader';
 import { toast } from 'sonner';
 import apiClient from '@/lib/api';
 import { apiRoutes } from '@/config/apiRoutes';
@@ -41,7 +42,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import RequiredRedStar from '@/components/custom/required-red-star';
 import { Switch } from '@/components/ui/switch';
 
-// Schema de validation
+// Schema de validation - Statut toujours en Brouillon à la création
 const accidentSchema = z.object({
   employeId: z.string().min(1, 'Employé requis'),
   dateHeureAccident: z.string().min(1, 'Date et heure requises'),
@@ -63,8 +64,7 @@ const accidentSchema = z.object({
   arretTravailExiste: z.boolean().default(false),
   arretTravailDuree: z.string().optional(),
   arretTravailDebut: z.string().optional(),
-  arretTravailFin: z.string().optional(),
-  statut: z.enum(['Brouillon', 'Déclaré']).default('Brouillon')
+  arretTravailFin: z.string().optional()
 });
 
 type AccidentFormValues = z.infer<typeof accidentSchema>;
@@ -84,6 +84,7 @@ export default function AjouterAccidentTravailPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [delaiAlert, setDelaiAlert] = useState<{
     heures: number;
     respect: boolean;
@@ -103,8 +104,7 @@ export default function AjouterAccidentTravailPage() {
       arretTravailExiste: false,
       arretTravailDuree: '',
       arretTravailDebut: '',
-      arretTravailFin: '',
-      statut: 'Brouillon'
+      arretTravailFin: ''
     }
   });
 
@@ -179,11 +179,17 @@ export default function AjouterAccidentTravailPage() {
           dateDebut: data.arretTravailDebut || undefined,
           dateFin: data.arretTravailFin || undefined
         },
-        statut: data.statut
+        statut: 'Brouillon', // Toujours en brouillon à la création
+        piecesJointes: uploadedFiles.map(file => ({
+          nom: file.name,
+          type: file.type,
+          taille: file.size,
+          dateUpload: new Date().toISOString()
+        }))
       };
 
       await apiClient.post(apiRoutes.admin.accidentsTravail.create, payload);
-      toast.success('Accident du travail déclaré avec succès');
+      toast.success('Accident du travail enregistré en brouillon');
       router.push('/admin/gestion-social/accidents-travail');
     } catch (error: any) {
       console.error('Erreur:', error);
@@ -219,7 +225,7 @@ export default function AjouterAccidentTravailPage() {
                 Déclarer un accident du travail
               </h1>
               <p className='text-muted-foreground text-sm'>
-                Déclaration obligatoire sous 48h
+                Enregistrement en brouillon • Déclaration CNSS sous 48h
               </p>
             </div>
           </div>
@@ -590,33 +596,34 @@ export default function AjouterAccidentTravailPage() {
               </CardContent>
             </Card>
 
-            {/* Statut */}
+            {/* Documents */}
             <Card>
               <CardHeader>
-                <CardTitle>Statut de la déclaration</CardTitle>
+                <CardTitle className='flex items-center gap-2'>
+                  <FileText className='h-5 w-5' />
+                  Documents et pièces jointes
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <FormField
-                  control={form.control}
-                  name='statut'
-                  render={() => (
-                    <FormItem>
-                      <FormLabel>Statut</FormLabel>
-                      <SelectField
-                        control={form.control}
-                        name='statut'
-                        options={[
-                          { label: 'Brouillon', value: 'Brouillon' },
-                          { label: 'Déclaré', value: 'Déclaré' }
-                        ]}
-                      />
-                      <FormDescription>
-                        Enregistrer en brouillon ou déclarer immédiatement
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className='space-y-2'>
+                  <p className='text-sm text-muted-foreground mb-4'>
+                    Certificat médical, déclaration, photos, témoignages...
+                  </p>
+                  <FileUploader
+                    value={uploadedFiles}
+                    onValueChange={setUploadedFiles}
+                    maxFiles={10}
+                    maxSize={5 * 1024 * 1024}
+                    accept={{
+                      'application/pdf': ['.pdf'],
+                      'image/*': ['.jpg', '.jpeg', '.png'],
+                      'application/msword': ['.doc'],
+                      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
+                    }}
+                    multiple
+                    description='PDF, images, Word (max 5MB par fichier)'
+                  />
+                </div>
               </CardContent>
             </Card>
 
@@ -636,7 +643,7 @@ export default function AjouterAccidentTravailPage() {
                 ) : (
                   <>
                     <Save className='mr-2 h-4 w-4' />
-                    Enregistrer
+                    Enregistrer en brouillon
                   </>
                 )}
               </Button>

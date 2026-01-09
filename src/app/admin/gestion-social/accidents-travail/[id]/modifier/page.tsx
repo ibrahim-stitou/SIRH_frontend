@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { SelectField } from '@/components/custom/SelectField';
 import { DatePickerField } from '@/components/custom/DatePickerField';
+import { FileUploader } from '@/components/file-uploader';
 import { toast } from 'sonner';
 import apiClient from '@/lib/api';
 import { apiRoutes } from '@/config/apiRoutes';
@@ -36,7 +37,7 @@ import {
   Clock,
   Loader2
 } from 'lucide-react';
-import { format, parseISO, differenceInHours } from 'date-fns';
+import { parseISO, differenceInHours } from 'date-fns';
 import PageContainer from '@/components/layout/page-container';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import RequiredRedStar from '@/components/custom/required-red-star';
@@ -96,6 +97,7 @@ export default function ModifierAccidentTravailPage() {
     heures: number;
     respect: boolean;
   } | null>(null);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
   const form = useForm<AccidentFormValues>({
     resolver: zodResolver(accidentSchema),
@@ -250,10 +252,110 @@ export default function ModifierAccidentTravailPage() {
   if (loadingData) {
     return (
       <PageContainer scrollable>
-        <div className='flex items-center justify-center py-20'>
-          <div className='flex flex-col items-center gap-4'>
-            <Loader2 className='h-8 w-8 animate-spin text-primary' />
-            <p className='text-muted-foreground'>Chargement de l&apos;accident...</p>
+        <div className='space-y-4'>
+          {/* Header Skeleton */}
+          <div className='flex items-center justify-between'>
+            <div className='flex items-center space-x-2'>
+              <Skeleton className='h-10 w-10 rounded-md' />
+              <div className='space-y-2'>
+                <Skeleton className='h-7 w-64' />
+                <Skeleton className='h-4 w-48' />
+              </div>
+            </div>
+          </div>
+
+          {/* Form Skeleton */}
+          <div className='space-y-6'>
+            {/* Card 1 - Informations générales */}
+            <Card>
+              <CardHeader>
+                <div className='flex items-center gap-2'>
+                  <Skeleton className='h-5 w-5 rounded' />
+                  <Skeleton className='h-6 w-48' />
+                </div>
+              </CardHeader>
+              <CardContent className='space-y-4'>
+                <div className='grid gap-4 md:grid-cols-2'>
+                  <div className='space-y-2'>
+                    <Skeleton className='h-4 w-24' />
+                    <Skeleton className='h-10 w-full' />
+                  </div>
+                  <div className='space-y-2'>
+                    <Skeleton className='h-4 w-32' />
+                    <Skeleton className='h-10 w-full' />
+                  </div>
+                </div>
+                <div className='grid gap-4 md:grid-cols-2'>
+                  <div className='space-y-2'>
+                    <Skeleton className='h-4 w-28' />
+                    <Skeleton className='h-10 w-full' />
+                  </div>
+                  <div className='space-y-2'>
+                    <Skeleton className='h-4 w-20' />
+                    <Skeleton className='h-10 w-full' />
+                  </div>
+                </div>
+                <div className='space-y-2'>
+                  <Skeleton className='h-4 w-32' />
+                  <Skeleton className='h-10 w-full' />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Card 2 - Circonstances */}
+            <Card>
+              <CardHeader>
+                <div className='flex items-center gap-2'>
+                  <Skeleton className='h-5 w-5 rounded' />
+                  <Skeleton className='h-6 w-56' />
+                </div>
+              </CardHeader>
+              <CardContent className='space-y-4'>
+                <div className='space-y-2'>
+                  <Skeleton className='h-4 w-48' />
+                  <Skeleton className='h-32 w-full' />
+                </div>
+                <div className='space-y-2'>
+                  <Skeleton className='h-4 w-36' />
+                  <Skeleton className='h-24 w-full' />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Card 3 - Témoins */}
+            <Card>
+              <CardHeader>
+                <div className='flex items-center justify-between'>
+                  <div className='flex items-center gap-2'>
+                    <Skeleton className='h-5 w-5 rounded' />
+                    <Skeleton className='h-6 w-32' />
+                  </div>
+                  <Skeleton className='h-9 w-40' />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Skeleton className='h-12 w-full' />
+              </CardContent>
+            </Card>
+
+            {/* Card 4 - Arrêt de travail */}
+            <Card>
+              <CardHeader>
+                <div className='flex items-center gap-2'>
+                  <Skeleton className='h-5 w-5 rounded' />
+                  <Skeleton className='h-6 w-40' />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Skeleton className='h-16 w-full rounded-lg' />
+              </CardContent>
+            </Card>
+
+            {/* Actions Skeleton */}
+            <div className='flex justify-end gap-2'>
+              <Skeleton className='h-10 w-24' />
+              <Skeleton className='h-10 w-48' />
+            </div>
           </div>
         </div>
       </PageContainer>
@@ -637,6 +739,37 @@ export default function ModifierAccidentTravailPage() {
               </CardContent>
             </Card>
 
+            {/* Documents */}
+            <Card>
+              <CardHeader>
+                <CardTitle className='flex items-center gap-2'>
+                  <FileText className='h-5 w-5' />
+                  Documents et pièces jointes
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className='space-y-2'>
+                  <p className='text-sm text-muted-foreground mb-4'>
+                    Certificat médical, déclaration, photos, témoignages...
+                  </p>
+                  <FileUploader
+                    value={uploadedFiles}
+                    onValueChange={setUploadedFiles}
+                    maxFiles={10}
+                    maxSize={5 * 1024 * 1024}
+                    accept={{
+                      'application/pdf': ['.pdf'],
+                      'image/*': ['.jpg', '.jpeg', '.png'],
+                      'application/msword': ['.doc'],
+                      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
+                    }}
+                    multiple
+                    description='PDF, images, Word (max 5MB par fichier)'
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Statut */}
             <Card>
               <CardHeader>
@@ -697,4 +830,3 @@ export default function ModifierAccidentTravailPage() {
     </PageContainer>
   );
 }
-

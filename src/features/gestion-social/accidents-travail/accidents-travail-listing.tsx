@@ -132,7 +132,7 @@ export default function AccidentsTravailListing() {
 
   const columns: CustomTableColumn<AccidentTravail>[] = useMemo(
     () => [
-  
+
       {
         data: 'employe',
         label: 'Employé',

@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import apiClient from '@/lib/api';
@@ -20,13 +21,12 @@ import {
   Users,
   Activity,
   DollarSign,
-  FileCheck,
-  Loader2
+  FileCheck
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import PageContainer from '@/components/layout/page-container';
-import { Temoin, HistoriqueAT } from '../../../../../../types/accidentsTravail';
+import { AccidentTravail, Temoin, HistoriqueAT } from '../../../../../../types/accidentsTravail';
 import { StatusBadge } from '@/components/custom/status-badge';
 import {
   Dialog,
@@ -38,7 +38,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { AccidentTravail } from '../../../../../../types/accidentsTravail';
+
 
 export default function AccidentTravailDetailsPage() {
   const router = useRouter();
@@ -113,10 +113,181 @@ export default function AccidentTravailDetailsPage() {
   if (loading) {
     return (
       <PageContainer scrollable>
-        <div className='flex items-center justify-center py-20'>
-          <div className='flex flex-col items-center gap-4'>
-            <Loader2 className='h-8 w-8 animate-spin text-primary' />
-            <p className='text-muted-foreground'>Chargement...</p>
+        <div className='space-y-6'>
+          {/* Header Skeleton */}
+          <div className='flex items-center justify-between'>
+            <div className='flex items-center space-x-2'>
+              <Skeleton className='h-10 w-10 rounded-md' />
+              <div className='space-y-2'>
+                <Skeleton className='h-7 w-48' />
+                <Skeleton className='h-4 w-64' />
+              </div>
+            </div>
+            <div className='flex gap-2'>
+              <Skeleton className='h-10 w-32' />
+              <Skeleton className='h-10 w-40' />
+            </div>
+          </div>
+
+          <div className='grid gap-6 md:grid-cols-3'>
+            {/* Colonne principale */}
+            <div className='space-y-6 md:col-span-2'>
+              {/* Card Informations générales */}
+              <Card>
+                <CardHeader>
+                  <div className='flex items-center gap-2'>
+                    <Skeleton className='h-5 w-5 rounded' />
+                    <Skeleton className='h-6 w-48' />
+                  </div>
+                </CardHeader>
+                <CardContent className='space-y-4'>
+                  <div className='grid gap-4 md:grid-cols-2'>
+                    <div className='space-y-2'>
+                      <Skeleton className='h-3 w-20' />
+                      <Skeleton className='h-5 w-full' />
+                      <Skeleton className='h-4 w-32' />
+                    </div>
+                    <div className='space-y-2'>
+                      <Skeleton className='h-3 w-24' />
+                      <Skeleton className='h-5 w-40' />
+                    </div>
+                  </div>
+                  <Skeleton className='h-px w-full' />
+                  <div className='grid gap-4 md:grid-cols-3'>
+                    <div className='space-y-2'>
+                      <Skeleton className='h-3 w-16' />
+                      <Skeleton className='h-6 w-24' />
+                    </div>
+                    <div className='space-y-2'>
+                      <Skeleton className='h-3 w-20' />
+                      <Skeleton className='h-6 w-20' />
+                    </div>
+                    <div className='space-y-2'>
+                      <Skeleton className='h-3 w-16' />
+                      <Skeleton className='h-6 w-28' />
+                    </div>
+                  </div>
+                  <Skeleton className='h-px w-full' />
+                  <div className='space-y-2'>
+                    <Skeleton className='h-3 w-16' />
+                    <Skeleton className='h-5 w-full' />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Card Circonstances */}
+              <Card>
+                <CardHeader>
+                  <div className='flex items-center gap-2'>
+                    <Skeleton className='h-5 w-5 rounded' />
+                    <Skeleton className='h-6 w-56' />
+                  </div>
+                </CardHeader>
+                <CardContent className='space-y-4'>
+                  <div className='space-y-2'>
+                    <Skeleton className='h-4 w-32' />
+                    <Skeleton className='h-20 w-full rounded-lg' />
+                  </div>
+                  <Skeleton className='h-px w-full' />
+                  <div className='space-y-2'>
+                    <Skeleton className='h-4 w-36' />
+                    <Skeleton className='h-16 w-full rounded-lg' />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Card Témoins */}
+              <Card>
+                <CardHeader>
+                  <div className='flex items-center gap-2'>
+                    <Skeleton className='h-5 w-5 rounded' />
+                    <Skeleton className='h-6 w-32' />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className='space-y-3'>
+                    {[1, 2].map((i) => (
+                      <Skeleton key={i} className='h-16 w-full rounded-lg' />
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Card Historique */}
+              <Card>
+                <CardHeader>
+                  <div className='flex items-center gap-2'>
+                    <Skeleton className='h-5 w-5 rounded' />
+                    <Skeleton className='h-6 w-28' />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className='space-y-4'>
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className='flex gap-3'>
+                        <Skeleton className='h-8 w-8 rounded-full' />
+                        <div className='flex-1 space-y-2'>
+                          <Skeleton className='h-4 w-48' />
+                          <Skeleton className='h-3 w-full' />
+                          <Skeleton className='h-3 w-32' />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Colonne latérale */}
+            <div className='space-y-6'>
+              {/* Card Suivi CNSS */}
+              <Card>
+                <CardHeader>
+                  <div className='flex items-center gap-2'>
+                    <Skeleton className='h-5 w-5 rounded' />
+                    <Skeleton className='h-6 w-32' />
+                  </div>
+                </CardHeader>
+                <CardContent className='space-y-4'>
+                  <div className='space-y-2'>
+                    <Skeleton className='h-3 w-24' />
+                    <Skeleton className='h-5 w-32' />
+                  </div>
+                  <div className='space-y-2'>
+                    <Skeleton className='h-3 w-28' />
+                    <Skeleton className='h-4 w-40' />
+                  </div>
+                  <div className='space-y-2'>
+                    <Skeleton className='h-3 w-20' />
+                    <Skeleton className='h-6 w-24' />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Card Impact paie */}
+              <Card>
+                <CardHeader>
+                  <div className='flex items-center gap-2'>
+                    <Skeleton className='h-5 w-5 rounded' />
+                    <Skeleton className='h-6 w-32' />
+                  </div>
+                </CardHeader>
+                <CardContent className='space-y-4'>
+                  <div className='space-y-2'>
+                    <Skeleton className='h-3 w-32' />
+                    <Skeleton className='h-5 w-12' />
+                  </div>
+                  <div className='space-y-2'>
+                    <Skeleton className='h-3 w-40' />
+                    <Skeleton className='h-6 w-32' />
+                  </div>
+                  <div className='space-y-2'>
+                    <Skeleton className='h-3 w-28' />
+                    <Skeleton className='h-6 w-20' />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </PageContainer>
@@ -385,6 +556,43 @@ export default function AccidentTravailDetailsPage() {
               </Card>
             )}
 
+            {/* Pièces jointes */}
+            {accident.piecesJointes && accident.piecesJointes.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className='flex items-center gap-2'>
+                    <FileText className='h-5 w-5' />
+                    Pièces jointes ({accident.piecesJointes.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className='space-y-2'>
+                    {accident.piecesJointes.map((piece: any, index: number) => (
+                      <div
+                        key={index}
+                        className='flex items-center justify-between rounded-lg border p-3'
+                      >
+                        <div className='flex items-center gap-3'>
+                          <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10'>
+                            <FileText className='h-5 w-5 text-primary' />
+                          </div>
+                          <div>
+                            <div className='font-medium'>{piece.nom}</div>
+                            <div className='text-sm text-muted-foreground'>
+                              {piece.type} • {(piece.taille / 1024).toFixed(1)} KB
+                            </div>
+                          </div>
+                        </div>
+                        <Button variant='ghost' size='sm'>
+                          Télécharger
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Historique */}
             <Card>
               <CardHeader>
@@ -579,4 +787,3 @@ export default function AccidentTravailDetailsPage() {
     </PageContainer>
   );
 }
-
