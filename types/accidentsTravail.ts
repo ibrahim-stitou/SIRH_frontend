@@ -81,7 +81,14 @@ export interface AccidentTravail {
   gravite: 'Léger' | 'Moyen' | 'Grave';
   temoins: Temoin[];
   arretTravail: ArretTravail;
-  statut: 'Brouillon' | 'Déclaré' | 'Transmis CNSS' | 'En instruction' | 'Accepté' | 'Refusé' | 'Clos';
+  statut:
+    | 'Brouillon'
+    | 'Déclaré'
+    | 'Transmis CNSS'
+    | 'En instruction'
+    | 'Accepté'
+    | 'Refusé'
+    | 'Clos';
   dateDeclaration: string;
   declarePar: string;
   delaiDeclarationRespect: boolean;
@@ -141,4 +148,3 @@ export interface StatistiquesAT {
   };
   montantIndemnites: number;
 }
-

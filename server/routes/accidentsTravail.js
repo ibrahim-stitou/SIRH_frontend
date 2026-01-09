@@ -20,30 +20,38 @@ module.exports = function (server, db) {
 
     // Filtrage
     if (employeeId) {
-      accidents = accidents.filter(a => String(a.employeId) === String(employeeId));
+      accidents = accidents.filter(
+        (a) => String(a.employeId) === String(employeeId)
+      );
     }
     if (typeAccident) {
-      accidents = accidents.filter(a => a.typeAccident === typeAccident);
+      accidents = accidents.filter((a) => a.typeAccident === typeAccident);
     }
     if (statut) {
-      accidents = accidents.filter(a => a.statut === statut);
+      accidents = accidents.filter((a) => a.statut === statut);
     }
     if (gravite) {
-      accidents = accidents.filter(a => a.gravite === gravite);
+      accidents = accidents.filter((a) => a.gravite === gravite);
     }
     if (arretTravail) {
       const hasArret = arretTravail === 'true';
-      accidents = accidents.filter(a => a.arretTravail.existe === hasArret);
+      accidents = accidents.filter((a) => a.arretTravail.existe === hasArret);
     }
     if (from) {
-      accidents = accidents.filter(a => new Date(a.dateHeureAccident) >= new Date(from));
+      accidents = accidents.filter(
+        (a) => new Date(a.dateHeureAccident) >= new Date(from)
+      );
     }
     if (to) {
-      accidents = accidents.filter(a => new Date(a.dateHeureAccident) <= new Date(to));
+      accidents = accidents.filter(
+        (a) => new Date(a.dateHeureAccident) <= new Date(to)
+      );
     }
 
     // Tri par date décroissante
-    accidents.sort((a, b) => new Date(b.dateHeureAccident) - new Date(a.dateHeureAccident));
+    accidents.sort(
+      (a, b) => new Date(b.dateHeureAccident) - new Date(a.dateHeureAccident)
+    );
 
     res.json(wrap(accidents, 'Liste des accidents du travail'));
   });
@@ -55,42 +63,53 @@ module.exports = function (server, db) {
 
     let filteredAccidents = accidents;
     if (annee) {
-      filteredAccidents = accidents.filter(a =>
-        new Date(a.dateHeureAccident).getFullYear() === parseInt(annee)
+      filteredAccidents = accidents.filter(
+        (a) => new Date(a.dateHeureAccident).getFullYear() === parseInt(annee)
       );
     }
 
     const stats = {
       nombreTotal: filteredAccidents.length,
-      avecArret: filteredAccidents.filter(a => a.arretTravail.existe).length,
-      sansArret: filteredAccidents.filter(a => !a.arretTravail.existe).length,
-      joursPerdus: filteredAccidents.reduce((sum, a) =>
-        sum + (a.arretTravail.dureePrevisionnelle || 0), 0
+      avecArret: filteredAccidents.filter((a) => a.arretTravail.existe).length,
+      sansArret: filteredAccidents.filter((a) => !a.arretTravail.existe).length,
+      joursPerdus: filteredAccidents.reduce(
+        (sum, a) => sum + (a.arretTravail.dureePrevisionnelle || 0),
+        0
       ),
       parType: {
-        surSite: filteredAccidents.filter(a => a.typeAccident === 'Sur site').length,
-        trajet: filteredAccidents.filter(a => a.typeAccident === 'Trajet').length
+        surSite: filteredAccidents.filter((a) => a.typeAccident === 'Sur site')
+          .length,
+        trajet: filteredAccidents.filter((a) => a.typeAccident === 'Trajet')
+          .length
       },
       parGravite: {
-        leger: filteredAccidents.filter(a => a.gravite === 'Léger').length,
-        moyen: filteredAccidents.filter(a => a.gravite === 'Moyen').length,
-        grave: filteredAccidents.filter(a => a.gravite === 'Grave').length
+        leger: filteredAccidents.filter((a) => a.gravite === 'Léger').length,
+        moyen: filteredAccidents.filter((a) => a.gravite === 'Moyen').length,
+        grave: filteredAccidents.filter((a) => a.gravite === 'Grave').length
       },
       parStatut: {
-        brouillon: filteredAccidents.filter(a => a.statut === 'Brouillon').length,
-        declare: filteredAccidents.filter(a => a.statut === 'Déclaré').length,
-        transmisCNSS: filteredAccidents.filter(a => a.statut === 'Transmis CNSS').length,
-        enInstruction: filteredAccidents.filter(a => a.statut === 'En instruction').length,
-        accepte: filteredAccidents.filter(a => a.statut === 'Accepté').length,
-        refuse: filteredAccidents.filter(a => a.statut === 'Refusé').length,
-        clos: filteredAccidents.filter(a => a.statut === 'Clos').length
+        brouillon: filteredAccidents.filter((a) => a.statut === 'Brouillon')
+          .length,
+        declare: filteredAccidents.filter((a) => a.statut === 'Déclaré').length,
+        transmisCNSS: filteredAccidents.filter(
+          (a) => a.statut === 'Transmis CNSS'
+        ).length,
+        enInstruction: filteredAccidents.filter(
+          (a) => a.statut === 'En instruction'
+        ).length,
+        accepte: filteredAccidents.filter((a) => a.statut === 'Accepté').length,
+        refuse: filteredAccidents.filter((a) => a.statut === 'Refusé').length,
+        clos: filteredAccidents.filter((a) => a.statut === 'Clos').length
       },
       delaisRespect: {
-        respect: filteredAccidents.filter(a => a.delaiDeclarationRespect).length,
-        horsDelai: filteredAccidents.filter(a => !a.delaiDeclarationRespect).length
+        respect: filteredAccidents.filter((a) => a.delaiDeclarationRespect)
+          .length,
+        horsDelai: filteredAccidents.filter((a) => !a.delaiDeclarationRespect)
+          .length
       },
-      montantIndemnites: filteredAccidents.reduce((sum, a) =>
-        sum + (a.suiviCNSS?.montantIndemnite || 0), 0
+      montantIndemnites: filteredAccidents.reduce(
+        (sum, a) => sum + (a.suiviCNSS?.montantIndemnite || 0),
+        0
       )
     };
 
@@ -99,7 +118,10 @@ module.exports = function (server, db) {
 
   // GET /accidents-travail/:id - Détail
   server.get('/accidents-travail/:id', (req, res) => {
-    const accident = db.get('accidentsTravail').find({ id: parseInt(req.params.id) }).value();
+    const accident = db
+      .get('accidentsTravail')
+      .find({ id: parseInt(req.params.id) })
+      .value();
     if (!accident) {
       return res.status(404).json({
         status: 'error',
@@ -107,13 +129,14 @@ module.exports = function (server, db) {
         data: null
       });
     }
-    res.json(wrap(accident, 'Détail de l\'accident'));
+    res.json(wrap(accident, "Détail de l'accident"));
   });
 
   // POST /accidents-travail - Création
   server.post('/accidents-travail', (req, res) => {
     const accidents = db.get('accidentsTravail').value() || [];
-    const newId = accidents.length > 0 ? Math.max(...accidents.map(a => a.id)) + 1 : 1;
+    const newId =
+      accidents.length > 0 ? Math.max(...accidents.map((a) => a.id)) + 1 : 1;
 
     const now = new Date().toISOString();
     const heuresDepuisAccident = req.body.dateHeureAccident
@@ -168,7 +191,10 @@ module.exports = function (server, db) {
 
   // PUT /accidents-travail/:id - Mise à jour
   server.put('/accidents-travail/:id', (req, res) => {
-    const accident = db.get('accidentsTravail').find({ id: parseInt(req.params.id) }).value();
+    const accident = db
+      .get('accidentsTravail')
+      .find({ id: parseInt(req.params.id) })
+      .value();
     if (!accident) {
       return res.status(404).json({
         status: 'error',
@@ -194,13 +220,19 @@ module.exports = function (server, db) {
       ]
     };
 
-    db.get('accidentsTravail').find({ id: parseInt(req.params.id) }).assign(updated).write();
+    db.get('accidentsTravail')
+      .find({ id: parseInt(req.params.id) })
+      .assign(updated)
+      .write();
     res.json(wrap(updated, 'Accident mis à jour'));
   });
 
   // PATCH /accidents-travail/:id/declarer-cnss - Déclarer à la CNSS
   server.patch('/accidents-travail/:id/declarer-cnss', (req, res) => {
-    const accident = db.get('accidentsTravail').find({ id: parseInt(req.params.id) }).value();
+    const accident = db
+      .get('accidentsTravail')
+      .find({ id: parseInt(req.params.id) })
+      .value();
     if (!accident) {
       return res.status(404).json({
         status: 'error',
@@ -233,13 +265,19 @@ module.exports = function (server, db) {
       ]
     };
 
-    db.get('accidentsTravail').find({ id: parseInt(req.params.id) }).assign(updated).write();
+    db.get('accidentsTravail')
+      .find({ id: parseInt(req.params.id) })
+      .assign(updated)
+      .write();
     res.json(wrap(updated, 'Dossier transmis à la CNSS'));
   });
 
   // PATCH /accidents-travail/:id/decision-cnss - Décision CNSS
   server.patch('/accidents-travail/:id/decision-cnss', (req, res) => {
-    const accident = db.get('accidentsTravail').find({ id: parseInt(req.params.id) }).value();
+    const accident = db
+      .get('accidentsTravail')
+      .find({ id: parseInt(req.params.id) })
+      .value();
     if (!accident) {
       return res.status(404).json({
         status: 'error',
@@ -273,13 +311,19 @@ module.exports = function (server, db) {
       ]
     };
 
-    db.get('accidentsTravail').find({ id: parseInt(req.params.id) }).assign(updated).write();
+    db.get('accidentsTravail')
+      .find({ id: parseInt(req.params.id) })
+      .assign(updated)
+      .write();
     res.json(wrap(updated, 'Décision CNSS enregistrée'));
   });
 
   // PATCH /accidents-travail/:id/cloturer - Clôturer
   server.patch('/accidents-travail/:id/cloturer', (req, res) => {
-    const accident = db.get('accidentsTravail').find({ id: parseInt(req.params.id) }).value();
+    const accident = db
+      .get('accidentsTravail')
+      .find({ id: parseInt(req.params.id) })
+      .value();
     if (!accident) {
       return res.status(404).json({
         status: 'error',
@@ -305,13 +349,19 @@ module.exports = function (server, db) {
       ]
     };
 
-    db.get('accidentsTravail').find({ id: parseInt(req.params.id) }).assign(updated).write();
+    db.get('accidentsTravail')
+      .find({ id: parseInt(req.params.id) })
+      .assign(updated)
+      .write();
     res.json(wrap(updated, 'Accident clôturé'));
   });
 
   // DELETE /accidents-travail/:id - Suppression
   server.delete('/accidents-travail/:id', (req, res) => {
-    const accident = db.get('accidentsTravail').find({ id: parseInt(req.params.id) }).value();
+    const accident = db
+      .get('accidentsTravail')
+      .find({ id: parseInt(req.params.id) })
+      .value();
     if (!accident) {
       return res.status(404).json({
         status: 'error',
@@ -320,7 +370,9 @@ module.exports = function (server, db) {
       });
     }
 
-    db.get('accidentsTravail').remove({ id: parseInt(req.params.id) }).write();
+    db.get('accidentsTravail')
+      .remove({ id: parseInt(req.params.id) })
+      .write();
     res.json(wrap(null, 'Accident supprimé'));
   });
 
@@ -331,46 +383,56 @@ module.exports = function (server, db) {
 
     let filteredAccidents = accidents;
     if (annee) {
-      filteredAccidents = accidents.filter(a =>
-        new Date(a.dateHeureAccident).getFullYear() === parseInt(annee)
+      filteredAccidents = accidents.filter(
+        (a) => new Date(a.dateHeureAccident).getFullYear() === parseInt(annee)
       );
     }
 
     const stats = {
       nombreTotal: filteredAccidents.length,
-      avecArret: filteredAccidents.filter(a => a.arretTravail.existe).length,
-      sansArret: filteredAccidents.filter(a => !a.arretTravail.existe).length,
-      joursPerdus: filteredAccidents.reduce((sum, a) =>
-        sum + (a.arretTravail.dureePrevisionnelle || 0), 0
+      avecArret: filteredAccidents.filter((a) => a.arretTravail.existe).length,
+      sansArret: filteredAccidents.filter((a) => !a.arretTravail.existe).length,
+      joursPerdus: filteredAccidents.reduce(
+        (sum, a) => sum + (a.arretTravail.dureePrevisionnelle || 0),
+        0
       ),
       parType: {
-        surSite: filteredAccidents.filter(a => a.typeAccident === 'Sur site').length,
-        trajet: filteredAccidents.filter(a => a.typeAccident === 'Trajet').length
+        surSite: filteredAccidents.filter((a) => a.typeAccident === 'Sur site')
+          .length,
+        trajet: filteredAccidents.filter((a) => a.typeAccident === 'Trajet')
+          .length
       },
       parGravite: {
-        leger: filteredAccidents.filter(a => a.gravite === 'Léger').length,
-        moyen: filteredAccidents.filter(a => a.gravite === 'Moyen').length,
-        grave: filteredAccidents.filter(a => a.gravite === 'Grave').length
+        leger: filteredAccidents.filter((a) => a.gravite === 'Léger').length,
+        moyen: filteredAccidents.filter((a) => a.gravite === 'Moyen').length,
+        grave: filteredAccidents.filter((a) => a.gravite === 'Grave').length
       },
       parStatut: {
-        brouillon: filteredAccidents.filter(a => a.statut === 'Brouillon').length,
-        declare: filteredAccidents.filter(a => a.statut === 'Déclaré').length,
-        transmisCNSS: filteredAccidents.filter(a => a.statut === 'Transmis CNSS').length,
-        enInstruction: filteredAccidents.filter(a => a.statut === 'En instruction').length,
-        accepte: filteredAccidents.filter(a => a.statut === 'Accepté').length,
-        refuse: filteredAccidents.filter(a => a.statut === 'Refusé').length,
-        clos: filteredAccidents.filter(a => a.statut === 'Clos').length
+        brouillon: filteredAccidents.filter((a) => a.statut === 'Brouillon')
+          .length,
+        declare: filteredAccidents.filter((a) => a.statut === 'Déclaré').length,
+        transmisCNSS: filteredAccidents.filter(
+          (a) => a.statut === 'Transmis CNSS'
+        ).length,
+        enInstruction: filteredAccidents.filter(
+          (a) => a.statut === 'En instruction'
+        ).length,
+        accepte: filteredAccidents.filter((a) => a.statut === 'Accepté').length,
+        refuse: filteredAccidents.filter((a) => a.statut === 'Refusé').length,
+        clos: filteredAccidents.filter((a) => a.statut === 'Clos').length
       },
       delaisRespect: {
-        respect: filteredAccidents.filter(a => a.delaiDeclarationRespect).length,
-        horsDelai: filteredAccidents.filter(a => !a.delaiDeclarationRespect).length
+        respect: filteredAccidents.filter((a) => a.delaiDeclarationRespect)
+          .length,
+        horsDelai: filteredAccidents.filter((a) => !a.delaiDeclarationRespect)
+          .length
       },
-      montantIndemnites: filteredAccidents.reduce((sum, a) =>
-        sum + (a.suiviCNSS?.montantIndemnite || 0), 0
+      montantIndemnites: filteredAccidents.reduce(
+        (sum, a) => sum + (a.suiviCNSS?.montantIndemnite || 0),
+        0
       )
     };
 
     res.json(wrap(stats, 'Statistiques des accidents du travail'));
   });
 };
-

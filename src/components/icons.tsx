@@ -102,7 +102,7 @@ export const Icons = {
   bell: IconBell,
   billing: IconCreditCard,
   file: IconFile,
-  ambulance:IconAmbulance,
+  ambulance: IconAmbulance,
   iconTicket: IconTicket,
   pointage: IconClockPause,
   book: IconBook,

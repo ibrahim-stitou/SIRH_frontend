@@ -26,7 +26,11 @@ import {
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import PageContainer from '@/components/layout/page-container';
-import { AccidentTravail, Temoin, HistoriqueAT } from '../../../../../../types/accidentsTravail';
+import {
+  AccidentTravail,
+  Temoin,
+  HistoriqueAT
+} from '../../../../../../types/accidentsTravail';
 import { StatusBadge } from '@/components/custom/status-badge';
 import {
   Dialog,
@@ -38,7 +42,6 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-
 
 export default function AccidentTravailDetailsPage() {
   const router = useRouter();
@@ -62,7 +65,7 @@ export default function AccidentTravailDetailsPage() {
       setAccident(response.data.data);
     } catch (error: any) {
       console.error('Erreur:', error);
-      toast.error('Erreur lors du chargement de l\'accident');
+      toast.error("Erreur lors du chargement de l'accident");
     } finally {
       setLoading(false);
     }
@@ -79,7 +82,9 @@ export default function AccidentTravailDetailsPage() {
       toast.success('Dossier transmis à la CNSS avec succès');
       loadAccident();
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || 'Erreur lors de la déclaration CNSS');
+      toast.error(
+        e?.response?.data?.message || 'Erreur lors de la déclaration CNSS'
+      );
     }
   };
 
@@ -299,7 +304,9 @@ export default function AccidentTravailDetailsPage() {
       <PageContainer scrollable>
         <div className='flex items-center justify-center py-20'>
           <div className='text-center'>
-            <div className='mb-4 text-muted-foreground'>Accident non trouvé</div>
+            <div className='text-muted-foreground mb-4'>
+              Accident non trouvé
+            </div>
             <Button onClick={() => router.back()}>Retour</Button>
           </div>
         </div>
@@ -309,25 +316,31 @@ export default function AccidentTravailDetailsPage() {
 
   const statutMap: Record<
     string,
-    { text: string; tone: 'neutral' | 'success' | 'danger' | 'warning' | 'info' }
+    {
+      text: string;
+      tone: 'neutral' | 'success' | 'danger' | 'warning' | 'info';
+    }
   > = {
-    'Brouillon': { text: 'Brouillon', tone: 'neutral' },
-    'Déclaré': { text: 'Déclaré', tone: 'info' },
+    Brouillon: { text: 'Brouillon', tone: 'neutral' },
+    Déclaré: { text: 'Déclaré', tone: 'info' },
     'Transmis CNSS': { text: 'Transmis CNSS', tone: 'warning' },
     'En instruction': { text: 'En instruction', tone: 'warning' },
-    'Accepté': { text: 'Accepté', tone: 'success' },
-    'Refusé': { text: 'Refusé', tone: 'danger' },
-    'Clos': { text: 'Clos', tone: 'neutral' }
+    Accepté: { text: 'Accepté', tone: 'success' },
+    Refusé: { text: 'Refusé', tone: 'danger' },
+    Clos: { text: 'Clos', tone: 'neutral' }
   };
 
-  const canEdit = accident.statut === 'Brouillon' || accident.statut === 'Déclaré';
-  const canDeclareCNSS = accident.statut === 'Déclaré' && !accident.suiviCNSS.dateEnvoi;
-  const canAddDecision = accident.statut === 'Transmis CNSS' || accident.statut === 'En instruction';
+  const canEdit =
+    accident.statut === 'Brouillon' || accident.statut === 'Déclaré';
+  const canDeclareCNSS =
+    accident.statut === 'Déclaré' && !accident.suiviCNSS.dateEnvoi;
+  const canAddDecision =
+    accident.statut === 'Transmis CNSS' || accident.statut === 'En instruction';
   const canCloturer = accident.statut === 'Accepté';
 
   return (
     <PageContainer scrollable>
-      <div className='space-y-6 w-full'>
+      <div className='w-full space-y-6'>
         {/* Header */}
         <div className='flex items-center justify-between'>
           <div className='flex items-center space-x-2'>
@@ -386,8 +399,9 @@ export default function AccidentTravailDetailsPage() {
               <div>
                 <div className='font-semibold'>Délai légal dépassé</div>
                 <div className='text-sm'>
-                  La déclaration a été effectuée {accident.heuresDepuisAccident.toFixed(1)}{' '}
-                  heures après l&apos;accident (délai légal: 48h)
+                  La déclaration a été effectuée{' '}
+                  {accident.heuresDepuisAccident.toFixed(1)} heures après
+                  l&apos;accident (délai légal: 48h)
                 </div>
               </div>
             </div>
@@ -412,16 +426,23 @@ export default function AccidentTravailDetailsPage() {
                     <div className='font-medium'>
                       {accident.employe.prenom} {accident.employe.nom}
                     </div>
-                    <div className='text-sm text-muted-foreground'>
-                      {accident.employe.matricule} • CNSS: {accident.employe.numeroCNSS}
+                    <div className='text-muted-foreground text-sm'>
+                      {accident.employe.matricule} • CNSS:{' '}
+                      {accident.employe.numeroCNSS}
                     </div>
                   </div>
                   <div>
-                    <div className='text-muted-foreground text-sm'>Date et heure</div>
+                    <div className='text-muted-foreground text-sm'>
+                      Date et heure
+                    </div>
                     <div className='font-medium'>
-                      {format(new Date(accident.dateHeureAccident), 'dd/MM/yyyy à HH:mm', {
-                        locale: fr
-                      })}
+                      {format(
+                        new Date(accident.dateHeureAccident),
+                        'dd/MM/yyyy à HH:mm',
+                        {
+                          locale: fr
+                        }
+                      )}
                     </div>
                   </div>
                 </div>
@@ -429,7 +450,13 @@ export default function AccidentTravailDetailsPage() {
                 <div className='grid gap-4 md:grid-cols-3'>
                   <div>
                     <div className='text-muted-foreground text-sm'>Type</div>
-                    <Badge variant={accident.typeAccident === 'Sur site' ? 'default' : 'secondary'}>
+                    <Badge
+                      variant={
+                        accident.typeAccident === 'Sur site'
+                          ? 'default'
+                          : 'secondary'
+                      }
+                    >
                       {accident.typeAccident}
                     </Badge>
                   </div>
@@ -450,7 +477,9 @@ export default function AccidentTravailDetailsPage() {
                   <div>
                     <div className='text-muted-foreground text-sm'>Statut</div>
                     <StatusBadge
-                      label={statutMap[accident.statut]?.text || accident.statut}
+                      label={
+                        statutMap[accident.statut]?.text || accident.statut
+                      }
                       tone={statutMap[accident.statut]?.tone || 'neutral'}
                     />
                   </div>
@@ -478,7 +507,7 @@ export default function AccidentTravailDetailsPage() {
                   <div className='text-muted-foreground mb-2 text-sm font-medium'>
                     Circonstances
                   </div>
-                  <div className='rounded-lg bg-muted p-3 text-sm'>
+                  <div className='bg-muted rounded-lg p-3 text-sm'>
                     {accident.circonstances}
                   </div>
                 </div>
@@ -487,7 +516,7 @@ export default function AccidentTravailDetailsPage() {
                   <div className='text-muted-foreground mb-2 text-sm font-medium'>
                     Nature des lésions
                   </div>
-                  <div className='rounded-lg bg-muted p-3 text-sm'>
+                  <div className='bg-muted rounded-lg p-3 text-sm'>
                     {accident.lesions}
                   </div>
                 </div>
@@ -506,10 +535,15 @@ export default function AccidentTravailDetailsPage() {
                 <CardContent>
                   <div className='space-y-3'>
                     {accident.temoins.map((temoin: Temoin, index: number) => (
-                      <div key={index} className='flex items-center justify-between rounded-lg border p-3'>
+                      <div
+                        key={index}
+                        className='flex items-center justify-between rounded-lg border p-3'
+                      >
                         <div>
                           <div className='font-medium'>{temoin.nom}</div>
-                          <div className='text-sm text-muted-foreground'>{temoin.contact}</div>
+                          <div className='text-muted-foreground text-sm'>
+                            {temoin.contact}
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -539,7 +573,10 @@ export default function AccidentTravailDetailsPage() {
                       <div>
                         <div className='text-muted-foreground text-sm'>Du</div>
                         <div className='font-medium'>
-                          {format(new Date(accident.arretTravail.dateDebut), 'dd/MM/yyyy')}
+                          {format(
+                            new Date(accident.arretTravail.dateDebut),
+                            'dd/MM/yyyy'
+                          )}
                         </div>
                       </div>
                     )}
@@ -547,7 +584,10 @@ export default function AccidentTravailDetailsPage() {
                       <div>
                         <div className='text-muted-foreground text-sm'>Au</div>
                         <div className='font-medium'>
-                          {format(new Date(accident.arretTravail.dateFin), 'dd/MM/yyyy')}
+                          {format(
+                            new Date(accident.arretTravail.dateFin),
+                            'dd/MM/yyyy'
+                          )}
                         </div>
                       </div>
                     )}
@@ -573,13 +613,14 @@ export default function AccidentTravailDetailsPage() {
                         className='flex items-center justify-between rounded-lg border p-3'
                       >
                         <div className='flex items-center gap-3'>
-                          <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10'>
-                            <FileText className='h-5 w-5 text-primary' />
+                          <div className='bg-primary/10 flex h-10 w-10 items-center justify-center rounded-lg'>
+                            <FileText className='text-primary h-5 w-5' />
                           </div>
                           <div>
                             <div className='font-medium'>{piece.nom}</div>
-                            <div className='text-sm text-muted-foreground'>
-                              {piece.type} • {(piece.taille / 1024).toFixed(1)} KB
+                            <div className='text-muted-foreground text-sm'>
+                              {piece.type} • {(piece.taille / 1024).toFixed(1)}{' '}
+                              KB
                             </div>
                           </div>
                         </div>
@@ -603,29 +644,31 @@ export default function AccidentTravailDetailsPage() {
               </CardHeader>
               <CardContent>
                 <div className='space-y-3'>
-                  {accident.historique.map((event: HistoriqueAT, index: number) => (
-                    <div key={index} className='flex gap-3'>
-                      <div className='mt-1 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary/10'>
-                        <Calendar className='h-4 w-4 text-primary' />
-                      </div>
-                      <div className='flex-1'>
-                        <div className='flex items-start justify-between'>
-                          <div>
-                            <div className='font-medium'>{event.action}</div>
-                            <div className='text-sm text-muted-foreground'>
-                              {event.details}
+                  {accident.historique.map(
+                    (event: HistoriqueAT, index: number) => (
+                      <div key={index} className='flex gap-3'>
+                        <div className='bg-primary/10 mt-1 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full'>
+                          <Calendar className='text-primary h-4 w-4' />
+                        </div>
+                        <div className='flex-1'>
+                          <div className='flex items-start justify-between'>
+                            <div>
+                              <div className='font-medium'>{event.action}</div>
+                              <div className='text-muted-foreground text-sm'>
+                                {event.details}
+                              </div>
+                            </div>
+                            <div className='text-muted-foreground text-xs'>
+                              {format(new Date(event.date), 'dd/MM/yyyy HH:mm')}
                             </div>
                           </div>
-                          <div className='text-xs text-muted-foreground'>
-                            {format(new Date(event.date), 'dd/MM/yyyy HH:mm')}
+                          <div className='text-muted-foreground mt-1 text-xs'>
+                            Par {event.utilisateur}
                           </div>
                         </div>
-                        <div className='mt-1 text-xs text-muted-foreground'>
-                          Par {event.utilisateur}
-                        </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -645,18 +688,29 @@ export default function AccidentTravailDetailsPage() {
                 {accident.suiviCNSS.dateEnvoi ? (
                   <>
                     <div>
-                      <div className='text-muted-foreground text-sm'>Envoyé le</div>
+                      <div className='text-muted-foreground text-sm'>
+                        Envoyé le
+                      </div>
                       <div className='font-medium'>
-                        {format(new Date(accident.suiviCNSS.dateEnvoi), 'dd/MM/yyyy')}
+                        {format(
+                          new Date(accident.suiviCNSS.dateEnvoi),
+                          'dd/MM/yyyy'
+                        )}
                       </div>
                     </div>
                     <div>
-                      <div className='text-muted-foreground text-sm'>N° Récépissé</div>
-                      <div className='font-mono text-sm'>{accident.suiviCNSS.numeroRecepisse}</div>
+                      <div className='text-muted-foreground text-sm'>
+                        N° Récépissé
+                      </div>
+                      <div className='font-mono text-sm'>
+                        {accident.suiviCNSS.numeroRecepisse}
+                      </div>
                     </div>
                     {accident.suiviCNSS.decision && (
                       <div>
-                        <div className='text-muted-foreground text-sm'>Décision</div>
+                        <div className='text-muted-foreground text-sm'>
+                          Décision
+                        </div>
                         <StatusBadge
                           label={accident.suiviCNSS.decision}
                           tone={
@@ -671,21 +725,30 @@ export default function AccidentTravailDetailsPage() {
                     )}
                     {accident.suiviCNSS.tauxIPP !== null && (
                       <div>
-                        <div className='text-muted-foreground text-sm'>Taux IPP</div>
-                        <div className='text-lg font-medium'>{accident.suiviCNSS.tauxIPP}%</div>
+                        <div className='text-muted-foreground text-sm'>
+                          Taux IPP
+                        </div>
+                        <div className='text-lg font-medium'>
+                          {accident.suiviCNSS.tauxIPP}%
+                        </div>
                       </div>
                     )}
                     {accident.suiviCNSS.montantIndemnite && (
                       <div>
-                        <div className='text-muted-foreground text-sm'>Montant indemnité</div>
+                        <div className='text-muted-foreground text-sm'>
+                          Montant indemnité
+                        </div>
                         <div className='text-lg font-medium'>
-                          {accident.suiviCNSS.montantIndemnite.toLocaleString('fr-FR')} MAD
+                          {accident.suiviCNSS.montantIndemnite.toLocaleString(
+                            'fr-FR'
+                          )}{' '}
+                          MAD
                         </div>
                       </div>
                     )}
                   </>
                 ) : (
-                  <div className='text-center text-sm text-muted-foreground'>
+                  <div className='text-muted-foreground text-center text-sm'>
                     Non transmis à la CNSS
                   </div>
                 )}
@@ -703,18 +766,29 @@ export default function AccidentTravailDetailsPage() {
                 </CardHeader>
                 <CardContent className='space-y-4'>
                   <div>
-                    <div className='text-muted-foreground text-sm'>Jours indemnisés</div>
-                    <div className='font-medium'>{accident.impactPaie.joursIndemnises}</div>
+                    <div className='text-muted-foreground text-sm'>
+                      Jours indemnisés
+                    </div>
+                    <div className='font-medium'>
+                      {accident.impactPaie.joursIndemnises}
+                    </div>
                   </div>
                   <div>
-                    <div className='text-muted-foreground text-sm'>Indemnités journalières</div>
+                    <div className='text-muted-foreground text-sm'>
+                      Indemnités journalières
+                    </div>
                     <div className='text-lg font-medium'>
-                      {accident.impactPaie.indemnitesJournalieres.toLocaleString('fr-FR')} MAD
+                      {accident.impactPaie.indemnitesJournalieres.toLocaleString(
+                        'fr-FR'
+                      )}{' '}
+                      MAD
                     </div>
                   </div>
                   {accident.impactPaie.priseEnCharge && (
                     <div>
-                      <div className='text-muted-foreground text-sm'>Prise en charge</div>
+                      <div className='text-muted-foreground text-sm'>
+                        Prise en charge
+                      </div>
                       <Badge>{accident.impactPaie.priseEnCharge}</Badge>
                     </div>
                   )}
@@ -740,7 +814,10 @@ export default function AccidentTravailDetailsPage() {
                   className='mt-1 w-full rounded-md border p-2'
                   value={decisionData.decision}
                   onChange={(e) =>
-                    setDecisionData({ ...decisionData, decision: e.target.value })
+                    setDecisionData({
+                      ...decisionData,
+                      decision: e.target.value
+                    })
                   }
                 >
                   <option value='Accepté'>Accepté</option>
@@ -756,7 +833,10 @@ export default function AccidentTravailDetailsPage() {
                   step='0.1'
                   value={decisionData.tauxIPP}
                   onChange={(e) =>
-                    setDecisionData({ ...decisionData, tauxIPP: e.target.value })
+                    setDecisionData({
+                      ...decisionData,
+                      tauxIPP: e.target.value
+                    })
                   }
                   placeholder='Ex: 7'
                 />
@@ -769,14 +849,20 @@ export default function AccidentTravailDetailsPage() {
                   step='0.01'
                   value={decisionData.montantIndemnite}
                   onChange={(e) =>
-                    setDecisionData({ ...decisionData, montantIndemnite: e.target.value })
+                    setDecisionData({
+                      ...decisionData,
+                      montantIndemnite: e.target.value
+                    })
                   }
                   placeholder='Ex: 4500'
                 />
               </div>
             </div>
             <DialogFooter>
-              <Button variant='outline' onClick={() => setShowDecisionModal(false)}>
+              <Button
+                variant='outline'
+                onClick={() => setShowDecisionModal(false)}
+              >
                 Annuler
               </Button>
               <Button onClick={handleDecisionCNSS}>Enregistrer</Button>

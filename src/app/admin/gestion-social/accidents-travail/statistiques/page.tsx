@@ -98,8 +98,10 @@ export default function StatistiquesAccidentsTravailPage() {
       <PageContainer scrollable>
         <div className='flex items-center justify-center py-20'>
           <div className='flex flex-col items-center gap-4'>
-            <div className='h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent' />
-            <p className='text-muted-foreground'>Chargement des statistiques...</p>
+            <div className='border-primary h-8 w-8 animate-spin rounded-full border-4 border-t-transparent' />
+            <p className='text-muted-foreground'>
+              Chargement des statistiques...
+            </p>
           </div>
         </div>
       </PageContainer>
@@ -110,13 +112,13 @@ export default function StatistiquesAccidentsTravailPage() {
     return (
       <PageContainer scrollable>
         <div className='flex items-center justify-center py-20'>
-          <div className='text-center space-y-4'>
-            <AlertTriangle className='h-12 w-12 text-muted-foreground mx-auto' />
+          <div className='space-y-4 text-center'>
+            <AlertTriangle className='text-muted-foreground mx-auto h-12 w-12' />
             <p className='text-lg font-medium'>Aucune donnée disponible</p>
-            <p className='text-sm text-muted-foreground'>
+            <p className='text-muted-foreground text-sm'>
               Une erreur s&apos;est produite lors du chargement des statistiques
             </p>
-            <div className='flex gap-2 justify-center'>
+            <div className='flex justify-center gap-2'>
               <Button onClick={loadStatistics} variant='outline'>
                 <Activity className='mr-2 h-4 w-4' />
                 Réessayer
@@ -133,7 +135,7 @@ export default function StatistiquesAccidentsTravailPage() {
   if (stats.nombreTotal === 0) {
     return (
       <PageContainer scrollable>
-        <div className='space-y-6 w-full'>
+        <div className='w-full space-y-6'>
           {/* Header */}
           <div className='flex items-center justify-between'>
             <div className='flex items-center space-x-2'>
@@ -166,25 +168,30 @@ export default function StatistiquesAccidentsTravailPage() {
           {/* Empty State */}
           <Card>
             <CardContent className='flex flex-col items-center justify-center py-20'>
-              <FileText className='h-16 w-16 text-muted-foreground mb-4' />
-              <h3 className='text-lg font-medium mb-2'>
+              <FileText className='text-muted-foreground mb-4 h-16 w-16' />
+              <h3 className='mb-2 text-lg font-medium'>
                 Aucun accident enregistré en {selectedYear}
               </h3>
-              <p className='text-sm text-muted-foreground mb-6 text-center'>
-                Il n&apos;y a aucun accident du travail enregistré pour l&apos;année sélectionnée.
+              <p className='text-muted-foreground mb-6 text-center text-sm'>
+                Il n&apos;y a aucun accident du travail enregistré pour
+                l&apos;année sélectionnée.
                 <br />
                 Sélectionnez une autre année ou déclarez un nouvel accident.
               </p>
               <div className='flex gap-2'>
                 <Button
                   variant='outline'
-                  onClick={() => router.push('/admin/gestion-social/accidents-travail')}
+                  onClick={() =>
+                    router.push('/admin/gestion-social/accidents-travail')
+                  }
                 >
                   Voir tous les accidents
                 </Button>
                 <Button
                   onClick={() =>
-                    router.push('/admin/gestion-social/accidents-travail/ajouter')
+                    router.push(
+                      '/admin/gestion-social/accidents-travail/ajouter'
+                    )
                   }
                 >
                   <Plus className='mr-2 h-4 w-4' />
@@ -209,7 +216,7 @@ export default function StatistiquesAccidentsTravailPage() {
 
   return (
     <PageContainer scrollable>
-      <div className='space-y-6 w-full'>
+      <div className='w-full space-y-6'>
         {/* Header */}
         <div className='flex items-center justify-between'>
           <div className='flex items-center space-x-2'>
@@ -227,27 +234,23 @@ export default function StatistiquesAccidentsTravailPage() {
           </div>
           <div className='flex items-center gap-4'>
             <Select value={selectedYear} onValueChange={setSelectedYear}>
-            <SelectTrigger className='w-[180px]'>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {years.map((year) => (
-                <SelectItem key={year} value={String(year)}>
-                  Année {year}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+              <SelectTrigger className='w-[180px]'>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {years.map((year) => (
+                  <SelectItem key={year} value={String(year)}>
+                    Année {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-
-              <Button onClick={() => window.print()}>
-                <FileText className='mr-2 h-4 w-4' />
-                Exporter PDF
-              </Button>
-
-
+            <Button onClick={() => window.print()}>
+              <FileText className='mr-2 h-4 w-4' />
+              Exporter PDF
+            </Button>
           </div>
-
         </div>
 
         {/* KPIs Principaux */}
@@ -257,11 +260,11 @@ export default function StatistiquesAccidentsTravailPage() {
               <CardTitle className='text-sm font-medium'>
                 Total Accidents
               </CardTitle>
-              <AlertTriangle className='h-4 w-4 text-muted-foreground' />
+              <AlertTriangle className='text-muted-foreground h-4 w-4' />
             </CardHeader>
             <CardContent>
               <div className='text-2xl font-bold'>{stats.nombreTotal}</div>
-              <div className='flex items-center gap-2 text-xs text-muted-foreground'>
+              <div className='text-muted-foreground flex items-center gap-2 text-xs'>
                 <span className='text-green-600'>
                   {stats.sansArret} sans arrêt
                 </span>
@@ -278,11 +281,11 @@ export default function StatistiquesAccidentsTravailPage() {
               <CardTitle className='text-sm font-medium'>
                 Jours Perdus
               </CardTitle>
-              <Calendar className='h-4 w-4 text-muted-foreground' />
+              <Calendar className='text-muted-foreground h-4 w-4' />
             </CardHeader>
             <CardContent>
               <div className='text-2xl font-bold'>{stats.joursPerdus}</div>
-              <p className='text-xs text-muted-foreground'>
+              <p className='text-muted-foreground text-xs'>
                 {stats.avecArret > 0
                   ? `Moyenne: ${(stats.joursPerdus / stats.avecArret).toFixed(1)} j/accident`
                   : 'Aucun arrêt'}
@@ -295,11 +298,11 @@ export default function StatistiquesAccidentsTravailPage() {
               <CardTitle className='text-sm font-medium'>
                 Taux de Fréquence
               </CardTitle>
-              <TrendingUp className='h-4 w-4 text-muted-foreground' />
+              <TrendingUp className='text-muted-foreground h-4 w-4' />
             </CardHeader>
             <CardContent>
               <div className='text-2xl font-bold'>{tauxFrequence}</div>
-              <p className='text-xs text-muted-foreground'>
+              <p className='text-muted-foreground text-xs'>
                 Pour 1 000 000 d&apos;heures travaillées
               </p>
             </CardContent>
@@ -310,13 +313,13 @@ export default function StatistiquesAccidentsTravailPage() {
               <CardTitle className='text-sm font-medium'>
                 Indemnités CNSS
               </CardTitle>
-              <DollarSign className='h-4 w-4 text-muted-foreground' />
+              <DollarSign className='text-muted-foreground h-4 w-4' />
             </CardHeader>
             <CardContent>
               <div className='text-2xl font-bold'>
                 {stats.montantIndemnites.toLocaleString('fr-FR')} MAD
               </div>
-              <p className='text-xs text-muted-foreground'>
+              <p className='text-muted-foreground text-xs'>
                 Montant total des indemnités
               </p>
             </CardContent>
@@ -339,17 +342,19 @@ export default function StatistiquesAccidentsTravailPage() {
                   <span className='text-sm'>Sur site</span>
                   <div className='flex items-center gap-2'>
                     <Badge variant='default'>{stats.parType.surSite}</Badge>
-                    <span className='text-xs text-muted-foreground'>
+                    <span className='text-muted-foreground text-xs'>
                       {stats.nombreTotal > 0
-                        ? Math.round((stats.parType.surSite / stats.nombreTotal) * 100)
+                        ? Math.round(
+                            (stats.parType.surSite / stats.nombreTotal) * 100
+                          )
                         : 0}
                       %
                     </span>
                   </div>
                 </div>
-                <div className='h-2 w-full overflow-hidden rounded-full bg-secondary'>
+                <div className='bg-secondary h-2 w-full overflow-hidden rounded-full'>
                   <div
-                    className='h-full bg-primary'
+                    className='bg-primary h-full'
                     style={{
                       width: `${stats.nombreTotal > 0 ? (stats.parType.surSite / stats.nombreTotal) * 100 : 0}%`
                     }}
@@ -362,15 +367,17 @@ export default function StatistiquesAccidentsTravailPage() {
                   <span className='text-sm'>Trajet</span>
                   <div className='flex items-center gap-2'>
                     <Badge variant='secondary'>{stats.parType.trajet}</Badge>
-                    <span className='text-xs text-muted-foreground'>
+                    <span className='text-muted-foreground text-xs'>
                       {stats.nombreTotal > 0
-                        ? Math.round((stats.parType.trajet / stats.nombreTotal) * 100)
+                        ? Math.round(
+                            (stats.parType.trajet / stats.nombreTotal) * 100
+                          )
                         : 0}
                       %
                     </span>
                   </div>
                 </div>
-                <div className='h-2 w-full overflow-hidden rounded-full bg-secondary'>
+                <div className='bg-secondary h-2 w-full overflow-hidden rounded-full'>
                   <div
                     className='h-full bg-blue-500'
                     style={{
@@ -398,15 +405,17 @@ export default function StatistiquesAccidentsTravailPage() {
                     <Badge className='bg-green-100 text-green-700'>
                       {stats.parGravite.leger}
                     </Badge>
-                    <span className='text-xs text-muted-foreground'>
+                    <span className='text-muted-foreground text-xs'>
                       {stats.nombreTotal > 0
-                        ? Math.round((stats.parGravite.leger / stats.nombreTotal) * 100)
+                        ? Math.round(
+                            (stats.parGravite.leger / stats.nombreTotal) * 100
+                          )
                         : 0}
                       %
                     </span>
                   </div>
                 </div>
-                <div className='h-2 w-full overflow-hidden rounded-full bg-secondary'>
+                <div className='bg-secondary h-2 w-full overflow-hidden rounded-full'>
                   <div
                     className='h-full bg-green-500'
                     style={{
@@ -423,15 +432,17 @@ export default function StatistiquesAccidentsTravailPage() {
                     <Badge className='bg-orange-100 text-orange-700'>
                       {stats.parGravite.moyen}
                     </Badge>
-                    <span className='text-xs text-muted-foreground'>
+                    <span className='text-muted-foreground text-xs'>
                       {stats.nombreTotal > 0
-                        ? Math.round((stats.parGravite.moyen / stats.nombreTotal) * 100)
+                        ? Math.round(
+                            (stats.parGravite.moyen / stats.nombreTotal) * 100
+                          )
                         : 0}
                       %
                     </span>
                   </div>
                 </div>
-                <div className='h-2 w-full overflow-hidden rounded-full bg-secondary'>
+                <div className='bg-secondary h-2 w-full overflow-hidden rounded-full'>
                   <div
                     className='h-full bg-orange-500'
                     style={{
@@ -448,15 +459,17 @@ export default function StatistiquesAccidentsTravailPage() {
                     <Badge className='bg-red-100 text-red-700'>
                       {stats.parGravite.grave}
                     </Badge>
-                    <span className='text-xs text-muted-foreground'>
+                    <span className='text-muted-foreground text-xs'>
                       {stats.nombreTotal > 0
-                        ? Math.round((stats.parGravite.grave / stats.nombreTotal) * 100)
+                        ? Math.round(
+                            (stats.parGravite.grave / stats.nombreTotal) * 100
+                          )
                         : 0}
                       %
                     </span>
                   </div>
                 </div>
-                <div className='h-2 w-full overflow-hidden rounded-full bg-secondary'>
+                <div className='bg-secondary h-2 w-full overflow-hidden rounded-full'>
                   <div
                     className='h-full bg-red-500'
                     style={{
@@ -543,17 +556,18 @@ export default function StatistiquesAccidentsTravailPage() {
                     <Badge className='bg-green-100 text-green-700'>
                       {stats.delaisRespect.respect}
                     </Badge>
-                    <span className='text-xs text-muted-foreground'>
+                    <span className='text-muted-foreground text-xs'>
                       {stats.nombreTotal > 0
                         ? Math.round(
-                            (stats.delaisRespect.respect / stats.nombreTotal) * 100
+                            (stats.delaisRespect.respect / stats.nombreTotal) *
+                              100
                           )
                         : 0}
                       %
                     </span>
                   </div>
                 </div>
-                <div className='h-2 w-full overflow-hidden rounded-full bg-secondary'>
+                <div className='bg-secondary h-2 w-full overflow-hidden rounded-full'>
                   <div
                     className='h-full bg-green-500'
                     style={{
@@ -573,17 +587,19 @@ export default function StatistiquesAccidentsTravailPage() {
                     <Badge className='bg-red-100 text-red-700'>
                       {stats.delaisRespect.horsDelai}
                     </Badge>
-                    <span className='text-xs text-muted-foreground'>
+                    <span className='text-muted-foreground text-xs'>
                       {stats.nombreTotal > 0
                         ? Math.round(
-                            (stats.delaisRespect.horsDelai / stats.nombreTotal) * 100
+                            (stats.delaisRespect.horsDelai /
+                              stats.nombreTotal) *
+                              100
                           )
                         : 0}
                       %
                     </span>
                   </div>
                 </div>
-                <div className='h-2 w-full overflow-hidden rounded-full bg-secondary'>
+                <div className='bg-secondary h-2 w-full overflow-hidden rounded-full'>
                   <div
                     className='h-full bg-red-500'
                     style={{
@@ -602,12 +618,7 @@ export default function StatistiquesAccidentsTravailPage() {
             </CardContent>
           </Card>
         </div>
-
-
-
-
       </div>
     </PageContainer>
   );
 }
-

@@ -43,7 +43,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import RequiredRedStar from '@/components/custom/required-red-star';
 import { Switch } from '@/components/ui/switch';
 import { AccidentTravail } from '../../../../../../../types/accidentsTravail';
-
+import { Skeleton } from '@/components/ui/skeleton';
 
 // Schema de validation
 const accidentSchema = z.object({
@@ -53,7 +53,9 @@ const accidentSchema = z.object({
     required_error: "Type d'accident requis"
   }),
   lieu: z.string().min(1, 'Lieu requis'),
-  circonstances: z.string().min(10, 'Description détaillée requise (min 10 caractères)'),
+  circonstances: z
+    .string()
+    .min(10, 'Description détaillée requise (min 10 caractères)'),
   lesions: z.string().min(1, 'Lésions requises'),
   gravite: z.enum(['Léger', 'Moyen', 'Grave'], {
     required_error: 'Gravité requise'
@@ -147,14 +149,15 @@ export default function ModifierAccidentTravailPage() {
           gravite: data.gravite,
           temoins: data.temoins || [],
           arretTravailExiste: data.arretTravail.existe,
-          arretTravailDuree: data.arretTravail.dureePrevisionnelle?.toString() || '',
+          arretTravailDuree:
+            data.arretTravail.dureePrevisionnelle?.toString() || '',
           arretTravailDebut: data.arretTravail.dateDebut || '',
           arretTravailFin: data.arretTravail.dateFin || '',
           statut: data.statut as 'Brouillon' | 'Déclaré'
         });
       } catch (error) {
         console.error('Erreur:', error);
-        toast.error('Erreur lors du chargement de l\'accident');
+        toast.error("Erreur lors du chargement de l'accident");
         router.push('/admin/gestion-social/accidents-travail');
       } finally {
         setLoadingData(false);
@@ -199,18 +202,22 @@ export default function ModifierAccidentTravailPage() {
   const onSubmit = async (data: AccidentFormValues) => {
     setLoading(true);
     try {
-      const employee = employees.find((e) => String(e.id) === String(data.employeId));
+      const employee = employees.find(
+        (e) => String(e.id) === String(data.employeId)
+      );
 
       const payload = {
         employeId: parseInt(String(data.employeId)),
-        employe: employee ? {
-          id: employee.id,
-          nom: employee.lastName,
-          prenom: employee.firstName,
-          matricule: employee.matricule,
-          numeroCNSS: employee.numeroCNSS,
-          departement: employee.departement?.name
-        } : accident?.employe,
+        employe: employee
+          ? {
+              id: employee.id,
+              nom: employee.lastName,
+              prenom: employee.firstName,
+              matricule: employee.matricule,
+              numeroCNSS: employee.numeroCNSS,
+              departement: employee.departement?.name
+            }
+          : accident?.employe,
         dateHeureAccident: data.dateHeureAccident,
         typeAccident: data.typeAccident,
         lieu: data.lieu,
@@ -237,7 +244,7 @@ export default function ModifierAccidentTravailPage() {
       console.error('Erreur:', error);
       toast.error(
         error?.response?.data?.message ||
-          'Erreur lors de la modification de l\'accident'
+          "Erreur lors de la modification de l'accident"
       );
     } finally {
       setLoading(false);
@@ -364,15 +371,11 @@ export default function ModifierAccidentTravailPage() {
 
   return (
     <PageContainer scrollable>
-      <div className='space-y-4 w-full'>
+      <div className='w-full space-y-4'>
         {/* Header */}
         <div className='flex items-center justify-between'>
           <div className='flex items-center space-x-2'>
-            <Button
-              variant='ghost'
-              size='icon'
-              onClick={() => router.back()}
-            >
+            <Button variant='ghost' size='icon' onClick={() => router.back()}>
               <ArrowLeft className='h-5 w-5' />
             </Button>
             <div>
@@ -548,12 +551,10 @@ export default function ModifierAccidentTravailPage() {
                       <Textarea
                         {...field}
                         rows={5}
-                        placeholder='Décrire précisément comment l&apos;accident s&apos;est produit, les conditions, les équipements utilisés...'
+                        placeholder="Décrire précisément comment l'accident s'est produit, les conditions, les équipements utilisés..."
                         className='resize-none'
                       />
-                      <FormDescription>
-                        Minimum 10 caractères
-                      </FormDescription>
+                      <FormDescription>Minimum 10 caractères</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -601,7 +602,7 @@ export default function ModifierAccidentTravailPage() {
               </CardHeader>
               <CardContent className='space-y-4'>
                 {fields.length === 0 ? (
-                  <p className='text-center text-sm text-muted-foreground'>
+                  <p className='text-muted-foreground text-center text-sm'>
                     Aucun témoin ajouté
                   </p>
                 ) : (
@@ -671,7 +672,8 @@ export default function ModifierAccidentTravailPage() {
                           Arrêt de travail prescrit
                         </FormLabel>
                         <FormDescription>
-                          L&apos;accident a-t-il donné lieu à un arrêt de travail ?
+                          L&apos;accident a-t-il donné lieu à un arrêt de
+                          travail ?
                         </FormDescription>
                       </div>
                       <FormControl>
@@ -749,7 +751,7 @@ export default function ModifierAccidentTravailPage() {
               </CardHeader>
               <CardContent>
                 <div className='space-y-2'>
-                  <p className='text-sm text-muted-foreground mb-4'>
+                  <p className='text-muted-foreground mb-4 text-sm'>
                     Certificat médical, déclaration, photos, témoignages...
                   </p>
                   <FileUploader
@@ -761,7 +763,8 @@ export default function ModifierAccidentTravailPage() {
                       'application/pdf': ['.pdf'],
                       'image/*': ['.jpg', '.jpeg', '.png'],
                       'application/msword': ['.doc'],
-                      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
+                      'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+                        ['.docx']
                     }}
                     multiple
                     description='PDF, images, Word (max 5MB par fichier)'

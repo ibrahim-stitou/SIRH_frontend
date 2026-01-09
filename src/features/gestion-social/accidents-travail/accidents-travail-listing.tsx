@@ -91,11 +91,15 @@ export default function AccidentsTravailListing() {
   const onDeclarerCNSS = useCallback(
     async (row: AccidentTravail) => {
       try {
-        await apiClient.patch(apiRoutes.admin.accidentsTravail.declarerCNSS(row.id));
+        await apiClient.patch(
+          apiRoutes.admin.accidentsTravail.declarerCNSS(row.id)
+        );
         toast.success('Dossier transmis à la CNSS avec succès');
         _tableInstance?.refresh?.();
       } catch (e: any) {
-        toast.error(e?.response?.data?.message || 'Erreur lors de la déclaration CNSS');
+        toast.error(
+          e?.response?.data?.message || 'Erreur lors de la déclaration CNSS'
+        );
       }
     },
     [_tableInstance]
@@ -104,7 +108,9 @@ export default function AccidentsTravailListing() {
   const onCloturer = useCallback(
     async (row: AccidentTravail) => {
       try {
-        await apiClient.patch(apiRoutes.admin.accidentsTravail.cloturer(row.id));
+        await apiClient.patch(
+          apiRoutes.admin.accidentsTravail.cloturer(row.id)
+        );
         toast.success('Accident clôturé avec succès');
         _tableInstance?.refresh?.();
       } catch (e: any) {
@@ -126,13 +132,14 @@ export default function AccidentsTravailListing() {
       setConfirmDeleteId(null);
       _tableInstance?.refresh?.();
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || 'Erreur lors de la suppression');
+      toast.error(
+        e?.response?.data?.message || 'Erreur lors de la suppression'
+      );
     }
   };
 
   const columns: CustomTableColumn<AccidentTravail>[] = useMemo(
     () => [
-
       {
         data: 'employe',
         label: 'Employé',
@@ -141,7 +148,7 @@ export default function AccidentsTravailListing() {
           row.employe ? (
             <div className='flex flex-col'>
               <span className='font-medium'>{`${row.employe.prenom} ${row.employe.nom}`}</span>
-              <div className='flex items-center gap-2 text-xs text-muted-foreground'>
+              <div className='text-muted-foreground flex items-center gap-2 text-xs'>
                 {row.employe.matricule && <span>{row.employe.matricule}</span>}
                 {row.employe.numeroCNSS && (
                   <>
@@ -163,7 +170,7 @@ export default function AccidentsTravailListing() {
           v ? (
             <div className='flex flex-col'>
               <span>{format(new Date(v), 'dd/MM/yyyy', { locale: fr })}</span>
-              <span className='text-xs text-muted-foreground'>
+              <span className='text-muted-foreground text-xs'>
                 {format(new Date(v), 'HH:mm', { locale: fr })}
               </span>
             </div>
@@ -192,7 +199,7 @@ export default function AccidentsTravailListing() {
             Grave: 'bg-red-100 text-red-700 border-red-300'
           };
           return (
-            <Badge className={colors[v]} variant="outline">
+            <Badge className={colors[v]} variant='outline'>
               {v}
             </Badge>
           );
@@ -207,7 +214,7 @@ export default function AccidentsTravailListing() {
             <div className='flex flex-col'>
               <StatusBadge tone='warning' label='Oui' />
               {row.arretTravail.dureePrevisionnelle && (
-                <span className='text-xs text-muted-foreground'>
+                <span className='text-muted-foreground text-xs'>
                   {row.arretTravail.dureePrevisionnelle} jours
                 </span>
               )}
@@ -240,15 +247,18 @@ export default function AccidentsTravailListing() {
         render: (v: AccidentTravail['statut']) => {
           const map: Record<
             string,
-            { text: string; tone: 'neutral' | 'success' | 'danger' | 'warning' | 'info' }
+            {
+              text: string;
+              tone: 'neutral' | 'success' | 'danger' | 'warning' | 'info';
+            }
           > = {
-            'Brouillon': { text: 'Brouillon', tone: 'neutral' },
-            'Déclaré': { text: 'Déclaré', tone: 'info' },
+            Brouillon: { text: 'Brouillon', tone: 'neutral' },
+            Déclaré: { text: 'Déclaré', tone: 'info' },
             'Transmis CNSS': { text: 'Transmis CNSS', tone: 'warning' },
             'En instruction': { text: 'En instruction', tone: 'warning' },
-            'Accepté': { text: 'Accepté', tone: 'success' },
-            'Refusé': { text: 'Refusé', tone: 'danger' },
-            'Clos': { text: 'Clos', tone: 'neutral' }
+            Accepté: { text: 'Accepté', tone: 'success' },
+            Refusé: { text: 'Refusé', tone: 'danger' },
+            Clos: { text: 'Clos', tone: 'neutral' }
           };
           const m = map[v] || map['Brouillon'];
           return <StatusBadge label={m.text} tone={m.tone} />;
@@ -261,15 +271,17 @@ export default function AccidentsTravailListing() {
         render: (_v, row) =>
           row.suiviCNSS.numeroRecepisse ? (
             <div className='flex flex-col text-xs'>
-              <span className='font-mono text-muted-foreground'>
+              <span className='text-muted-foreground font-mono'>
                 {row.suiviCNSS.numeroRecepisse}
               </span>
               {row.suiviCNSS.tauxIPP !== null && (
-                <span className='text-blue-600'>IPP: {row.suiviCNSS.tauxIPP}%</span>
+                <span className='text-blue-600'>
+                  IPP: {row.suiviCNSS.tauxIPP}%
+                </span>
               )}
             </div>
           ) : (
-            <span className='text-xs text-muted-foreground'>Non transmis</span>
+            <span className='text-muted-foreground text-xs'>Non transmis</span>
           )
       },
       {
@@ -277,8 +289,10 @@ export default function AccidentsTravailListing() {
         label: 'Actions',
         sortable: false,
         render: (_v, row) => {
-          const canEdit = row.statut === 'Brouillon' || row.statut === 'Déclaré';
-          const canDeclareCNSS = row.statut === 'Déclaré' && !row.suiviCNSS.dateEnvoi;
+          const canEdit =
+            row.statut === 'Brouillon' || row.statut === 'Déclaré';
+          const canDeclareCNSS =
+            row.statut === 'Déclaré' && !row.suiviCNSS.dateEnvoi;
           const canCloturer = row.statut === 'Accepté';
           const canDelete = row.statut === 'Brouillon';
 
@@ -445,12 +459,20 @@ export default function AccidentsTravailListing() {
         <div className='flex gap-2'>
           <Button
             variant='outline'
-            onClick={() => router.push('/admin/gestion-social/accidents-travail/statistiques')}
+            onClick={() =>
+              router.push(
+                '/admin/gestion-social/accidents-travail/statistiques'
+              )
+            }
           >
             <FileText className='mr-2 h-4 w-4' />
             Statistiques
           </Button>
-          <Button onClick={() => router.push('/admin/gestion-social/accidents-travail/ajouter')}>
+          <Button
+            onClick={() =>
+              router.push('/admin/gestion-social/accidents-travail/ajouter')
+            }
+          >
             <Plus className='mr-2 h-4 w-4' />
             Déclarer un accident
           </Button>
@@ -478,4 +500,3 @@ export default function AccidentsTravailListing() {
     </>
   );
 }
-

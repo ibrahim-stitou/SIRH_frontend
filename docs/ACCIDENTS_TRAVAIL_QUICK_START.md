@@ -1,7 +1,8 @@
 # 🚀 Module Accidents du Travail - Guide de Démarrage Rapide
+
 **Statut:** ✅ Production Ready (Mock)
 **Date:** 09/01/2026  
-**Version:** 1.0.0  
+**Version:** 1.0.0
 
 ---
 
@@ -19,26 +20,30 @@
 - Détails: `src/app/admin/attestations/[id]/page.tsx`
 - Formulaire: `src/app/admin/absences/ajouter/page.tsx`
 - DataTable: `src/features/absences/absences-listing.tsx`
-**Patterns de référence:**
+  **Patterns de référence:**
 
 **Documentation complète:** `docs/ACCIDENTS_TRAVAIL_MODULE.md`
 
 ## 📞 Support
 
 **Solution:** Normal - les boutons sont désactivés selon le statut (ex: Modifier désactivé si Clos)
-**Cause:** Logique conditionnelle  
+**Cause:** Logique conditionnelle
+
 ### Boutons actions désactivés
 
 **Solution:** Vérifier que les noms de champs dans la table correspondent aux query params API
-**Cause:** Query params mal mappés  
+**Cause:** Query params mal mappés
+
 ### Filtres ne fonctionnent pas
 
 **Solution:** Vérifier `mock-server.js` contient `require('./server/routes/accidentsTravail')(server, db);`
-**Cause:** Routes non enregistrées  
+**Cause:** Routes non enregistrées
+
 ### Erreur 404 sur routes
 
 **Solution:** Vérifier `db.js` contient `accidentsTravail: require('./mock-data/accidentsTravail.json')`
-**Cause:** Mock data non chargé  
+**Cause:** Mock data non chargé
+
 ### La liste est vide
 
 ## 🐛 Troubleshooting
@@ -46,21 +51,24 @@
 - [ ] Rapports annuels CNSS
 - [ ] Analyse zones à risque
 - [ ] Tableau de bord prévention
+
 ### Priorité 3
 
 - [ ] Export Excel/PDF
 - [ ] Intégration paie réelle (bulletins)
 - [ ] Module suivi médical enrichi
+
 ### Priorité 2
 
 - [ ] Notifications email automatiques
 - [ ] Génération PDF déclaration CNSS
 - [ ] Upload vraies pièces jointes (certificats, photos)
+
 ### Priorité 1
 
 ## 📈 Prochaines étapes (Phase 2)
 
-```
+````
 }
   'at.stats': true
   'at.cnss': true,
@@ -74,13 +82,15 @@ permissions: {
 
 ### 2. Permissions (à implémenter en Phase 2)
 
-```
+````
+
 }
-  badge: '🔴 48h' // optionnel
-  icon: AlertTriangle,
-  href: '/admin/gestion-social/accidents-travail',
-  title: 'Accidents du Travail',
+badge: '🔴 48h' // optionnel
+icon: AlertTriangle,
+href: '/admin/gestion-social/accidents-travail',
+title: 'Accidents du Travail',
 {
+
 ```tsx
 
 Ajouter dans `src/components/layout/sidebar.tsx` ou équivalent:
@@ -235,17 +245,19 @@ Ajouter dans `src/components/layout/sidebar.tsx` ou équivalent:
 ## 🧪 Test du module
 
 ```
+
 }
-  ]
-    }
-      icon: AlertTriangle
-      href: '/admin/gestion-social/accidents-travail',
-      title: 'Accidents du Travail',
-    {
-  items: [
-  icon: Users,
-  title: 'Gestion Sociale',
+]
+}
+icon: AlertTriangle
+href: '/admin/gestion-social/accidents-travail',
+title: 'Accidents du Travail',
 {
+items: [
+icon: Users,
+title: 'Gestion Sociale',
+{
+
 ```typescript
 
 Ajoutez dans votre menu de navigation (si pas déjà fait):
@@ -262,9 +274,13 @@ Ajoutez dans votre menu de navigation (si pas déjà fait):
 Le mock server démarre automatiquement sur le port 3001.
 
 ```
+
 pnpm dev
+
 # OU
+
 npm run dev
+
 ```bash
 
 ### 1. Démarrer le serveur mock
@@ -296,3 +312,4 @@ Le module **Accidents du Travail** a été installé avec succès dans votre sys
 ## ✅ Installation Complète
 
 
+```

@@ -347,11 +347,9 @@ module.exports = (server, db) => {
 
     const currentStatus = existing.status || 'draft';
     if (!canSubmitFrom(currentStatus)) {
-      return res
-        .status(400)
-        .json({
-          message: `Impossible de soumettre depuis le statut '${currentStatus}'`
-        });
+      return res.status(400).json({
+        message: `Impossible de soumettre depuis le statut '${currentStatus}'`
+      });
     }
 
     // Ensure lines present for totals
@@ -389,11 +387,9 @@ module.exports = (server, db) => {
 
     const status = existing.status || 'draft';
     if (!isActionAllowed(status, action)) {
-      return res
-        .status(400)
-        .json({
-          message: `Action '${action}' non permise depuis le statut '${status}'`
-        });
+      return res.status(400).json({
+        message: `Action '${action}' non permise depuis le statut '${status}'`
+      });
     }
 
     const meta = readMeta();
@@ -451,11 +447,9 @@ module.exports = (server, db) => {
     } else if (action === 'request_complement') {
       const comment = String(payload.comment || '').trim();
       if (!comment) {
-        return res
-          .status(400)
-          .json({
-            message: 'Le commentaire est requis pour la demande de complément'
-          });
+        return res.status(400).json({
+          message: 'Le commentaire est requis pour la demande de complément'
+        });
       }
       note.managerComment = comment;
       note.status = 'needs_complement';
