@@ -302,6 +302,26 @@ export const apiRoutes = {
         delete: (id: number | string) =>
           `${API_BASE}/parametre-max-general/${id}`
       }
+    },
+    accidentsTravail: {
+      list: `${API_BASE}/accidents-travail`,
+      create: `${API_BASE}/accidents-travail`,
+      show: (id: number | string) => `${API_BASE}/accidents-travail/${id}`,
+      update: (id: number | string) => `${API_BASE}/accidents-travail/${id}`,
+      delete: (id: number | string) => `${API_BASE}/accidents-travail/${id}`,
+      declarerCNSS: (id: number | string) =>
+        `${API_BASE}/accidents-travail/${id}/declarer-cnss`,
+      decisionCNSS: (id: number | string) =>
+        `${API_BASE}/accidents-travail/${id}/decision-cnss`,
+      cloturer: (id: number | string) =>
+        `${API_BASE}/accidents-travail/${id}/cloturer`,
+      suiviMedical: (id: number | string) =>
+        `${API_BASE}/accidents-travail/${id}/suivi-medical`,
+      piecesJointes: (id: number | string) =>
+        `${API_BASE}/accidents-travail/${id}/pieces-jointes`,
+      relances: (id: number | string) =>
+        `${API_BASE}/accidents-travail/${id}/relances`,
+      statistiques: `${API_BASE}/accidents-travail/statistiques`
     }
   }
 };

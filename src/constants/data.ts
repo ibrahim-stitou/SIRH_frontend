@@ -147,6 +147,13 @@ export const useNavItems = (): NavItem[] => {
           description: 'US-FRA-001'
         }
       ]
+    },
+    {
+      title:t('sidebar.accidentsTravail'),
+      url: '/admin/gestion-social/accidents-travail',
+      icon: 'ambulance',
+      shortcut: ['a', 't'],
+      description: 'US-AT-001',
     }
   ];
 };

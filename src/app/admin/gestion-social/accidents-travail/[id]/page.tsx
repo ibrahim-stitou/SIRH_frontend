@@ -1,0 +1,582 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { toast } from 'sonner';
+import apiClient from '@/lib/api';
+import { apiRoutes } from '@/config/apiRoutes';
+import {
+  ArrowLeft,
+  Edit,
+  Send,
+  CheckCircle2,
+  FileText,
+  AlertTriangle,
+  Calendar,
+  Users,
+  Activity,
+  DollarSign,
+  FileCheck,
+  Loader2
+} from 'lucide-react';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
+import PageContainer from '@/components/layout/page-container';
+import { Temoin, HistoriqueAT } from '../../../../../../types/accidentsTravail';
+import { StatusBadge } from '@/components/custom/status-badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { AccidentTravail } from '../../../../../../types/accidentsTravail';
+
+export default function AccidentTravailDetailsPage() {
+  const router = useRouter();
+  const params = useParams();
+  const id = params.id as string;
+
+  const [accident, setAccident] = useState<AccidentTravail | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [showDecisionModal, setShowDecisionModal] = useState(false);
+  const [decisionData, setDecisionData] = useState({
+    decision: 'Accepté',
+    tauxIPP: '',
+    montantIndemnite: ''
+  });
+
+  const loadAccident = async () => {
+    try {
+      const response = await apiClient.get(
+        apiRoutes.admin.accidentsTravail.show(id)
+      );
+      setAccident(response.data.data);
+    } catch (error: any) {
+      console.error('Erreur:', error);
+      toast.error('Erreur lors du chargement de l\'accident');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadAccident();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  const handleDeclarerCNSS = async () => {
+    try {
+      await apiClient.patch(apiRoutes.admin.accidentsTravail.declarerCNSS(id));
+      toast.success('Dossier transmis à la CNSS avec succès');
+      loadAccident();
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message || 'Erreur lors de la déclaration CNSS');
+    }
+  };
+
+  const handleCloturer = async () => {
+    try {
+      await apiClient.patch(apiRoutes.admin.accidentsTravail.cloturer(id));
+      toast.success('Accident clôturé avec succès');
+      loadAccident();
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message || 'Erreur lors de la clôture');
+    }
+  };
+
+  const handleDecisionCNSS = async () => {
+    try {
+      await apiClient.patch(apiRoutes.admin.accidentsTravail.decisionCNSS(id), {
+        decision: decisionData.decision,
+        tauxIPP: decisionData.tauxIPP ? parseFloat(decisionData.tauxIPP) : null,
+        montantIndemnite: decisionData.montantIndemnite
+          ? parseFloat(decisionData.montantIndemnite)
+          : null
+      });
+      toast.success('Décision CNSS enregistrée avec succès');
+      setShowDecisionModal(false);
+      loadAccident();
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message || 'Erreur');
+    }
+  };
+
+  if (loading) {
+    return (
+      <PageContainer scrollable>
+        <div className='flex items-center justify-center py-20'>
+          <div className='flex flex-col items-center gap-4'>
+            <Loader2 className='h-8 w-8 animate-spin text-primary' />
+            <p className='text-muted-foreground'>Chargement...</p>
+          </div>
+        </div>
+      </PageContainer>
+    );
+  }
+
+  if (!accident) {
+    return (
+      <PageContainer scrollable>
+        <div className='flex items-center justify-center py-20'>
+          <div className='text-center'>
+            <div className='mb-4 text-muted-foreground'>Accident non trouvé</div>
+            <Button onClick={() => router.back()}>Retour</Button>
+          </div>
+        </div>
+      </PageContainer>
+    );
+  }
+
+  const statutMap: Record<
+    string,
+    { text: string; tone: 'neutral' | 'success' | 'danger' | 'warning' | 'info' }
+  > = {
+    'Brouillon': { text: 'Brouillon', tone: 'neutral' },
+    'Déclaré': { text: 'Déclaré', tone: 'info' },
+    'Transmis CNSS': { text: 'Transmis CNSS', tone: 'warning' },
+    'En instruction': { text: 'En instruction', tone: 'warning' },
+    'Accepté': { text: 'Accepté', tone: 'success' },
+    'Refusé': { text: 'Refusé', tone: 'danger' },
+    'Clos': { text: 'Clos', tone: 'neutral' }
+  };
+
+  const canEdit = accident.statut === 'Brouillon' || accident.statut === 'Déclaré';
+  const canDeclareCNSS = accident.statut === 'Déclaré' && !accident.suiviCNSS.dateEnvoi;
+  const canAddDecision = accident.statut === 'Transmis CNSS' || accident.statut === 'En instruction';
+  const canCloturer = accident.statut === 'Accepté';
+
+  return (
+    <PageContainer scrollable>
+      <div className='space-y-6 w-full'>
+        {/* Header */}
+        <div className='flex items-center justify-between'>
+          <div className='flex items-center space-x-2'>
+            <Button variant='ghost' size='icon' onClick={() => router.back()}>
+              <ArrowLeft className='h-5 w-5' />
+            </Button>
+            <div>
+              <h1 className='text-2xl font-semibold tracking-tight'>
+                Accident #{accident.id}
+              </h1>
+              <p className='text-muted-foreground text-sm'>
+                {accident.employe.prenom} {accident.employe.nom}
+              </p>
+            </div>
+          </div>
+          <div className='flex gap-2'>
+            {canEdit && (
+              <Button
+                variant='outline'
+                onClick={() =>
+                  router.push(
+                    `/admin/gestion-social/accidents-travail/${id}/modifier`
+                  )
+                }
+              >
+                <Edit className='mr-2 h-4 w-4' />
+                Modifier
+              </Button>
+            )}
+            {canDeclareCNSS && (
+              <Button onClick={handleDeclarerCNSS}>
+                <Send className='mr-2 h-4 w-4' />
+                Déclarer à la CNSS
+              </Button>
+            )}
+            {canAddDecision && (
+              <Button onClick={() => setShowDecisionModal(true)}>
+                <FileCheck className='mr-2 h-4 w-4' />
+                Enregistrer décision CNSS
+              </Button>
+            )}
+            {canCloturer && (
+              <Button onClick={handleCloturer}>
+                <CheckCircle2 className='mr-2 h-4 w-4' />
+                Clôturer
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Alerte délai */}
+        {!accident.delaiDeclarationRespect && (
+          <div className='rounded-lg border border-red-200 bg-red-50 p-4'>
+            <div className='flex items-center gap-2 text-red-600'>
+              <AlertTriangle className='h-5 w-5' />
+              <div>
+                <div className='font-semibold'>Délai légal dépassé</div>
+                <div className='text-sm'>
+                  La déclaration a été effectuée {accident.heuresDepuisAccident.toFixed(1)}{' '}
+                  heures après l&apos;accident (délai légal: 48h)
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className='grid gap-6 md:grid-cols-3'>
+          {/* Colonne principale */}
+          <div className='space-y-6 md:col-span-2'>
+            {/* Informations générales */}
+            <Card>
+              <CardHeader>
+                <CardTitle className='flex items-center gap-2'>
+                  <FileText className='h-5 w-5' />
+                  Informations générales
+                </CardTitle>
+              </CardHeader>
+              <CardContent className='space-y-4'>
+                <div className='grid gap-4 md:grid-cols-2'>
+                  <div>
+                    <div className='text-muted-foreground text-sm'>Employé</div>
+                    <div className='font-medium'>
+                      {accident.employe.prenom} {accident.employe.nom}
+                    </div>
+                    <div className='text-sm text-muted-foreground'>
+                      {accident.employe.matricule} • CNSS: {accident.employe.numeroCNSS}
+                    </div>
+                  </div>
+                  <div>
+                    <div className='text-muted-foreground text-sm'>Date et heure</div>
+                    <div className='font-medium'>
+                      {format(new Date(accident.dateHeureAccident), 'dd/MM/yyyy à HH:mm', {
+                        locale: fr
+                      })}
+                    </div>
+                  </div>
+                </div>
+                <Separator />
+                <div className='grid gap-4 md:grid-cols-3'>
+                  <div>
+                    <div className='text-muted-foreground text-sm'>Type</div>
+                    <Badge variant={accident.typeAccident === 'Sur site' ? 'default' : 'secondary'}>
+                      {accident.typeAccident}
+                    </Badge>
+                  </div>
+                  <div>
+                    <div className='text-muted-foreground text-sm'>Gravité</div>
+                    <Badge
+                      className={
+                        accident.gravite === 'Léger'
+                          ? 'bg-green-100 text-green-700'
+                          : accident.gravite === 'Moyen'
+                            ? 'bg-orange-100 text-orange-700'
+                            : 'bg-red-100 text-red-700'
+                      }
+                    >
+                      {accident.gravite}
+                    </Badge>
+                  </div>
+                  <div>
+                    <div className='text-muted-foreground text-sm'>Statut</div>
+                    <StatusBadge
+                      label={statutMap[accident.statut]?.text || accident.statut}
+                      tone={statutMap[accident.statut]?.tone || 'neutral'}
+                    />
+                  </div>
+                </div>
+                <Separator />
+                <div>
+                  <div className='text-muted-foreground mb-1 text-sm'>Lieu</div>
+                  <div className='flex items-start gap-2'>
+                    <div>{accident.lieu}</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Circonstances et lésions */}
+            <Card>
+              <CardHeader>
+                <CardTitle className='flex items-center gap-2'>
+                  <FileText className='h-5 w-5' />
+                  Circonstances et lésions
+                </CardTitle>
+              </CardHeader>
+              <CardContent className='space-y-4'>
+                <div>
+                  <div className='text-muted-foreground mb-2 text-sm font-medium'>
+                    Circonstances
+                  </div>
+                  <div className='rounded-lg bg-muted p-3 text-sm'>
+                    {accident.circonstances}
+                  </div>
+                </div>
+                <Separator />
+                <div>
+                  <div className='text-muted-foreground mb-2 text-sm font-medium'>
+                    Nature des lésions
+                  </div>
+                  <div className='rounded-lg bg-muted p-3 text-sm'>
+                    {accident.lesions}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Témoins */}
+            {accident.temoins.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className='flex items-center gap-2'>
+                    <Users className='h-5 w-5' />
+                    Témoins ({accident.temoins.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className='space-y-3'>
+                    {accident.temoins.map((temoin: Temoin, index: number) => (
+                      <div key={index} className='flex items-center justify-between rounded-lg border p-3'>
+                        <div>
+                          <div className='font-medium'>{temoin.nom}</div>
+                          <div className='text-sm text-muted-foreground'>{temoin.contact}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Arrêt de travail */}
+            {accident.arretTravail.existe && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className='flex items-center gap-2'>
+                    <Activity className='h-5 w-5' />
+                    Arrêt de travail
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className='grid gap-4 md:grid-cols-3'>
+                    <div>
+                      <div className='text-muted-foreground text-sm'>Durée</div>
+                      <div className='text-lg font-medium'>
+                        {accident.arretTravail.dureePrevisionnelle} jours
+                      </div>
+                    </div>
+                    {accident.arretTravail.dateDebut && (
+                      <div>
+                        <div className='text-muted-foreground text-sm'>Du</div>
+                        <div className='font-medium'>
+                          {format(new Date(accident.arretTravail.dateDebut), 'dd/MM/yyyy')}
+                        </div>
+                      </div>
+                    )}
+                    {accident.arretTravail.dateFin && (
+                      <div>
+                        <div className='text-muted-foreground text-sm'>Au</div>
+                        <div className='font-medium'>
+                          {format(new Date(accident.arretTravail.dateFin), 'dd/MM/yyyy')}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Historique */}
+            <Card>
+              <CardHeader>
+                <CardTitle className='flex items-center gap-2'>
+                  <Activity className='h-5 w-5' />
+                  Historique
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className='space-y-3'>
+                  {accident.historique.map((event: HistoriqueAT, index: number) => (
+                    <div key={index} className='flex gap-3'>
+                      <div className='mt-1 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary/10'>
+                        <Calendar className='h-4 w-4 text-primary' />
+                      </div>
+                      <div className='flex-1'>
+                        <div className='flex items-start justify-between'>
+                          <div>
+                            <div className='font-medium'>{event.action}</div>
+                            <div className='text-sm text-muted-foreground'>
+                              {event.details}
+                            </div>
+                          </div>
+                          <div className='text-xs text-muted-foreground'>
+                            {format(new Date(event.date), 'dd/MM/yyyy HH:mm')}
+                          </div>
+                        </div>
+                        <div className='mt-1 text-xs text-muted-foreground'>
+                          Par {event.utilisateur}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Colonne latérale */}
+          <div className='space-y-6'>
+            {/* Suivi CNSS */}
+            <Card>
+              <CardHeader>
+                <CardTitle className='flex items-center gap-2'>
+                  <FileCheck className='h-5 w-5' />
+                  Suivi CNSS
+                </CardTitle>
+              </CardHeader>
+              <CardContent className='space-y-4'>
+                {accident.suiviCNSS.dateEnvoi ? (
+                  <>
+                    <div>
+                      <div className='text-muted-foreground text-sm'>Envoyé le</div>
+                      <div className='font-medium'>
+                        {format(new Date(accident.suiviCNSS.dateEnvoi), 'dd/MM/yyyy')}
+                      </div>
+                    </div>
+                    <div>
+                      <div className='text-muted-foreground text-sm'>N° Récépissé</div>
+                      <div className='font-mono text-sm'>{accident.suiviCNSS.numeroRecepisse}</div>
+                    </div>
+                    {accident.suiviCNSS.decision && (
+                      <div>
+                        <div className='text-muted-foreground text-sm'>Décision</div>
+                        <StatusBadge
+                          label={accident.suiviCNSS.decision}
+                          tone={
+                            accident.suiviCNSS.decision === 'Accepté'
+                              ? 'success'
+                              : accident.suiviCNSS.decision === 'Refusé'
+                                ? 'danger'
+                                : 'warning'
+                          }
+                        />
+                      </div>
+                    )}
+                    {accident.suiviCNSS.tauxIPP !== null && (
+                      <div>
+                        <div className='text-muted-foreground text-sm'>Taux IPP</div>
+                        <div className='text-lg font-medium'>{accident.suiviCNSS.tauxIPP}%</div>
+                      </div>
+                    )}
+                    {accident.suiviCNSS.montantIndemnite && (
+                      <div>
+                        <div className='text-muted-foreground text-sm'>Montant indemnité</div>
+                        <div className='text-lg font-medium'>
+                          {accident.suiviCNSS.montantIndemnite.toLocaleString('fr-FR')} MAD
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className='text-center text-sm text-muted-foreground'>
+                    Non transmis à la CNSS
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Impact paie */}
+            {accident.impactPaie.impactBulletin && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className='flex items-center gap-2'>
+                    <DollarSign className='h-5 w-5' />
+                    Impact paie
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className='space-y-4'>
+                  <div>
+                    <div className='text-muted-foreground text-sm'>Jours indemnisés</div>
+                    <div className='font-medium'>{accident.impactPaie.joursIndemnises}</div>
+                  </div>
+                  <div>
+                    <div className='text-muted-foreground text-sm'>Indemnités journalières</div>
+                    <div className='text-lg font-medium'>
+                      {accident.impactPaie.indemnitesJournalieres.toLocaleString('fr-FR')} MAD
+                    </div>
+                  </div>
+                  {accident.impactPaie.priseEnCharge && (
+                    <div>
+                      <div className='text-muted-foreground text-sm'>Prise en charge</div>
+                      <Badge>{accident.impactPaie.priseEnCharge}</Badge>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
+
+        {/* Modal décision CNSS */}
+        <Dialog open={showDecisionModal} onOpenChange={setShowDecisionModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Enregistrer la décision CNSS</DialogTitle>
+              <DialogDescription>
+                Saisir les informations de la décision de la CNSS
+              </DialogDescription>
+            </DialogHeader>
+            <div className='space-y-4'>
+              <div>
+                <Label>Décision</Label>
+                <select
+                  className='mt-1 w-full rounded-md border p-2'
+                  value={decisionData.decision}
+                  onChange={(e) =>
+                    setDecisionData({ ...decisionData, decision: e.target.value })
+                  }
+                >
+                  <option value='Accepté'>Accepté</option>
+                  <option value='Refusé'>Refusé</option>
+                </select>
+              </div>
+              <div>
+                <Label>Taux IPP (%)</Label>
+                <Input
+                  type='number'
+                  min='0'
+                  max='100'
+                  step='0.1'
+                  value={decisionData.tauxIPP}
+                  onChange={(e) =>
+                    setDecisionData({ ...decisionData, tauxIPP: e.target.value })
+                  }
+                  placeholder='Ex: 7'
+                />
+              </div>
+              <div>
+                <Label>Montant indemnité (MAD)</Label>
+                <Input
+                  type='number'
+                  min='0'
+                  step='0.01'
+                  value={decisionData.montantIndemnite}
+                  onChange={(e) =>
+                    setDecisionData({ ...decisionData, montantIndemnite: e.target.value })
+                  }
+                  placeholder='Ex: 4500'
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant='outline' onClick={() => setShowDecisionModal(false)}>
+                Annuler
+              </Button>
+              <Button onClick={handleDecisionCNSS}>Enregistrer</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </PageContainer>
+  );
+}
+

@@ -80,6 +80,7 @@ import {
   IconCashRegister,
   IconClockPause,
   IconBuildingBank,
+  IconAmbulance,
   IconZoomCheck,
   IconCashPlus
 } from '@tabler/icons-react';
@@ -101,6 +102,7 @@ export const Icons = {
   bell: IconBell,
   billing: IconCreditCard,
   file: IconFile,
+  ambulance:IconAmbulance,
   iconTicket: IconTicket,
   pointage: IconClockPause,
   book: IconBook,

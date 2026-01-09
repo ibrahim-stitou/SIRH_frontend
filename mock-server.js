@@ -71,6 +71,7 @@ require('./server/routes/avances')(server, db);
 require('./server/routes/prets')(server, db);
 require('./server/routes/frais')(server, db);
 require('./server/routes/parametres')(server, db);
+require('./server/routes/accidentsTravail')(server, db);
 require('./server/routes/generic')(server, db, data);
 
 server.use(router);

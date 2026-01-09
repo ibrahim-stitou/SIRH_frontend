@@ -1,0 +1,419 @@
+[
+  {
+    "id": 1,
+    "employeId": 1,
+    "employe": {
+      "id": 1,
+      "nom": "BENALI",
+      "prenom": "Karim",
+      "matricule": "EMP001",
+      "numeroCNSS": "456789123",
+      "departement": "Production"
+    },
+    "dateHeureAccident": "2026-03-10T09:15:00",
+    "typeAccident": "Trajet",
+    "lieu": "Avenue Hassan II - Domicile → Travail",
+    "circonstances": "Collision avec un deux-roues lors du trajet domicile-travail. Le salarié circulait en voiture et a été percuté par un scooter qui a grillé un feu rouge.",
+    "lesions": "Contusion genou droit avec hématome",
+    "gravite": "Moyen",
+    "temoins": [
+      {
+        "nom": "EL IDRISSI Ahmed",
+        "contact": "0600111222"
+      }
+    ],
+    "arretTravail": {
+      "existe": true,
+      "dureePrevisionnelle": 15,
+      "dateDebut": "2026-03-10",
+      "dateFin": "2026-03-25"
+    },
+    "statut": "En instruction",
+    "dateDeclaration": "2024-03-10T10:30:00",
+    "declarePar": "RH Manager",
+    "delaiDeclarationRespect": true,
+    "heuresDepuisAccident": 1.25,
+    "suiviCNSS": {
+      "dateEnvoi": "2026-03-11T14:00:00",
+      "numeroRecepisse": "CNSS-AT-2024-001234",
+      "decision": "En cours",
+      "tauxIPP": null,
+      "dateDecision": null,
+      "montantIndemnite": null
+    },
+    "suiviMedical": [
+      {
+        "id": 1,
+        "date": "2026-03-10",
+        "type": "Consultation urgences",
+        "medecin": "Dr. ALAMI",
+        "diagnostic": "Contusion genou droit",
+        "prescriptions": "Repos 15 jours, anti-inflammatoires",
+        "fichier": "certificat_medical_001.pdf"
+      }
+    ],
+    "impactPaie": {
+      "indemnitesJournalieres": 1800.00,
+      "joursIndemnises": 15,
+      "priseEnCharge": "CNSS",
+      "impactBulletin": true,
+      "montantDeduction": 0
+    },
+    "piecesJointes": [
+      {
+        "id": 1,
+        "type": "Certificat médical",
+        "fichier": "certificat_at_1.pdf",
+        "dateUpload": "2026-03-10T11:00:00",
+        "uploadePar": "RH Manager"
+      },
+      {
+        "id": 2,
+        "type": "Déclaration accident",
+        "fichier": "declaration_at_1.pdf",
+        "dateUpload": "2026-03-10T14:30:00",
+        "uploadePar": "RH Manager"
+      }
+    ],
+    "historique": [
+      {
+        "date": "2026-03-10T10:30:00",
+        "action": "Création dossier",
+        "utilisateur": "RH Manager",
+        "details": "Dossier AT créé"
+      },
+      {
+        "date": "2026-03-11T14:00:00",
+        "action": "Envoi CNSS",
+        "utilisateur": "RH Manager",
+        "details": "Dossier transmis à la CNSS"
+      }
+    ],
+    "relancesCNSS": [],
+    "dateCreation": "2024-03-10T10:30:00",
+    "dateModification": "2024-03-11T14:00:00",
+    "archivageObligatoire": true,
+    "dureeArchivage": 40
+  },
+  {
+    "id": 2,
+    "employeId": 2,
+    "employe": {
+      "id": 2,
+      "nom": "RACHIDI",
+      "prenom": "Fatima",
+      "matricule": "EMP002",
+      "numeroCNSS": "789456123",
+      "departement": "Logistique"
+    },
+    "dateHeureAccident": "2024-02-15T14:30:00",
+    "typeAccident": "Sur site",
+    "lieu": "Entrepôt - Zone de stockage B",
+    "circonstances": "Chute d'une palette mal arrimée lors d'une opération de manutention. La salariée effectuait un inventaire.",
+    "lesions": "Fracture poignet gauche",
+    "gravite": "Grave",
+    "temoins": [
+      {
+        "nom": "BENNANI Mohammed",
+        "contact": "0661222333"
+      },
+      {
+        "nom": "TAZI Samira",
+        "contact": "0662333444"
+      }
+    ],
+    "arretTravail": {
+      "existe": true,
+      "dureePrevisionnelle": 45,
+      "dateDebut": "2024-02-15",
+      "dateFin": "2024-03-31"
+    },
+    "statut": "Accepté",
+    "dateDeclaration": "2024-02-15T16:00:00",
+    "declarePar": "RH Manager",
+    "delaiDeclarationRespect": true,
+    "heuresDepuisAccident": 1.5,
+    "suiviCNSS": {
+      "dateEnvoi": "2024-02-16T09:00:00",
+      "numeroRecepisse": "CNSS-AT-2024-000987",
+      "decision": "Accepté",
+      "tauxIPP": 7,
+      "dateDecision": "2024-03-05T10:00:00",
+      "montantIndemnite": 4500.00
+    },
+    "suiviMedical": [
+      {
+        "id": 1,
+        "date": "2024-02-15",
+        "type": "Consultation urgences",
+        "medecin": "Dr. BENNANI",
+        "diagnostic": "Fracture poignet gauche",
+        "prescriptions": "Plâtre 6 semaines, rééducation",
+        "fichier": "certificat_medical_002_1.pdf"
+      },
+      {
+        "id": 2,
+        "date": "2024-03-01",
+        "type": "Contrôle",
+        "medecin": "Dr. BENNANI",
+        "diagnostic": "Évolution favorable",
+        "prescriptions": "Poursuite plâtre 2 semaines",
+        "fichier": "certificat_medical_002_2.pdf"
+      }
+    ],
+    "impactPaie": {
+      "indemnitesJournalieres": 5400.00,
+      "joursIndemnises": 45,
+      "priseEnCharge": "CNSS",
+      "impactBulletin": true,
+      "montantDeduction": 0
+    },
+    "piecesJointes": [
+      {
+        "id": 1,
+        "type": "Certificat médical",
+        "fichier": "certificat_at_2.pdf",
+        "dateUpload": "2024-02-15T17:00:00",
+        "uploadePar": "RH Manager"
+      },
+      {
+        "id": 2,
+        "type": "Déclaration accident",
+        "fichier": "declaration_at_2.pdf",
+        "dateUpload": "2024-02-15T17:30:00",
+        "uploadePar": "RH Manager"
+      },
+      {
+        "id": 3,
+        "type": "Photos",
+        "fichier": "photos_at_2.pdf",
+        "dateUpload": "2024-02-15T18:00:00",
+        "uploadePar": "RH Manager"
+      }
+    ],
+    "historique": [
+      {
+        "date": "2024-02-15T16:00:00",
+        "action": "Création dossier",
+        "utilisateur": "RH Manager",
+        "details": "Dossier AT créé"
+      },
+      {
+        "date": "2024-02-16T09:00:00",
+        "action": "Envoi CNSS",
+        "utilisateur": "RH Manager",
+        "details": "Dossier transmis à la CNSS"
+      },
+      {
+        "date": "2024-03-05T10:00:00",
+        "action": "Décision CNSS",
+        "utilisateur": "Système",
+        "details": "AT accepté - IPP 7%"
+      }
+    ],
+    "relancesCNSS": [
+      {
+        "date": "2024-02-28T10:00:00",
+        "motif": "Demande de suivi",
+        "reponse": "Dossier en cours d'instruction"
+      }
+    ],
+    "dateCreation": "2024-02-15T16:00:00",
+    "dateModification": "2024-03-05T10:00:00",
+    "archivageObligatoire": true,
+    "dureeArchivage": 40
+  },
+  {
+    "id": 3,
+    "employeId": 3,
+    "employe": {
+      "id": 3,
+      "nom": "ZAHIRI",
+      "prenom": "Omar",
+      "matricule": "EMP003",
+      "numeroCNSS": "321654987",
+      "departement": "Maintenance"
+    },
+    "dateHeureAccident": "2024-03-20T11:45:00",
+    "typeAccident": "Sur site",
+    "lieu": "Atelier mécanique",
+    "circonstances": "Projection de copeaux métalliques lors d'une opération de fraisage. L'employé ne portait pas ses lunettes de protection.",
+    "lesions": "Lésion œil droit",
+    "gravite": "Moyen",
+    "temoins": [
+      {
+        "nom": "AMRANI Youssef",
+        "contact": "0663444555"
+      }
+    ],
+    "arretTravail": {
+      "existe": true,
+      "dureePrevisionnelle": 7,
+      "dateDebut": "2024-03-20",
+      "dateFin": "2024-03-27"
+    },
+    "statut": "Déclaré",
+    "dateDeclaration": "2024-03-20T12:30:00",
+    "declarePar": "RH Manager",
+    "delaiDeclarationRespect": true,
+    "heuresDepuisAccident": 0.75,
+    "suiviCNSS": {
+      "dateEnvoi": null,
+      "numeroRecepisse": null,
+      "decision": null,
+      "tauxIPP": null,
+      "dateDecision": null,
+      "montantIndemnite": null
+    },
+    "suiviMedical": [
+      {
+        "id": 1,
+        "date": "2024-03-20",
+        "type": "Consultation urgences ophtalmologie",
+        "medecin": "Dr. SEFRIOUI",
+        "diagnostic": "Corps étranger œil droit",
+        "prescriptions": "Extraction corps étranger, collyre antibiotique",
+        "fichier": "certificat_medical_003.pdf"
+      }
+    ],
+    "impactPaie": {
+      "indemnitesJournalieres": 840.00,
+      "joursIndemnises": 7,
+      "priseEnCharge": "CNSS",
+      "impactBulletin": true,
+      "montantDeduction": 0
+    },
+    "piecesJointes": [
+      {
+        "id": 1,
+        "type": "Certificat médical",
+        "fichier": "certificat_at_3.pdf",
+        "dateUpload": "2024-03-20T13:00:00",
+        "uploadePar": "RH Manager"
+      }
+    ],
+    "historique": [
+      {
+        "date": "2024-03-20T12:30:00",
+        "action": "Création dossier",
+        "utilisateur": "RH Manager",
+        "details": "Dossier AT créé"
+      }
+    ],
+    "relancesCNSS": [],
+    "dateCreation": "2024-03-20T12:30:00",
+    "dateModification": "2024-03-20T13:00:00",
+    "archivageObligatoire": true,
+    "dureeArchivage": 40
+  },
+  {
+    "id": 4,
+    "employeId": 4,
+    "employe": {
+      "id": 4,
+      "nom": "SAIDI",
+      "prenom": "Laila",
+      "matricule": "EMP004",
+      "numeroCNSS": "147258369",
+      "departement": "Administration"
+    },
+    "dateHeureAccident": "2024-01-10T16:00:00",
+    "typeAccident": "Sur site",
+    "lieu": "Bureau - Escalier principal",
+    "circonstances": "Chute dans les escaliers suite à un faux pas. Absence de main courante dans la section concernée.",
+    "lesions": "Entorse cheville droite",
+    "gravite": "Léger",
+    "temoins": [
+      {
+        "nom": "FILALI Nadia",
+        "contact": "0664555666"
+      }
+    ],
+    "arretTravail": {
+      "existe": true,
+      "dureePrevisionnelle": 10,
+      "dateDebut": "2024-01-10",
+      "dateFin": "2024-01-20"
+    },
+    "statut": "Clos",
+    "dateDeclaration": "2024-01-10T17:00:00",
+    "declarePar": "RH Manager",
+    "delaiDeclarationRespect": true,
+    "heuresDepuisAccident": 1,
+    "suiviCNSS": {
+      "dateEnvoi": "2024-01-11T09:00:00",
+      "numeroRecepisse": "CNSS-AT-2024-000123",
+      "decision": "Accepté",
+      "tauxIPP": 0,
+      "dateDecision": "2024-01-25T14:00:00",
+      "montantIndemnite": 1200.00
+    },
+    "suiviMedical": [
+      {
+        "id": 1,
+        "date": "2024-01-10",
+        "type": "Consultation urgences",
+        "medecin": "Dr. JAMAL",
+        "diagnostic": "Entorse cheville droite grade 1",
+        "prescriptions": "Repos 10 jours, attelle, anti-inflammatoires",
+        "fichier": "certificat_medical_004.pdf"
+      }
+    ],
+    "impactPaie": {
+      "indemnitesJournalieres": 1200.00,
+      "joursIndemnises": 10,
+      "priseEnCharge": "CNSS",
+      "impactBulletin": true,
+      "montantDeduction": 0
+    },
+    "piecesJointes": [
+      {
+        "id": 1,
+        "type": "Certificat médical",
+        "fichier": "certificat_at_4.pdf",
+        "dateUpload": "2024-01-10T18:00:00",
+        "uploadePar": "RH Manager"
+      },
+      {
+        "id": 2,
+        "type": "Déclaration accident",
+        "fichier": "declaration_at_4.pdf",
+        "dateUpload": "2024-01-10T18:15:00",
+        "uploadePar": "RH Manager"
+      }
+    ],
+    "historique": [
+      {
+        "date": "2024-01-10T17:00:00",
+        "action": "Création dossier",
+        "utilisateur": "RH Manager",
+        "details": "Dossier AT créé"
+      },
+      {
+        "date": "2024-01-11T09:00:00",
+        "action": "Envoi CNSS",
+        "utilisateur": "RH Manager",
+        "details": "Dossier transmis à la CNSS"
+      },
+      {
+        "date": "2024-01-25T14:00:00",
+        "action": "Décision CNSS",
+        "utilisateur": "Système",
+        "details": "AT accepté - IPP 0%"
+      },
+      {
+        "date": "2024-02-01T10:00:00",
+        "action": "Clôture",
+        "utilisateur": "RH Manager",
+        "details": "Dossier clôturé"
+      }
+    ],
+    "relancesCNSS": [],
+    "dateCreation": "2024-01-10T17:00:00",
+    "dateModification": "2024-02-01T10:00:00",
+    "dateCloture": "2024-02-01T10:00:00",
+    "archivageObligatoire": true,
+    "dureeArchivage": 40
+  }
+]
+

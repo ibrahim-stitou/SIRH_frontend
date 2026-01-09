@@ -45,6 +45,7 @@ module.exports = {
   prets: require('./mock-data/prets.json'),
   notesFrais: require('./mock-data/notesFrais.json'),
   lignesFrais: require('./mock-data/lignesFrais.json'),
+  accidentsTravail: require('./mock-data/accidentsTravail.json'),
   // Catalog des conditions de contrat
   contractConditionsCatalog: require('./mock-data/contract-conditions.json'),
   // Pivot many-to-many entre contrats et conditions
