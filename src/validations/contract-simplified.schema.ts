@@ -18,7 +18,8 @@ const simplifiedDatesSchema = z.object({
       end_date: z.string().nullable().optional(),
       renewable: z.boolean().optional(),
       max_renewals: z.number().min(0).max(3).optional(),
-      acceptance_criteria: z.array(z.string()).default([]).optional()
+      acceptance_criteria: z.array(z.string()).default([]).optional(),
+      conditions: z.string().optional(),
     })
     .optional()
 });

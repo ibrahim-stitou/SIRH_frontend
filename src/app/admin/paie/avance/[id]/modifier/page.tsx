@@ -167,7 +167,7 @@ export default function ModifierAvancePage() {
       const year = new Date(dateDemande).getFullYear();
       try {
         const res = await apiClient.get(
-          apiRoutes.admin.avances.countForEmployeeCurrentYear(empId, year)
+          apiRoutes.admin.avances.countForEmployeeCurrentYear(empId)
         );
         const payload = res.data?.data || res.data;
         const countThisYear = payload?.count ?? 0;
