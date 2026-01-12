@@ -75,6 +75,8 @@ require('./server/routes/settings/departements')(server, db);
 require('./server/routes/settings/postes')(server, db);
 require('./server/routes/settings/emplois')(server, db);
 require('./server/routes/settings/metiers')(server, db);
+require('./server/routes/settings/lieux-travail')(server, db);
+require('./server/routes/settings/types-absences')(server, db);
 require('./server/routes/accidentsTravail')(server, db);
 require('./server/routes/generic')(server, db, data);
 

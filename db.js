@@ -62,5 +62,9 @@ module.exports = {
   // Paramètres: emplois (code, libelle, type_contrat, is_active)
   settingsEmplois: require('./mock-data/settings/emploisParametres.json'),
   // Paramètres: métiers (code, libelle, domaine, is_active)
-  settingsMetiers: require('./mock-data/settings/metiersParametres.json')
+  settingsMetiers: require('./mock-data/settings/metiersParametres.json'),
+  // Paramètres: lieux de travail (code, libelle, adresse)
+  settingsLieuxTravail: require('./mock-data/settings/lieuxTravailParametres.json'),
+  // Paramètres: types d'absences
+  settingsTypesAbsences: require('./mock-data/settings/typesAbsencesParametres.json')
 };

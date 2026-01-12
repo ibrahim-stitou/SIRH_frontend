@@ -93,7 +93,7 @@ export const PARAMETRES_LIST: ParametreItem[] = [
     description:
       "Sites et établissements de l'entreprise. Gérez les adresses et localisations.",
     icon: MapPin,
-    path: '/parametres/lieux-travail',
+    path: '/admin/parametres/lieux-travail',
     categorie: 'organisation',
     couleur: '#3B82F6',
     actif: true
@@ -176,7 +176,7 @@ export const PARAMETRES_LIST: ParametreItem[] = [
     description:
       "Catégories d'absences avec leurs règles de gestion. Configurez les validations et impacts.",
     icon: CalendarOff,
-    path: '/parametres/types-absences',
+    path: '/admin/parametres/types-absences',
     categorie: 'absences',
     couleur: '#F59E0B',
     actif: true

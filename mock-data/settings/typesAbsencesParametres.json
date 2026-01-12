@@ -1,0 +1,29 @@
+[
+  {
+    "id": 501,
+    "code": "ABS-CP",
+    "libelle": "Congé payé",
+    "remunere": true,
+    "deduit_compteur": true,
+    "delai_prevenance_jours": 7,
+    "duree_max": 30,
+    "acquisition_mensuelle": 2,
+    "plafond_annuel": 24,
+    "report_possible": true,
+    "description": "Congés payés annuels"
+  },
+  {
+    "id": 502,
+    "code": "ABS-MAL",
+    "libelle": "Maladie",
+    "remunere": false,
+    "deduit_compteur": false,
+    "delai_prevenance_jours": 0,
+    "duree_max": 10,
+    "acquisition_mensuelle": 0,
+    "plafond_annuel": 0,
+    "report_possible": false,
+    "description": "Absence pour maladie (non rémunérée)"
+  }
+]
+

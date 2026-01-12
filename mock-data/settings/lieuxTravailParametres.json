@@ -1,0 +1,6 @@
+[
+  { "id": 401, "code": "LT-HEAD", "libelle": "Siège Central", "adresse": "123 Avenue Principale, Casablanca", "created_at": "2025-03-15T08:00:00.000Z", "updated_at": "2025-03-15T08:00:00.000Z" },
+  { "id": 402, "code": "LT-ANNEXE1", "libelle": "Annexe 1", "adresse": "Zone Industrielle, Marrakech", "created_at": "2025-03-16T09:15:00.000Z", "updated_at": "2025-03-16T09:15:00.000Z" },
+  { "id": 403, "code": "LT-AGENCE-RABAT", "libelle": "Agence Rabat", "adresse": "Boulevard Hassan II, Rabat", "created_at": "2025-03-17T10:30:00.000Z", "updated_at": "2025-03-17T10:30:00.000Z" }
+]
+

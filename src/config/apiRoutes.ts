@@ -348,6 +348,20 @@ export const apiRoutes = {
           `${API_BASE}/settings/metiers/${id}/activate`,
         deactivate: (id: number | string) =>
           `${API_BASE}/settings/metiers/${id}/deactivate`
+      },
+      lieuxTravail: {
+        list: `${API_BASE}/settings/lieux-travail`,
+        create: `${API_BASE}/settings/lieux-travail`,
+        show: (id: number | string) => `${API_BASE}/settings/lieux-travail/${id}`,
+        update: (id: number | string) => `${API_BASE}/settings/lieux-travail/${id}`,
+        delete: (id: number | string) => `${API_BASE}/settings/lieux-travail/${id}`
+      },
+      typesAbsences: {
+        list: `${API_BASE}/settings/types-absences`,
+        create: `${API_BASE}/settings/types-absences`,
+        show: (id: number | string) => `${API_BASE}/settings/types-absences/${id}`,
+        update: (id: number | string) => `${API_BASE}/settings/types-absences/${id}`,
+        delete: (id: number | string) => `${API_BASE}/settings/types-absences/${id}`
       }
     },
     accidentsTravail: {
