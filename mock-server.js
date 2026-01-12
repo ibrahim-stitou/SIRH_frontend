@@ -71,6 +71,10 @@ require('./server/routes/avances')(server, db);
 require('./server/routes/prets')(server, db);
 require('./server/routes/frais')(server, db);
 require('./server/routes/parametres')(server, db);
+require('./server/routes/settings/departements')(server, db);
+require('./server/routes/settings/postes')(server, db);
+require('./server/routes/settings/emplois')(server, db);
+require('./server/routes/settings/metiers')(server, db);
 require('./server/routes/accidentsTravail')(server, db);
 require('./server/routes/generic')(server, db, data);
 

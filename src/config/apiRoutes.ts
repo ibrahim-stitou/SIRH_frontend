@@ -301,6 +301,42 @@ export const apiRoutes = {
           `${API_BASE}/parametre-max-general/${id}`,
         delete: (id: number | string) =>
           `${API_BASE}/parametre-max-general/${id}`
+      },
+      departements: {
+        list: `${API_BASE}/settings/departements`,
+        create: `${API_BASE}/settings/departements`,
+        show: (id: number | string) => `${API_BASE}/settings/departements/${id}`,
+        update: (id: number | string) => `${API_BASE}/settings/departements/${id}`,
+        delete: (id: number | string) => `${API_BASE}/settings/departements/${id}`,
+        activate: (id: number | string) => `${API_BASE}/settings/departements/${id}/activate`,
+        deactivate: (id: number | string) => `${API_BASE}/settings/departements/${id}/deactivate`
+      },
+      postes: {
+        list: `${API_BASE}/settings/postes`,
+        create: `${API_BASE}/settings/postes`,
+        show: (id: number | string) => `${API_BASE}/settings/postes/${id}`,
+        update: (id: number | string) => `${API_BASE}/settings/postes/${id}`,
+        delete: (id: number | string) => `${API_BASE}/settings/postes/${id}`,
+        activate: (id: number | string) => `${API_BASE}/settings/postes/${id}/activate`,
+        deactivate: (id: number | string) => `${API_BASE}/settings/postes/${id}/deactivate`
+      },
+      emplois: {
+        list: `${API_BASE}/settings/emplois`,
+        create: `${API_BASE}/settings/emplois`,
+        show: (id: number | string) => `${API_BASE}/settings/emplois/${id}`,
+        update: (id: number | string) => `${API_BASE}/settings/emplois/${id}`,
+        delete: (id: number | string) => `${API_BASE}/settings/emplois/${id}`,
+        activate: (id: number | string) => `${API_BASE}/settings/emplois/${id}/activate`,
+        deactivate: (id: number | string) => `${API_BASE}/settings/emplois/${id}/deactivate`
+      },
+      metiers: {
+        list: `${API_BASE}/settings/metiers`,
+        create: `${API_BASE}/settings/metiers`,
+        show: (id: number | string) => `${API_BASE}/settings/metiers/${id}`,
+        update: (id: number | string) => `${API_BASE}/settings/metiers/${id}`,
+        delete: (id: number | string) => `${API_BASE}/settings/metiers/${id}`,
+        activate: (id: number | string) => `${API_BASE}/settings/metiers/${id}/activate`,
+        deactivate: (id: number | string) => `${API_BASE}/settings/metiers/${id}/deactivate`
       }
     },
     accidentsTravail: {

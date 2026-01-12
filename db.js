@@ -54,5 +54,13 @@ module.exports = {
   trialCriteriaCatalog: require('./mock-data/trial-criteria.json'),
   contractTrialCriteria: require('./mock-data/contractTrialCriteria.json'),
   // Nouveau: paramètres max généraux
-  parametreMaxGeneral: require('./mock-data/parametreMaxGeneral.json')
+  parametreMaxGeneral: require('./mock-data/parametreMaxGeneral.json'),
+  // Paramètres: départements (code, libelle, is_active)
+  settingsDepartements: require('./mock-data/settings/departementsParametres.json'),
+  // Paramètres: postes (code, libelle, departement_id, is_active)
+  settingsPostes: require('./mock-data/settings/postesParametres.json'),
+  // Paramètres: emplois (code, libelle, type_contrat, is_active)
+  settingsEmplois: require('./mock-data/settings/emploisParametres.json'),
+  // Paramètres: métiers (code, libelle, domaine, is_active)
+  settingsMetiers: require('./mock-data/settings/metiersParametres.json')
 };

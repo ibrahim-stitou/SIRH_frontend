@@ -1,234 +1,202 @@
-/**
- * EXEMPLE - Page de gestion des départements
- * Ce fichier sert d'exemple pour créer les pages de gestion des autres paramètres
- */
-
 'use client';
-
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useMemo, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import CustomTable from '@/components/custom/data-table/custom-table';
+import { StatusBadge } from '@/components/custom/status-badge';
+import { apiRoutes } from '@/config/apiRoutes';
+import apiClient from '@/lib/api';
+import { Plus, Trash2, Check, X } from 'lucide-react';
+import CustomAlertDialog from '@/components/custom/customAlert';
+import { toast } from 'sonner';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Building2, Plus, Pencil, Trash2, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
-import { toast } from '@/components/ui/sonner';
+import { Switch } from '@/components/ui/switch';
+import type { CustomTableColumn, UseTableReturn } from '@/components/custom/data-table/types';
+import PageContainer from '@/components/layout/page-container';
 
-// Type pour un département
-interface Departement {
-  id: string;
+interface DepartementSettingRow {
+  id: number | string;
   code: string;
   libelle: string;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
-export default function DepartementsPage() {
-  const [departements, setDepartements] = useState<Departement[]>([
-    { id: '1', code: '01', libelle: 'Ressources Humaines' },
-    { id: '2', code: '02', libelle: 'Informatique' },
-    { id: '3', code: '03', libelle: 'Commercial' },
-  ]);
+export default function DepartementsParametresPage() {
+  const router = useRouter();
+  const [_tableInstance, setTableInstance] = useState<Partial<UseTableReturn<DepartementSettingRow>> | null>(null);
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingDepartement, setEditingDepartement] = useState<Departement | null>(null);
-  const [formData, setFormData] = useState({ code: '', libelle: '' });
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | string | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [addLoading, setAddLoading] = useState(false);
+  const [newCode, setNewCode] = useState('');
+  const [newLibelle, setNewLibelle] = useState('');
+  const [newActive, setNewActive] = useState(true);
 
-  const handleSubmit = () => {
-    if (editingDepartement) {
-      // Mise à jour
-      setDepartements(
-        departements.map((d) =>
-          d.id === editingDepartement.id
-            ? { ...d, code: formData.code, libelle: formData.libelle }
-            : d
-        )
-      );
-      toast.success('Département modifié', {
-        description: 'Le département a été modifié avec succès.',
-      });
-    } else {
-      // Création
-      const newDepartement: Departement = {
-        id: Date.now().toString(),
-        code: formData.code,
-        libelle: formData.libelle,
-      };
-      setDepartements([...departements, newDepartement]);
-      toast.success('Département créé', {
-        description: 'Le département a été créé avec succès.',
-      });
+  const onAskDelete = (row: DepartementSettingRow) => setConfirmDeleteId(row.id);
+  const onConfirmDelete = async () => {
+    if (!confirmDeleteId) return;
+    try {
+      await apiClient.delete(apiRoutes.admin.parametres.departements.delete(confirmDeleteId));
+      setConfirmDeleteId(null);
+      _tableInstance?.refresh?.();
+    } catch (e) {
+      // noop or toast
+    }finally{
+      toast.success('Département supprimé avec succès');
     }
-    resetForm();
   };
 
-  const handleEdit = (departement: Departement) => {
-    setEditingDepartement(departement);
-    setFormData({ code: departement.code, libelle: departement.libelle });
-    setIsDialogOpen(true);
+  const onToggleActive = useCallback(async (row: DepartementSettingRow) => {
+    try {
+      const route = row.is_active
+        ? apiRoutes.admin.parametres.departements.deactivate(row.id)
+        : apiRoutes.admin.parametres.departements.activate(row.id);
+      await apiClient.patch(route);
+      _tableInstance?.refresh?.();
+    } catch (e) {
+      // noop or toast
+    }
+  }, [_tableInstance]);
+
+  const handleAdd = async () => {
+    if (!newCode.trim() || !newLibelle.trim()) return;
+    setAddLoading(true);
+    try {
+      await apiClient.post(apiRoutes.admin.parametres.departements.create, {
+        code: newCode.trim(),
+        libelle: newLibelle.trim(),
+        is_active: newActive
+      });
+      setShowAddModal(false);
+      setNewCode('');
+      setNewLibelle('');
+      setNewActive(true);
+      _tableInstance?.refresh?.();
+    } catch (e) {
+      // noop or toast
+    } finally {
+      setAddLoading(false);
+      toast.success('Département ajouté avec succès');
+    }
   };
 
-  const handleDelete = (id: string) => {
-    setDepartements(departements.filter((d) => d.id !== id));
-    toast.error('Département supprimé', {
-      description: 'Le département a été supprimé avec succès.',
-    });
-  };
+  const columns: CustomTableColumn<DepartementSettingRow>[] = useMemo(() => [
+    { data: 'id', label: 'ID', sortable: true, width: 100 },
+    { data: 'code', label: 'Code', sortable: true },
+    { data: 'libelle', label: 'Libellé', sortable: true },
+    {
+      data: 'is_active',
+      label: 'Statut',
+      sortable: true,
+      render: (v: boolean) => (
+        <StatusBadge tone={v ? 'success' : 'danger'} label={v ? 'Actif' : 'Inactif'} />
+      )
+    },
+    {
+      data: 'actions',
+      label: 'Actions',
+      sortable: false,
+      render: (_v, row) => (
+        <div className='flex items-center gap-2'>
+          <Tooltip>
+            <TooltipTrigger asChild>
+          <Button
+            variant='ghost'
+            className={`h-8 w-8 p-0 flex items-center justify-center ${row.is_active ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200 hover:text-yellow-700' : 'bg-green-100 text-green-600 hover:bg-green-200 hover:text-green-700'}`}
+            onClick={() => onToggleActive(row)}
+            aria-label={row.is_active ? 'Désactiver' : 'Activer'}
+            title={row.is_active ? 'Désactiver' : 'Activer'}
+          >
+                {row.is_active ? <X className='h-4 w-4' /> : <Check className='h-4 w-4' />}
+          </Button>
+            </TooltipTrigger>
+            <TooltipContent side='top' className={`${row.is_active ? 'bg-yellow-50 text-yellow-600' : 'bg-green-50 text-green-600'}`}>
+              {row.is_active ? 'Désactiver' : 'Activer'}
+            </TooltipContent>
+          </Tooltip>
 
-  const resetForm = () => {
-    setFormData({ code: '', libelle: '' });
-    setEditingDepartement(null);
-    setIsDialogOpen(false);
-  };
+          <Tooltip>
+            <TooltipTrigger asChild>
+          <Button
+            variant='ghost'
+            className='h-8 w-8 p-0 flex items-center justify-center bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-700'
+            onClick={() => onAskDelete(row)}
+            aria-label='Supprimer'
+            title='Supprimer'
+          >
+            <Trash2 className='h-4 w-4' />
+          </Button>
+            </TooltipTrigger>
+            <TooltipContent side='top' className={"bg-red-50 text-red-600"}>Supprimer</TooltipContent>
+          </Tooltip>
+        </div>
+      )
+    }
+  ], [onToggleActive]);
 
   return (
-    <div className="space-y-6">
-      {/* En-tête avec navigation retour */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <Link href="/parametres">
-              <Button variant="ghost" size="icon">
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-            </Link>
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-blue-500/10">
-                <Building2 className="h-6 w-6 text-blue-500" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold tracking-tight">Départements</h1>
-                <p className="text-muted-foreground">
-                  Gérez la structure organisationnelle de l&apos;entreprise
-                </p>
-              </div>
-            </div>
-          </div>
+    <PageContainer scrollable={false}>
+    <div className='flex flex-col gap-4 w-full'>
+      <div className='mb-2 flex items-center justify-between'>
+        <div>
+          <h1 className='text-2xl font-semibold tracking-tight'>Paramètres — Départements</h1>
+          <p className='text-muted-foreground text-sm'>Gérez les codes, libellés et statut d&lsquo;activité des départements</p>
         </div>
-
-        {/* Bouton d'ajout */}
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => resetForm()}>
-              <Plus className="h-4 w-4 mr-2" />
-              Nouveau département
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                {editingDepartement ? 'Modifier le département' : 'Nouveau département'}
-              </DialogTitle>
-              <DialogDescription>
-                {editingDepartement
-                  ? 'Modifiez les informations du département.'
-                  : 'Créez un nouveau département dans l\'organisation.'}
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="code">Code</Label>
-                <Input
-                  id="code"
-                  placeholder="Ex: 01"
-                  value={formData.code}
-                  onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="libelle">Libellé</Label>
-                <Input
-                  id="libelle"
-                  placeholder="Ex: Ressources Humaines"
-                  value={formData.libelle}
-                  onChange={(e) => setFormData({ ...formData, libelle: e.target.value })}
-                />
-              </div>
-            </div>
-
-            <DialogFooter>
-              <Button variant="outline" onClick={resetForm}>
-                Annuler
-              </Button>
-              <Button onClick={handleSubmit}>
-                {editingDepartement ? 'Modifier' : 'Créer'}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <Button onClick={() => setShowAddModal(true)}>
+          <Plus className='mr-2 h-4 w-4' /> Nouveau département
+        </Button>
       </div>
 
-      {/* Tableau des départements */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Liste des départements</CardTitle>
-          <CardDescription>
-            {departements.length} département(s) enregistré(s)
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Code</TableHead>
-                <TableHead>Libellé</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {departements.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
-                    Aucun département enregistré
-                  </TableCell>
-                </TableRow>
-              ) : (
-                departements.map((departement) => (
-                  <TableRow key={departement.id}>
-                    <TableCell className="font-medium">{departement.code}</TableCell>
-                    <TableCell>{departement.libelle}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEdit(departement)}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDelete(departement.id)}
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <CustomTable<DepartementSettingRow>
+        url={apiRoutes.admin.parametres.departements.list}
+        columns={columns}
+        onInit={(inst) => setTableInstance(inst)}
+      />
+
+      <CustomAlertDialog
+        title={'Supprimer cette département ?'}
+        description={'Cette action est irréversible.'}
+        cancelText={'Annuler'}
+        confirmText={'Supprimer'}
+        onConfirm={onConfirmDelete}
+        open={!!confirmDeleteId}
+        setOpen={(o) => (!o ? setConfirmDeleteId(null) : void 0)}
+      />
+
+      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Ajouter un département</DialogTitle>
+          </DialogHeader>
+          <div className='grid gap-4'>
+            <div className='grid gap-2'>
+              <Label htmlFor='code'>Code</Label>
+              <Input id='code' value={newCode} onChange={(e) => setNewCode(e.target.value)} placeholder='Ex: DEP-IT' />
+            </div>
+            <div className='grid gap-2'>
+              <Label htmlFor='libelle'>Libellé</Label>
+              <Input id='libelle' value={newLibelle} onChange={(e) => setNewLibelle(e.target.value)} placeholder='Ex: Informatique' />
+            </div>
+            <div className='flex items-center justify-between'>
+              <Label htmlFor='is_active'>Actif</Label>
+              <Switch id='is_active' checked={newActive} onCheckedChange={setNewActive} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant='outline' onClick={() => setShowAddModal(false)} disabled={addLoading}>Annuler</Button>
+            <Button onClick={handleAdd} disabled={addLoading || !newCode.trim() || !newLibelle.trim()}>
+              {addLoading ? 'Ajout...' : 'Ajouter'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
+    </PageContainer>
   );
 }
 
