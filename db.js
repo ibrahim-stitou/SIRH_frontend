@@ -66,5 +66,11 @@ module.exports = {
   // Paramètres: lieux de travail (code, libelle, adresse)
   settingsLieuxTravail: require('./mock-data/settings/lieuxTravailParametres.json'),
   // Paramètres: types d'absences
-  settingsTypesAbsences: require('./mock-data/settings/typesAbsencesParametres.json')
+  settingsTypesAbsences: require('./mock-data/settings/typesAbsencesParametres.json'),
+  // Paramètres: conditions de contrat (name, value, description)
+  settingsConditionsContrat: require('./mock-data/settings/conditionsContratParametres.json'),
+  // Paramètres: conditions période d'essai (name, value)
+  settingsConditionsPeriodeEssaie: require('./mock-data/settings/conditionsPeriodeEssaieParametres.json'),
+  // Paramètres: managers (employe_id, departement_id)
+  settingsManagers: require('./mock-data/settings/managersParametres.json')
 };

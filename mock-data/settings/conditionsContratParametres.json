@@ -1,0 +1,5 @@
+[
+  { "id": 601, "name": "Période d'essai", "description": "Durée standard de la période d'essai" },
+  { "id": 602, "name": "Horaire standard", "description": "Temps de travail hebdomadaire" },
+  { "id": 603, "name": "Prime de transport", "description": "Allocation mensuelle de transport" }
+]

@@ -362,6 +362,27 @@ export const apiRoutes = {
         show: (id: number | string) => `${API_BASE}/settings/types-absences/${id}`,
         update: (id: number | string) => `${API_BASE}/settings/types-absences/${id}`,
         delete: (id: number | string) => `${API_BASE}/settings/types-absences/${id}`
+      },
+      conditionsContrat: {
+        list: `${API_BASE}/settings/conditions-contrat`,
+        create: `${API_BASE}/settings/conditions-contrat`,
+        show: (id: number | string) => `${API_BASE}/settings/conditions-contrat/${id}`,
+        update: (id: number | string) => `${API_BASE}/settings/conditions-contrat/${id}`,
+        delete: (id: number | string) => `${API_BASE}/settings/conditions-contrat/${id}`
+      },
+      conditionsPeriodeEssaie: {
+        list: `${API_BASE}/settings/conditions-periode-essaie`,
+        create: `${API_BASE}/settings/conditions-periode-essaie`,
+        show: (id: number | string) => `${API_BASE}/settings/conditions-periode-essaie/${id}`,
+        update: (id: number | string) => `${API_BASE}/settings/conditions-periode-essaie/${id}`,
+        delete: (id: number | string) => `${API_BASE}/settings/conditions-periode-essaie/${id}`
+      },
+      managers: {
+        list: `${API_BASE}/settings/managers`,
+        create: `${API_BASE}/settings/managers`,
+        show: (id: number | string) => `${API_BASE}/settings/managers/${id}`,
+        update: (id: number | string) => `${API_BASE}/settings/managers/${id}`,
+        delete: (id: number | string) => `${API_BASE}/settings/managers/${id}`
       }
     },
     accidentsTravail: {

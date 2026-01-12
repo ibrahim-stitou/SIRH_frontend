@@ -1,10 +1,24 @@
 [
   {
-    "id": 1,
-    "max_avenants_par_contrat": 3,
-    "max_avances_par_an": 4,
-    "max_acomptes_par_an": 2,
-    "created_at": "2025-01-01T00:00:00Z",
-    "updated_at": "2025-01-01T00:00:00Z"
+    "id": 801,
+    "type": "MAX_AVENANTS_PAR_CONTRAT",
+    "max": 3,
+    "description": "Nombre maximum d’avenants autorisés par contrat",
+    "is_required": true
+  },
+  {
+    "id": 802,
+    "type": "MAX_AVANCES_PAR_ANNEE",
+    "max": 12000,
+    "description": "Plafond annuel cumulé des avances (en MAD)",
+    "is_required": true
+  },
+  {
+    "id": 803,
+    "type": "MAX_ACOMPTES_PAR_MOIS",
+    "max": 5000,
+    "description": "Montant maximum des acomptes par mois (en MAD)",
+    "is_required": false
   }
 ]
+

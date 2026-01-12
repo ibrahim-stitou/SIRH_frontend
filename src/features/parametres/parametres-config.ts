@@ -28,25 +28,11 @@ import { ParametreItem, ParametreCategorie } from './types';
  */
 export const PARAMETRES_CATEGORIES: ParametreCategorie[] = [
   {
-    id: 'organisation',
-    nom: 'Organisation',
-    description: "Structure organisationnelle de l'entreprise",
-    icon: Building2,
-    couleur: '#3B82F6' // blue
-  },
-  {
     id: 'rh',
     nom: 'Ressources Humaines',
     description: 'Gestion des postes, emplois et métiers',
     icon: Users,
     couleur: '#8B5CF6' // violet
-  },
-  {
-    id: 'financier',
-    nom: 'Financier',
-    description: 'Primes, indemnités et avances',
-    icon: DollarSign,
-    couleur: '#10B981' // green
   },
   {
     id: 'absences',
@@ -75,29 +61,8 @@ export const PARAMETRES_CATEGORIES: ParametreCategorie[] = [
  * Liste complète des paramètres
  */
 export const PARAMETRES_LIST: ParametreItem[] = [
-  // ========== ORGANISATION ==========
-  {
-    code: 'DEPT',
-    titre: 'Départements',
-    description:
-      "Structure organisationnelle de l'entreprise. Gérez les départements et services.",
-    icon: Building2,
-    path: '/admin/parametres/departements',
-    categorie: 'organisation',
-    couleur: '#3B82F6',
-    actif: true
-  },
-  {
-    code: 'LIEU',
-    titre: 'Lieux de Travail',
-    description:
-      "Sites et établissements de l'entreprise. Gérez les adresses et localisations.",
-    icon: MapPin,
-    path: '/admin/parametres/lieux-travail',
-    categorie: 'organisation',
-    couleur: '#3B82F6',
-    actif: true
-  },
+
+
 
   // ========== RESSOURCES HUMAINES ==========
   {
@@ -139,35 +104,34 @@ export const PARAMETRES_LIST: ParametreItem[] = [
     description:
       'Hiérarchie et relations managériales. Gérez la structure de reporting.',
     icon: UserCog,
-    path: '/parametres/managers',
+    path: '/admin/parametres/managers',
+    categorie: 'rh',
+    couleur: '#8B5CF6',
+    actif: true
+  },
+  {
+    code: 'DEPT',
+    titre: 'Départements',
+    description:
+      "Structure organisationnelle de l'entreprise. Gérez les départements et services.",
+    icon: Building2,
+    path: '/admin/parametres/departements',
+    categorie: 'rh',
+    couleur: '#8B5CF6',
+    actif: true
+  },
+  {
+    code: 'LIEU',
+    titre: 'Lieux de Travail',
+    description:
+      "Sites et établissements de l'entreprise. Gérez les adresses et localisations.",
+    icon: MapPin,
+    path: '/admin/parametres/lieux-travail',
     categorie: 'rh',
     couleur: '#8B5CF6',
     actif: true
   },
 
-  // ========== FINANCIER ==========
-  {
-    code: 'PRIM',
-    titre: 'Primes',
-    description:
-      'Primes accordées aux employés. Configurez les montants et exonérations fiscales.',
-    icon: Coins,
-    path: '/parametres/primes',
-    categorie: 'financier',
-    couleur: '#10B981',
-    actif: true
-  },
-  {
-    code: 'INDEM',
-    titre: 'Indemnités',
-    description:
-      "Indemnités et avantages en nature. Gérez les différents types d'avantages.",
-    icon: Gift,
-    path: '/parametres/indemnites',
-    categorie: 'financier',
-    couleur: '#10B981',
-    actif: true
-  },
 
   // ========== ABSENCES & CONGÉS ==========
   {
@@ -216,6 +180,28 @@ export const PARAMETRES_LIST: ParametreItem[] = [
     couleur: '#EF4444',
     actif: true
   },
+  {
+    code: 'PRIM',
+    titre: 'Primes',
+    description:
+      'Primes accordées aux employés. Configurez les montants et exonérations fiscales.',
+    icon: Coins,
+    path: '/parametres/primes',
+    categorie: 'paie',
+    couleur: '#EF4444',
+    actif: true
+  },
+  {
+    code: 'INDEM',
+    titre: 'Indemnités',
+    description:
+      "Indemnités et avantages en nature. Gérez les différents types d'avantages.",
+    icon: Gift,
+    path: '/parametres/indemnites',
+    categorie: 'paie',
+    couleur: '#EF4444',
+    actif: true
+  },
 
   // ========== CONTRATS ==========
   {
@@ -224,7 +210,7 @@ export const PARAMETRES_LIST: ParametreItem[] = [
     description:
       'Paramètres prédéfinis pour les contrats. Configurez les clauses standard.',
     icon: FileText,
-    path: '/parametres/conditions-contrat',
+    path: '/admin/parametres/conditions-contrat',
     categorie: 'contrats',
     couleur: '#06B6D4',
     actif: true
@@ -235,7 +221,7 @@ export const PARAMETRES_LIST: ParametreItem[] = [
     description:
       "Paramètres de gestion de la période d'essai. Définissez les critères de validation.",
     icon: ClipboardList,
-    path: '/parametres/conditions-essai',
+    path: '/admin/parametres/conditions-periode-essaie',
     categorie: 'contrats',
     couleur: '#06B6D4',
     actif: true
@@ -246,7 +232,7 @@ export const PARAMETRES_LIST: ParametreItem[] = [
     description:
       'Configuration centralisée des valeurs maximales. Définissez les limites globales.',
     icon: Settings,
-    path: '/parametres/max-generaux',
+    path: '/admin/parametres/parametre-max-general',
     categorie: 'contrats',
     couleur: '#06B6D4',
     actif: true

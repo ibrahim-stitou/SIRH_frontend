@@ -1,0 +1,5 @@
+[
+  { "id": 701, "name": "Standard", "description": "Période d'essai standard — 3 mois : évaluation générale des compétences, de l'adaptabilité et de l'intégration à l'équipe." },
+  { "id": 702, "name": "Tech", "description": "Période d'essai technique — 6 mois : évaluation approfondie des compétences techniques, des livrables et de la montée en autonomie." }
+]
+
