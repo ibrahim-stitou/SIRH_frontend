@@ -36,4 +36,3 @@ const testAcompte: AvanceInterface = {
 console.log('Type validation test passed!');
 console.log('Avance:', testAvance);
 console.log('Acompte:', testAcompte);
-

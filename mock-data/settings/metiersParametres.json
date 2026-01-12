@@ -1,6 +1,29 @@
 [
-  { "id": 301, "code": "MET-DEV", "libelle": "Développeur", "domaine": "Informatique", "is_active": true, "created_at": "2025-03-10T08:00:00.000Z", "updated_at": "2025-03-10T08:00:00.000Z" },
-  { "id": 302, "code": "MET-COMPTA", "libelle": "Comptable", "domaine": "Finance", "is_active": true, "created_at": "2025-03-11T09:15:00.000Z", "updated_at": "2025-03-11T09:15:00.000Z" },
-  { "id": 303, "code": "MET-ASSRH", "libelle": "Assistant RH", "domaine": "RH", "is_active": false, "created_at": "2025-03-12T10:30:00.000Z", "updated_at": "2025-03-13T10:30:00.000Z" }
+  {
+    "id": 301,
+    "code": "MET-DEV",
+    "libelle": "Développeur",
+    "domaine": "Informatique",
+    "is_active": true,
+    "created_at": "2025-03-10T08:00:00.000Z",
+    "updated_at": "2025-03-10T08:00:00.000Z"
+  },
+  {
+    "id": 302,
+    "code": "MET-COMPTA",
+    "libelle": "Comptable",
+    "domaine": "Finance",
+    "is_active": true,
+    "created_at": "2025-03-11T09:15:00.000Z",
+    "updated_at": "2025-03-11T09:15:00.000Z"
+  },
+  {
+    "id": 303,
+    "code": "MET-ASSRH",
+    "libelle": "Assistant RH",
+    "domaine": "RH",
+    "is_active": false,
+    "created_at": "2025-03-12T10:30:00.000Z",
+    "updated_at": "2025-03-13T10:30:00.000Z"
+  }
 ]
-

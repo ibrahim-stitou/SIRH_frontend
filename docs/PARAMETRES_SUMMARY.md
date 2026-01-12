@@ -34,28 +34,34 @@ docs/
 ## 📋 Les 15 Paramètres Configurés
 
 ### Organisation (2 paramètres)
+
 1. ✅ **Départements** - `/parametres/departements` (IMPLÉMENTÉ)
 2. ✅ **Lieux de Travail** - `/parametres/lieux-travail` (CONFIG)
 
 ### Ressources Humaines (4 paramètres)
+
 3. ✅ **Postes** - `/parametres/postes` (CONFIG)
 4. ✅ **Emplois** - `/parametres/emplois` (CONFIG)
 5. ✅ **Métiers** - `/parametres/metiers` (CONFIG)
 6. ✅ **Managers** - `/parametres/managers` (CONFIG)
 
 ### Financier (2 paramètres)
+
 7. ✅ **Primes** - `/parametres/primes` (CONFIG)
 8. ✅ **Indemnités** - `/parametres/indemnites` (CONFIG)
 
 ### Absences & Congés (2 paramètres)
+
 9. ✅ **Types d'Absences** - `/parametres/types-absences` (CONFIG)
 10. ✅ **Politique de Congés** - `/parametres/politique-conges` (CONFIG)
 
 ### Paie (2 paramètres)
+
 11. ✅ **Rubriques de Paie** - `/parametres/rubriques-paie` (CONFIG)
 12. ✅ **Mutuelles et Assurances** - `/parametres/mutuelles` (CONFIG)
 
 ### Contrats (3 paramètres)
+
 13. ✅ **Conditions de Contrat** - `/parametres/conditions-contrat` (CONFIG)
 14. ✅ **Conditions de Période d'Essai** - `/parametres/conditions-essai` (CONFIG)
 15. ✅ **Paramètres Maximaux Généraux** - `/parametres/max-generaux` (CONFIG)
@@ -63,6 +69,7 @@ docs/
 ## 🎨 Fonctionnalités Implémentées
 
 ### Page Principale (/parametres)
+
 - ✅ Affichage des 15 paramètres par catégorie
 - ✅ 6 catégories avec icônes et couleurs
 - ✅ Recherche en temps réel
@@ -73,6 +80,7 @@ docs/
 - ✅ Cartes avec bordures colorées
 
 ### Composant ParameterCard
+
 - ✅ Icône personnalisée avec couleur
 - ✅ Badge avec code du paramètre
 - ✅ Description détaillée
@@ -81,6 +89,7 @@ docs/
 - ✅ Bordure gauche colorée
 
 ### Page Exemple - Départements
+
 - ✅ Liste avec tableau
 - ✅ Formulaire de création/édition (Dialog)
 - ✅ Actions CRUD complètes
@@ -102,24 +111,29 @@ docs/
 ### Ordre suggéré d'implémentation :
 
 #### Phase 1 - Organisation & RH (Simple)
+
 - [ ] Lieux de Travail
 - [ ] Postes
 - [ ] Emplois
 - [ ] Métiers
 
 #### Phase 2 - Financier (Simple)
+
 - [ ] Primes
 - [ ] Indemnités
 
 #### Phase 3 - Absences (Moyen)
+
 - [ ] Types d'Absences
 - [ ] Politique de Congés
 
 #### Phase 4 - Paie (Complexe)
+
 - [ ] Mutuelles et Assurances
 - [ ] Rubriques de Paie
 
 #### Phase 5 - Contrats (Complexe)
+
 - [ ] Managers
 - [ ] Conditions de Contrat
 - [ ] Conditions de Période d'Essai
@@ -128,18 +142,21 @@ docs/
 ## 📊 Structure de Données par Paramètre
 
 ### Simples (code + libellé)
+
 - Départements
 - Lieux de Travail (+ adresse)
 - Emplois (+ type_contrat)
 - Métiers (+ domaine)
 
 ### Moyens (3-5 champs)
+
 - Postes (code, libellé, département)
 - Primes (code, libellé, exonéré, montant)
 - Indemnités (code, libellé, type)
 - Managers (code, nom, prénom, relations)
 
 ### Complexes (6+ champs)
+
 - Types d'Absences (15+ champs avec booléens et paramètres)
 - Politique de Congés (7 champs avec calculs)
 - Rubriques de Paie (12+ champs avec formules)
@@ -160,6 +177,7 @@ docs/
 ## 📱 Design System
 
 ### Couleurs par Catégorie
+
 - Organisation : `#3B82F6` (Bleu)
 - RH : `#8B5CF6` (Violet)
 - Financier : `#10B981` (Vert)
@@ -168,6 +186,7 @@ docs/
 - Contrats : `#06B6D4` (Cyan)
 
 ### Icônes Utilisées
+
 - Building2 (Départements, Organisation)
 - MapPin (Lieux)
 - Briefcase (Postes)
@@ -208,18 +227,21 @@ docs/
 ## 📝 Notes Importantes
 
 1. **Toast Notifications** : Utilisez `toast` de `@/components/ui/sonner`
+
    ```typescript
    import { toast } from '@/components/ui/sonner';
-   
+
    toast.success('Titre', { description: 'Description' });
    toast.error('Titre', { description: 'Description' });
    ```
 
-2. **Échappement des caractères** : 
+2. **Échappement des caractères** :
+
    - Apostrophes : `&apos;`
    - Guillemets : `&quot;`
 
 3. **États locaux** : Pour le moment, utilisez `useState` pour les données
+
    - Phase 2 : Connexion API avec React Query
 
 4. **Validation** : Ajoutez Zod pour la validation des formulaires
@@ -250,4 +272,3 @@ docs/
 ---
 
 **Statut** : Module de base ✅ Complet | Pages individuelles 📝 1/15 complètes
-

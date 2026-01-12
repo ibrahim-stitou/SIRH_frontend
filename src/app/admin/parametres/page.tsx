@@ -8,5 +8,3 @@ import { ParametresPage } from '@/features/parametres';
 export default function Parametres() {
   return <ParametresPage />;
 }
-
-

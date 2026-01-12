@@ -9,12 +9,25 @@ import apiClient from '@/lib/api';
 import { Plus, Trash2, Check, X } from 'lucide-react';
 import CustomAlertDialog from '@/components/custom/customAlert';
 import { toast } from 'sonner';
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent
+} from '@/components/ui/tooltip';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import type { CustomTableColumn, UseTableReturn } from '@/components/custom/data-table/types';
+import type {
+  CustomTableColumn,
+  UseTableReturn
+} from '@/components/custom/data-table/types';
 import PageContainer from '@/components/layout/page-container';
 
 interface DepartementSettingRow {
@@ -28,40 +41,50 @@ interface DepartementSettingRow {
 
 export default function DepartementsParametresPage() {
   const router = useRouter();
-  const [_tableInstance, setTableInstance] = useState<Partial<UseTableReturn<DepartementSettingRow>> | null>(null);
+  const [_tableInstance, setTableInstance] = useState<Partial<
+    UseTableReturn<DepartementSettingRow>
+  > | null>(null);
 
-  const [confirmDeleteId, setConfirmDeleteId] = useState<number | string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<
+    number | string | null
+  >(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
   const [newCode, setNewCode] = useState('');
   const [newLibelle, setNewLibelle] = useState('');
   const [newActive, setNewActive] = useState(true);
 
-  const onAskDelete = (row: DepartementSettingRow) => setConfirmDeleteId(row.id);
+  const onAskDelete = (row: DepartementSettingRow) =>
+    setConfirmDeleteId(row.id);
   const onConfirmDelete = async () => {
     if (!confirmDeleteId) return;
     try {
-      await apiClient.delete(apiRoutes.admin.parametres.departements.delete(confirmDeleteId));
+      await apiClient.delete(
+        apiRoutes.admin.parametres.departements.delete(confirmDeleteId)
+      );
       setConfirmDeleteId(null);
       _tableInstance?.refresh?.();
     } catch (e) {
       // noop or toast
-    }finally{
+    } finally {
       toast.success('Département supprimé avec succès');
     }
   };
 
-  const onToggleActive = useCallback(async (row: DepartementSettingRow) => {
-    try {
-      const route = row.is_active
-        ? apiRoutes.admin.parametres.departements.deactivate(row.id)
-        : apiRoutes.admin.parametres.departements.activate(row.id);
-      await apiClient.patch(route);
-      _tableInstance?.refresh?.();
-    } catch (e) {
-      // noop or toast
-    }
-  }, [_tableInstance]);
+  const onToggleActive = useCallback(
+    async (row: DepartementSettingRow) => {
+      try {
+        const route = row.is_active
+          ? apiRoutes.admin.parametres.departements.deactivate(row.id)
+          : apiRoutes.admin.parametres.departements.activate(row.id);
+        await apiClient.patch(route);
+        _tableInstance?.refresh?.();
+      } catch (e) {
+        // noop or toast
+      }
+    },
+    [_tableInstance]
+  );
 
   const handleAdd = async () => {
     if (!newCode.trim() || !newLibelle.trim()) return;
@@ -85,118 +108,160 @@ export default function DepartementsParametresPage() {
     }
   };
 
-  const columns: CustomTableColumn<DepartementSettingRow>[] = useMemo(() => [
-    { data: 'id', label: 'ID', sortable: true, width: 100 },
-    { data: 'code', label: 'Code', sortable: true },
-    { data: 'libelle', label: 'Libellé', sortable: true },
-    {
-      data: 'is_active',
-      label: 'Statut',
-      sortable: true,
-      render: (v: boolean) => (
-        <StatusBadge tone={v ? 'success' : 'danger'} label={v ? 'Actif' : 'Inactif'} />
-      )
-    },
-    {
-      data: 'actions',
-      label: 'Actions',
-      sortable: false,
-      render: (_v, row) => (
-        <div className='flex items-center gap-2'>
-          <Tooltip>
-            <TooltipTrigger asChild>
-          <Button
-            variant='ghost'
-            className={`h-8 w-8 p-0 flex items-center justify-center ${row.is_active ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200 hover:text-yellow-700' : 'bg-green-100 text-green-600 hover:bg-green-200 hover:text-green-700'}`}
-            onClick={() => onToggleActive(row)}
-            aria-label={row.is_active ? 'Désactiver' : 'Activer'}
-            title={row.is_active ? 'Désactiver' : 'Activer'}
-          >
-                {row.is_active ? <X className='h-4 w-4' /> : <Check className='h-4 w-4' />}
-          </Button>
-            </TooltipTrigger>
-            <TooltipContent side='top' className={`${row.is_active ? 'bg-yellow-50 text-yellow-600' : 'bg-green-50 text-green-600'}`}>
-              {row.is_active ? 'Désactiver' : 'Activer'}
-            </TooltipContent>
-          </Tooltip>
+  const columns: CustomTableColumn<DepartementSettingRow>[] = useMemo(
+    () => [
+      { data: 'id', label: 'ID', sortable: true, width: 100 },
+      { data: 'code', label: 'Code', sortable: true },
+      { data: 'libelle', label: 'Libellé', sortable: true },
+      {
+        data: 'is_active',
+        label: 'Statut',
+        sortable: true,
+        render: (v: boolean) => (
+          <StatusBadge
+            tone={v ? 'success' : 'danger'}
+            label={v ? 'Actif' : 'Inactif'}
+          />
+        )
+      },
+      {
+        data: 'actions',
+        label: 'Actions',
+        sortable: false,
+        render: (_v, row) => (
+          <div className='flex items-center gap-2'>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant='ghost'
+                  className={`flex h-8 w-8 items-center justify-center p-0 ${row.is_active ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200 hover:text-yellow-700' : 'bg-green-100 text-green-600 hover:bg-green-200 hover:text-green-700'}`}
+                  onClick={() => onToggleActive(row)}
+                  aria-label={row.is_active ? 'Désactiver' : 'Activer'}
+                  title={row.is_active ? 'Désactiver' : 'Activer'}
+                >
+                  {row.is_active ? (
+                    <X className='h-4 w-4' />
+                  ) : (
+                    <Check className='h-4 w-4' />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent
+                side='top'
+                className={`${row.is_active ? 'bg-yellow-50 text-yellow-600' : 'bg-green-50 text-green-600'}`}
+              >
+                {row.is_active ? 'Désactiver' : 'Activer'}
+              </TooltipContent>
+            </Tooltip>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-          <Button
-            variant='ghost'
-            className='h-8 w-8 p-0 flex items-center justify-center bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-700'
-            onClick={() => onAskDelete(row)}
-            aria-label='Supprimer'
-            title='Supprimer'
-          >
-            <Trash2 className='h-4 w-4' />
-          </Button>
-            </TooltipTrigger>
-            <TooltipContent side='top' className={"bg-red-50 text-red-600"}>Supprimer</TooltipContent>
-          </Tooltip>
-        </div>
-      )
-    }
-  ], [onToggleActive]);
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant='ghost'
+                  className='flex h-8 w-8 items-center justify-center bg-red-100 p-0 text-red-600 hover:bg-red-200 hover:text-red-700'
+                  onClick={() => onAskDelete(row)}
+                  aria-label='Supprimer'
+                  title='Supprimer'
+                >
+                  <Trash2 className='h-4 w-4' />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side='top' className={'bg-red-50 text-red-600'}>
+                Supprimer
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        )
+      }
+    ],
+    [onToggleActive]
+  );
 
   return (
     <PageContainer scrollable={false}>
-    <div className='flex flex-col gap-4 w-full'>
-      <div className='mb-2 flex items-center justify-between'>
-        <div>
-          <h1 className='text-2xl font-semibold tracking-tight'>Paramètres — Départements</h1>
-          <p className='text-muted-foreground text-sm'>Gérez les codes, libellés et statut d&lsquo;activité des départements</p>
-        </div>
-        <Button onClick={() => setShowAddModal(true)}>
-          <Plus className='mr-2 h-4 w-4' /> Nouveau département
-        </Button>
-      </div>
-
-      <CustomTable<DepartementSettingRow>
-        url={apiRoutes.admin.parametres.departements.list}
-        columns={columns}
-        onInit={(inst) => setTableInstance(inst)}
-      />
-
-      <CustomAlertDialog
-        title={'Supprimer cette département ?'}
-        description={'Cette action est irréversible.'}
-        cancelText={'Annuler'}
-        confirmText={'Supprimer'}
-        onConfirm={onConfirmDelete}
-        open={!!confirmDeleteId}
-        setOpen={(o) => (!o ? setConfirmDeleteId(null) : void 0)}
-      />
-
-      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Ajouter un département</DialogTitle>
-          </DialogHeader>
-          <div className='grid gap-4'>
-            <div className='grid gap-2'>
-              <Label htmlFor='code'>Code</Label>
-              <Input id='code' value={newCode} onChange={(e) => setNewCode(e.target.value)} placeholder='Ex: DEP-IT' />
-            </div>
-            <div className='grid gap-2'>
-              <Label htmlFor='libelle'>Libellé</Label>
-              <Input id='libelle' value={newLibelle} onChange={(e) => setNewLibelle(e.target.value)} placeholder='Ex: Informatique' />
-            </div>
-            <div className='flex items-center justify-between'>
-              <Label htmlFor='is_active'>Actif</Label>
-              <Switch id='is_active' checked={newActive} onCheckedChange={setNewActive} />
-            </div>
+      <div className='flex w-full flex-col gap-4'>
+        <div className='mb-2 flex items-center justify-between'>
+          <div>
+            <h1 className='text-2xl font-semibold tracking-tight'>
+              Paramètres — Départements
+            </h1>
+            <p className='text-muted-foreground text-sm'>
+              Gérez les codes, libellés et statut d&lsquo;activité des
+              départements
+            </p>
           </div>
-          <DialogFooter>
-            <Button variant='outline' onClick={() => setShowAddModal(false)} disabled={addLoading}>Annuler</Button>
-            <Button onClick={handleAdd} disabled={addLoading || !newCode.trim() || !newLibelle.trim()}>
-              {addLoading ? 'Ajout...' : 'Ajouter'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+          <Button onClick={() => setShowAddModal(true)}>
+            <Plus className='mr-2 h-4 w-4' /> Nouveau département
+          </Button>
+        </div>
+
+        <CustomTable<DepartementSettingRow>
+          url={apiRoutes.admin.parametres.departements.list}
+          columns={columns}
+          onInit={(inst) => setTableInstance(inst)}
+        />
+
+        <CustomAlertDialog
+          title={'Supprimer cette département ?'}
+          description={'Cette action est irréversible.'}
+          cancelText={'Annuler'}
+          confirmText={'Supprimer'}
+          onConfirm={onConfirmDelete}
+          open={!!confirmDeleteId}
+          setOpen={(o) => (!o ? setConfirmDeleteId(null) : void 0)}
+        />
+
+        <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Ajouter un département</DialogTitle>
+            </DialogHeader>
+            <div className='grid gap-4'>
+              <div className='grid gap-2'>
+                <Label htmlFor='code'>Code</Label>
+                <Input
+                  id='code'
+                  value={newCode}
+                  onChange={(e) => setNewCode(e.target.value)}
+                  placeholder='Ex: DEP-IT'
+                />
+              </div>
+              <div className='grid gap-2'>
+                <Label htmlFor='libelle'>Libellé</Label>
+                <Input
+                  id='libelle'
+                  value={newLibelle}
+                  onChange={(e) => setNewLibelle(e.target.value)}
+                  placeholder='Ex: Informatique'
+                />
+              </div>
+              <div className='flex items-center justify-between'>
+                <Label htmlFor='is_active'>Actif</Label>
+                <Switch
+                  id='is_active'
+                  checked={newActive}
+                  onCheckedChange={setNewActive}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant='outline'
+                onClick={() => setShowAddModal(false)}
+                disabled={addLoading}
+              >
+                Annuler
+              </Button>
+              <Button
+                onClick={handleAdd}
+                disabled={addLoading || !newCode.trim() || !newLibelle.trim()}
+              >
+                {addLoading ? 'Ajout...' : 'Ajouter'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
     </PageContainer>
   );
 }
-

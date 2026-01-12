@@ -10,7 +10,13 @@ export interface ParametreItem {
   description: string;
   icon: LucideIcon;
   path: string;
-  categorie: 'organisation' | 'rh' | 'financier' | 'absences' | 'paie' | 'contrats';
+  categorie:
+    | 'organisation'
+    | 'rh'
+    | 'financier'
+    | 'absences'
+    | 'paie'
+    | 'contrats';
   couleur?: string;
   actif?: boolean;
 }
@@ -22,4 +28,3 @@ export interface ParametreCategorie {
   icon: LucideIcon;
   couleur: string;
 }
-

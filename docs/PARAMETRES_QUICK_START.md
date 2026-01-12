@@ -108,7 +108,7 @@ interface MonParametre {
 
 export default function MonParametrePage() {
   const { toast } = useToast();
-  
+
   // 2. État local
   const [items, setItems] = useState<MonParametre[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -118,8 +118,8 @@ export default function MonParametrePage() {
   // 3. Fonctions CRUD
   const handleSubmit = () => {
     if (editingItem) {
-      setItems(items.map(item => 
-        item.id === editingItem.id 
+      setItems(items.map(item =>
+        item.id === editingItem.id
           ? { ...item, ...formData }
           : item
       ));
@@ -171,7 +171,7 @@ export default function MonParametrePage() {
           {/* Formulaire */}
         </Dialog>
       </div>
-      
+
       {/* Tableau */}
       <Card>
         <CardHeader>
@@ -233,26 +233,26 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 function useMonParametre() {
   const queryClient = useQueryClient();
-  
+
   const { data } = useQuery({
     queryKey: ['mon-parametre'],
     queryFn: async () => {
       const res = await fetch('/api/parametres/mon-parametre');
       return res.json();
-    },
+    }
   });
 
   const createMutation = useMutation({
     mutationFn: async (newItem) => {
       const res = await fetch('/api/parametres/mon-parametre', {
         method: 'POST',
-        body: JSON.stringify(newItem),
+        body: JSON.stringify(newItem)
       });
       return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['mon-parametre'] });
-    },
+    }
   });
 
   return { data, createMutation };
@@ -277,6 +277,7 @@ function useMonParametre() {
 ### Erreur "Cannot find module"
 
 Vérifiez les imports :
+
 ```typescript
 import { Component } from '@/components/ui/component';
 ```
@@ -305,4 +306,3 @@ Assurez-vous d'appeler `resetForm()` après modification.
 4. Exporter en PDF/Excel
 5. Ajouter l'historique des modifications
 6. Implémenter les permissions utilisateur
-

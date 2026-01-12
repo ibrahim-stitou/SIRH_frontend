@@ -203,7 +203,9 @@ export default function AvanceDetailsPage() {
                   <div className='rounded-md border p-3'>
                     <div className='text-muted-foreground text-sm'>Type</div>
                     <div className='font-medium'>
-                      <Badge variant={data.type === 'Avance' ? 'default' : 'outline'}>
+                      <Badge
+                        variant={data.type === 'Avance' ? 'default' : 'outline'}
+                      >
                         {data.type || 'Avance'}
                       </Badge>
                     </div>

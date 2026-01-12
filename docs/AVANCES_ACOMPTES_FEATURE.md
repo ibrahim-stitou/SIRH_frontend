@@ -9,11 +9,12 @@ Ce document décrit les modifications apportées au système de gestion des avan
 ### 1. Types TypeScript (`src/types/avance.ts`)
 
 **Ajout du champ `type`:**
+
 ```typescript
 export interface AvanceInterface {
   id: number;
   employe_id: number;
-  type: 'Avance' | 'Acompte';  // ✨ NOUVEAU CHAMP
+  type: 'Avance' | 'Acompte'; // ✨ NOUVEAU CHAMP
   statut: 'Brouillon' | 'En_attente' | 'Valide' | 'Refuse';
   date_demande: string;
   // ... autres champs
@@ -23,13 +24,14 @@ export interface AvanceInterface {
 ### 2. Schéma de validation Zod (`src/app/admin/paie/avance/avanceSchema.tsx`)
 
 **Validation du champ type:**
+
 ```typescript
 export const AvanceSchema = z.object({
   // ...
   type: z.enum(['Avance', 'Acompte'], {
     required_error: 'Le type est requis.',
     invalid_type_error: "Le type doit être 'Avance' ou 'Acompte'."
-  }),
+  })
   // ...
 });
 ```
@@ -37,16 +39,17 @@ export const AvanceSchema = z.object({
 ### 3. Données mockées (`mock-data/avances.json`)
 
 **Exemples de données avec type:**
+
 ```json
 [
   {
     "id": 1,
-    "type": "Avance",
+    "type": "Avance"
     // ...
   },
   {
     "id": 2,
-    "type": "Acompte",
+    "type": "Acompte"
     // ...
   }
 ]
@@ -55,6 +58,7 @@ export const AvanceSchema = z.object({
 ### 4. Interface de listing (`src/features/paie/avances/avances-listing.tsx`)
 
 **Modifications:**
+
 - Ajout du champ `type` dans l'interface `Avance`
 - Nouvelle colonne "Type" dans le tableau avec badges visuels
 - Nouveau filtre par type (Avance/Acompte)
@@ -62,6 +66,7 @@ export const AvanceSchema = z.object({
 - Mise à jour du bouton: "Ajouter une nouvelle demande"
 
 **Colonne Type:**
+
 ```typescript
 {
   data: 'type',
@@ -76,6 +81,7 @@ export const AvanceSchema = z.object({
 ```
 
 **Filtre Type:**
+
 ```typescript
 {
   field: 'type',
@@ -92,12 +98,14 @@ export const AvanceSchema = z.object({
 ### 5. Formulaire d'ajout (`src/app/admin/paie/avance/ajouter/page.tsx`)
 
 **Modifications:**
+
 - Inclusion du champ `type` dans le schéma de création
 - Valeur par défaut: `'Avance'`
 - Nouveau champ SelectField pour choisir le type
 - Mise à jour du titre: "Nouvelle demande d'avance/acompte"
 
 **Champ de sélection:**
+
 ```typescript
 <SelectField
   name='type'
@@ -117,6 +125,7 @@ export const AvanceSchema = z.object({
 ### 6. Formulaire de modification (`src/app/admin/paie/avance/[id]/modifier/page.tsx`)
 
 **Modifications:**
+
 - Inclusion du champ `type` dans le schéma d'édition
 - Chargement de la valeur existante avec fallback sur 'Avance'
 - Même champ SelectField que dans le formulaire d'ajout
@@ -125,11 +134,13 @@ export const AvanceSchema = z.object({
 ### 7. Page de détails (`src/app/admin/paie/avance/[id]/details/page.tsx`)
 
 **Modifications:**
+
 - Ajout du champ `type` dans l'interface `AvanceDetails`
 - Affichage du type avec badge visuel
 - Mise à jour du titre: "Détails de la demande"
 
 **Affichage du type:**
+
 ```typescript
 <div className='rounded-md border p-3'>
   <div className='text-muted-foreground text-sm'>Type</div>
@@ -144,6 +155,7 @@ export const AvanceSchema = z.object({
 ### 8. Traductions (`public/locales/fr.json`)
 
 **Mise à jour:**
+
 ```json
 {
   "sidebar": {
@@ -157,6 +169,7 @@ export const AvanceSchema = z.object({
 Les routes existantes dans `server/routes/avances.js` supportent déjà le nouveau champ `type` car elles traitent les données de manière générique. Aucune modification spécifique n'est nécessaire.
 
 **Routes disponibles:**
+
 - `GET /avances` - Liste avec filtrage
 - `GET /avances/:id` - Détails
 - `POST /avances` - Création
@@ -166,10 +179,12 @@ Les routes existantes dans `server/routes/avances.js` supportent déjà le nouve
 ## Styles visuels
 
 ### Badges Type
+
 - **Avance**: Badge bleu (variant: 'default')
 - **Acompte**: Badge gris outline (variant: 'outline')
 
 ### Badges Statut
+
 - **Brouillon**: Badge jaune (outline)
 - **En attente**: Badge gris (default)
 - **Valide**: Badge vert (secondary)
@@ -181,14 +196,15 @@ Pour les données existantes sans champ `type`, le système utilise 'Avance' com
 
 ```sql
 -- Exemple SQL (à adapter selon votre base de données)
-UPDATE avances 
-SET type = 'Avance' 
+UPDATE avances
+SET type = 'Avance'
 WHERE type IS NULL;
 ```
 
 ## Validation
 
 Le champ `type` est:
+
 - ✅ Requis lors de la création
 - ✅ Requis lors de la modification
 - ✅ Validé comme enum ('Avance' | 'Acompte')
@@ -225,5 +241,4 @@ Le champ `type` est:
 
 ---
 
-*Dernière mise à jour: 2026-01-09*
-
+_Dernière mise à jour: 2026-01-09_

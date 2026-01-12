@@ -9,7 +9,6 @@ export {
   PARAMETRES_LIST,
   PARAMETRES_CATEGORIES,
   getParametresByCategorie,
-  getParametreByCode,
+  getParametreByCode
 } from './parametres-config';
 export type { ParametreItem, ParametreCategorie } from './types';
-

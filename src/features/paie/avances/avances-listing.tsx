@@ -287,9 +287,7 @@ export default function AvancesListing() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>
-              Supprimer la demande (brouillon)&nbsp;?
-            </DialogTitle>
+            <DialogTitle>Supprimer la demande (brouillon)&nbsp;?</DialogTitle>
           </DialogHeader>
           <p className='text-muted-foreground text-sm'>
             Cette action est irréversible.
