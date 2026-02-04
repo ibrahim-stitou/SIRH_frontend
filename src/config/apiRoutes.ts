@@ -139,6 +139,8 @@ export const apiRoutes = {
     pointages: {
       list: `${API_BASE}/pointages`,
       show: (id: number | string) => `${API_BASE}/pointages/${id}`,
+
+
       create: `${API_BASE}/pointages`,
       update: (id: number | string) => `${API_BASE}/pointages/${id}`,
       delete: (id: number | string) => `${API_BASE}/pointages/${id}`,
@@ -405,7 +407,31 @@ export const apiRoutes = {
         `${API_BASE}/accidents-travail/${id}/relances`,
       statistiques: `${API_BASE}/accidents-travail/statistiques`
     }
-  }
-};
+  },
+
+
+    offres: {
+      list: `${API_BASE}/offres`,
+      byId: (id: number | string) => `${API_BASE}/offres/${id}`,
+      nouveau: `${API_BASE}/offres/nouveau`,
+    },
+
+    responsables: {
+      list: `${API_BASE}/responsables`,
+      byId: (id: number | string) => `${API_BASE}/responsables/${id}`,
+    },
+
+    candidatures: {
+      list: `${API_BASE}/candidatures`,
+      byId: (id: number | string) => `${API_BASE}/candidatures/${id}`,
+      byOffre: (offreId: number | string) =>
+        `${API_BASE}/candidatures?offreId=${offreId}`,
+   
+
+
+  },
+} as const;
+
+
 
 export type ApiRoutes = typeof apiRoutes;

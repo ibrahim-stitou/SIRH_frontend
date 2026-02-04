@@ -9,14 +9,20 @@ const data = require('./db.js');
 const router = jsonServer.router(data);
 const db = router.db;
 
-// Add router.render for automatic wrapping of resource responses
+// Add router.render: return raw resource data for GET requests
+// (frontend expects arrays/objects directly). For non-GET methods,
+// keep a small wrapper with status/message/data.
 router.render = (req, res) => {
   const body = res.locals.data;
+
+  if (req.method === 'GET') {
+    // Return raw data so client code can use array methods like .filter()
+    res.json(body);
+    return;
+  }
+
   let message;
   switch (req.method) {
-    case 'GET':
-      message = 'Récupération réussie';
-      break;
     case 'POST':
       message = 'Création réussie';
       break;
@@ -32,6 +38,7 @@ router.render = (req, res) => {
     default:
       message = 'Opération réussie';
   }
+
   res.json({ status: 'success', message, data: body });
 };
 
@@ -82,6 +89,7 @@ require('./server/routes/settings/conditions-contrat')(server, db);
 require('./server/routes/settings/conditions-periode-essaie')(server, db);
 require('./server/routes/settings/managers')(server, db);
 require('./server/routes/accidentsTravail')(server, db);
+require('./server/routes/offre')(server, db);
 require('./server/routes/generic')(server, db, data);
 
 server.use(router);

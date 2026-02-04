@@ -1,0 +1,472 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import {
+  MapPin,
+  Calendar,
+  Briefcase,
+  User,
+  Mail,
+  Eye,
+  Users,
+  ExternalLink,
+  Copy,
+  Edit,
+  Trash2,
+  ArrowLeft,
+  Play,
+  Pause,
+  Check,
+  Linkedin,
+  Globe,
+  Share2,
+  Loader2,
+} from "lucide-react";
+import type { OffreEmploi, StatutOffre } from "@/types/offre";
+import { getOffreById, updateOffreStatut, deleteOffre } from "@/services/offreService";
+
+interface OffreDetailProps {
+  offreId: number;
+}
+
+const statutConfig: Record<
+  StatutOffre,
+  { label: string; variant: "default" | "secondary" | "destructive" | "outline" }
+> = {
+  brouillon: { label: "Brouillon", variant: "secondary" },
+  publiee: { label: "Publiée", variant: "default" },
+  cloturee: { label: "Clôturée", variant: "outline" },
+};
+
+export function OffreDetail({ offreId }: OffreDetailProps) {
+  const router = useRouter();
+  const [offre, setOffre] = useState<OffreEmploi | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const fetchOffre = async () => {
+      try {
+        const data = await getOffreById(offreId);
+        setOffre(data);
+      } catch (error) {
+        console.error("Erreur:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchOffre();
+  }, [offreId]);
+
+  const handleStatutChange = async (newStatut: StatutOffre) => {
+    if (!offre) return;
+    try {
+      const updated = await updateOffreStatut(offre.id, newStatut);
+      setOffre(updated);
+    } catch (error) {
+      console.error("Erreur:", error);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!offre) return;
+    if (confirm("Êtes-vous sûr de vouloir supprimer cette offre ?")) {
+      try {
+        await deleteOffre(offre.id);
+        router.push("/admin/offres");
+      } catch (error) {
+        console.error("Erreur:", error);
+      }
+    }
+  };
+
+  const handleCopyLink = () => {
+    if (offre?.lienCandidature) {
+      navigator.clipboard.writeText(offre.lienCandidature);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return "-";
+    return new Date(dateString).toLocaleDateString("fr-FR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (!offre) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-muted-foreground">Offre non trouvée</p>
+        <Button asChild className="mt-4">
+          <Link href="/admin/offres">Retour aux offres</Link>
+        </Button>
+      </div>
+    );
+  }
+
+  const diffusionChannels = [
+    { key: "siteCarrieres", label: "Site carrières", icon: Globe },
+    { key: "linkedin", label: "LinkedIn", icon: Linkedin },
+    { key: "rekrute", label: "Rekrute.com", icon: Globe },
+    { key: "emploiMa", label: "Emploi.ma", icon: Globe },
+    { key: "reseauxSociaux", label: "Réseaux sociaux", icon: Share2 },
+  ] as const;
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row gap-4 items-start justify-between">
+        <div>
+          <Button variant="ghost" size="sm" asChild className="mb-2 -ml-2">
+            <Link href="/admin/offres">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Retour aux offres
+            </Link> 
+          </Button>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+            <span className="font-mono">{offre.reference}</span>
+            {offre.anonyme && (
+              <Badge variant="outline" className="text-xs">
+                Anonyme
+              </Badge>
+            )}
+          </div>
+          <h1 className="text-2xl font-bold">{offre.intitulePoste}</h1>
+        </div>
+        <div className="flex items-center gap-2">
+          <Badge variant={statutConfig[offre.statut].variant} className="text-sm">
+            {statutConfig[offre.statut].label}
+          </Badge>
+          <div className="flex gap-2">
+            {offre.statut === "brouillon" && (
+              <Button size="sm" onClick={() => handleStatutChange("publiee")}>
+                <Play className="mr-2 h-4 w-4" />
+                Publier
+              </Button>
+            )}
+            {offre.statut === "publiee" && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="bg-transparent"
+                onClick={() => handleStatutChange("cloturee")}
+              >
+                <Pause className="mr-2 h-4 w-4" />
+                Clôturer
+              </Button>
+            )}
+            <Button size="sm" variant="outline" className="bg-transparent" asChild>
+              <Link href={`/admin/offres/${offre.id}/modifier`}>
+                <Edit className="mr-2 h-4 w-4" />
+                Modifier
+              </Link>
+            </Button>
+            <Button size="sm" variant="destructive" onClick={handleDelete}>
+              <Trash2 className="mr-2 h-4 w-4" />
+              Supprimer
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Colonne principale */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Description */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Description du poste</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground whitespace-pre-line">
+                {offre.descriptionPoste}
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Missions */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Missions principales</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2">
+                {offre.missionsPrincipales.map((mission, index) => (
+                  <li key={index} className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <span>{mission}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Profil */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Profil recherché</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <h4 className="font-medium mb-1">Formation</h4>
+                <p className="text-muted-foreground">
+                  {offre.profilRecherche.formation}
+                </p>
+              </div>
+              <Separator />
+              <div>
+                <h4 className="font-medium mb-1">Expérience</h4>
+                <p className="text-muted-foreground">
+                  {offre.profilRecherche.experience}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Compétences */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Compétences requises</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                {offre.competencesRequises.map((comp, index) => (
+                  <Badge key={index} variant="secondary">
+                    {comp}
+                  </Badge>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Informations clés */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Informations clés</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center gap-3">
+                <MapPin className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Lieu de travail</p>
+                  <p className="font-medium">{offre.lieuTravail}</p>
+                </div>
+              </div>
+              <Separator />
+              <div className="flex items-center gap-3">
+                <Briefcase className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Type de contrat</p>
+                  <p className="font-medium">{offre.typeContrat}</p>
+                </div>
+              </div>
+              <Separator />
+              <div className="flex items-center gap-3">
+                <Calendar className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Date limite</p>
+                  <p className="font-medium">
+                    {formatDate(offre.dateLimiteCandidature)}
+                  </p>
+                </div>
+              </div>
+              {offre.fourchetteSalaire && (
+                <>
+                  <Separator />
+                  <div>
+                    <p className="text-sm text-muted-foreground">
+                      Fourchette salariale
+                    </p>
+                    <p className="font-medium">
+                      {offre.fourchetteSalaire.min.toLocaleString()} -{" "}
+                      {offre.fourchetteSalaire.max.toLocaleString()}{" "}
+                      {offre.fourchetteSalaire.devise}
+                    </p>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Responsable */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Responsable recrutement</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center gap-3">
+                <User className="h-5 w-5 text-muted-foreground" />
+                <span>{offre.responsableRecrutement.nom}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Mail className="h-5 w-5 text-muted-foreground" />
+                <a
+                  href={`mailto:${offre.responsableRecrutement.email}`}
+                  className="text-primary hover:underline"
+                >
+                  {offre.responsableRecrutement.email}
+                </a>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Lien candidature */}
+          {offre.lienCandidature && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Lien de candidature</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <code className="text-xs bg-muted p-2 rounded block break-all">
+                  {offre.lienCandidature}
+                </code>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="flex-1 bg-transparent"
+                    onClick={handleCopyLink}
+                  >
+                    {copied ? (
+                      <Check className="mr-2 h-4 w-4" />
+                    ) : (
+                      <Copy className="mr-2 h-4 w-4" />
+                    )}
+                    {copied ? "Copié !" : "Copier"}
+                  </Button>
+                  <Button size="sm" className="flex-1" asChild>
+                    <a
+                      href={offre.lienCandidature}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      Ouvrir
+                    </a>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Statistiques */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Statistiques</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-3 bg-muted rounded-lg">
+                  <Eye className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
+                  <p className="text-2xl font-bold">{offre.statistiques.vues}</p>
+                  <p className="text-xs text-muted-foreground">Vues</p>
+                </div>
+                <div className="text-center p-3 bg-muted rounded-lg">
+                  <Users className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
+                  <p className="text-2xl font-bold">
+                    {offre.statistiques.candidaturesRecues}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Candidatures</p>
+                </div>
+              </div>
+
+              {offre.statistiques.candidaturesRecues > 0 && (
+                <>
+                  <Separator />
+                  <div>
+                    <h4 className="text-sm font-medium mb-3">
+                      Sources des candidatures
+                    </h4>
+                    <div className="space-y-2">
+                      {Object.entries(offre.statistiques.sourceCandidatures)
+                        .filter(([, count]) => count > 0)
+                        .sort(([, a], [, b]) => b - a)
+                        .map(([source, count]) => (
+                          <div
+                            key={source}
+                            className="flex items-center justify-between text-sm"
+                          >
+                            <span className="text-muted-foreground capitalize">
+                              {source.replace(/([A-Z])/g, " $1").trim()}
+                            </span>
+                            <span className="font-medium">{count}</span>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Diffusion */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Canaux de diffusion</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {diffusionChannels.map(({ key, label, icon: Icon }) => (
+                  <div
+                    key={key}
+                    className={`flex items-center gap-2 p-2 rounded ${
+                      offre.diffusion[key]
+                        ? "bg-primary/10 text-primary"
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    <span className="text-sm">{label}</span>
+                    {offre.diffusion[key] && (
+                      <Check className="h-4 w-4 ml-auto" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Dates */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Historique</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Créée le</span>
+                <span>{formatDate(offre.dateCreation)}</span>
+              </div>
+              {offre.datePublication && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Publiée le</span>
+                  <span>{formatDate(offre.datePublication)}</span>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}

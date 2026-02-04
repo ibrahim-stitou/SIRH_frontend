@@ -14,7 +14,9 @@ module.exports = {
   evaluations: require('./mock-data/evaluations.json'),
   goals: require('./mock-data/goals.json'),
   announcements: require('./mock-data/announcements.json'),
-  documents: require('./mock-data/documents.json'),
+  // Offres & Responsables: loaded from consolidated db.json
+  offres: require('./mock-data/db.json').offres,
+  responsables: require('./mock-data/db.json').responsables,
   systemSettings: require('./mock-data/systemSettings.json'),
   featureFlags: require('./mock-data/featureFlags.json'),
   auditLogs: require('./mock-data/auditLogs.json'),
@@ -73,4 +75,5 @@ module.exports = {
   settingsConditionsPeriodeEssaie: require('./mock-data/settings/conditionsPeriodeEssaieParametres.json'),
   // Paramètres: managers (employe_id, departement_id)
   settingsManagers: require('./mock-data/settings/managersParametres.json')
+
 };
