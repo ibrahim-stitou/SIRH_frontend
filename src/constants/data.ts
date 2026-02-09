@@ -156,6 +156,13 @@ export const useNavItems = (): NavItem[] => {
       description: 'US-AT-001'
     },
     {
+  title: t('sidebar.postesCompetences'),
+  url: '/admin/gpec/postes',
+  icon: 'briefcase',
+  description: 'US-GPEC-001'
+},
+
+    {
       title: t('sidebar.parametres'),
       url: '/admin/parametres',
       icon: 'settings',

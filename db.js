@@ -17,6 +17,11 @@ module.exports = {
   // Offres & Responsables: loaded from consolidated db.json
   offres: require('./mock-data/db.json').offres,
   responsables: require('./mock-data/db.json').responsables,
+    offres: require('./mock-data/db.json').offres,
+  responsables: require('./mock-data/db.json').responsables,
+  Competences: require('./mock-data/db.json').Competences,
+  PosteCompetences: require('./mock-data/db.json').PosteCompetences,
+ CompetenceNiveaux: require('./mock-data/db.json').CompetenceNiveaux,
   systemSettings: require('./mock-data/systemSettings.json'),
   featureFlags: require('./mock-data/featureFlags.json'),
   auditLogs: require('./mock-data/auditLogs.json'),

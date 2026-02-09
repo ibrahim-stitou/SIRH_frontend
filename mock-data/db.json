@@ -198,5 +198,120 @@
       "source": "siteCarrieres",
       "statut": "nouveau"
     }
-  ]
+  ],
+
+
+  
+  "PosteCompetences": [
+  {
+    "id": 1,
+    "poste_id": 103,
+    "competence_id": 3,
+    "niveau_requis": 3,
+    "importance": 2
+  },
+  {
+    "id": 2,
+    "poste_id": 103,
+    "competence_id": 1,
+    "niveau_requis": 4,
+    "importance": 1
+  }
+]
+,
+
+"Competences": [
+  {
+    "id": 1,
+    "libelle": "JavaScript",
+    "categorie": "Savoir-faire",
+    "description": "Langage frontend",
+    "createdAt": "2026-01-10T09:00:00.000Z"
+  },
+  {
+    "id": 3,
+    "libelle": "Anglais",
+    "categorie": "Langue",
+    "description": "Langue professionnelle",
+    "createdAt": "2026-01-12T14:20:00.000Z"
+  }
+]
+
+,
+
+"CompetenceNiveaux": [
+  {
+    "id": 1,
+    "competenceId": 1,
+    "niveau": 1,
+    "libelle": "Notions",
+    "description": "Connaît la syntaxe de base de JavaScript"
+  },
+  {
+    "id": 2,
+    "competenceId": 1,
+    "niveau": 2,
+    "libelle": "Pratique encadrée",
+    "description": "Développe des scripts simples avec accompagnement"
+  },
+  {
+    "id": 3,
+    "competenceId": 1,
+    "niveau": 3,
+    "libelle": "Autonomie",
+    "description": "Développe des fonctionnalités JavaScript de manière autonome"
+  },
+  {
+    "id": 4,
+    "competenceId": 1,
+    "niveau": 4,
+    "libelle": "Maîtrise",
+    "description": "Optimise le code et applique les bonnes pratiques"
+  },
+  {
+    "id": 5,
+    "competenceId": 1,
+    "niveau": 5,
+    "libelle": "Expertise",
+    "description": "Référence technique JavaScript au sein de l’équipe"
+  },
+
+  {
+    "id": 6,
+    "competenceId": 3,
+    "niveau": 1,
+    "libelle": "Notions",
+    "description": "Comprend des phrases simples en anglais"
+  },
+  {
+    "id": 7,
+    "competenceId": 3,
+    "niveau": 2,
+    "libelle": "Pratique encadrée",
+    "description": "Participe à des échanges simples en anglais"
+  },
+  {
+    "id": 8,
+    "competenceId": 3,
+    "niveau": 3,
+    "libelle": "Autonomie",
+    "description": "Communique efficacement en anglais en contexte professionnel"
+  },
+  {
+    "id": 9,
+    "competenceId": 3,
+    "niveau": 4,
+    "libelle": "Maîtrise",
+    "description": "Anime des réunions et rédige des documents en anglais"
+  },
+  {
+    "id": 10,
+    "competenceId": 3,
+    "niveau": 5,
+    "libelle": "Expertise",
+    "description": "Négocie et représente l’entreprise en anglais"
+  }
+]
+
+
 }

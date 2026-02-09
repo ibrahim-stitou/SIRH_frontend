@@ -2,7 +2,7 @@
   {
     "id": 201,
     "code": "EMP-CDI-DEV",
-    "libelle": "Développeur CDI",
+    "libelle": "Emploi CDI Développement",
     "type_contrat": "CDI",
     "is_active": true,
     "created_at": "2025-03-05T08:00:00.000Z",
@@ -10,8 +10,8 @@
   },
   {
     "id": 202,
-    "code": "EMP-CDD-ASSIST",
-    "libelle": "Assistant RH CDD",
+    "code": "EMP-CDD-RH",
+    "libelle": "Emploi CDD Ressources Humaines",
     "type_contrat": "CDD",
     "is_active": true,
     "created_at": "2025-03-06T09:15:00.000Z",
@@ -19,8 +19,8 @@
   },
   {
     "id": 203,
-    "code": "EMP-INTERIM-COMPTA",
-    "libelle": "Comptable Intérim",
+    "code": "EMP-INT-FIN",
+    "libelle": "Emploi Intérim Finance",
     "type_contrat": "Interim",
     "is_active": false,
     "created_at": "2025-03-07T10:30:00.000Z",

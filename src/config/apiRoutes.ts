@@ -1,36 +1,36 @@
-const API_BASE =
-  process.env.NEXT_PUBLIC_USE_MOCK === 'true'
-    ? process.env.JSON_SERVER_URL || 'http://localhost:3001'
-    : process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:8003/api/v1';
 
+
+
+
+
+
+
+
+
+
+const API_BASE =
+  process.env.NEXT_PUBLIC_USE_MOCK === "true"
+    ? process.env.JSON_SERVER_URL || "http://localhost:3001"
+    : process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000/api";
+
+/**
+ * =========================
+ * API ROUTES
+ * =========================
+ */
 export const apiRoutes = {
   auth: {
     login: `${API_BASE}/login`,
-    register: `${API_BASE}/register`,
     logout: `${API_BASE}/logout`,
-    // json-server mock supports both /refresh and /refresh-token handlers provided by the mock server
-    refreshToken: `${API_BASE}/refresh`,
-    me: `${API_BASE}/me`,
-    forgotPassword: `${API_BASE}/forgot-password`,
-    resetPassword: `${API_BASE}/reset-password`
   },
 
-  files: {
-    uploadTemp: `${API_BASE}/files/upload-temp`,
-    cleanupTemp: `${API_BASE}/files/cleanup-temp`
-  },
-
-  common: {
-    profile: {
-      get: `${API_BASE}/user`,
-      update: `${API_BASE}/profile`,
-      changePassword: `${API_BASE}/password`
-    },
-    debug: `${API_BASE}/debug-user`
-  },
-
+  /**
+   * =========================
+   * PARAMÈTRES / RÉFÉRENTIEL
+   * =========================
+   */
   admin: {
-    users: {
+     users: {
       list: `${API_BASE}/users`,
       delete: (id: number | string) => `${API_BASE}/users/${id}`,
       details: (id: number | string) => `${API_BASE}/users/${id}`,
@@ -139,8 +139,6 @@ export const apiRoutes = {
     pointages: {
       list: `${API_BASE}/pointages`,
       show: (id: number | string) => `${API_BASE}/pointages/${id}`,
-
-
       create: `${API_BASE}/pointages`,
       update: (id: number | string) => `${API_BASE}/pointages/${id}`,
       delete: (id: number | string) => `${API_BASE}/pointages/${id}`,
@@ -294,7 +292,7 @@ export const apiRoutes = {
         `${API_BASE}/api/admin/frais/${id}/submit`
     },
     parametres: {
-      parametreMaxGeneral: {
+     parametreMaxGeneral: {
         list: `${API_BASE}/parametre-max-general`,
         create: `${API_BASE}/parametre-max-general`,
         show: (id: number | string) =>
@@ -385,7 +383,77 @@ export const apiRoutes = {
         show: (id: number | string) => `${API_BASE}/settings/managers/${id}`,
         update: (id: number | string) => `${API_BASE}/settings/managers/${id}`,
         delete: (id: number | string) => `${API_BASE}/settings/managers/${id}`
-      }
+      },
+      
+
+      /**
+       * ============
+       * COMPÉTENCES
+       * ============
+       */
+     competences: {
+  list: `${API_BASE}/settings/competences`,
+
+  search: (query: string) =>
+    `${API_BASE}/settings/competences/search?q=${query}`,
+
+  create: `${API_BASE}/settings/competences`, // CREATE
+
+  update: (id: number | string) =>
+    `${API_BASE}/settings/competences/${id}`, // UPDATE ✅
+
+  delete: (id: number | string) =>
+    `${API_BASE}/settings/competences/${id}`, // DELETE
+
+     competenceNiveaux: {
+  byCompetence: (competenceId: number | string) =>
+    `${API_BASE}/settings/competences/${competenceId}/niveaux`
+}
+
+      },
+
+      
+    posteCompetences: {
+  /**
+   * Compétences liées à un poste
+   * GET /settings/poste-competences?poste_id=103
+   */
+  byPoste: (posteId: number | string) =>
+    `${API_BASE}/settings/poste-competences?poste_id=${posteId}`,
+
+  /**
+   * Associer une compétence à un poste
+   * POST /settings/poste-competences
+   */
+  create: `${API_BASE}/settings/poste-competences`,
+
+  /**
+   * Modifier niveau / importance
+   * PUT /settings/poste-competences/:id
+   */
+
+
+  /**
+   * SUPPRESSION (poste_id + competence_id dans le BODY)
+   * DELETE /settings/poste-competences
+   */
+  delete: `${API_BASE}/settings/poste-competences`,
+  quickAdd: `${API_BASE}/settings/poste-competences/quick-add`,
+
+  
+
+  update: (
+    posteId: number | string,
+    competenceId: number | string
+  ) =>
+    `${API_BASE}/settings/postes-competences/${posteId}/competences/${competenceId}`,
+
+
+},
+
+
+
+
     },
     accidentsTravail: {
       list: `${API_BASE}/accidents-travail`,
@@ -407,10 +475,11 @@ export const apiRoutes = {
         `${API_BASE}/accidents-travail/${id}/relances`,
       statistiques: `${API_BASE}/accidents-travail/statistiques`
     }
+
+
   },
 
-
-    offres: {
+  offres: {
       list: `${API_BASE}/offres`,
       byId: (id: number | string) => `${API_BASE}/offres/${id}`,
       nouveau: `${API_BASE}/offres/nouveau`,
@@ -430,8 +499,7 @@ export const apiRoutes = {
 
 
   },
-} as const;
-
+};
 
 
 export type ApiRoutes = typeof apiRoutes;

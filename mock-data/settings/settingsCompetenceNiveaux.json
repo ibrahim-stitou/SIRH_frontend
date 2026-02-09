@@ -1,0 +1,7 @@
+[
+  { "id": 1, "competence_id": 3, "niveau": 1, "description": "Notions de base" },
+  { "id": 2, "competence_id": 3, "niveau": 2, "description": "Compréhension simple" },
+  { "id": 3, "competence_id": 3, "niveau": 3, "description": "Réunion technique autonome" },
+  { "id": 4, "competence_id": 3, "niveau": 4, "description": "Communication fluide" },
+  { "id": 5, "competence_id": 3, "niveau": 5, "description": "Niveau expert professionnel" }
+]

@@ -1,0 +1,15 @@
+[{
+      "id": 1,
+      "poste_id": 103,
+      "competence_id": 3,
+      "niveau_requis": 3,
+      "importance": 2
+    },
+    {
+      "id": 2,
+      "poste_id": 103,
+      "competence_id": 1,
+      "niveau_requis": 4,
+      "importance": 1
+    }
+  ]

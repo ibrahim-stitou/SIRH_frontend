@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "libelle": "JavaScript",
+    "categorie": "Savoir-faire",
+    "description": "Langage de programmation côté frontend"
+  },
+  {
+    "id": 2,
+    "libelle": "React",
+    "categorie": "Savoir-faire",
+    "description": "Bibliothèque frontend pour interfaces UI"
+  },
+  {
+    "id": 3,
+    "libelle": "Anglais",
+    "categorie": "Langue",
+    "description": "Langue professionnelle"
+  },
+  {
+    "id": 4,
+    "libelle": "Communication",
+    "categorie": "Savoir-être",
+    "description": "Capacité à communiquer efficacement"
+  }
+]
