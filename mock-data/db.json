@@ -1,164 +1,165 @@
 {
-  "offres": [
+  "offres"
+: [
+  {
+    "id": 1,
+    "reference": "OFF-2026-001",
+    "description": "Nous recherchons un développeur Angular passionné pour rejoindre notre équipe IT à Casablanca. Le candidat idéal aura une solide expérience en développement frontend, une bonne maîtrise d'Angular et une capacité à travailler en équipe dans un environnement dynamique.",
+    "posteId": 103,
+    "lieuTravail": "Casablanca",
+    "typeContrat": "CDI",
+    "salaireMin": 10000,
+    "salaireMax": 15000,
+    "dateLimiteCandidature": "2026-03-30",
+    "statut": "BROUILLON",
+    "anonymisee": false,
+    "responsableId": 1,
+    "validatedManager": false,
+    "validatedRH": false,
+    "slug": "developpeur-angular-casablanca-001",
+    "lienCandidature": "https://entreprise.ma/candidature/developpeur-angular-casablanca-001",
+    "createdAt": "2026-02-10T10:00:00Z"
+  },
+  {
+    "id": 2,
+    "reference": "OFF-2026-002",
+    "description": "Nous sommes à la recherche d'un chef de projet digital expérimenté pour piloter nos initiatives digitales à Rabat. Le candidat idéal aura une expérience avérée en gestion de projets digitaux, une excellente communication et une capacité à coordonner des équipes multidisciplinaires.",
+    "posteId": 103,
+    "lieuTravail": "Rabat",
+    "typeContrat": "CDD",
+    "salaireMin": 8000,
+    "salaireMax": 12000,
+    "dateLimiteCandidature": "2026-04-15",
+    "statut": "PUBLIQUE",
+    "anonymisee": true,
+    "responsableId": 2,
+    "validatedManager": true,
+    "validatedRH": false,
+    "slug": "chef-projet-digital-rabat-002",
+    "lienCandidature": "https://entreprise.ma/candidature/chef-projet-digital-rabat-002",
+    "createdAt": "2026-02-15T14:30:00Z"
+  }
+],
+
+"Missions": [
+  {
+    "id": 1,
+    "offreId": 1,
+    "libelle": "Développer les interfaces Angular"
+  },
+  {
+    "id": 2,
+    "offreId": 1,
+    "libelle": "Participer aux revues de code"
+  },
+  {
+    "id": 3,
+    "offreId": 2,
+    "libelle": "Optimiser les performances frontend"
+  },
+  {
+    "id": 4,
+    "offreId": 2,
+    "libelle": "Collaborer avec les équipes backend"
+  }
+],
+
+"OffreCompetences": [
+  {
+    "offreId": 1,
+    "competenceId": 1
+  },
+  {
+    "offreId": 1,
+    "competenceId": 3
+  },
+  {
+    "offreId": 2,
+    "competenceId": 1
+  },
+  {
+    "offreId": 2,
+    "competenceId": 3
+  }
+],
+
+"ProfilRecherche": [
+  {
+    "id": 1,
+    "offreId": 1,
+    "type": "FORMATION",
+    "contenu": "Bac+5 en informatique ou équivalent"
+  },
+  {
+    "id": 2,
+    "offreId": 1,
+    "type": "EXPERIENCE",
+    "contenu": "Minimum 2 ans en développement Angular"
+  },
+  {
+    "id": 3,
+    "offreId": 2,
+    "type": "FORMATION",
+    "contenu": "Bac+3 en informatique ou équivalent"
+
+  },
+  {
+    "id": 4,
+    "offreId": 2,
+    "type": "EXPERIENCE",
+    "contenu": "Minimum 3 ans en développement frontend"
+  }
+],
+"candidatures": [
     {
       "id": 1,
-      "reference": "OFF-2026-001",
-      "intitulePoste": "Développeur Full Stack",
-      "descriptionPoste": "Nous recherchons un développeur Full Stack passionné pour rejoindre notre équipe technique.",
-      "missionsPrincipales": [
-        "Développement d'applications web avec React et Node.js",
-        "Participation aux revues de code",
-        "Maintenance et amélioration des systèmes existants",
-        "Collaboration avec l'équipe produit"
-      ],
-      "profilRecherche": {
-        "formation": "Bac+5 en informatique ou équivalent",
-        "experience": "3-5 ans d'expérience en développement web"
-      },
-      "competencesRequises": ["React", "Node.js", "TypeScript", "PostgreSQL", "Git"],
-      "lieuTravail": "Casablanca, Maroc",
-      "typeContrat": "CDI",
-      "fourchetteSalaire": {
-        "min": 15000,
-        "max": 25000,
-        "devise": "MAD"
-      },
-      "dateLimiteCandidature": "2026-03-15",
-      "responsableRecrutement": {
-        "id": 1,
-        "nom": "Ahmed Bennani",
-        "email": "a.bennani@entreprise.ma"
-      },
-      "statut": "publiee",
-      "dateCreation": "2026-01-15",
-      "datePublication": "2026-01-16",
-      "diffusion": {
-        "siteCarrieres": true,
-        "linkedin": true,
-        "rekrute": true,
-        "emploiMa": false,
-        "reseauxSociaux": true
-      },
-      "lienCandidature": "https://carrieres.entreprise.ma/postuler/OFF-2026-001",
-      "statistiques": {
-        "vues": 245,
-        "candidaturesRecues": 18,
-        "sourceCandidatures": {
-          "siteCarrieres": 8,
-          "linkedin": 6,
-          "rekrute": 3,
-          "emploiMa": 0,
-          "reseauxSociaux": 1
-        }
-      },
-      "anonyme": false
+      "offreId": 1,
+      "candidatNom": "Mohamed Alaoui",
+       "cvUrl": "/uploads/cv1.pdf",
+      "candidatEmail": "m.alaoui@email.com",
+      "datePostulation": "2026-01-20",
+      "source": "linkedin",
+      "statut": "en_cours"
     },
     {
       "id": 2,
-      "reference": "OFF-2026-002",
-      "intitulePoste": "Chef de Projet Digital",
-      "descriptionPoste": "Rejoignez notre équipe pour piloter des projets digitaux innovants.",
-      "missionsPrincipales": [
-        "Gestion de projets web et mobile",
-        "Coordination des équipes techniques",
-        "Suivi des budgets et des délais",
-        "Relation client"
-      ],
-      "profilRecherche": {
-        "formation": "Bac+5 en gestion de projet ou informatique",
-        "experience": "5+ ans d'expérience en gestion de projets digitaux"
-      },
-      "competencesRequises": ["Gestion de projet", "Agile/Scrum", "Communication", "Leadership"],
-      "lieuTravail": "Rabat, Maroc",
-      "typeContrat": "CDI",
-      "fourchetteSalaire": {
-        "min": 20000,
-        "max": 35000,
-        "devise": "MAD"
-      },
-      "dateLimiteCandidature": "2026-02-28",
-      "responsableRecrutement": {
-        "id": 2,
-        "nom": "Fatima Zahra El Alami",
-        "email": "f.elalami@entreprise.ma"
-      },
-      "statut": "brouillon",
-      "dateCreation": "2026-01-20",
-      "datePublication": null,
-      "diffusion": {
-        "siteCarrieres": false,
-        "linkedin": false,
-        "rekrute": false,
-        "emploiMa": false,
-        "reseauxSociaux": false
-      },
-      "lienCandidature": null,
-      "statistiques": {
-        "vues": 0,
-        "candidaturesRecues": 0,
-        "sourceCandidatures": {
-          "siteCarrieres": 0,
-          "linkedin": 0,
-          "rekrute": 0,
-          "emploiMa": 0,
-          "reseauxSociaux": 0
-        }
-      },
-      "anonyme": false
+      "offreId": 1,
+       "cvUrl": "/uploads/cv1.pdf",
+      "candidatNom": "Sara Tazi",
+      "candidatEmail": "s.tazi@email.com",
+      "datePostulation": "2026-01-22",
+      "source": "siteCarrieres",
+      "statut": "RECUE"
     },
     {
-      "id": 3,
-      "reference": "OFF-2026-003",
-      "intitulePoste": "Stage Développeur Mobile",
-      "descriptionPoste": "Stage de fin d'études en développement mobile.",
-      "missionsPrincipales": [
-        "Développement d'applications mobiles React Native",
-        "Tests et débogage",
-        "Documentation technique"
-      ],
-      "profilRecherche": {
-        "formation": "Bac+4/5 en informatique (en cours)",
-        "experience": "Première expérience en développement mobile appréciée"
-      },
-      "competencesRequises": ["React Native", "JavaScript", "Git"],
-      "lieuTravail": "Casablanca, Maroc",
-      "typeContrat": "Stage",
-      "fourchetteSalaire": {
-        "min": 3000,
-        "max": 5000,
-        "devise": "MAD"
-      },
-      "dateLimiteCandidature": "2026-01-31",
-      "responsableRecrutement": {
-        "id": 1,
-        "nom": "Ahmed Bennani",
-        "email": "a.bennani@entreprise.ma"
-      },
-      "statut": "cloturee",
-      "dateCreation": "2025-12-01",
-      "datePublication": "2025-12-02",
-      "diffusion": {
-        "siteCarrieres": true,
-        "linkedin": true,
-        "rekrute": true,
-        "emploiMa": true,
-        "reseauxSociaux": false
-      },
-      "lienCandidature": "https://carrieres.entreprise.ma/postuler/OFF-2026-003",
-      "statistiques": {
-        "vues": 520,
-        "candidaturesRecues": 45,
-        "sourceCandidatures": {
-          "siteCarrieres": 12,
-          "linkedin": 15,
-          "rekrute": 10,
-          "emploiMa": 8,
-          "reseauxSociaux": 0
-        }
-      },
-      "anonyme": false
+      "id": 2,
+      "offreId": 2,
+       "cvUrl": "/uploads/cv1.pdf",
+      "candidatNom": "Sara Tazi",
+      "candidatEmail": "s.tazi@email.com",
+      "datePostulation": "2026-01-22",
+      "source": "siteCarrieres",
+      "statut": "RECUE"
     }
+   
   ],
+
+"OffreStatistiques": [
+  {
+    "id": 1,
+    "offreId": 1,
+    "nombreVues": 120,
+    "nombreCandidatures": 1
+  }
+  ,
+  {
+    "id": 2,
+    "offreId": 2,
+    "nombreVues": 80,
+    "nombreCandidatures": 1
+  }
+]
+,
   "responsables": [
     {
       "id": 1,
@@ -179,29 +180,22 @@
       "departement": "RH"
     }
   ],
-  "candidatures": [
-    {
-      "id": 1,
-      "offreId": 1,
-      "candidatNom": "Mohamed Alaoui",
-      "candidatEmail": "m.alaoui@email.com",
-      "datePostulation": "2026-01-20",
-      "source": "linkedin",
-      "statut": "en_cours"
-    },
-    {
-      "id": 2,
-      "offreId": 1,
-      "candidatNom": "Sara Tazi",
-      "candidatEmail": "s.tazi@email.com",
-      "datePostulation": "2026-01-22",
-      "source": "siteCarrieres",
-      "statut": "nouveau"
-    }
-  ],
-
-
-  
+"OffreDiffusions": [
+  {
+    "id": 1,
+    "offreId": 1,
+    "canal": "LinkedIn",
+    "dateDiffusion": "2026-02-12T08:00:00Z",
+    "statut": "SUCCES"
+  },
+  {
+    "id": 2,
+    "offreId": 1,
+    "canal": "SITE_CARRIERE",
+    "dateDiffusion": "2026-02-12T08:01:00Z",
+    "statut": "SUCCES"
+  }
+], 
   "PosteCompetences": [
   {
     "id": 1,
@@ -217,9 +211,7 @@
     "niveau_requis": 4,
     "importance": 1
   }
-]
-,
-
+],
 "Competences": [
   {
     "id": 1,
@@ -235,9 +227,7 @@
     "description": "Langue professionnelle",
     "createdAt": "2026-01-12T14:20:00.000Z"
   }
-]
-
-,
+],
 
 "CompetenceNiveaux": [
   {

@@ -26,19 +26,25 @@ import {
   Linkedin,
   Globe,
   Share2,
-  Loader2,
 } from "lucide-react";
 import type { OffreEmploi, StatutOffre } from "@/types/offre";
-import { getOffreById, updateOffreStatut, deleteOffre } from "@/services/offreService";
+import {
+  getOffreById
+} from "@/services/offreService";
+import ServerError from "@/components/common/server-error";
+import { OffreDetailSkeleton } from "./OffreDetailSkeleton";
 
 interface OffreDetailProps {
   offreId: number;
 }
 
 const statutConfig: Record<
-  StatutOffre,
+  string,
   { label: string; variant: "default" | "secondary" | "destructive" | "outline" }
 > = {
+  BROUILLON: { label: "Brouillon", variant: "secondary" },
+  PUBLIEE: { label: "Publiée", variant: "default" },
+  CLOTUREE: { label: "Clôturée", variant: "outline" },
   brouillon: { label: "Brouillon", variant: "secondary" },
   publiee: { label: "Publiée", variant: "default" },
   cloturee: { label: "Clôturée", variant: "outline" },
@@ -46,17 +52,22 @@ const statutConfig: Record<
 
 export function OffreDetail({ offreId }: OffreDetailProps) {
   const router = useRouter();
-  const [offre, setOffre] = useState<OffreEmploi | null>(null);
+  const [offre, setOffre] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasServerError, setHasServerError] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const fetchOffre = async () => {
+      setIsLoading(true);
+      setHasServerError(false);
       try {
         const data = await getOffreById(offreId);
         setOffre(data);
-      } catch (error) {
-        console.error("Erreur:", error);
+      } catch (error: any) {
+        if (!error?.response || error.response.status >= 500) {
+          setHasServerError(true);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -66,32 +77,22 @@ export function OffreDetail({ offreId }: OffreDetailProps) {
 
   const handleStatutChange = async (newStatut: StatutOffre) => {
     if (!offre) return;
-    try {
-      const updated = await updateOffreStatut(offre.id, newStatut);
-      setOffre(updated);
-    } catch (error) {
-      console.error("Erreur:", error);
-    }
+    const updated = await updateOffreStatut(offre.id, newStatut);
+    setOffre(updated);
   };
 
   const handleDelete = async () => {
     if (!offre) return;
-    if (confirm("Êtes-vous sûr de vouloir supprimer cette offre ?")) {
-      try {
-        await deleteOffre(offre.id);
-        router.push("/admin/offres");
-      } catch (error) {
-        console.error("Erreur:", error);
-      }
-    }
+    if (!confirm("Êtes-vous sûr de vouloir supprimer cette offre ?")) return;
+    await deleteOffre(offre.id);
+    router.push("/admin/offres");
   };
 
   const handleCopyLink = () => {
-    if (offre?.lienCandidature) {
-      navigator.clipboard.writeText(offre.lienCandidature);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
+    if (!offre?.lienCandidature) return;
+    navigator.clipboard.writeText(offre.lienCandidature);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const formatDate = (dateString: string | null) => {
@@ -103,15 +104,18 @@ export function OffreDetail({ offreId }: OffreDetailProps) {
     });
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
+  if (isLoading) return <OffreDetailSkeleton />;
 
-  if (!offre) {
+  if (hasServerError)
+    return (
+      <ServerError
+        title="Serveur indisponible"
+        message="Impossible de charger le détail de l'offre."
+        onRetry={() => window.location.reload()}
+      />
+    );
+
+  if (!offre)
     return (
       <div className="text-center py-12">
         <p className="text-muted-foreground">Offre non trouvée</p>
@@ -120,7 +124,6 @@ export function OffreDetail({ offreId }: OffreDetailProps) {
         </Button>
       </div>
     );
-  }
 
   const diffusionChannels = [
     { key: "siteCarrieres", label: "Site carrières", icon: Globe },
@@ -130,16 +133,19 @@ export function OffreDetail({ offreId }: OffreDetailProps) {
     { key: "reseauxSociaux", label: "Réseaux sociaux", icon: Share2 },
   ] as const;
 
+  // Normaliser le statut (gérer BROUILLON vs brouillon)
+  const normalizedStatut = offre.statut?.toLowerCase() || 'brouillon';
+  const currentStatutConfig = statutConfig[offre.statut] || statutConfig.brouillon;
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-3">
       <div className="flex flex-col sm:flex-row gap-4 items-start justify-between">
         <div>
           <Button variant="ghost" size="sm" asChild className="mb-2 -ml-2">
             <Link href="/admin/offres">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Retour aux offres
-            </Link> 
+            </Link>
           </Button>
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
             <span className="font-mono">{offre.reference}</span>
@@ -149,31 +155,32 @@ export function OffreDetail({ offreId }: OffreDetailProps) {
               </Badge>
             )}
           </div>
-          <h1 className="text-2xl font-bold">{offre.intitulePoste}</h1>
+          <h1 className="text-2xl font-bold">
+            {offre.poste.libelle || "Titre du poste non défini"}
+          </h1>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant={statutConfig[offre.statut].variant} className="text-sm">
-            {statutConfig[offre.statut].label}
+          <Badge variant={currentStatutConfig.variant}>
+            {currentStatutConfig.label}
           </Badge>
           <div className="flex gap-2">
-            {offre.statut === "brouillon" && (
+            {normalizedStatut === "brouillon" && (
               <Button size="sm" onClick={() => handleStatutChange("publiee")}>
                 <Play className="mr-2 h-4 w-4" />
                 Publier
               </Button>
             )}
-            {offre.statut === "publiee" && (
+            {normalizedStatut === "publiee" && (
               <Button
                 size="sm"
                 variant="outline"
-                className="bg-transparent"
                 onClick={() => handleStatutChange("cloturee")}
               >
                 <Pause className="mr-2 h-4 w-4" />
                 Clôturer
               </Button>
             )}
-            <Button size="sm" variant="outline" className="bg-transparent" asChild>
+            <Button size="sm" variant="outline" asChild>
               <Link href={`/admin/offres/${offre.id}/modifier`}>
                 <Edit className="mr-2 h-4 w-4" />
                 Modifier
@@ -187,103 +194,118 @@ export function OffreDetail({ offreId }: OffreDetailProps) {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Colonne principale */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Description */}
+      <div className="grid gap-3 lg:grid-cols-3">
+        <div className="lg:col-span-2 space-y-3">
           <Card>
             <CardHeader>
               <CardTitle>Description du poste</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground whitespace-pre-line">
-                {offre.descriptionPoste}
+                {offre.descriptionPoste || "Aucune description disponible"}
               </p>
             </CardContent>
           </Card>
 
-          {/* Missions */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Missions principales</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2">
-                {offre.missionsPrincipales.map((mission, index) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span>{mission}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+          {offre.missionsPrincipales && offre.missionsPrincipales.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Missions principales</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  {offre.missionsPrincipales.map((mission: string, index: number) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span>{mission}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
 
-          {/* Profil */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Profil recherché</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h4 className="font-medium mb-1">Formation</h4>
-                <p className="text-muted-foreground">
-                  {offre.profilRecherche.formation}
-                </p>
-              </div>
-              <Separator />
-              <div>
-                <h4 className="font-medium mb-1">Expérience</h4>
-                <p className="text-muted-foreground">
-                  {offre.profilRecherche.experience}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          {offre.profilRecherche && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Profil recherché</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {offre.profilRecherche.formation && (
+                  <>
+                    <div>
+                      <h4 className="font-medium mb-1">Formation</h4>
+                      <p className="text-muted-foreground">
+                        {offre.profilRecherche.formation}
+                      </p>
+                    </div>
+                    {offre.profilRecherche.experience && <Separator />}
+                  </>
+                )}
+                {offre.profilRecherche.experience && (
+                  <div>
+                    <h4 className="font-medium mb-1">Expérience</h4>
+                    <p className="text-muted-foreground">
+                      {offre.profilRecherche.experience}
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
-          {/* Compétences */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Compétences requises</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {offre.competencesRequises.map((comp, index) => (
-                  <Badge key={index} variant="secondary">
-                    {comp}
-                  </Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          {offre.competencesRequises && offre.competencesRequises.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Compétences requises</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {offre.competencesRequises.map((comp: string, index: number) => (
+                    <Badge key={index} variant="secondary">
+                      {comp}
+                    </Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Informations clés */}
+        <div className="space-y-3">
           <Card>
             <CardHeader>
               <CardTitle>Informations clés</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              {offre.lieuTravail && (
+                <>
+                  <div className="flex items-center gap-3">
+                    <MapPin className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Lieu de travail</p>
+                      <p className="font-medium">{offre.lieuTravail}</p>
+                    </div>
+                  </div>
+                  <Separator />
+                </>
+              )}
+              {offre.typeContrat && (
+                <>
+                  <div className="flex items-center gap-3">
+                    <Briefcase className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">
+                        Type de contrat
+                      </p>
+                      <p className="font-medium">{offre.typeContrat}</p>
+                    </div>
+                  </div>
+                  <Separator />
+                </>
+              )}
               <div className="flex items-center gap-3">
-                <MapPin className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Lieu de travail</p>
-                  <p className="font-medium">{offre.lieuTravail}</p>
-                </div>
-              </div>
-              <Separator />
-              <div className="flex items-center gap-3">
-                <Briefcase className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Type de contrat</p>
-                  <p className="font-medium">{offre.typeContrat}</p>
-                </div>
-              </div>
-              <Separator />
-              <div className="flex items-center gap-3">
-                <Calendar className="h-5 w-5 text-muted-foreground" />
+                <Calendar className="h-5 w-5 text-muted-foreground flex-shrink-0" />
                 <div>
                   <p className="text-sm text-muted-foreground">Date limite</p>
                   <p className="font-medium">
@@ -309,29 +331,33 @@ export function OffreDetail({ offreId }: OffreDetailProps) {
             </CardContent>
           </Card>
 
-          {/* Responsable */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Responsable recrutement</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center gap-3">
-                <User className="h-5 w-5 text-muted-foreground" />
-                <span>{offre.responsableRecrutement.nom}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-muted-foreground" />
-                <a
-                  href={`mailto:${offre.responsableRecrutement.email}`}
-                  className="text-primary hover:underline"
-                >
-                  {offre.responsableRecrutement.email}
-                </a>
-              </div>
-            </CardContent>
-          </Card>
+          {offre.responsableRecrutement && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Responsable recrutement</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {offre.responsableRecrutement.nom && (
+                  <div className="flex items-center gap-3">
+                    <User className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                    <span>{offre.responsableRecrutement.nom}</span>
+                  </div>
+                )}
+                {offre.responsableRecrutement.email && (
+                  <div className="flex items-center gap-3">
+                    <Mail className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                    <a
+                      href={`mailto:${offre.responsableRecrutement.email}`}
+                      className="text-primary hover:underline break-all"
+                    >
+                      {offre.responsableRecrutement.email}
+                    </a>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
-          {/* Lien candidature */}
           {offre.lienCandidature && (
             <Card>
               <CardHeader>
@@ -345,7 +371,7 @@ export function OffreDetail({ offreId }: OffreDetailProps) {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="flex-1 bg-transparent"
+                    className="flex-1"
                     onClick={handleCopyLink}
                   >
                     {copied ? (
@@ -356,11 +382,7 @@ export function OffreDetail({ offreId }: OffreDetailProps) {
                     {copied ? "Copié !" : "Copier"}
                   </Button>
                   <Button size="sm" className="flex-1" asChild>
-                    <a
-                      href={offre.lienCandidature}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
+                    <a href={offre.lienCandidature} target="_blank">
                       <ExternalLink className="mr-2 h-4 w-4" />
                       Ouvrir
                     </a>
@@ -370,93 +392,71 @@ export function OffreDetail({ offreId }: OffreDetailProps) {
             </Card>
           )}
 
-          {/* Statistiques */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Statistiques</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-3 bg-muted rounded-lg">
-                  <Eye className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
-                  <p className="text-2xl font-bold">{offre.statistiques.vues}</p>
-                  <p className="text-xs text-muted-foreground">Vues</p>
+          {offre.statistiques && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Statistiques</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-3 bg-muted rounded-lg">
+                    <Eye className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
+                    <p className="text-2xl font-bold">{offre.statistiques.vues || 0}</p>
+                    <p className="text-xs text-muted-foreground">Vues</p>
+                  </div>
+                  <div className="text-center p-3 bg-muted rounded-lg">
+                    <Users className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
+                    <p className="text-2xl font-bold">
+                      {offre.statistiques.candidaturesRecues || 0}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Candidatures
+                    </p>
+                  </div>
                 </div>
-                <div className="text-center p-3 bg-muted rounded-lg">
-                  <Users className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
-                  <p className="text-2xl font-bold">
-                    {offre.statistiques.candidaturesRecues}
-                  </p>
-                  <p className="text-xs text-muted-foreground">Candidatures</p>
-                </div>
-              </div>
+              </CardContent>
+            </Card>
+          )}
 
-              {offre.statistiques.candidaturesRecues > 0 && (
-                <>
-                  <Separator />
-                  <div>
-                    <h4 className="text-sm font-medium mb-3">
-                      Sources des candidatures
-                    </h4>
-                    <div className="space-y-2">
-                      {Object.entries(offre.statistiques.sourceCandidatures)
-                        .filter(([, count]) => count > 0)
-                        .sort(([, a], [, b]) => b - a)
-                        .map(([source, count]) => (
-                          <div
-                            key={source}
-                            className="flex items-center justify-between text-sm"
-                          >
-                            <span className="text-muted-foreground capitalize">
-                              {source.replace(/([A-Z])/g, " $1").trim()}
-                            </span>
-                            <span className="font-medium">{count}</span>
-                          </div>
-                        ))}
+          {offre.diffusion && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Canaux de diffusion</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {diffusionChannels.map(({ key, label, icon: Icon }) => (
+                    <div
+                      key={key}
+                      className={`flex items-center gap-2 p-2 rounded ${
+                        offre.diffusion[key]
+                          ? "bg-primary/10 text-primary"
+                          : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      <Icon className="h-4 w-4 flex-shrink-0" />
+                      <span className="text-sm">{label}</span>
+                      {offre.diffusion[key] && (
+                        <Check className="h-4 w-4 ml-auto" />
+                      )}
                     </div>
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-          {/* Diffusion */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Canaux de diffusion</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {diffusionChannels.map(({ key, label, icon: Icon }) => (
-                  <div
-                    key={key}
-                    className={`flex items-center gap-2 p-2 rounded ${
-                      offre.diffusion[key]
-                        ? "bg-primary/10 text-primary"
-                        : "bg-muted text-muted-foreground"
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span className="text-sm">{label}</span>
-                    {offre.diffusion[key] && (
-                      <Check className="h-4 w-4 ml-auto" />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Dates */}
           <Card>
             <CardHeader>
               <CardTitle>Historique</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Créée le</span>
-                <span>{formatDate(offre.dateCreation)}</span>
-              </div>
+              {offre.dateCreation && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Créée le</span>
+                  <span>{formatDate(offre.dateCreation)}</span>
+                </div>
+              )}
               {offre.datePublication && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Publiée le</span>

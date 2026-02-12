@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function NouvelleOffrePage() {
   return (
-    <main className="container mx-auto py-8 px-4 max-w-4xl overflow-auto pb-32" style={{maxHeight: 'calc(100vh - 64px)'}}>
+    <main className="w-full py-8 px-4 overflow-auto pb-32" style={{maxHeight: 'calc(100vh - 64px)'}}>
       <div className="mb-8">
         <h1 className="text-3xl font-bold">Créer une offre d&apos;emploi</h1>
         <p className="text-muted-foreground mt-1">

@@ -480,8 +480,8 @@ export const apiRoutes = {
   },
 
   offres: {
-      list: `${API_BASE}/offres`,
-      byId: (id: number | string) => `${API_BASE}/offres/${id}`,
+      list: `${API_BASE}/offres/getAll`,
+      byId: (id: number | string) => `${API_BASE}/offres/${id}/detail`,
       nouveau: `${API_BASE}/offres/nouveau`,
     },
 

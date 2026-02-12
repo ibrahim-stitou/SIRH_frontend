@@ -199,9 +199,8 @@ const CustomTable = <T extends Record<string, any>>({
                       {allBulkActions && allBulkActions.length > 0 && (
                         <TableHead className='w-[50px]'>
                           <Checkbox
-                            checked={areAllRowsSelected}
-                            //@ts-ignore
-                            indeterminate={areSomeRowsSelected}
+                            // Use Radix CheckedState: true | false | 'indeterminate'
+                            checked={areAllRowsSelected ? true : areSomeRowsSelected ? 'indeterminate' : false}
                             onCheckedChange={(checked) => {
                               if (checked) {
                                 const newSelectedRows = [...table.selectedRows];

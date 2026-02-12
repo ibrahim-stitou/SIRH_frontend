@@ -155,12 +155,18 @@ export const useNavItems = (): NavItem[] => {
       shortcut: ['a', 't'],
       description: 'US-AT-001'
     },
-    {
+    { 
   title: t('sidebar.postesCompetences'),
   url: '/admin/gpec/postes',
   icon: 'briefcase',
   description: 'US-GPEC-001'
+},    { 
+  title: t('sidebar.Offres'),
+  url: '/admin/offres',
+  icon: 'briefcase',
+  description: 'US-GPEC-002'
 },
+
 
     {
       title: t('sidebar.parametres'),

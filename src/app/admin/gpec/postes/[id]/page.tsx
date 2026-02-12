@@ -13,10 +13,13 @@ import { PosteInfoCard } from "../components/poste-info-card";
 import { CompetenceGrid } from "../components/competence-grid";
 
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Search, X } from "lucide-react";
 
-import { Search, X, Plus } from "lucide-react";
 import { QuickAddCompetenceModal } from "../components/QuickAddCompetenceModal";
+import { PosteInfoCardSkeleton } from "../skeleton/poste-info-card-skeleton";
+import { SearchSkeleton } from "../skeleton/search-skeleton";
+import { CompetenceGridSkeleton } from "../skeleton/competence-grid-skeleton";
+import ServerError from "@/components/common/server-error";
 
 export default function PosteProfilPage() {
   const { id } = useParams();
@@ -27,25 +30,42 @@ export default function PosteProfilPage() {
   const [search, setSearch] = useState("");
   const [openQuickAdd, setOpenQuickAdd] = useState(false);
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [serverError, setServerError] = useState(false);
+
   /* =========================
      LOAD DATA
   ========================= */
   const loadData = async () => {
-    const posteData = await getPosteById(posteId);
-    const response = await getPosteCompetences(posteId);
+    try {
+      setIsLoading(true);
+      setServerError(false);
 
-    setPoste(posteData);
+      const posteData = await getPosteById(posteId);
+      const response = await getPosteCompetences(posteId);
 
-    const rawData = Array.isArray(response?.data) ? response.data : [];
+      setPoste(posteData);
 
-    const normalized = rawData.map((item: any) => ({
-      competence: item.competence,
-      importance: item.importance,
-      niveau_requis: item.niveau?.niveau ?? 0,
-      niveau: item.niveau // ✅ GARDEZ L'OBJET NIVEAU COMPLET
-    }));
+      const rawData = Array.isArray(response?.data) ? response.data : [];
 
-    setCompetences(normalized);
+      const normalized: PosteCompetence[] = rawData.map((item: any) => ({
+        id: item.id,
+        poste_id: posteId,
+        competence: item.competence,
+        importance: item.importance,
+        niveau_requis: item.niveau?.niveau ?? 0,
+        niveau: item.niveau,
+      }));
+
+      setCompetences(normalized);
+    } catch (err: any) {
+      // 🔴 Serveur éteint / API inaccessible
+      if (!err.response || err.code === "ECONNABORTED") {
+        setServerError(true);
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -57,29 +77,52 @@ export default function PosteProfilPage() {
      FILTER
   ========================= */
   const filteredCompetences = useMemo(() => {
-    return competences.filter(c =>
+    return competences.filter((c) =>
       c.competence?.libelle
         ?.toLowerCase()
         .includes(search.toLowerCase())
     );
   }, [competences, search]);
 
+  /* =========================
+     LOADING STATE
+  ========================= */
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <PosteInfoCardSkeleton />
+        <SearchSkeleton />
+        <CompetenceGridSkeleton />
+      </div>
+    );
+  }
+
+  /* =========================
+     SERVER ERROR STATE
+  ========================= */
+  if (serverError) {
+    return (
+      <ServerError
+        title="Serveur indisponible"
+        message="Impossible de charger la liste des postes."
+onRetry={loadData}       />
+    );
+  }
   if (!poste) return null;
 
+  /* =========================
+     RENDER
+  ========================= */
   return (
     <div className="space-y-6">
-      {/* =========================
-          POSTE INFOS
-      ========================= */}
+      {/* POSTE INFOS */}
       <PosteInfoCard
         poste={poste}
         competencesCount={competences.length}
         onQuickAdd={() => setOpenQuickAdd(true)}
       />
 
-      {/* =========================
-          SEARCH (affiché seulement si >= 8 compétences)
-      ========================= */}
+      {/* SEARCH */}
       {competences.length >= 8 && (
         <div className="flex items-center gap-3">
           <div className="relative w-full max-w-sm">
@@ -98,7 +141,6 @@ export default function PosteProfilPage() {
                 type="button"
                 onClick={() => setSearch("")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                aria-label="Effacer"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -107,18 +149,14 @@ export default function PosteProfilPage() {
         </div>
       )}
 
-      {/* =========================
-          COMPETENCES GRID
-      ========================= */}
+      {/* GRID */}
       <CompetenceGrid
         posteId={posteId}
         data={filteredCompetences}
         onRefresh={loadData}
       />
 
-      {/* =========================
-          QUICK ADD MODAL
-      ========================= */}
+      {/* QUICK ADD */}
       <QuickAddCompetenceModal
         open={openQuickAdd}
         posteId={posteId}

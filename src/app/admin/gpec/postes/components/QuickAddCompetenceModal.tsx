@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form"; // Ajout
 import {
   Dialog,
   DialogContent,
@@ -21,8 +22,8 @@ import {
 
 import { LevelTooltip } from "./level-tooltip";
 import { CompetenceNiveau } from "@/types/competence-niveau";
+import { SelectField } from "@/components/custom/SelectField"; // Ajout
 
- // Ajustez le chemin selon votre structure
 import { createCompetenceSchema,
   affectationCompetenceSchema,competenceNiveauSchema } from "./competence.schema";
 
@@ -74,7 +75,13 @@ export function QuickAddCompetenceModal({
   /** ===== Affectation ===== */
   const [niveaux, setNiveaux] = useState<CompetenceNiveau[]>([]);
   const [niveauRequis, setNiveauRequis] = useState<number | null>(null);
-  const [importance, setImportance] = useState(1);
+  
+  // Ajout du form pour l'importance
+  const importanceForm = useForm({
+    defaultValues: {
+      importance: 1
+    }
+  });
 
   /** 🔄 Reset modal */
   useEffect(() => {
@@ -89,7 +96,7 @@ export function QuickAddCompetenceModal({
     setNewNiveaux([]);
     setNiveaux([]);
     setNiveauRequis(null);
-    setImportance(1);
+    importanceForm.reset({ importance: 1 }); // Reset du form
     setError(null);
     setValidationErrors({});
   }, [open]);
@@ -260,6 +267,8 @@ export function QuickAddCompetenceModal({
       return false;
     }
 
+    const importance = importanceForm.getValues("importance"); // Récupérer la valeur du form
+
     const result = affectationCompetenceSchema.safeParse({
       posteId,
       competenceId: selectedCompetence.id,
@@ -289,6 +298,8 @@ export function QuickAddCompetenceModal({
 
     try {
       setLoading(true);
+
+      const importance = importanceForm.getValues("importance"); // Récupérer la valeur
 
       await addPosteCompetence({
         poste_id: posteId,
@@ -552,14 +563,18 @@ export function QuickAddCompetenceModal({
                   ))}
                 </div>
 
-                <select
-                  className="border rounded-md p-2 w-full"
-                  value={importance}
-                  onChange={(e) => setImportance(Number(e.target.value))}
-                >
-                  <option value={1}>Indispensable</option>
-                  <option value={5}>Souhaitable</option>
-                </select>
+                {/* Remplacement du select natif par SelectField */}
+                <SelectField
+                  name="importance"
+                  control={importanceForm.control}
+                  options={[
+                    { id: 1, label: 'Indispensable' },
+                    { id: 5, label: 'Souhaitable' }
+                  ]}
+                  displayField="label"
+                  placeholder="Sélectionner l'importance"
+                  className="w-full"
+                />
 
                 {validationErrors.affectation && (
                   <p className="text-red-500 text-sm">{validationErrors.affectation}</p>

@@ -1,116 +1,173 @@
-import { apiRoutes } from '@/config/apiRoutes';
-import { Candidature, OffreEmploi, OffreFormData, ResponsableRecrutement, StatutOffre } from "@/types/offre";
+import { apiRoutes } from "@/config/apiRoutes";
+import { ResponsableRecrutement } from "@/types/offre";
+import type { OffreEmploi, OffreEmploiUI, StatutOffre } from "@/types/PosteOffre";
 
-// ==================== OFFRES ====================
 
-export async function getOffres(): Promise<OffreEmploi[]> {
-  const response = await fetch(apiRoutes.offres.list);
-  if (!response.ok) throw new Error("Erreur lors de la récupération des offres");
-  const json = await response.json();
-  return Array.isArray(json) ? json : json?.data ?? [];
-}
 
-export async function getOffreById(id: number): Promise<OffreEmploi> {
-  const response = await fetch(apiRoutes.offres.byId(id));
-  if (!response.ok) throw new Error("Offre non trouvée");
-  const json = await response.json();
-  return json?.data ?? json;
-}
+/**
+ * Fonction utilitaire pour mapper les données de l'API vers le format UI
+ */
+export function mapOffreToUI(offre: OffreEmploi): OffreEmploiUI {
+  // Extraire les compétences du ProfilRecherche de type COMPETENCE
+  const competences = offre.ProfilRecherche
+    .filter((profil) => profil.type === "COMPETENCE")
+    .map((profil) => profil.contenu);
 
-export async function createOffre(
-  data: OffreFormData,
-  responsable: ResponsableRecrutement
-): Promise<OffreEmploi> {
-  const year = new Date().getFullYear();
-  const offres = await getOffres();
-  const seq = String(offres.length + 1).padStart(3, "0");
-  const reference = `OFF-${year}-${seq}`;
-
-  const newOffre: Omit<OffreEmploi, "id"> = {
-    reference,
-    intitulePoste: data.intitulePoste,
-    descriptionPoste: data.descriptionPoste,
-    missionsPrincipales: data.missionsPrincipales,
-    profilRecherche: data.profilRecherche,
-    competencesRequises: data.competencesRequises,
-    lieuTravail: data.lieuTravail,
-    typeContrat: data.typeContrat,
-    fourchetteSalaire: data.fourchetteSalaire,
-    dateLimiteCandidature: data.dateLimiteCandidature,
-    responsableRecrutement: responsable,
-    statut: data.statut,
-    dateCreation: new Date().toISOString().split("T")[0],
-    datePublication:
-      data.statut === "publiee" ? new Date().toISOString().split("T")[0] : null,
-    diffusion: data.diffusion,
-    lienCandidature:
-      data.statut === "publiee"
-        ? `https://carrieres.entreprise.ma/postuler/${reference}`
-        : null,
-    statistiques: {
-      vues: 0,
-      candidaturesRecues: 0,
-      sourceCandidatures: {
-        siteCarrieres: 0,
-        linkedin: 0,
-        rekrute: 0,
-        emploiMa: 0,
-        reseauxSociaux: 0,
-      },
-    },
-    anonyme: data.anonyme,
+  // Mapper le statut de l'API vers le format UI
+  const statutMapping: Record<StatutOffre, "brouillon" | "publiee" | "cloturee"> = {
+    BROUILLON: "brouillon",
+    PUBLIQUE: "publiee",
+    CLOTUREE: "cloturee",
   };
 
-  const response = await fetch(apiRoutes.offres.list, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(newOffre),
-  });
-
-  if (!response.ok) throw new Error("Erreur lors de la création de l'offre");
-  const json = await response.json();
-  return json?.data ?? json;
+  return {
+    id: offre.id,
+    reference: offre.reference,
+    intitulePoste: offre.poste?.libelle || "Poste non défini",
+    descriptionPoste: offre.description,
+    lieuTravail: offre.lieuTravail,
+    typeContrat: offre.typeContrat,
+    fourchetteSalaire:
+      offre.salaireMin && offre.salaireMax
+        ? {
+            min: offre.salaireMin,
+            max: offre.salaireMax,
+            devise: "MAD",
+          }
+        : null,
+    dateLimiteCandidature: offre.dateLimiteCandidature,
+    statut: statutMapping[offre.statut],
+    anonyme: offre.anonymisee,
+    lienCandidature: offre.lienCandidature,
+    competencesRequises: competences,
+    responsableRecrutement: {
+      nom: offre.responsable.nom,
+      email: offre.responsable.email,
+    },
+    statistiques: {
+      vues: offre.OffreStatistiques[0]?.nombreVues || 0,
+      candidaturesRecues: offre.OffreStatistiques[0]?.nombreCandidatures || 0,
+    },
+  };
 }
 
-export async function updateOffre(
-  id: number,
-  data: Partial<OffreEmploi>
-): Promise<OffreEmploi> {
-  const response = await fetch(apiRoutes.offres.byId(id), {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
+/**
+ * Récupérer toutes les offres d'emploi
+ */
+export async function getOffres(): Promise<OffreEmploiUI[]> {
+ const response = await fetch(apiRoutes.offres.list);
+  
 
-  if (!response.ok) throw new Error("Erreur lors de la mise à jour de l'offre");
-  const json = await response.json();
-  return json?.data ?? json;
-}
-
-export async function updateOffreStatut(
-  id: number,
-  statut: StatutOffre
-): Promise<OffreEmploi> {
-  const offre = await getOffreById(id);
-  const updates: Partial<OffreEmploi> = { statut };
-
-  if (statut === "publiee" && !offre.datePublication) {
-    updates.datePublication = new Date().toISOString().split("T")[0];
-    updates.lienCandidature = `https://carrieres.entreprise.ma/postuler/${offre.reference}`;
+  if (!response.ok) {
+    throw new Error(`Erreur HTTP: ${response.status}`);
   }
 
-  return updateOffre(id, updates);
+  const data: OffreEmploi[] = await response.json();
+  
+  // Mapper les données vers le format UI
+  return data.map(mapOffreToUI);
 }
 
-export async function deleteOffre(id: number): Promise<void> {
-  const response = await fetch(apiRoutes.offres.byId(id), {
-    method: "DELETE",
+/**
+ * Récupérer une offre spécifique par ID
+ */
+export async function getOffreById(id: number): Promise<OffreEmploiUI> {
+  const response = await fetch(apiRoutes.offres.byId(id));
+
+  if (!response.ok) {
+    throw new Error("Erreur lors du chargement de l'offre");
+  }
+
+  return response.json();
+}
+
+
+/**
+ * Mettre à jour le statut d'une offre
+ */
+export async function updateOffreStatut(
+  id: number,
+  newStatut: "brouillon" | "publiee" | "cloturee"
+): Promise<void> {
+  // Mapper le statut UI vers le format API
+  const statutMapping: Record<"brouillon" | "publiee" | "cloturee", StatutOffre> = {
+    brouillon: "BROUILLON",
+    publiee: "PUBLIQUE",
+    cloturee: "CLOTUREE",
+  };
+
+  const response = await fetch(`http://localhost:3001//offres/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      statut: statutMapping[newStatut],
+    }),
   });
 
-  if (!response.ok) throw new Error("Erreur lors de la suppression de l'offre");
+  if (!response.ok) {
+    throw new Error(`Erreur HTTP: ${response.status}`);
+  }
 }
 
-// ==================== RESPONSABLES ====================
+/**
+ * Supprimer une offre
+ */
+export async function deleteOffre(id: number): Promise<void> {
+  const response = await fetch(`http://localhost:3001//offres/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Erreur HTTP: ${response.status}`);
+  }
+}
+
+/**
+ * Créer une nouvelle offre
+ */
+export async function createOffre(offre: Partial<OffreEmploi>): Promise<OffreEmploi> {
+  const response = await fetch(`http://localhost:3001/offres`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(offre),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Erreur HTTP: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Mettre à jour une offre complète
+ */
+export async function updateOffre(
+  id: number,
+  offre: Partial<OffreEmploi>
+): Promise<OffreEmploi> {
+  const response = await fetch(`http://localhost:3001//offres/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(offre),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Erreur HTTP: ${response.status}`);
+  }
+
+  return response.json();
+}
+
 
 export async function getResponsables(): Promise<ResponsableRecrutement[]> {
   const response = await fetch(apiRoutes.responsables.list);
@@ -120,31 +177,3 @@ export async function getResponsables(): Promise<ResponsableRecrutement[]> {
   return Array.isArray(json) ? json : json?.data ?? [];
 }
 
-export async function getResponsableById(
-  id: number
-): Promise<ResponsableRecrutement> {
-  const response = await fetch(apiRoutes.responsables.byId(id));
-  if (!response.ok) throw new Error("Responsable non trouvé");
-  const json = await response.json();
-  return json?.data ?? json;
-}
-
-// ==================== CANDIDATURES ====================
-
-export async function getCandidaturesByOffre(
-  offreId: number
-): Promise<Candidature[]> {
-  const response = await fetch(apiRoutes.candidatures.byOffre(offreId));
-  if (!response.ok)
-    throw new Error("Erreur lors de la récupération des candidatures");
-  const json = await response.json();
-  return Array.isArray(json) ? json : json?.data ?? [];
-}
-
-export async function getAllCandidatures(): Promise<Candidature[]> {
-  const response = await fetch(apiRoutes.candidatures.list);
-  if (!response.ok)
-    throw new Error("Erreur lors de la récupération des candidatures");
-  const json = await response.json();
-  return Array.isArray(json) ? json : json?.data ?? [];
-}

@@ -27,6 +27,8 @@ import type {
   OffreEmploi,
 } from "@/types/offre";
 import { createOffre, updateOffre, getResponsables } from "@/services/offreService";
+import { z } from "zod";
+import { offreFormSchema } from "./offre-form.schema";
 
 interface OffreFormProps {
   offre?: OffreEmploi;
@@ -64,6 +66,7 @@ export function OffreForm({ offre, mode }: OffreFormProps) {
   const [showSalaire, setShowSalaire] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     getResponsables().then(setResponsables).catch(console.error);
@@ -93,6 +96,12 @@ export function OffreForm({ offre, mode }: OffreFormProps) {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    // Clear validation error for this field
+    setValidationErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors[name];
+      return newErrors;
+    });
   };
 
   const handleProfilChange = (field: "formation" | "experience", value: string) => {
@@ -100,6 +109,12 @@ export function OffreForm({ offre, mode }: OffreFormProps) {
       ...prev,
       profilRecherche: { ...prev.profilRecherche, [field]: value },
     }));
+    // Clear validation error for profil fields
+    setValidationErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors[`profilRecherche.${field}`];
+      return newErrors;
+    });
   };
 
   const handleSalaireChange = (field: "min" | "max", value: string) => {
@@ -121,6 +136,12 @@ export function OffreForm({ offre, mode }: OffreFormProps) {
         missionsPrincipales: [...prev.missionsPrincipales, newMission.trim()],
       }));
       setNewMission("");
+      // Clear validation error for missions
+      setValidationErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.missionsPrincipales;
+        return newErrors;
+      });
     }
   };
 
@@ -138,6 +159,12 @@ export function OffreForm({ offre, mode }: OffreFormProps) {
         competencesRequises: [...prev.competencesRequises, newCompetence.trim()],
       }));
       setNewCompetence("");
+      // Clear validation error for competences
+      setValidationErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.competencesRequises;
+        return newErrors;
+      });
     }
   };
 
@@ -156,6 +183,24 @@ export function OffreForm({ offre, mode }: OffreFormProps) {
       ...prev,
       diffusion: { ...prev.diffusion, [channel]: checked },
     }));
+  };
+
+  const validateForm = (dataToValidate: OffreFormData): boolean => {
+    try {
+      offreFormSchema.parse(dataToValidate);
+      setValidationErrors({});
+      return true;
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        const errors: Record<string, string> = {};
+        err.errors.forEach((error) => {
+          const path = error.path.join(".");
+          errors[path] = error.message;
+        });
+        setValidationErrors(errors);
+      }
+      return false;
+    }
   };
 
   const handleSubmit = async (saveAs: StatutOffre) => {
@@ -177,6 +222,13 @@ export function OffreForm({ offre, mode }: OffreFormProps) {
         fourchetteSalaire: showSalaire ? formData.fourchetteSalaire : null,
       };
 
+      // Validate only when publishing
+      if (saveAs === "publiee" && !validateForm(dataToSave)) {
+        setError("Veuillez corriger les erreurs dans le formulaire");
+        setIsLoading(false);
+        return;
+      }
+
       if (mode === "create") {
         await createOffre(dataToSave, responsable);
       } else if (offre) {
@@ -195,16 +247,55 @@ export function OffreForm({ offre, mode }: OffreFormProps) {
     }
   };
 
+  const getFieldError = (fieldPath: string): string | undefined => {
+    return validationErrors[fieldPath];
+  };
+
   return (
-    <form className="space-y-8">
+    <div className="space-y-4">
+      {/* Actions - Top Right */}
+      <div className="flex flex-col sm:flex-row gap-4 justify-end">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => router.push("/admin/offres")}
+          disabled={isLoading}
+          className="bg-transparent"
+        >
+          Annuler
+        </Button>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => handleSubmit("brouillon")}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : null}
+          Enregistrer en brouillon
+        </Button>
+        <Button
+          type="button"
+          onClick={() => handleSubmit("publiee")}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : null}
+          Publier l&apos;offre
+        </Button>
+      </div>
+
       {error && (
         <div className="bg-destructive/10 text-destructive px-4 py-3 rounded-lg">
           {error}
         </div>
       )}
 
-      {/* Informations générales */}
-      <Card>
+      <form className="space-y-4">
+        {/* Informations générales */}
+        <Card>
         <CardHeader>
           <CardTitle>Informations générales</CardTitle>
         </CardHeader>
@@ -219,7 +310,11 @@ export function OffreForm({ offre, mode }: OffreFormProps) {
                 onChange={handleInputChange}
                 placeholder="Ex: Développeur Full Stack"
                 required
+                className={getFieldError("intitulePoste") ? "border-destructive" : ""}
               />
+              {getFieldError("intitulePoste") && (
+                <p className="text-sm text-destructive">{getFieldError("intitulePoste")}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="lieuTravail">Lieu de travail *</Label>
@@ -230,7 +325,11 @@ export function OffreForm({ offre, mode }: OffreFormProps) {
                 onChange={handleInputChange}
                 placeholder="Ex: Casablanca, Maroc"
                 required
+                className={getFieldError("lieuTravail") ? "border-destructive" : ""}
               />
+              {getFieldError("lieuTravail") && (
+                <p className="text-sm text-destructive">{getFieldError("lieuTravail")}</p>
+              )}
             </div>
           </div>
 
@@ -244,7 +343,11 @@ export function OffreForm({ offre, mode }: OffreFormProps) {
               placeholder="Décrivez le poste et l'environnement de travail..."
               rows={4}
               required
+              className={getFieldError("descriptionPoste") ? "border-destructive" : ""}
             />
+            {getFieldError("descriptionPoste") && (
+              <p className="text-sm text-destructive">{getFieldError("descriptionPoste")}</p>
+            )}
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
@@ -277,7 +380,11 @@ export function OffreForm({ offre, mode }: OffreFormProps) {
                 value={formData.dateLimiteCandidature}
                 onChange={handleInputChange}
                 required
+                className={getFieldError("dateLimiteCandidature") ? "border-destructive" : ""}
               />
+              {getFieldError("dateLimiteCandidature") && (
+                <p className="text-sm text-destructive">{getFieldError("dateLimiteCandidature")}</p>
+              )}
             </div>
           </div>
         </CardContent>
@@ -319,6 +426,9 @@ export function OffreForm({ offre, mode }: OffreFormProps) {
               </div>
             ))}
           </div>
+          {getFieldError("missionsPrincipales") && (
+            <p className="text-sm text-destructive">{getFieldError("missionsPrincipales")}</p>
+          )}
         </CardContent>
       </Card>
 
@@ -336,7 +446,11 @@ export function OffreForm({ offre, mode }: OffreFormProps) {
               onChange={(e) => handleProfilChange("formation", e.target.value)}
               placeholder="Ex: Bac+5 en informatique ou équivalent"
               required
+              className={getFieldError("profilRecherche.formation") ? "border-destructive" : ""}
             />
+            {getFieldError("profilRecherche.formation") && (
+              <p className="text-sm text-destructive">{getFieldError("profilRecherche.formation")}</p>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="experience">Expérience requise *</Label>
@@ -346,7 +460,11 @@ export function OffreForm({ offre, mode }: OffreFormProps) {
               onChange={(e) => handleProfilChange("experience", e.target.value)}
               placeholder="Ex: 3-5 ans d'expérience en développement web"
               required
+              className={getFieldError("profilRecherche.experience") ? "border-destructive" : ""}
             />
+            {getFieldError("profilRecherche.experience") && (
+              <p className="text-sm text-destructive">{getFieldError("profilRecherche.experience")}</p>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -384,6 +502,9 @@ export function OffreForm({ offre, mode }: OffreFormProps) {
               </Badge>
             ))}
           </div>
+          {getFieldError("competencesRequises") && (
+            <p className="text-sm text-destructive">{getFieldError("competencesRequises")}</p>
+          )}
         </CardContent>
       </Card>
 
@@ -450,7 +571,7 @@ export function OffreForm({ offre, mode }: OffreFormProps) {
                 }))
               }
             >
-              <SelectTrigger>
+              <SelectTrigger className={getFieldError("responsableRecrutementId") ? "border-destructive" : ""}>
                 <SelectValue placeholder="Sélectionnez un responsable" />
               </SelectTrigger>
               <SelectContent>
@@ -461,6 +582,9 @@ export function OffreForm({ offre, mode }: OffreFormProps) {
                 ))}
               </SelectContent>
             </Select>
+            {getFieldError("responsableRecrutementId") && (
+              <p className="text-sm text-destructive">{getFieldError("responsableRecrutementId")}</p>
+            )}
           </div>
 
           <div className="flex items-center space-x-2">
@@ -538,40 +662,7 @@ export function OffreForm({ offre, mode }: OffreFormProps) {
           </div>
         </CardContent>
       </Card>
-
-      {/* Actions */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-end">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => router.push("/admin/offres")}
-          disabled={isLoading}
-          className="bg-transparent"
-        >
-          Annuler
-        </Button>
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={() => handleSubmit("brouillon")}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : null}
-          Enregistrer en brouillon
-        </Button>
-        <Button
-          type="button"
-          onClick={() => handleSubmit("publiee")}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : null}
-          Publier l&apos;offre
-        </Button>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 }

@@ -8,7 +8,7 @@ server.use(jsonServer.bodyParser);
 const data = require('./db.js');
 const router = jsonServer.router(data);
 const db = router.db;
-
+  
 // Add router.render: return raw resource data for GET requests
 // (frontend expects arrays/objects directly). For non-GET methods,
 // keep a small wrapper with status/message/data.
@@ -88,9 +88,13 @@ require('./server/routes/settings/types-absences')(server, db);
 require('./server/routes/settings/conditions-contrat')(server, db);
 require('./server/routes/settings/conditions-periode-essaie')(server, db);
 require('./server/routes/settings/managers')(server, db);
+require('./server/routes/settings/competence')(server, db);
+require('./server/routes/registerPosteCompetence')(server, db);
 require('./server/routes/accidentsTravail')(server, db);
 require('./server/routes/offre')(server, db);
 require('./server/routes/generic')(server, db, data);
+
+
 
 server.use(router);
 

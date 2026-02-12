@@ -55,7 +55,7 @@ export const PARAMETRES_CATEGORIES: ParametreCategorie[] = [
     icon: FileText,
     couleur: '#06B6D4' // cyan
   }
-];
+,];
 
 /**
  * Liste complète des paramètres
@@ -131,6 +131,21 @@ export const PARAMETRES_LIST: ParametreItem[] = [
     couleur: '#8B5CF6',
     actif: true
   },
+
+  {
+  code: 'COMP',
+  titre: 'Compétences',
+  description:
+    "Compétences et savoir-faire des employés. Gérez le référentiel de compétences et leurs niveaux requis.",
+  icon: Target, // tu peux changer l'icône si tu veux
+  path: '/admin/parametres/competences',
+  categorie: 'rh',
+  couleur: '#8B5CF6',
+  actif: true
+},
+
+
+
 
 
   // ========== ABSENCES & CONGÉS ==========

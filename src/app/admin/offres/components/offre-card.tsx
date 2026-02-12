@@ -25,36 +25,35 @@ import {
   ExternalLink,
   Copy,
 } from "lucide-react";
-import type { OffreEmploi, StatutOffre } from "@/types/offre";
+import type { OffreEmploiUI } from "@/types/PosteOffre";
 import { updateOffreStatut, deleteOffre } from "@/services/offreService";
 
 interface OffreCardProps {
-  offre: OffreEmploi;
+  offre: OffreEmploiUI;
   onUpdate: () => void;
 }
 
-const statutConfig: Record<
-  StatutOffre,
-  { label: string; variant: "default" | "secondary" | "destructive" | "outline" }
-> = {
-  brouillon: { label: "Brouillon", variant: "secondary" },
-  publiee: { label: "Publiée", variant: "default" },
-  cloturee: { label: "Clôturée", variant: "outline" },
+const statutConfig = {
+  brouillon: { label: "Brouillon", variant: "secondary" as const },
+  publiee: { label: "Publiée", variant: "default" as const },
+  cloturee: { label: "Clôturée", variant: "outline" as const },
 };
 
 const typeContratColors: Record<string, string> = {
   CDI: "bg-emerald-100 text-emerald-800",
   CDD: "bg-amber-100 text-amber-800",
   Stage: "bg-sky-100 text-sky-800",
+  Freelance: "bg-purple-100 text-purple-800",
 };
 
 export function OffreCard({ offre, onUpdate }: OffreCardProps) {
-  const handleStatutChange = async (newStatut: StatutOffre) => {
+  const handleStatutChange = async (newStatut: "brouillon" | "publiee" | "cloturee") => {
     try {
       await updateOffreStatut(offre.id, newStatut);
       onUpdate();
     } catch (error) {
       console.error("Erreur lors de la mise à jour du statut:", error);
+      alert("Erreur lors de la mise à jour du statut");
     }
   };
 
@@ -65,6 +64,7 @@ export function OffreCard({ offre, onUpdate }: OffreCardProps) {
         onUpdate();
       } catch (error) {
         console.error("Erreur lors de la suppression:", error);
+        alert("Erreur lors de la suppression de l'offre");
       }
     }
   };
@@ -72,6 +72,7 @@ export function OffreCard({ offre, onUpdate }: OffreCardProps) {
   const handleCopyLink = () => {
     if (offre.lienCandidature) {
       navigator.clipboard.writeText(offre.lienCandidature);
+      // Vous pouvez ajouter un toast notification ici
     }
   };
 
@@ -180,7 +181,7 @@ export function OffreCard({ offre, onUpdate }: OffreCardProps) {
           </div>
           <div className="flex items-center gap-1">
             <Briefcase className="h-4 w-4" />
-            <span className={`px-2 py-0.5 rounded text-xs font-medium ${typeContratColors[offre.typeContrat]}`}>
+            <span className={`px-2 py-0.5 rounded text-xs font-medium ${typeContratColors[offre.typeContrat] || "bg-gray-100 text-gray-800"}`}>
               {offre.typeContrat}
             </span>
           </div>
@@ -200,18 +201,20 @@ export function OffreCard({ offre, onUpdate }: OffreCardProps) {
           </div>
         )}
 
-        <div className="flex flex-wrap gap-1.5 mt-4">
-          {offre.competencesRequises.slice(0, 4).map((comp, index) => (
-            <Badge key={index} variant="secondary" className="text-xs">
-              {comp}
-            </Badge>
-          ))}
-          {offre.competencesRequises.length > 4 && (
-            <Badge variant="secondary" className="text-xs">
-              +{offre.competencesRequises.length - 4}
-            </Badge>
-          )}
-        </div>
+        {offre.competencesRequises.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mt-4">
+            {offre.competencesRequises.slice(0, 4).map((comp, index) => (
+              <Badge key={index} variant="secondary" className="text-xs">
+                {comp}
+              </Badge>
+            ))}
+            {offre.competencesRequises.length > 4 && (
+              <Badge variant="secondary" className="text-xs">
+                +{offre.competencesRequises.length - 4}
+              </Badge>
+            )}
+          </div>
+        )}
       </CardContent>
 
       <CardFooter className="pt-3 border-t">

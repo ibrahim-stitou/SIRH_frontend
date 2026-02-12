@@ -14,7 +14,7 @@ export default async function OffrePage({ params }: OffrePageProps) {
   const offreId = parseInt(id);
 
   return (
-    <main className="container mx-auto py-8 px-4 overflow-auto pb-32" style={{maxHeight: 'calc(100vh - 64px)'}}>
+    <main className="container mx-auto py-4 px-4 overflow-auto pb-16" style={{maxHeight: 'calc(100vh - 64px)'}}>
       <OffreDetail offreId={offreId} />
     </main>
   );

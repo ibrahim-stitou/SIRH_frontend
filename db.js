@@ -16,6 +16,11 @@ module.exports = {
   announcements: require('./mock-data/announcements.json'),
   // Offres & Responsables: loaded from consolidated db.json
   offres: require('./mock-data/db.json').offres,
+  Missions: require('./mock-data/db.json').Missions,
+ProfilRecherche: require('./mock-data/db.json').ProfilRecherche,
+OffreStatistiques: require('./mock-data/db.json').OffreStatistiques,
+OffreDiffusions: require('./mock-data/db.json').OffreDiffusions,
+candidatures: require('./mock-data/db.json').candidatures,
   responsables: require('./mock-data/db.json').responsables,
     offres: require('./mock-data/db.json').offres,
   responsables: require('./mock-data/db.json').responsables,

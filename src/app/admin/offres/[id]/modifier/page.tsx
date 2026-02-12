@@ -31,7 +31,7 @@ export default function ModifierOffrePage({ params }: ModifierOffrePageProps) {
 
   if (isLoading) {
     return (
-      <main className="container mx-auto py-8 px-4 max-w-4xl overflow-auto pb-32" style={{maxHeight: 'calc(100vh - 64px)'}}>
+      <main className="w-full py-8 px-4 overflow-auto pb-32" style={{maxHeight: 'calc(100vh - 64px)'}}>
         <div className="flex items-center justify-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
@@ -41,15 +41,14 @@ export default function ModifierOffrePage({ params }: ModifierOffrePageProps) {
 
   if (!offre) {
     return (
-      <main className="container mx-auto py-8 px-4 max-w-4xl overflow-auto pb-32" style={{maxHeight: 'calc(100vh - 64px)'}}>
+      <main className="w-full py-8 px-4 overflow-auto pb-32" style={{maxHeight: 'calc(100vh - 64px)'}}>
         <p className="text-center text-muted-foreground">Offre non trouvée</p>
       </main>
     );
   }
 
   return (
-    <main className="container mx-auto py-8 px-4 max-w-4xl overflow-auto pb-32" style={{maxHeight: 'calc(100vh - 64px)'}}>
-
+    <main className="w-full py-8 px-4 overflow-auto pb-32" style={{maxHeight: 'calc(100vh - 64px)'}}>
       <div className="mb-8">
         <h1 className="text-3xl font-bold">Modifier l&apos;offre</h1>
         <p className="text-muted-foreground mt-1">

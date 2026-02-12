@@ -24,6 +24,7 @@ import {
 import { Eye } from 'lucide-react';
 
 import { getCompetencesByPoste } from '@/services/competenceService';
+import ServerError from '@/components/common/server-error';
 
 interface LinkedItem {
   id?: number | string;
@@ -56,6 +57,32 @@ export default function PostesListing() {
   >([]);
   const [metierById, setMetierById] = useState<Record<string, any>>({});
   const [emploiById, setEmploiById] = useState<Record<string, any>>({});
+
+  const [serverError, setServerError] = useState(false);
+  const [checkingServer, setCheckingServer] = useState(true);
+
+  /* =========================
+     Vérifier serveur
+  ========================= */
+  const checkServer = async () => {
+    try {
+      setCheckingServer(true);
+      setServerError(false);
+
+      // ping simple (endpoint existant)
+      await apiClient.get(apiRoutes.admin.parametres.postes.list);
+    } catch (err: any) {
+      if (!err.response || err.code === 'ECONNABORTED') {
+        setServerError(true);
+      }
+    } finally {
+      setCheckingServer(false);
+    }
+  };
+
+  useEffect(() => {
+    checkServer();
+  }, []);
 
   /* =========================
      Charger le nombre de compétences
@@ -98,15 +125,10 @@ export default function PostesListing() {
           apiClient.get(apiRoutes.admin.parametres.emplois.list)
         ]);
 
-        const metiers = Array.isArray(mRes.data?.data)
-          ? mRes.data.data
-          : mRes.data || [];
-
-        const emplois = Array.isArray(eRes.data?.data)
-          ? eRes.data.data
-          : eRes.data || [];
-
         if (!mounted) return;
+
+        const metiers = mRes.data?.data || mRes.data || [];
+        const emplois = eRes.data?.data || eRes.data || [];
 
         setMetierOptions(
           metiers.map((m: any) => ({
@@ -157,7 +179,6 @@ export default function PostesListing() {
           row.metier && typeof row.metier === 'object'
             ? row.metier
             : metierById[String(row.metier_id)];
-
         return m ? m.libelle || m.code || String(m.id) : '';
       }
     },
@@ -170,25 +191,16 @@ export default function PostesListing() {
           row.emploi && typeof row.emploi === 'object'
             ? row.emploi
             : emploiById[String(row.emploi_id)];
-
         return e ? e.libelle || e.code || String(e.id) : '';
       }
     },
-    {
-      data: 'competences_count',
-      label: 'Compétences',
-      sortable: false,
-      render: (_v, row) => (
-        <Badge>{counts[Number(row.id)] ?? 0}</Badge>
-      )
-    },
+   
     {
       data: 'actions',
       label: 'Actions',
       sortable: false,
       render: (_v, row) => (
-       <div className="flex items-center justify-center">
-
+        <div className="flex items-center justify-center">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -201,9 +213,7 @@ export default function PostesListing() {
                 <Eye className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>
-            gérer les compétences
-            </TooltipContent>
+            <TooltipContent>gérer les compétences</TooltipContent>
           </Tooltip>
         </div>
       )
@@ -233,7 +243,24 @@ export default function PostesListing() {
     }
   ], [metierOptions, emploiOptions]);
 
+  /* =========================
+     SERVER ERROR UI
+  ========================= */
+  if (checkingServer) return null;
+
+
+if (serverError) {
   return (
+    <ServerError
+      title="Serveur indisponible"
+      message="Impossible de charger la liste des postes."
+      onRetry={checkServer}
+    />
+  );
+}
+  return (
+
+    
     <CustomTable
       url={apiRoutes.admin.parametres.postes.list}
       columns={columns}
