@@ -4,6 +4,7 @@ import { poste } from '@/types/poste';
 import { PosteCompetence } from '@/types/postecompetence';
 import { CompetenceNiveau } from '@/types/competence-niveau';
 import { toast } from 'sonner';
+import { Competence } from '@/types/competence-types';
 
 /* =====================================================
    POSTE
@@ -133,6 +134,24 @@ const onDelete = async (competenceId: number) => {
     console.error(error);
     toast.error('Erreur lors de la suppression de la compétence');
   }
+
+
 };
+
+
+// 🔹 Récupérer les compétences
+export async function getCompetences(): Promise<Competence[]> {
+  try {
+    const response = await apiClient.get(
+      apiRoutes.admin.parametres.competences.list
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("getCompetences error:", error);
+    return [];
+  }
+};
+
 
 

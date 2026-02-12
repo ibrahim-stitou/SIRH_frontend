@@ -14,8 +14,6 @@
     "statut": "BROUILLON",
     "anonymisee": false,
     "responsableId": 1,
-    "validatedManager": false,
-    "validatedRH": false,
     "slug": "developpeur-angular-casablanca-001",
     "lienCandidature": "https://entreprise.ma/candidature/developpeur-angular-casablanca-001",
     "createdAt": "2026-02-10T10:00:00Z"
@@ -110,39 +108,69 @@
     "contenu": "Minimum 3 ans en développement frontend"
   }
 ],
+"Candidats": [
+  {
+    "id": 1,
+    "nom": "Mohamed Alaoui",
+    "email": "m.alaoui@email.com",
+    "telephone": "0612345678",
+    "ville": "Casablanca",
+    "cvUrl": "/uploads/cv_mohamed.pdf",
+    "createdAt": "2026-01-15T09:00:00Z"
+  },
+  {
+    "id": 2,
+    "nom": "Sara Tazi",
+    "email": "s.tazi@email.com",
+    "telephone": "0622334455",
+    "ville": "Rabat",
+    "cvUrl": "/uploads/cv_sara.pdf",
+    "createdAt": "2026-01-18T10:30:00Z"
+  }
+],
+
 "candidatures": [
-    {
-      "id": 1,
-      "offreId": 1,
-      "candidatNom": "Mohamed Alaoui",
-       "cvUrl": "/uploads/cv1.pdf",
-      "candidatEmail": "m.alaoui@email.com",
-      "datePostulation": "2026-01-20",
-      "source": "linkedin",
-      "statut": "en_cours"
-    },
-    {
-      "id": 2,
-      "offreId": 1,
-       "cvUrl": "/uploads/cv1.pdf",
-      "candidatNom": "Sara Tazi",
-      "candidatEmail": "s.tazi@email.com",
-      "datePostulation": "2026-01-22",
-      "source": "siteCarrieres",
-      "statut": "RECUE"
-    },
-    {
-      "id": 2,
-      "offreId": 2,
-       "cvUrl": "/uploads/cv1.pdf",
-      "candidatNom": "Sara Tazi",
-      "candidatEmail": "s.tazi@email.com",
-      "datePostulation": "2026-01-22",
-      "source": "siteCarrieres",
-      "statut": "RECUE"
-    }
-   
-  ],
+  {
+    "id": 1,
+    "offreId": 1,
+    "candidatId": 1,
+    "canalId": 1,
+    "datePostulation": "2026-01-20",
+    "statut": "EN_COURS"
+  },
+  {
+    "id": 2,
+    "offreId": 1,
+    "candidatId": 2,
+    "canalId": 2,
+    "datePostulation": "2026-01-22",
+    "statut": "RECUE"
+  },
+  {
+    "id": 3,
+    "offreId": 2,
+    "candidatId": 2,
+    "canalId": 2,
+    "datePostulation": "2026-01-25",
+    "statut": "RECUE"
+  }
+]
+,
+"CanauxDiffusion": [
+  {
+    "id": 1,
+    "libelle": "LinkedIn"
+  },
+  {
+    "id": 2,
+    "libelle": "SITE_CARRIERE"
+  },
+  {
+    "id": 3,
+    "libelle": "Indeed"
+  }
+]
+,
 
 "OffreStatistiques": [
   {
@@ -184,18 +212,19 @@
   {
     "id": 1,
     "offreId": 1,
-    "canal": "LinkedIn",
+    "canalId": 1,
     "dateDiffusion": "2026-02-12T08:00:00Z",
     "statut": "SUCCES"
   },
   {
     "id": 2,
     "offreId": 1,
-    "canal": "SITE_CARRIERE",
+    "canalId": 2,
     "dateDiffusion": "2026-02-12T08:01:00Z",
     "statut": "SUCCES"
   }
-], 
+]
+, 
   "PosteCompetences": [
   {
     "id": 1,

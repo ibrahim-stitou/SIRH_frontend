@@ -57,6 +57,7 @@ export function OffresList() {
     let result = offres;
 
     // Filtre de recherche
+    // Filtre de recherche
     if (searchTerm) {
       const search = searchTerm.toLowerCase();
       result = result.filter(
@@ -64,8 +65,8 @@ export function OffresList() {
           offre.intitulePoste.toLowerCase().includes(search) ||
           offre.reference.toLowerCase().includes(search) ||
           offre.lieuTravail.toLowerCase().includes(search) ||
-          offre.competencesRequises.some((c) =>
-            c.toLowerCase().includes(search)
+          offre.competencesRequises.some(
+            (c) => c.libelle.toLowerCase().includes(search) // ✅ Ajoutez .libelle
           )
       );
     }

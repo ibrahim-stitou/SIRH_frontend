@@ -40,12 +40,10 @@ export interface ProfilRecherche {
 export interface Candidature {
   id: number;
   offreId: number;
-  candidatNom: string;
-  candidatEmail: string;
-  cvUrl: string;
+  candidatId: number;
+  canalId: number;
   datePostulation: string;
-  source: SourceCandidature;
-  statut: StatutCandidature;
+  statut: string;
 }
 
 export interface OffreStatistique {
@@ -53,6 +51,12 @@ export interface OffreStatistique {
   offreId: number;
   nombreVues: number;
   nombreCandidatures: number;
+}
+
+export interface Competence {
+  id: number;
+  libelle: string;
+  categorie: string;
 }
 
 export interface OffreEmploi {
@@ -80,10 +84,10 @@ export interface OffreEmploi {
   Missions: Mission[];
   ProfilRecherche: ProfilRecherche[];
   candidatures: Candidature[];
-  OffreStatistiques: OffreStatistique[];
+  OffreStatistiques: OffreStatistique; // ✅ Objet, pas tableau
+  competencesRequises: Competence[]; // ✅ Ajouté
 }
 
-// Type pour l'affichage dans l'interface (mapping)
 export interface OffreEmploiUI {
   id: number;
   reference: string;
@@ -100,7 +104,7 @@ export interface OffreEmploiUI {
   statut: "brouillon" | "publiee" | "cloturee";
   anonyme: boolean;
   lienCandidature: string;
-  competencesRequises: string[];
+  competencesRequises: Competence[];
   responsableRecrutement: {
     nom: string;
     email: string;

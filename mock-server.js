@@ -92,6 +92,7 @@ require('./server/routes/settings/competence')(server, db);
 require('./server/routes/registerPosteCompetence')(server, db);
 require('./server/routes/accidentsTravail')(server, db);
 require('./server/routes/offre')(server, db);
+require('./server/routes/canauxDiffusion')(server, db);
 require('./server/routes/generic')(server, db, data);
 
 

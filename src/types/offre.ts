@@ -64,21 +64,49 @@ export interface OffreEmploi {
   anonyme: boolean;
 }
 
+
 export interface OffreFormData {
-  intitulePoste: string;
-  descriptionPoste: string;
-  missionsPrincipales: string[];
-  profilRecherche: ProfilRecherche;
-  competencesRequises: string[];
-  lieuTravail: string;
-  typeContrat: TypeContrat;
-  fourchetteSalaire: FourchetteSalaire | null;
-  dateLimiteCandidature: string;
-  responsableRecrutementId: number;
-  statut: StatutOffre;
-  diffusion: Diffusion;
-  anonyme: boolean;
+  titre: string;
+  description: string;
+  missions: string;
+  profilRecherche: string;
+
+  typeContrat: 
+    | "CDI"
+    | "CDD"
+    | "STAGE"
+    | "ALTERNANCE"
+    | "FREELANCE";
+
+  localisation: string;
+  salaireMin?: number;
+  salaireMax?: number;
+
+  dateExpiration?: string; // ISO string
+
+  competencesRequises: number[]; // IDs des compétences
+
+  canauxDiffusion: number[]; // IDs des canaux sélectionnés
+
+  statut?: "BROUILLON" | "PUBLIEE";
+
 }
+
+// export interface OffreFormData {
+//   intitulePoste: string;
+//   descriptionPoste: string;
+//   missionsPrincipales: string[];
+//   profilRecherche: ProfilRecherche;
+//   competencesRequises: string[];
+//   lieuTravail: string;
+//   typeContrat: TypeContrat;
+//   fourchetteSalaire: FourchetteSalaire | null;
+//   dateLimiteCandidature: string;
+//   responsableRecrutementId: number;
+//   statut: StatutOffre;
+//   diffusion: Diffusion;
+//   anonyme: boolean;
+// }
 
 export interface Candidature {
   id: number;
@@ -89,3 +117,7 @@ export interface Candidature {
   source: keyof SourceCandidatures;
   statut: "nouveau" | "en_cours" | "retenu" | "rejete";
 }
+
+
+
+

@@ -47,15 +47,7 @@ const typeContratColors: Record<string, string> = {
 };
 
 export function OffreCard({ offre, onUpdate }: OffreCardProps) {
-  const handleStatutChange = async (newStatut: "brouillon" | "publiee" | "cloturee") => {
-    try {
-      await updateOffreStatut(offre.id, newStatut);
-      onUpdate();
-    } catch (error) {
-      console.error("Erreur lors de la mise à jour du statut:", error);
-      alert("Erreur lors de la mise à jour du statut");
-    }
-  };
+  
 
   const handleDelete = async () => {
     if (confirm("Êtes-vous sûr de vouloir supprimer cette offre ?")) {
@@ -125,13 +117,13 @@ export function OffreCard({ offre, onUpdate }: OffreCardProps) {
                   </Link>
                 </DropdownMenuItem>
                 {offre.statut === "brouillon" && (
-                  <DropdownMenuItem onClick={() => handleStatutChange("publiee")}>
+                  <DropdownMenuItem >
                     <Play className="mr-2 h-4 w-4" />
                     Publier
                   </DropdownMenuItem>
                 )}
                 {offre.statut === "publiee" && (
-                  <DropdownMenuItem onClick={() => handleStatutChange("cloturee")}>
+                  <DropdownMenuItem >
                     <Pause className="mr-2 h-4 w-4" />
                     Clôturer
                   </DropdownMenuItem>
@@ -205,7 +197,7 @@ export function OffreCard({ offre, onUpdate }: OffreCardProps) {
           <div className="flex flex-wrap gap-1.5 mt-4">
             {offre.competencesRequises.slice(0, 4).map((comp, index) => (
               <Badge key={index} variant="secondary" className="text-xs">
-                {comp}
+                {comp.libelle}
               </Badge>
             ))}
             {offre.competencesRequises.length > 4 && (

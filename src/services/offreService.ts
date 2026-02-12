@@ -1,18 +1,10 @@
 import { apiRoutes } from "@/config/apiRoutes";
-import { ResponsableRecrutement } from "@/types/offre";
-import type { OffreEmploi, OffreEmploiUI, StatutOffre } from "@/types/PosteOffre";
+import apiClient from "@/lib/api";
+import { CanalDiffusion } from "@/types/canalDiffusion";
+import { OffreFormData, ResponsableRecrutement } from "@/types/offre";
+import type { Competence, OffreEmploi, OffreEmploiUI, StatutOffre } from "@/types/PosteOffre";
 
-
-
-/**
- * Fonction utilitaire pour mapper les données de l'API vers le format UI
- */
 export function mapOffreToUI(offre: OffreEmploi): OffreEmploiUI {
-  // Extraire les compétences du ProfilRecherche de type COMPETENCE
-  const competences = offre.ProfilRecherche
-    .filter((profil) => profil.type === "COMPETENCE")
-    .map((profil) => profil.contenu);
-
   // Mapper le statut de l'API vers le format UI
   const statutMapping: Record<StatutOffre, "brouillon" | "publiee" | "cloturee"> = {
     BROUILLON: "brouillon",
@@ -39,34 +31,18 @@ export function mapOffreToUI(offre: OffreEmploi): OffreEmploiUI {
     statut: statutMapping[offre.statut],
     anonyme: offre.anonymisee,
     lienCandidature: offre.lienCandidature,
-    competencesRequises: competences,
+    competencesRequises: offre.competencesRequises || [],
     responsableRecrutement: {
       nom: offre.responsable.nom,
       email: offre.responsable.email,
     },
     statistiques: {
-      vues: offre.OffreStatistiques[0]?.nombreVues || 0,
-      candidaturesRecues: offre.OffreStatistiques[0]?.nombreCandidatures || 0,
+      vues: offre.OffreStatistiques?.nombreVues || 0,
+      candidaturesRecues: offre.OffreStatistiques?.nombreCandidatures || 0,
     },
   };
 }
 
-/**
- * Récupérer toutes les offres d'emploi
- */
-export async function getOffres(): Promise<OffreEmploiUI[]> {
- const response = await fetch(apiRoutes.offres.list);
-  
-
-  if (!response.ok) {
-    throw new Error(`Erreur HTTP: ${response.status}`);
-  }
-
-  const data: OffreEmploi[] = await response.json();
-  
-  // Mapper les données vers le format UI
-  return data.map(mapOffreToUI);
-}
 
 /**
  * Récupérer une offre spécifique par ID
@@ -82,91 +58,9 @@ export async function getOffreById(id: number): Promise<OffreEmploiUI> {
 }
 
 
-/**
- * Mettre à jour le statut d'une offre
- */
-export async function updateOffreStatut(
-  id: number,
-  newStatut: "brouillon" | "publiee" | "cloturee"
-): Promise<void> {
-  // Mapper le statut UI vers le format API
-  const statutMapping: Record<"brouillon" | "publiee" | "cloturee", StatutOffre> = {
-    brouillon: "BROUILLON",
-    publiee: "PUBLIQUE",
-    cloturee: "CLOTUREE",
-  };
 
-  const response = await fetch(`http://localhost:3001//offres/${id}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      statut: statutMapping[newStatut],
-    }),
-  });
 
-  if (!response.ok) {
-    throw new Error(`Erreur HTTP: ${response.status}`);
-  }
-}
 
-/**
- * Supprimer une offre
- */
-export async function deleteOffre(id: number): Promise<void> {
-  const response = await fetch(`http://localhost:3001//offres/${id}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Erreur HTTP: ${response.status}`);
-  }
-}
-
-/**
- * Créer une nouvelle offre
- */
-export async function createOffre(offre: Partial<OffreEmploi>): Promise<OffreEmploi> {
-  const response = await fetch(`http://localhost:3001/offres`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(offre),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Erreur HTTP: ${response.status}`);
-  }
-
-  return response.json();
-}
-
-/**
- * Mettre à jour une offre complète
- */
-export async function updateOffre(
-  id: number,
-  offre: Partial<OffreEmploi>
-): Promise<OffreEmploi> {
-  const response = await fetch(`http://localhost:3001//offres/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(offre),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Erreur HTTP: ${response.status}`);
-  }
-
-  return response.json();
-}
 
 
 export async function getResponsables(): Promise<ResponsableRecrutement[]> {
@@ -176,4 +70,78 @@ export async function getResponsables(): Promise<ResponsableRecrutement[]> {
   const json = await response.json();
   return Array.isArray(json) ? json : json?.data ?? [];
 }
+
+
+
+
+
+export async function createOffre(
+  formData: OffreFormData,
+  responsable: ResponsableRecrutement
+): Promise<OffreEmploi> {
+
+  const competenceIds = formData.competencesRequises.map((c) =>
+    typeof c === "object" ? c.id : c
+  );
+
+  const payload = {
+    ...formData,
+    competencesRequises: competenceIds,
+    responsableRecrutementId: responsable.id,
+  };
+
+  const { data } = await apiClient.post(
+    apiRoutes.offres.nouveau,
+    payload
+  );
+
+  return data;
+}
+
+
+export async function getOffres(): Promise<OffreEmploiUI[]> {
+  const { data } = await apiClient.get(apiRoutes.offres.list);
+
+  return data.map(mapOffreToUI);
+}
+
+export async function deleteOffre(
+  id: number
+): Promise<void> {
+  await apiClient.delete(
+    apiRoutes.offres.delete(id)
+  );
+}
+
+
+  
+
+
+
+
+  export async function getCanaux(): Promise<CanalDiffusion[]> {
+  try {
+    const { data } = await apiClient.get(
+      apiRoutes.canaux.list
+    );
+
+    return data;
+  } catch (error) {
+    console.error("getCanaux error:", error);
+    return [];
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -75,18 +75,7 @@ export function OffreDetail({ offreId }: OffreDetailProps) {
     fetchOffre();
   }, [offreId]);
 
-  const handleStatutChange = async (newStatut: StatutOffre) => {
-    if (!offre) return;
-    const updated = await updateOffreStatut(offre.id, newStatut);
-    setOffre(updated);
-  };
 
-  const handleDelete = async () => {
-    if (!offre) return;
-    if (!confirm("Êtes-vous sûr de vouloir supprimer cette offre ?")) return;
-    await deleteOffre(offre.id);
-    router.push("/admin/offres");
-  };
 
   const handleCopyLink = () => {
     if (!offre?.lienCandidature) return;
@@ -165,7 +154,7 @@ export function OffreDetail({ offreId }: OffreDetailProps) {
           </Badge>
           <div className="flex gap-2">
             {normalizedStatut === "brouillon" && (
-              <Button size="sm" onClick={() => handleStatutChange("publiee")}>
+              <Button size="sm">
                 <Play className="mr-2 h-4 w-4" />
                 Publier
               </Button>
@@ -174,7 +163,7 @@ export function OffreDetail({ offreId }: OffreDetailProps) {
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => handleStatutChange("cloturee")}
+                
               >
                 <Pause className="mr-2 h-4 w-4" />
                 Clôturer
@@ -186,7 +175,7 @@ export function OffreDetail({ offreId }: OffreDetailProps) {
                 Modifier
               </Link>
             </Button>
-            <Button size="sm" variant="destructive" onClick={handleDelete}>
+            <Button size="sm" variant="destructive" >
               <Trash2 className="mr-2 h-4 w-4" />
               Supprimer
             </Button>

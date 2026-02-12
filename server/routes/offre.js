@@ -1,7 +1,6 @@
 
 
 module.exports = (server, db) => {
-
 server.get('/offres/getAll', (req, res) => {
   const offres = db.get('offres').value() || [];
   const responsables = db.get('responsables').value() || [];
@@ -10,26 +9,151 @@ server.get('/offres/getAll', (req, res) => {
   const candidatures = db.get('candidatures').value() || [];
   const stats = db.get('OffreStatistiques').value() || [];
   const postes = db.get('settingsPostes').value() || [];
+  const offreCompetences = db.get('OffreCompetences').value() || [];
+  const competences = db.get('Competences').value() || [];
 
-  const result = offres.map(offre => ({
-    ...offre,
+  const result = offres.map(offre => {
 
-    poste: postes.find(p => p.id === offre.posteId) || null,
+    // 🔹 Compétences liées à l’offre
+    const competencesRequises = offreCompetences
+      .filter(oc => oc.offreId === offre.id)
+      .map(oc => {
+        const competence = competences.find(c => c.id === oc.competenceId);
+        if (!competence) return null;
 
-    responsable: responsables.find(r => r.id === offre.responsableId) || null,
+        return {
+          id: competence.id,
+          libelle: competence.libelle,
+          categorie: competence.categorie,
+          niveauRequis: oc.niveauRequis,
+          importance: oc.importance
+        };
+      })
+      .filter(Boolean);
 
-    Missions: missions.filter(m => m.offreId === offre.id),
-    ProfilRecherche: profils.filter(p => p.offreId === offre.id),
-    candidatures: candidatures.filter(c => c.offreId === offre.id),
-    OffreStatistiques: stats.filter(s => s.offreId === offre.id)
-  }));
+    return {
+      ...offre,
+
+      poste: postes.find(p => p.id === offre.posteId) || null,
+
+      responsable: responsables.find(r => r.id === offre.responsableId) || null,
+
+      Missions: missions.filter(m => m.offreId === offre.id),
+
+      ProfilRecherche: profils.filter(p => p.offreId === offre.id),
+
+      candidatures: candidatures.filter(c => c.offreId === offre.id),
+
+      OffreStatistiques: stats.find(s => s.offreId === offre.id) || null,
+
+      competencesRequises
+    };
+  });
 
   res.json(result);
 });
 
 
+server.post('/offres/create', (req, res) => {
+  try {
+    const {
+      offre,
+      missions,
+      profilRecherche,
+      competenceIds,
+      canalIds
+    } = req.body;
 
+    const offres = db.get('offres').value() || [];
 
+    // Générer ID
+    const newId = offres.length > 0
+      ? Math.max(...offres.map(o => o.id)) + 1
+      : 1;
+
+    const newOffre = {
+      id: newId,
+      ...offre,
+      createdAt: new Date().toISOString()
+    };
+
+    // 1️⃣ Sauvegarde offre
+    db.get('offres').push(newOffre).write();
+
+    // 2️⃣ Missions
+    if (missions?.length) {
+      missions.forEach((libelle, index) => {
+        db.get('Missions').push({
+          id: Date.now() + index,
+          offreId: newId,
+          libelle
+        }).write();
+      });
+    }
+
+    // 3️⃣ Profil recherché
+    if (profilRecherche?.formation) {
+      db.get('ProfilRecherche').push({
+        id: Date.now() + 100,
+        offreId: newId,
+        type: "FORMATION",
+        contenu: profilRecherche.formation
+      }).write();
+    }
+
+    if (profilRecherche?.experience) {
+      db.get('ProfilRecherche').push({
+        id: Date.now() + 200,
+        offreId: newId,
+        type: "EXPERIENCE",
+        contenu: profilRecherche.experience
+      }).write();
+    }
+
+    // 4️⃣ Compétences
+    if (competenceIds?.length) {
+      competenceIds.forEach((competenceId, index) => {
+        db.get('OffreCompetences').push({
+          id: Date.now() + index,
+          offreId: newId,
+          competenceId
+        }).write();
+      });
+    }
+
+    // 5️⃣ Diffusion
+    if (canalIds?.length) {
+      canalIds.forEach((canalId, index) => {
+        db.get('OffreDiffusions').push({
+          id: Date.now() + index,
+          offreId: newId,
+          canalId,
+          dateDiffusion: new Date().toISOString(),
+          statut: "DIFFUSEE"
+        }).write();
+      });
+    }
+
+    // 6️⃣ Initialiser statistiques
+    db.get('OffreStatistiques').push({
+      id: Date.now(),
+      offreId: newId,
+      nombreVues: 0,
+      nombreCandidatures: 0
+    }).write();
+
+    res.status(201).json({
+      message: "Offre créée avec succès",
+      offre: newOffre
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Erreur lors de la création",
+      error: error.message
+    });
+  }
+});
 
 
 server.get('/offres/:id/detail', (req, res) => {
@@ -39,12 +163,12 @@ server.get('/offres/:id/detail', (req, res) => {
   const responsables = db.get('responsables').value() || [];
   const missions = db.get('Missions').value() || [];
   const profils = db.get('ProfilRecherche').value() || [];
-  const candidatures = db.get('candidatures').value() || [];
   const stats = db.get('OffreStatistiques').value() || [];
   const diffusions = db.get('OffreDiffusions').value() || [];
   const offreCompetences = db.get('OffreCompetences').value() || [];
   const competences = db.get('Competences').value() || [];
   const postes = db.get('settingsPostes').value() || [];
+  const canaux = db.get('CanauxDiffusion').value() || [];
 
   const offre = offres.find(o => o.id === id);
 
@@ -52,10 +176,7 @@ server.get('/offres/:id/detail', (req, res) => {
     return res.status(404).json({ message: "Offre introuvable" });
   }
 
-  // Poste
   const poste = postes.find(p => p.id === offre.posteId);
-
-  // Responsable
   const responsable = responsables.find(r => r.id === offre.responsableId);
 
   // Missions
@@ -63,16 +184,24 @@ server.get('/offres/:id/detail', (req, res) => {
     .filter(m => m.offreId === id)
     .map(m => m.libelle);
 
-  // Compétences
-  const competenceIds = offreCompetences
+  // ✅ COMPÉTENCES AVEC OBJET COMPLET
+  const competencesRequises = offreCompetences
     .filter(oc => oc.offreId === id)
-    .map(oc => oc.competenceId);
+    .map(oc => {
+      const competence = competences.find(c => c.id === oc.competenceId);
+      if (!competence) return null;
 
-  const competencesRequises = competences
-    .filter(c => competenceIds.includes(c.id))
-    .map(c => c.libelle);
+      return {
+        id: competence.id,
+        libelle: competence.libelle,
+        categorie: competence.categorie,
+        niveauRequis: oc.niveauRequis,
+        importance: oc.importance
+      };
+    })
+    .filter(Boolean);
 
-  // Profil
+  // Profil recherché
   const profilData = profils.filter(p => p.offreId === id);
 
   const formation = profilData.find(p => p.type === "FORMATION")?.contenu || null;
@@ -81,49 +210,55 @@ server.get('/offres/:id/detail', (req, res) => {
   // Statistiques
   const statistique = stats.find(s => s.offreId === id);
 
-  // Diffusion
-  const diffusionData = diffusions.filter(d => d.offreId === id);
+  // ✅ DIFFUSION PROPRE (objet canal)
+  const diffusion = diffusions
+    .filter(d => d.offreId === id)
+    .map(d => {
+      const canal = canaux.find(c => c.id === d.canalId);
+      if (!canal) return null;
 
-const response = {
-  id: offre.id,
-  reference: offre.reference,
+      return {
+        id: canal.id,
+        code: canal.code,
+        libelle: canal.libelle,
+        dateDiffusion: d.dateDiffusion,
+        statut: d.statut
+      };
+    })
+    .filter(Boolean);
 
-  poste: poste || null,   // 👈 poste complet ici
+  const response = {
+    id: offre.id,
+    reference: offre.reference,
+    poste: poste || null,
+    descriptionPoste: offre.description,
+    missionsPrincipales,
+    competencesRequises,
+    lieuTravail: offre.lieuTravail,
+    typeContrat: offre.typeContrat,
+    statut: offre.statut,
+    anonyme: offre.anonymisee,
+    dateLimiteCandidature: offre.dateLimiteCandidature,
+    dateCreation: offre.createdAt,
 
-  descriptionPoste: offre.description,
-  missionsPrincipales,
-  competencesRequises,
-  lieuTravail: offre.lieuTravail,
-  typeContrat: offre.typeContrat,
-  statut: offre.statut,
-  anonyme: offre.anonymisee,
-  dateLimiteCandidature: offre.dateLimiteCandidature,
-  dateCreation: offre.createdAt,
+    profilRecherche: {
+      formation,
+      experience
+    },
 
-  profilRecherche: {
-    formation,
-    experience
-  },
+    responsableRecrutement: {
+      id: responsable?.id || null,
+      nom: responsable?.nom || null,
+      email: responsable?.email || null
+    },
 
-  responsableRecrutement: {
-    nom: responsable?.nom || null,
-    email: responsable?.email || null
-  },
+    statistiques: {
+      vues: statistique?.nombreVues || 0,
+      candidaturesRecues: statistique?.nombreCandidatures || 0
+    },
 
-  statistiques: {
-    vues: statistique?.nombreVues || 0,
-    candidaturesRecues: statistique?.nombreCandidatures || 0
-  },
-
-  diffusion: {
-    siteCarrieres: diffusionData.some(d => d.canal === "SITE_CARRIERE"),
-    linkedin: diffusionData.some(d => d.canal === "LinkedIn"),
-    rekrute: diffusionData.some(d => d.canal === "REKRUTE"),
-    emploiMa: diffusionData.some(d => d.canal === "EMPLOI_MA"),
-    reseauxSociaux: diffusionData.some(d => d.canal === "RESEAUX_SOCIAUX")
-  }
-};
-
+    diffusion
+  };
 
   res.json(response);
 });
