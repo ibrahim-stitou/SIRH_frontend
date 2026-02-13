@@ -27,8 +27,9 @@ import {
   Globe,
   Share2,
 } from "lucide-react";
-import type { OffreEmploi, StatutOffre } from "@/types/offre";
+import type {  StatutOffre } from "@/types/offre";
 import {
+  changerStatutOffre,
   getOffreById
 } from "@/services/offreService";
 import ServerError from "@/components/common/server-error";
@@ -77,6 +78,24 @@ export function OffreDetail({ offreId }: OffreDetailProps) {
 
 
 
+
+  const handleChangeStatut = async (
+  nouveauStatut: "BROUILLON" | "PUBLIQUE" | "CLOTUREE"
+) => {
+  try {
+    await changerStatutOffre(offre.id, nouveauStatut);
+
+    // Recharger l'offre après modification
+    const updated = await getOffreById(offre.id);
+    setOffre(updated);
+
+  } catch (error) {
+    console.error("Erreur changement statut:", error);
+    alert("Erreur lors du changement de statut");
+  }
+};
+
+
   const handleCopyLink = () => {
     if (!offre?.lienCandidature) return;
     navigator.clipboard.writeText(offre.lienCandidature);
@@ -114,14 +133,6 @@ export function OffreDetail({ offreId }: OffreDetailProps) {
       </div>
     );
 
-  const diffusionChannels = [
-    { key: "siteCarrieres", label: "Site carrières", icon: Globe },
-    { key: "linkedin", label: "LinkedIn", icon: Linkedin },
-    { key: "rekrute", label: "Rekrute.com", icon: Globe },
-    { key: "emploiMa", label: "Emploi.ma", icon: Globe },
-    { key: "reseauxSociaux", label: "Réseaux sociaux", icon: Share2 },
-  ] as const;
-
   // Normaliser le statut (gérer BROUILLON vs brouillon)
   const normalizedStatut = offre.statut?.toLowerCase() || 'brouillon';
   const currentStatutConfig = statutConfig[offre.statut] || statutConfig.brouillon;
@@ -145,7 +156,7 @@ export function OffreDetail({ offreId }: OffreDetailProps) {
             )}
           </div>
           <h1 className="text-2xl font-bold">
-            {offre.poste.libelle || "Titre du poste non défini"}
+            {offre.poste?.libelle || "Titre du poste non défini"}
           </h1>
         </div>
         <div className="flex items-center gap-2">
@@ -153,28 +164,37 @@ export function OffreDetail({ offreId }: OffreDetailProps) {
             {currentStatutConfig.label}
           </Badge>
           <div className="flex gap-2">
+         {normalizedStatut === "brouillon" && (
+  <Button
+    size="sm"
+    onClick={() => handleChangeStatut("PUBLIQUE")}
+  >
+    <Play className="mr-2 h-4 w-4" />
+    Publier
+  </Button>
+)}
+
+           {normalizedStatut === "publique" && (
+  <Button
+    size="sm"
+    variant="outline"
+    onClick={() => handleChangeStatut("CLOTUREE")}
+  >
+    <Pause className="mr-2 h-4 w-4" />
+    Clôturer
+  </Button>
+)}
+
+            {/* 🔥 Afficher le bouton Modifier UNIQUEMENT si statut = BROUILLON */}
             {normalizedStatut === "brouillon" && (
-              <Button size="sm">
-                <Play className="mr-2 h-4 w-4" />
-                Publier
+              <Button size="sm" variant="outline" asChild>
+                <Link href={`/admin/offres/${offre.id}/modifier`}>
+                  <Edit className="mr-2 h-4 w-4" />
+                  Modifier
+                </Link>
               </Button>
             )}
-            {normalizedStatut === "publiee" && (
-              <Button
-                size="sm"
-                variant="outline"
-                
-              >
-                <Pause className="mr-2 h-4 w-4" />
-                Clôturer
-              </Button>
-            )}
-            <Button size="sm" variant="outline" asChild>
-              <Link href={`/admin/offres/${offre.id}/modifier`}>
-                <Edit className="mr-2 h-4 w-4" />
-                Modifier
-              </Link>
-            </Button>
+            
             <Button size="sm" variant="destructive" >
               <Trash2 className="mr-2 h-4 w-4" />
               Supprimer
@@ -244,20 +264,25 @@ export function OffreDetail({ offreId }: OffreDetailProps) {
           )}
 
           {offre.competencesRequises && offre.competencesRequises.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Compétences requises</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {offre.competencesRequises.map((comp: string, index: number) => (
-                    <Badge key={index} variant="secondary">
-                      {comp}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+         <Card>
+  <CardHeader>
+    <CardTitle>Compétences requises</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <div className="flex flex-wrap gap-3">
+      {offre.competencesRequises.map((comp: any, index: number) => (
+        <Badge
+          key={comp.id || index}
+          variant="secondary"
+          className="text-sm px-4 py-2 rounded-lg"
+        >
+          {comp.libelle}
+        </Badge>
+      ))}
+    </div>
+  </CardContent>
+</Card>
+
           )}
         </div>
 
@@ -407,29 +432,39 @@ export function OffreDetail({ offreId }: OffreDetailProps) {
             </Card>
           )}
 
-          {offre.diffusion && (
+          {offre.diffusion && offre.diffusion.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle>Canaux de diffusion</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {diffusionChannels.map(({ key, label, icon: Icon }) => (
-                    <div
-                      key={key}
-                      className={`flex items-center gap-2 p-2 rounded ${
-                        offre.diffusion[key]
-                          ? "bg-primary/10 text-primary"
-                          : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      <Icon className="h-4 w-4 flex-shrink-0" />
-                      <span className="text-sm">{label}</span>
-                      {offre.diffusion[key] && (
-                        <Check className="h-4 w-4 ml-auto" />
-                      )}
-                    </div>
-                  ))}
+                  {offre.diffusion.map((canal: any) => {
+                    // Déterminer l'icône en fonction du libellé
+                    let Icon = Globe;
+                    if (canal.libelle.toLowerCase().includes('linkedin')) {
+                      Icon = Linkedin;
+                    } else if (canal.libelle.toLowerCase().includes('social')) {
+                      Icon = Share2;
+                    }
+
+                    return (
+                      <div
+                        key={canal.id}
+                        className={`flex items-center gap-2 p-2 rounded ${
+                          canal.statut === 'SUCCES'
+                            ? "bg-primary/10 text-primary"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        <Icon className="h-4 w-4 flex-shrink-0" />
+                        <span className="text-sm flex-1">{canal.libelle}</span>
+                        {canal.statut === 'SUCCES' && (
+                          <Check className="h-4 w-4" />
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>

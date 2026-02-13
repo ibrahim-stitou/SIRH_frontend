@@ -16,10 +16,44 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { X, Plus, Loader2, ArrowLeft } from "lucide-react";
-import { offreSchema } from "./offre-form.schema";
-
+import { X, Plus, Loader2 } from "lucide-react";
 import { DatePickerField } from "@/components/custom/DatePickerField";
+import { OffreEmploi } from "@/types/PosteOffre";
+
+// 🔥 Interface pour les données de l'offre reçues de l'API
+interface OffreFromAPI {
+  id: number;
+  reference: string;
+  poste?: {
+    id: number;
+    libelle: string;
+  };
+  descriptionPoste: string;
+  missionsPrincipales: string[];
+  competencesRequises: Array<{
+    id: number;
+    libelle: string;
+    categorie: string;
+  }>;
+  lieuTravail: string;
+  typeContrat: string;
+  salaireMin?: number;
+  salaireMax?: number;
+  dateLimiteCandidature: string;
+  profilRecherche: {
+    formation: string;
+    experience: string;
+  };
+  responsableRecrutement?: {
+    id: number;
+    nom: string;
+  };
+  diffusion?: Array<{
+    id: number;
+    libelle: string;
+  }>;
+  statut: string;
+}
 
 interface Poste {
   id: number;
@@ -43,8 +77,8 @@ interface Competence {
   id: number;
   libelle: string;
   categorie: string;
-  description: string;
-  createdAt: string;
+  description?: string;
+  createdAt?: string;
 }
 
 interface Canal {
@@ -79,13 +113,11 @@ interface FormData {
   canalIds: number[];
 }
 
-interface OffreFormProps {
-  mode: "create" | "edit";
-  offreId?: number;
-  initialData?: any;
+interface OffreEditFormProps {
+  offre: OffreEmploi;
 }
 
-export function OffreForm({ mode, offreId, initialData }: OffreFormProps) {
+export function OffreEditForm({ offre }: OffreEditFormProps) {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
     reference: "",
@@ -131,57 +163,39 @@ export function OffreForm({ mode, offreId, initialData }: OffreFormProps) {
     loadCompetences();
     loadCanaux();
     loadResponsables();
+    populateFormWithData(offre);
+  }, [offre]);
 
-    // Si mode édition, charger les données de l'offre
-    if (mode === "edit" && offreId) {
-      loadOffreData(offreId);
-    } else if (mode === "edit" && initialData) {
-      populateFormWithData(initialData);
-    }
-  }, [mode, offreId]);
-
-  // Charger les données d'une offre existante
-  const loadOffreData = async (id: number) => {
-    try {
-      const response = await fetch(`http://localhost:3001/offres/${id}`);
-      const data = await response.json();
-      populateFormWithData(data);
-    } catch (err) {
-      console.error("Erreur lors du chargement de l'offre:", err);
-      setError("Impossible de charger les données de l'offre");
-    }
-  };
-
-  // Remplir le formulaire avec les données existantes
-  const populateFormWithData = (data: any) => {
+  // 🔥 Remplir le formulaire avec les données de l'offre
+  const populateFormWithData = (data: OffreFromAPI) => {
     setFormData({
       reference: data.reference || "",
-      description: data.description || "",
-      posteId: data.posteId || null,
-      intitulePoste: data.intitulePoste || data.poste?.libelle || "",
+      description: data.descriptionPoste || "",
+      posteId: data.poste?.id || null,
+      intitulePoste: data.poste?.libelle || "",
       lieuTravail: data.lieuTravail || "",
       typeContrat: data.typeContrat || "CDI",
       salaireMin: data.salaireMin || 0,
       salaireMax: data.salaireMax || 0,
       dateLimiteCandidature: data.dateLimiteCandidature?.split('T')[0] || "",
-      responsableId: data.responsableId || null,
-      missions: data.missions || [],
+      responsableId: data.responsableRecrutement?.id || null,
+      missions: data.missionsPrincipales || [],
       profilRecherche: data.profilRecherche || {
         formation: "",
         experience: "",
       },
-      competenceIds: data.competenceIds || [],
-      canalIds: data.canalIds || [],
+      competenceIds: data.competencesRequises?.map(c => c.id) || [],
+      canalIds: data.diffusion?.map(d => d.id) || [],
     });
 
     // Charger les compétences sélectionnées
-    if (data.competences) {
-      setSelectedCompetences(data.competences);
+    if (data.competencesRequises) {
+      setSelectedCompetences(data.competencesRequises);
     }
 
     // Définir searchPoste pour l'affichage
-    if (data.intitulePoste || data.poste?.libelle) {
-      setSearchPoste(data.intitulePoste || data.poste?.libelle);
+    if (data.poste?.libelle) {
+      setSearchPoste(data.poste.libelle);
     }
 
     // Afficher la section salaire si des valeurs existent
@@ -316,79 +330,59 @@ export function OffreForm({ mode, offreId, initialData }: OffreFormProps) {
     }));
   };
 
+  // 🔥 Fonction de soumission adaptée au format de votre API
   const handleSubmit = async (statut: "brouillon" | "publiee") => {
-  setIsLoading(true);
-  setError(null);
+    setIsLoading(true);
+    setError(null);
 
-  try {
-    // ✅ Validation ZOD
-    const validation = offreSchema.safeParse(formData);
+    try {
+      const statutMapping: Record<string, string> = {
+        brouillon: "BROUILLON",
+        publiee: "PUBLIQUE",
+      };
 
-    if (!validation.success) {
-      const firstError =
-        validation.error.errors[0]?.message || "Erreur de validation";
-      setError(firstError);
-      setIsLoading(false);
-      return;
-    }
+      // 🔥 Payload au format exact de votre API PATCH
+      const payload = {
+        offre: {
+          reference: formData.reference,
+          description: formData.description,
+          posteId: formData.posteId,
+          lieuTravail: formData.lieuTravail,
+          typeContrat: formData.typeContrat,
+          salaireMin: showSalaire ? formData.salaireMin : undefined,
+          salaireMax: showSalaire ? formData.salaireMax : undefined,
+          dateLimiteCandidature: formData.dateLimiteCandidature,
+          responsableId: formData.responsableId,
+          statut: statutMapping[statut],
+        },
+        missions: formData.missions, // Array de strings
+        profilRecherche: formData.profilRecherche, // { formation, experience }
+        competenceIds: formData.competenceIds, // Array d'IDs
+        canalIds: formData.canalIds, // Array d'IDs
+      };
 
-    // Si tout est valide
-    const validatedData = validation.data;
+      console.log("📤 Payload envoyé:", JSON.stringify(payload, null, 2));
 
-    const statutMapping: Record<string, string> = {
-      brouillon: "BROUILLON",
-      publiee: "PUBLIQUE",
-    };
-
-    const payload = {
-      offre: {
-        reference: validatedData.reference,
-        description: validatedData.description,
-        posteId: validatedData.posteId,
-        lieuTravail: validatedData.lieuTravail,
-        typeContrat: validatedData.typeContrat,
-        salaireMin: showSalaire ? validatedData.salaireMin : undefined,
-        salaireMax: showSalaire ? validatedData.salaireMax : undefined,
-        dateLimiteCandidature: validatedData.dateLimiteCandidature,
-        responsableId: validatedData.responsableId,
-        statut: statutMapping[statut],
-      },
-      missions: validatedData.missions,
-      profilRecherche: validatedData.profilRecherche,
-      competenceIds: validatedData.competenceIds,
-      canalIds: validatedData.canalIds,
-    };
-      let response;
-      
-      if (mode === "create") {
-        response = await fetch("http://localhost:3001/offres/create", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        });
-      } else {
-        response = await fetch(`http://localhost:3001/offres/${offreId}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        });
-      }
+      const response = await fetch(`http://localhost:3001/offres/${offre.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
       if (!response.ok) {
-        throw new Error(
-          mode === "create"
-            ? "Erreur lors de la création de l'offre"
-            : "Erreur lors de la modification de l'offre"
-        );
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || "Erreur lors de la modification de l'offre");
       }
+
+      const result = await response.json();
+      console.log("✅ Réponse API:", result);
 
       router.push("/admin/offres");
       router.refresh();
     } catch (err) {
+      console.error("❌ Erreur:", err);
       setError(err instanceof Error ? err.message : "Une erreur est survenue");
     } finally {
       setIsLoading(false);
@@ -397,66 +391,45 @@ export function OffreForm({ mode, offreId, initialData }: OffreFormProps) {
 
   return (
     <div className="space-y-4">
-      {/* Header avec titre et actions */}
-      <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-      <div className="flex items-center gap-3">
-  <Button
-    type="button"
-    variant="ghost"
-    size="icon"
-    onClick={() => router.push("/admin/offres")}
-    disabled={isLoading}
-  >
-    <ArrowLeft className="h-5 w-5" />
-  </Button>
-
-  <div>
-    <h1 className="text-3xl font-bold">
-      {mode === "create"
-        ? "Créer une offre d'emploi"
-        : "Modifier l'offre d'emploi"}
-    </h1>
-    <p className="text-muted-foreground mt-1">
-      {mode === "create"
-        ? "Remplissez le formulaire pour publier une nouvelle offre"
-        : "Modifiez les informations de l'offre d'emploi"}
-    </p>
-  </div>
-</div>
-
-        
-        {/* Actions - à droite du header */}
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:shrink-0">
-          
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => handleSubmit("brouillon")}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : null}
-            Enregistrer en brouillon
-          </Button>
-          <Button
-            type="button"
-            onClick={() => handleSubmit("publiee")}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : null}
-            {mode === "create" ? "Publier l'offre" : "Mettre à jour"}
-          </Button>
-        </div>
-      </div>
-
       {error && (
         <div className="bg-destructive/10 text-destructive px-4 py-3 rounded-lg">
           {error}
         </div>
       )}
+
+      {/* Actions - En haut du formulaire */}
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-end">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => router.push("/admin/offres")}
+          disabled={isLoading}
+          className="bg-transparent"
+        >
+          Annuler
+        </Button>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => handleSubmit("brouillon")}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : null}
+          Enregistrer en brouillon
+        </Button>
+        <Button
+          type="button"
+          onClick={() => handleSubmit("publiee")}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : null}
+          Mettre à jour
+        </Button>
+      </div>
 
       <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
         {/* Informations générales */}
@@ -510,7 +483,6 @@ export function OffreForm({ mode, offreId, initialData }: OffreFormProps) {
               </div>
             </div>
 
-            
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="lieuTravail">Lieu de travail *</Label>
@@ -674,9 +646,11 @@ export function OffreForm({ mode, offreId, initialData }: OffreFormProps) {
                       onClick={() => handleCompetenceSelect(competence)}
                     >
                       <div className="font-medium">{competence.libelle}</div>
-                      <div className="text-sm text-gray-500">
-                        {competence.categorie} - {competence.description}
-                      </div>
+                      {competence.categorie && (
+                        <div className="text-sm text-gray-500">
+                          {competence.categorie}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

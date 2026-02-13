@@ -8,12 +8,7 @@ export const metadata = {
 export default function NouvelleOffrePage() {
   return (
     <main className="w-full py-8 px-4 overflow-auto pb-32" style={{maxHeight: 'calc(100vh - 64px)'}}>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Créer une offre d&apos;emploi</h1>
-        <p className="text-muted-foreground mt-1">
-          Remplissez le formulaire pour publier une nouvelle offre
-        </p>
-      </div>
+   
       <OffreForm mode="create" />
     </main>
   );

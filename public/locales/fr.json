@@ -38,7 +38,9 @@
     "fraisDeplacements": "Frais & Déplacements",
     "accidentsTravail": "Accidents du travail",
     "parametres": "Paramètres",
-      "Offres": "Offres d'emploi"
+      "offres": "Offres d'emploi",
+     "gpec": "GPEC"
+
   },
   "header": {
     "language": "Langue"

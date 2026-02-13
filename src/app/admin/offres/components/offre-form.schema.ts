@@ -1,40 +1,73 @@
-// /schemas/offreForm.schema.ts
 import { z } from "zod";
 
-export const offreFormSchema = z.object({
-  intitulePoste: z.string().min(3),
-  descriptionPoste: z.string().min(10),
-  missionsPrincipales: z.array(z.string()).min(1),
+export const offreSchema = z.object({
+  reference: z
+    .string()
+    .min(1, "La référence est obligatoire"),
+
+  description: z
+    .string()
+    .min(1, "La description est obligatoire"),
+
+  posteId: z
+    .number({
+      required_error: "Le poste est obligatoire",
+      invalid_type_error: "Le poste est obligatoire",
+    })
+    .nullable()
+    .refine((val) => val !== null, {
+      message: "Le poste est obligatoire",
+    }),
+
+  intitulePoste: z
+    .string()
+    .min(1, "L’intitulé du poste est obligatoire"),
+
+  lieuTravail: z
+    .string()
+    .min(1, "Le lieu de travail est obligatoire"),
+
+  typeContrat: z.enum(["CDI", "CDD", "Stage"], {
+    errorMap: () => ({ message: "Type de contrat invalide" }),
+  }),
+
+  salaireMin: z.number().optional(),
+  salaireMax: z.number().optional(),
+
+  dateLimiteCandidature: z
+    .string()
+    .min(1, "La date limite est obligatoire"),
+
+  responsableId: z
+    .number({
+      required_error: "Le responsable est obligatoire",
+    })
+    .nullable()
+    .refine((val) => val !== null, {
+      message: "Le responsable est obligatoire",
+    }),
+
+  missions: z
+    .array(
+      z.string().min(1, "Une mission ne peut pas être vide")
+    )
+    .min(1, "Au moins une mission est requise"),
 
   profilRecherche: z.object({
-    formation: z.string().min(2),
-    experience: z.string().min(2),
+    formation: z
+      .string()
+      .min(1, "La formation est obligatoire"),
+
+    experience: z
+      .string()
+      .min(1, "L’expérience est obligatoire"),
   }),
 
-  competencesRequises: z.array(z.string()).min(1),
-  lieuTravail: z.string().min(2),
+  competenceIds: z
+    .array(z.number())
+    .min(1, "Au moins une compétence est requise"),
 
-  typeContrat: z.enum(["CDI", "CDD", "Stage"]),
-  dateLimiteCandidature: z.string().min(1),
-
-  responsableRecrutementId: z.number().min(1),
-  statut: z.enum(["brouillon", "publiee"]),
-
-  fourchetteSalaire: z
-    .object({
-      min: z.number(),
-      max: z.number(),
-      devise: z.string(),
-    })
-    .nullable(),
-
-  diffusion: z.object({
-    siteCarrieres: z.boolean(),
-    linkedin: z.boolean(),
-    rekrute: z.boolean(),
-    emploiMa: z.boolean(),
-    reseauxSociaux: z.boolean(),
-  }),
-
-  anonyme: z.boolean(),
+  canalIds: z
+    .array(z.number())
+    .optional(),
 });

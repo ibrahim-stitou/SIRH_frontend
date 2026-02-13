@@ -26,7 +26,7 @@ import {
   Copy,
 } from "lucide-react";
 import type { OffreEmploiUI } from "@/types/PosteOffre";
-import { updateOffreStatut, deleteOffre } from "@/services/offreService";
+import {  changerStatutOffre, deleteOffre } from "@/services/offreService";
 
 interface OffreCardProps {
   offre: OffreEmploiUI;
@@ -48,6 +48,17 @@ const typeContratColors: Record<string, string> = {
 
 export function OffreCard({ offre, onUpdate }: OffreCardProps) {
   
+const handleChangeStatut = async (
+  nouveauStatut: "BROUILLON" | "PUBLIQUE" | "CLOTUREE"
+) => {
+  try {
+    await changerStatutOffre(offre.id, nouveauStatut);
+    onUpdate(); // refresh la liste
+  } catch (error) {
+    console.error("Erreur lors du changement de statut:", error);
+    alert("Erreur lors du changement de statut");
+  }
+};
 
   const handleDelete = async () => {
     if (confirm("Êtes-vous sûr de vouloir supprimer cette offre ?")) {
@@ -80,20 +91,15 @@ export function OffreCard({ offre, onUpdate }: OffreCardProps) {
 
   return (
     <Card className="group hover:shadow-md transition-shadow">
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-4">
-          <div className="space-y-1 flex-1">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <div className="space-y-0 flex-1">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
               <span className="font-mono">{offre.reference}</span>
-              {offre.anonyme && (
-                <Badge variant="outline" className="text-xs">
-                  Anonyme
-                </Badge>
-              )}
             </div>
             <Link
               href={`/admin/offres/${offre.id}`}
-              className="text-lg font-semibold hover:underline line-clamp-1"
+              className="text-lg font-semibold hover:underline line-clamp-1 mb-0"
             >
               {offre.intitulePoste}
             </Link>
@@ -117,17 +123,23 @@ export function OffreCard({ offre, onUpdate }: OffreCardProps) {
                   </Link>
                 </DropdownMenuItem>
                 {offre.statut === "brouillon" && (
-                  <DropdownMenuItem >
-                    <Play className="mr-2 h-4 w-4" />
-                    Publier
-                  </DropdownMenuItem>
-                )}
+  <DropdownMenuItem
+onClick={() => handleChangeStatut("PUBLIQUE")}
+  >
+    <Play className="mr-2 h-4 w-4" />
+    Publier
+  </DropdownMenuItem>
+)}
+
                 {offre.statut === "publiee" && (
-                  <DropdownMenuItem >
-                    <Pause className="mr-2 h-4 w-4" />
-                    Clôturer
-                  </DropdownMenuItem>
-                )}
+  <DropdownMenuItem
+    onClick={() => handleChangeStatut("CLOTUREE")}
+  >
+    <Pause className="mr-2 h-4 w-4" />
+    Clôturer
+  </DropdownMenuItem>
+)}
+
                 {offre.lienCandidature && (
                   <>
                     <DropdownMenuSeparator />
@@ -161,11 +173,7 @@ export function OffreCard({ offre, onUpdate }: OffreCardProps) {
         </div>
       </CardHeader>
 
-      <CardContent className="pb-3">
-        <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-          {offre.descriptionPoste}
-        </p>
-
+      <CardContent className="pb-3 pt-0">
         <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <MapPin className="h-4 w-4" />
@@ -221,9 +229,7 @@ export function OffreCard({ offre, onUpdate }: OffreCardProps) {
               <span>{offre.statistiques.candidaturesRecues} candidatures</span>
             </div>
           </div>
-          <div className="text-xs text-muted-foreground">
-            Par {offre.responsableRecrutement.nom}
-          </div>
+    
         </div>
       </CardFooter>
     </Card>

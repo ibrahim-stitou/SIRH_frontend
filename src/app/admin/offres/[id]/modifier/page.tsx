@@ -3,8 +3,9 @@
 import { useState, useEffect, use } from "react";
 import { OffreForm } from "../../components/offre-form";
 import { getOffreById } from "@/services/offreService";
-import type { OffreEmploi } from "@/types/offre";
 import { Loader2 } from "lucide-react";
+import { OffreEditForm } from "../../components/Offre-edit-form";
+import { OffreEmploi } from "@/types/PosteOffre";
 
 interface ModifierOffrePageProps {
   params: Promise<{ id: string }>;
@@ -55,7 +56,7 @@ export default function ModifierOffrePage({ params }: ModifierOffrePageProps) {
           Modifiez les informations de l&apos;offre {offre.reference}
         </p>
       </div>
-      <OffreForm offre={offre} mode="edit" />
+      <OffreEditForm offre={offre}  />
     </main>
   );
 }

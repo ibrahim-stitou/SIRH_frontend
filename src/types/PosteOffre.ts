@@ -72,9 +72,9 @@ export interface OffreEmploi {
   statut: StatutOffre;
   anonymisee: boolean;
   responsableId: number;
-  validatedManager: boolean;
-  validatedRH: boolean;
-  slug: string;
+  // validatedManager: boolean;
+  // validatedRH: boolean;
+  // slug: string;
   lienCandidature: string;
   createdAt: string;
   
@@ -102,12 +102,12 @@ export interface OffreEmploiUI {
   } | null;
   dateLimiteCandidature: string;
   statut: "brouillon" | "publiee" | "cloturee";
-  anonyme: boolean;
+
   lienCandidature: string;
   competencesRequises: Competence[];
   responsableRecrutement: {
     nom: string;
-    email: string;
+    // email: string;
   };
   statistiques: {
     vues: number;

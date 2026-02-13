@@ -42,27 +42,27 @@ export interface Statistiques {
   sourceCandidatures: SourceCandidatures;
 }
 
-export interface OffreEmploi {
-  id: number;
-  reference: string;
-  intitulePoste: string;
-  descriptionPoste: string;
-  missionsPrincipales: string[];
-  profilRecherche: ProfilRecherche;
-  competencesRequises: string[];
-  lieuTravail: string;
-  typeContrat: TypeContrat;
-  fourchetteSalaire: FourchetteSalaire | null;
-  dateLimiteCandidature: string;
-  responsableRecrutement: ResponsableRecrutement;
-  statut: StatutOffre;
-  dateCreation: string;
-  datePublication: string | null;
-  diffusion: Diffusion;
-  lienCandidature: string | null;
-  statistiques: Statistiques;
-  anonyme: boolean;
-}
+// export interface OffreEmploi {
+//   id: number;
+//   reference: string;
+//   intitulePoste: string;
+//   descriptionPoste: string;
+//   missionsPrincipales: string[];
+//   profilRecherche: ProfilRecherche;
+//   competencesRequises: string[];
+//   lieuTravail: string;
+//   typeContrat: TypeContrat;
+//   fourchetteSalaire: FourchetteSalaire | null;
+//   dateLimiteCandidature: string;
+//   responsableRecrutement: ResponsableRecrutement;
+//   statut: StatutOffre;
+//   dateCreation: string;
+//   datePublication: string | null;
+//   diffusion: Diffusion;
+//   lienCandidature: string | null;
+//   statistiques: Statistiques;
+//   anonyme: boolean;
+// }
 
 
 export interface OffreFormData {

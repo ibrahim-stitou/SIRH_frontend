@@ -71,9 +71,15 @@ server.post('/offres/create', (req, res) => {
       ? Math.max(...offres.map(o => o.id)) + 1
       : 1;
 
+    // 🔥 Génération automatique du lien
+    const BASE_URL = "http://localhost:3000"; // change en prod
+    const lienCandidature = `${BASE_URL}/candidature/${newId}`;
+
     const newOffre = {
       id: newId,
       ...offre,
+      statut: offre.statut || "BROUILLON",
+      lienCandidature, // 👈 ajouté automatiquement
       createdAt: new Date().toISOString()
     };
 
@@ -154,6 +160,7 @@ server.post('/offres/create', (req, res) => {
     });
   }
 });
+
 
 
 server.get('/offres/:id/detail', (req, res) => {
@@ -263,6 +270,196 @@ server.get('/offres/:id/detail', (req, res) => {
   res.json(response);
 });
 
+
+
+server.patch('/offres/:id/statut', (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const { statut } = req.body;
+
+    const statutsAutorises = ["BROUILLON", "PUBLIQUE", "CLOTUREE"];
+
+    if (!statut || !statutsAutorises.includes(statut)) {
+      return res.status(400).json({
+        message: "Statut invalide. Valeurs autorisées: BROUILLON, PUBLIQUE, CLOTUREE"
+      });
+    }
+
+    const offre = db.get('offres').find({ id }).value();
+
+    if (!offre) {
+      return res.status(404).json({ message: "Offre introuvable" });
+    }
+
+    db.get('offres')
+      .find({ id })
+      .assign({ statut })
+      .write();
+
+    res.json({
+      message: "Statut mis à jour avec succès",
+      id,
+      nouveauStatut: statut
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Erreur lors de la mise à jour du statut",
+      error: error.message
+    });
+  }
+});
+
+
+server.patch('/offres/:id', (req, res) => {
+
+  const id = parseInt(req.params.id);
+
+  // 🔥 IMPORTANT : déclarer les variables
+  const {
+    offre,
+    missions,
+    profilRecherche,
+    competenceIds,
+    canalIds
+  } = req.body;
+
+  const existingOffre = db.get('offres').find({ id: id }).value();
+
+  if (!existingOffre) {
+    return res.status(404).json({ message: "Offre non trouvée" });
+  }
+
+  // ===================================================
+  // 1️⃣ UPDATE OFFRE (partiel)
+  // ===================================================
+  if (offre !== undefined) {
+    db.get('offres')
+      .find({ id: id })
+      .assign({ ...offre })
+      .write();
+  }
+
+  // ===================================================
+  // 2️⃣ UPDATE MISSIONS (remplacement complet)
+  // ===================================================
+  if (missions !== undefined) {
+
+    db.get('Missions')
+      .remove({ offreId: id })
+      .write();
+
+    missions.forEach((mission, index) => {
+      db.get('Missions')
+        .push({
+          id: Date.now() + index,
+          offreId: id,
+          libelle: mission   // ⚠️ ta base utilise libelle
+        })
+        .write();
+    });
+  }
+
+  // ===================================================
+  // 3️⃣ UPDATE PROFIL RECHERCHE (FORMATION / EXPERIENCE)
+  // ===================================================
+  if (profilRecherche !== undefined) {
+
+    // 🔹 FORMATION
+    if (profilRecherche.formation !== undefined) {
+
+      const formationRow = db.get('ProfilRecherche')
+        .find({ offreId: id, type: "FORMATION" })
+        .value();
+
+      if (formationRow) {
+        db.get('ProfilRecherche')
+          .find({ offreId: id, type: "FORMATION" })
+          .assign({ contenu: profilRecherche.formation })
+          .write();
+      } else {
+        db.get('ProfilRecherche')
+          .push({
+            id: Date.now(),
+            offreId: id,
+            type: "FORMATION",
+            contenu: profilRecherche.formation
+          })
+          .write();
+      }
+    }
+
+    // 🔹 EXPERIENCE
+    if (profilRecherche.experience !== undefined) {
+
+      const experienceRow = db.get('ProfilRecherche')
+        .find({ offreId: id, type: "EXPERIENCE" })
+        .value();
+
+      if (experienceRow) {
+        db.get('ProfilRecherche')
+          .find({ offreId: id, type: "EXPERIENCE" })
+          .assign({ contenu: profilRecherche.experience })
+          .write();
+      } else {
+        db.get('ProfilRecherche')
+          .push({
+            id: Date.now(),
+            offreId: id,
+            type: "EXPERIENCE",
+            contenu: profilRecherche.experience
+          })
+          .write();
+      }
+    }
+  }
+
+  // ===================================================
+  // 4️⃣ UPDATE COMPETENCES (remplacement complet)
+  // ===================================================
+  if (competenceIds !== undefined) {
+
+    db.get('OffreCompetences')
+      .remove({ offreId: id })
+      .write();
+
+    competenceIds.forEach((compId) => {
+      db.get('OffreCompetences')
+        .push({
+          offreId: id,
+          competenceId: compId
+        })
+        .write();
+    });
+  }
+
+  // ===================================================
+  // 5️⃣ UPDATE CANAUX (remplacement complet via OffreDiffusions)
+  // ===================================================
+  if (canalIds !== undefined) {
+
+    db.get('OffreDiffusions')
+      .remove({ offreId: id })
+      .write();
+
+    canalIds.forEach((canalId, index) => {
+      db.get('OffreDiffusions')
+        .push({
+          id: Date.now() + index,
+          offreId: id,
+          canalId: canalId,
+          dateDiffusion: new Date().toISOString(),
+          statut: "SUCCES"
+        })
+        .write();
+    });
+  }
+
+  return res.status(200).json({
+    message: "Offre mise à jour avec succès"
+  });
+
+});
 
 
 //   // Route personnalisée pour les offres récentes

@@ -29,13 +29,13 @@ export function mapOffreToUI(offre: OffreEmploi): OffreEmploiUI {
         : null,
     dateLimiteCandidature: offre.dateLimiteCandidature,
     statut: statutMapping[offre.statut],
-    anonyme: offre.anonymisee,
     lienCandidature: offre.lienCandidature,
     competencesRequises: offre.competencesRequises || [],
     responsableRecrutement: {
-      nom: offre.responsable.nom,
-      email: offre.responsable.email,
-    },
+  nom: offre.responsable?.nom || "Non assigné",
+ // email: offre.responsable?.email || "",
+},
+
     statistiques: {
       vues: offre.OffreStatistiques?.nombreVues || 0,
       candidaturesRecues: offre.OffreStatistiques?.nombreCandidatures || 0,
@@ -44,10 +44,30 @@ export function mapOffreToUI(offre: OffreEmploi): OffreEmploiUI {
 }
 
 
+
+export const changerStatutOffre = async (
+  id: number,
+  statut: "BROUILLON" | "PUBLIQUE" | "CLOTUREE"
+) => {
+  const response = await fetch(apiRoutes.offres.changeStatut(id), {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ statut }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Erreur lors du changement de statut");
+  }
+
+  return response.json();
+};
+
 /**
  * Récupérer une offre spécifique par ID
  */
-export async function getOffreById(id: number): Promise<OffreEmploiUI> {
+export async function getOffreById(id: number): Promise<OffreEmploi> {
   const response = await fetch(apiRoutes.offres.byId(id));
 
   if (!response.ok) {

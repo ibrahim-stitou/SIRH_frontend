@@ -481,7 +481,7 @@ export const apiRoutes = {
 
   offres: {
       list: `${API_BASE}/offres/getAll`,
-      
+      changeStatut: (id: number | string) => `${API_BASE}/offres/${id}/statut`,
       byId: (id: number | string) => `${API_BASE}/offres/${id}/detail`,
       nouveau: `${API_BASE}/offres/nouveau`,
       delete: (id: number | string) => `${API_BASE}/offres/${id}`
